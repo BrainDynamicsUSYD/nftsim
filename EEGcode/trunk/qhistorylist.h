@@ -20,7 +20,7 @@ class Poplist;
 
 class Qhistorylist {
 public:
-  Qhistorylist(int numpops, long gridsize);  
+  Qhistorylist(ifstream& inputf, ofstream& dumpf, int numpops, long gridsize);  
   ~Qhistorylist(); 
   void init(ifstream& inputf, Poplist *ppoplist); // initialize each Q history
   void dump(ofstream& dumpf);
@@ -29,8 +29,8 @@ public:
   void updateQhistories(Poplist * ppoplist); // get Q values from populations and move keyring pointers
 
 private:
-  Qhistory * firstlink; // link to first qhistory object in linked list
-  int * getdepths(); // Read in array of depth of each Q history keyring
+  Qhistory ** Qhistarray; // Array of pointers to Qhistory objects
+  void getdepths(ifstream& inputf, ofstream& dumpf); // Read in array of depth of each Q history keyring
   int * depthofhistory; // Array numpops long of the depth of each Q history keyring
   const int numhistories; // number of Q histories
 };

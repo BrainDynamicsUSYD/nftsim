@@ -12,26 +12,20 @@
 //
 
 WaveEqnlist::WaveEqnlist(int numconnects, long gridsize, float deltat, float deltax):numwaveeq(numconnects){
-  WaveEqn *currentlink;
-  WaveEqn *nextlink;
-  firstlink = new WaveEqn(gridsize, deltat, deltax);
-  numconnects--;
-  currentlink=firstlink;
-  for(; numconnects>0; numconnects--){
-    nextlink= new WaveEqn(gridsize, deltat, deltax);
-    currentlink->next=nextlink;
-    currentlink=nextlink;
-    }
+  waveeqnarray = new WaveEqn *[numwaveeq];
+  for(int i=0;i<numwaveeq;i++){
+    waveeqnarray[i] = new WaveEqn(gridsize, deltat, deltax);
+  }
 }
 
 //
-// Destructor sucessively deletes each object in the linked list
+// Destructor deletes each wave equation object and then array which holds them
 //
 
 WaveEqnlist::~WaveEqnlist(){
-  int i=numwaveeq;
-  for(;i>0; i--)
-    delete getwaveeq(i-1);
+  for(int i=0;i<numwaveeq; i++)
+    delete getwaveeq(i);
+  delete [ ] waveeqnarray;
 }
 
 //
@@ -39,17 +33,8 @@ WaveEqnlist::~WaveEqnlist(){
 //
 
 WaveEqn * WaveEqnlist::getwaveeq(int index){
-  WaveEqn *currentlink;
-  if(index<numwaveeq){
-    currentlink=firstlink;
-    for(;index>0; index--)
-      currentlink=currentlink->next;
-    }
-  else {
-    currentlink=0;
-    }
-  return currentlink;
- }
+  return waveeqnarray[index];
+}
 
 //
 //  init method initializes wave equation object in turn

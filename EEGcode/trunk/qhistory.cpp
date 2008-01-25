@@ -11,11 +11,17 @@
 #include"qhistory.h"
 #include"poplist.h"
 
-Qhistory::Qhistory(int qdepth, long gridsize, int indexQ)
-	       :indexofQ(indexQ),depthq(qdepth),gridsize(gridsize){
+Qhistory::Qhistory(int qdepth, long gsize, int indexQ)
+	       :indexofQ(indexQ),depthq(qdepth),gridsize(gsize){
   qhistory = new float*[qdepth+3];
-  for(int i=0;i<qdepth+3;i++)
+  float *q;
+  for(int i=0;i<qdepth+3;i++){
     qhistory[i] = new float[gridsize];
+    // Initialize q arrays to zero
+    q = qhistory[i];
+    for(long j=0;j<gridsize;j++)
+      *q++=0.0F;
+  }
   timeindex = new int[qdepth+3]; 
   for(int i=0;i<qdepth+3;i++) // Fill time index with default arrangement
     timeindex[i]=i;
@@ -50,7 +56,7 @@ void Qhistory::init(ifstream& inputf, Poplist *ppoplist){
 void Qhistory::dump(ofstream& dumpf){
   for(int i=0;i<depthq+3;i++){
     float *q=qhistory[i];
-    dumpf << "Qhistory depth " << i << " :";
+    dumpf << "Qhistory index " << i << " :";
     for(long j=0;j<gridsize;j++)
       dumpf << *q++ <<" ";
     dumpf << endl;
@@ -90,10 +96,10 @@ void Qhistory::updateQhistory(Poplist *ppoplist){
   copyQfrompop(ppoplist);
 // Second, increment timeindex array updating indexes of Q values
   for(int i=0;i<depthq+3;i++){
-    if(timeindex[i]<depthq+2)
-      timeindex[i]++;
+    if(timeindex[i]!=0)
+      timeindex[i]--;
     else
-      timeindex[i]=0;
+      timeindex[i]=depthq+2;
   }
 }
 

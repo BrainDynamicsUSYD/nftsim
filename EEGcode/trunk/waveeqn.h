@@ -23,18 +23,19 @@ class WaveEqn {
 public: 
   WaveEqn(long gridsize, float deltat, float deltax);
   ~WaveEqn();
-  void init(ifstream& inputf); // still needs to get tau_ab
+  void init(ifstream& inputf);
   void dump(ofstream& dumpf);
   void restart(ifstream& restartf);
   void stepwaveeq(float *Phi, Qhistory* qhistory);
-  WaveEqn * next; // link to next Wave equation object in linked list
 private:
   Gamma gammaobj;
   EffRange effrangeobj;
   float gamma;
   float effrange;
   int tauab;
+  bool islocal;
   float p2; // Square of mesh ratio, dimensionless equal to (deltat effrange gamma/deltax)^2
+  const long gridsize; // size of grids for integration of wave equation
   const float deltat; // Grid spacing in time
   const float deltax; // Grid spacing in space
   float deltatdivideddeltaxallsquared; //Factor in p2 definition
@@ -46,7 +47,6 @@ private:
   float expfact2; //factor of Exp(- 2 gamma deltat)
   float *Phi_1; // Eta one step into past stored for use by DE solver routine
   float *Phi_2; // Eta two steps into past stored for use by DE solver routine  
-  const long gridsize; // size of grids for integration of wave equation
   long rowlength;
   long sidelength; // number of nodes along one side length of square node population
   long startfirstrow;

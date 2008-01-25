@@ -9,48 +9,33 @@
 #include"coupling.h"
 
 //
-// Constructor for Couplinglist creates a linked list of wave equation objects
+// Constructor for Couplinglist creates an array of coupling objects
 //
 
 Couplinglist::Couplinglist(int numconnects):numcoup(numconnects){
-  Coupling *currentlink;
-  Coupling *nextlink;
-  firstlink = new Coupling();
-  numconnects--;
-  currentlink=firstlink;
-  for(; numconnects>0; numconnects--){
-    nextlink= new Coupling();
-    currentlink->next=nextlink;
-    currentlink=nextlink;
-    }
+  couparray = new Coupling *[numcoup];
+  for(int i=0;i<numcoup;i++){
+    couparray[i] = new Coupling();
+  }
 }
 
 //
-// Destructor sucessively deletes each object in the linked list
+// Destructor deletes each coupling object and then array which holds them
 //
 
 Couplinglist::~Couplinglist(){
-  int i=numcoup;
-  for(;i>0; i--)
-    delete getcoup(i-1);
+  for(int i=0;i<numcoup; i++)
+    delete getcoup(i);
+  delete [ ] couparray;
 }
 
 //
-// getcoup method returns a pointer to the "index"th wave equation object in the list
+// getcoup method returns a pointer to the "index"th coupling object in the list
 //
 
 Coupling * Couplinglist::getcoup(int index){
-  Coupling *currentlink;
-  if(index<numcoup){
-    currentlink=firstlink;
-    for(;index>0; index--)
-      currentlink=currentlink->next;
-    }
-  else {
-    currentlink=0;
-    }
-  return currentlink;
- }
+  return couparray[index];
+}
 
 void Couplinglist::init(ifstream& inputf){
   for(int i=0; i<numcoup; i++)

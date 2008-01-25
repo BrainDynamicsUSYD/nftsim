@@ -1,6 +1,6 @@
 /***************************************************************************
                           poplist.cpp  -  Poplist is an object holding
-			                  a linked list of (neural) populations
+			                  an array of (neural) populations
                              -------------------
     copyright            : (C) 2005 by Peter Drysdale
     email                : peter@physics.usyd.edu.au
@@ -9,44 +9,29 @@
 #include "poplist.h"
 
 //
-// Constructor for Poplist creates a linked list of (neural) populations
+// Constructor for Poplist creates an array of (neural) populations
 //
 Poplist::Poplist(long nodes, int numberofpops, ConnectMat * pconnectmat): numpops(numberofpops){
-  Population *currentlink;
-  Population *nextlink;
-  int popindex=0;
-  firstlink = new Population(nodes,popindex,pconnectmat);
-  numberofpops--, popindex++;
-  currentlink=firstlink;
-  for(; numberofpops>0; numberofpops--, popindex++){
-    nextlink= new Population(nodes,popindex,pconnectmat);
-    currentlink->next=nextlink;
-    currentlink=nextlink;
-    }
+  poparray = new Population *[numpops];
+  for(int i=0;i<numpops;i++){
+    poparray[i] = new Population(nodes,i,pconnectmat);
+  }
 }
 
 //
-// Destructor sucessively deletes each population object in the linked list
+// Destructor deletes each population object and then array which holds them
 //
 Poplist::~Poplist(){
-  for(int i=numpops;i>0; i--)
-    delete get(i-1);
+  for(int i=0;i<numpops; i++)
+    delete get(i);
+  delete [ ] poparray;
 }
 
 //
 // get method returns a pointer to the "index"th Population in the population list
 //
 Population * Poplist::get(int index){
-  Population *currentlink;
-  if(index<numpops){
-    currentlink=firstlink;
-    for(;index>0; index--)
-      currentlink=currentlink->next;
-    }
-  else {
-    currentlink=0;
-    }
-  return currentlink;
+  return poparray[index];
  }
 
 //

@@ -24,7 +24,6 @@ public:
   void init(ifstream& inputf, Poplist *ppoplist); 
   void dump(ofstream& dumpf); // dump history data for restart
   void restart(ifstream& restartf, Poplist *ppoplist);
-  Qhistory * next; // link to next qhistory in linked list
   void updateQhistory(Poplist *ppoplist); // Update Qhistory by reading in Q from populations and moving pointers
   float * getQbytime(int index){return qhistory[timeindex[index]];}; // Get a pointer to the Q array with time index "index"
                              // In this case indexx="0" Q for current time, index="1" Q one time step in the past etc.

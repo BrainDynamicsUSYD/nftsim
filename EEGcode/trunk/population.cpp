@@ -7,19 +7,37 @@
  ***************************************************************************/
 
 #include "population.h"
+#include "connectmat.h"
 
 Population::Population(long totalnodes, int popindex, ConnectMat *pconnectmat)
-             :dr(totalnodes,popindex,pconnectmat),nodes(totalnodes) {
-  V = new float[totalnodes];
+             :nodes(totalnodes) {
   Q = new float[totalnodes];
+  isstimulus=true;
+  V = 0;
+  pfr = 0;
+  pdr = 0;
+  pstimulus = 0;
+  if (pconnectmat->getDRlength(popindex)) { // If populations are attached to this dendritic tree this is not a stimulus population
+    isstimulus=false;
+    V = new float[totalnodes];
+    pfr = new FiringR();
+    pdr = new DendriticRlist(totalnodes,popindex,pconnectmat);
+  } else {
+    pstimulus = new Stimulus();
+  }
 }
 
 //
 // destructor for population frees V and Q data
 //
 Population::~Population(){
-    delete[ ] V;
-    delete[ ] Q;
+  delete[ ] Q;
+//  if (!isstimulus) {
+  if (V)  delete[ ] V;
+  if (pfr) delete pfr;
+  if (pdr)  delete pdr;
+  if (pstimulus)  delete pstimulus;
+//  }
 }
 
 //
@@ -32,12 +50,13 @@ void Population::init(ifstream& inputf, PropagNet *ppropagnet, ConnectMat *pconn
   inputf >> Qsteady;
   for(long i=0; i<nodes; i++)
       Q[i]=Qsteady;
-  fr.init(inputf);
-  dr.init(inputf,ppropagnet,pconnectmat);
-  inputf.ignore(200,32); //throwaway space line between populations
-// Temp fill some potential with a testing data set
-  for(long i=0; i<nodes; i++)
-      V[i]=(static_cast<float>(i)-50.0F)/2.0F;
+  if (isstimulus) {
+    pstimulus->init(inputf);
+  } else {
+    pfr->init(inputf);
+    pdr->init(inputf,ppropagnet,pconnectmat);
+    inputf.ignore(200,32); //throwaway space line between populations
+  }
 }
 //
 // dump method gives diagnostic information on the population
@@ -48,8 +67,12 @@ void Population::dump(ofstream& dumpf){
   for(long i=0; i<nodes; i++)
     dumpf << Q[i] <<" ";
   dumpf << endl; // append a endl to end of Q array
-  fr.dump(dumpf);
-  dr.dump(dumpf);
+  if (isstimulus) {
+    pstimulus->dump(dumpf);
+  } else {
+    pfr->dump(dumpf);
+    pdr->dump(dumpf);
+  }
 }
 
 //
@@ -61,16 +84,24 @@ void Population::restart(ifstream& restartf, PropagNet *ppropagnet, ConnectMat *
   for(long i=0; i<nodes; i++)
     restartf >> Q[i];
   restartf.ignore(200,32); // Throwaway appended endl at end of Q array
-  fr.restart(restartf);
-  dr.restart(restartf,ppropagnet,pconnectmat);
+  if (isstimulus) {
+    pstimulus->restart(restartf);
+  } else {
+    pfr->restart(restartf);
+    pdr->restart(restartf,ppropagnet,pconnectmat);
+  }
 }
 
 //
 // Step forward population one timestep method
 //
 void Population::stepPop(float timestep){
-  dr.stepVa(timestep);
-  dr.SumAfferent(V);
-  fr.getQ(V,Q,nodes);
+  if (isstimulus) {
+    pstimulus->getQstim(timestep, Q, nodes);
+  } else {
+    pdr->stepVa(timestep);
+    pdr->SumAfferent(V);
+    pfr->getQ(V,Q,nodes);
+  }
 }
 

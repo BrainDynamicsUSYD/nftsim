@@ -30,8 +30,8 @@ public:
 						    // smaller "nodes" grid
 
 private:
-  Coupling * firstlink; // link to first coupling object in linked list
-  Coupling * getcoup(int index); // method to obtain pointer to "i" coupling object in linked list
+  Coupling ** couparray; // Array of pointers to coupling objects
+  Coupling * getcoup(int index); // method to obtain pointer to "index" coupling object in linked list
   const int numcoup; // Number of coupling objects in coupling list
 };
 

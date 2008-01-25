@@ -16,20 +16,13 @@
 // all incoming afferent neural populations
 //
 
-DendriticRlist::DendriticRlist(long nodes, int popindex, ConnectMat *pconnectmat)
-	          :numnodes(nodes),popindex(popindex){
+DendriticRlist::DendriticRlist(long nodes, int popid, ConnectMat *pconnectmat)
+	          :numnodes(nodes),popindex(popid){
   numaff=pconnectmat->getDRlength(popindex);
-  int i=numaff;
-  DendriticR *currentlink;
-  DendriticR *nextlink;
-  firstlink = new DendriticR();
-  i--;
-  currentlink=firstlink;
-  for(; i>0; i--){
-    nextlink= new DendriticR();
-    currentlink->next=nextlink;
-    currentlink=nextlink;
-    }
+  drarray = new DendriticR *[numaff];
+  for(int i=0;i<numaff;i++){
+    drarray[i] = new DendriticR();
+  }
   Va = new float *[numaff];
   dVdt = new float *[numaff];
   for(int i=0;i<numaff;i++){
@@ -44,8 +37,9 @@ DendriticRlist::DendriticRlist(long nodes, int popindex, ConnectMat *pconnectmat
 //
 
 DendriticRlist::~DendriticRlist(){
-  for(int i=numaff;i>0; i--)
-    delete getdendr(i-1);
+  for(int i=0;i<numaff;i++)
+    delete getdendr(i);
+  delete [ ] drarray;
   for(int i=0;i<numaff;i++){
     delete[ ] Va[i];
     delete[ ] dVdt[i];
@@ -56,31 +50,14 @@ DendriticRlist::~DendriticRlist(){
 }
 
 //
-// get method returns a pointer to the "i"th dendritic response in the dendritic response list
+// get method returns a pointer to the "index"th dendritic response in the dendritic response list
 //
 
-DendriticR * DendriticRlist::getdendr(int i){
-  DendriticR *currentlink;
-  if(i<numaff){
-    currentlink=firstlink;
-    for(;i>0; i--)
-      currentlink=currentlink->next;
-    }
-  else {
-    currentlink=0;
-    }
-  return currentlink;
- }
+DendriticR * DendriticRlist::getdendr(int index){
+  return drarray[index];
+}
 
 void DendriticRlist::init(ifstream& inputf, PropagNet *ppropagnet, ConnectMat *pconnectmat){
-// Read data from inputf
-  inputf.ignore(200,58); // Throwaway title line uptil colon
-  int expectaff;
-  inputf >> expectaff; // Read in number of dendritic responses expected for this population
-  if (expectaff!=numaff)
-    cerr << "Number of afferent populations expected from connection matrix and that stated here are inconsistent";
-  for(int i=0;i<numaff; i++)
-    getdendr(i)->init(inputf);
 // initialize localP pointer array
   int end=ppropagnet->numconnects;
   int counter=0;
@@ -88,6 +65,25 @@ void DendriticRlist::init(ifstream& inputf, PropagNet *ppropagnet, ConnectMat *p
     if(pconnectmat->getDRindex(j)==popindex){ // Test if the 'j'th P array in propagnet is connected to this population
      localP[counter]=ppropagnet->P[j];
      counter++;
+    }
+  }
+// Read data from inputf
+  inputf.ignore(200,58); // Throwaway title line uptil colon
+  int expectaff;
+  inputf >> expectaff; // Read in number of dendritic responses expected for this population
+  if (expectaff!=numaff){
+    cerr << "Number of afferent populations expected from connection matrix and that stated here are inconsistent" << endl;
+    cerr << expectaff << " " << numaff << endl;
+    exit(EXIT_FAILURE);
+  }
+  float Vinit;
+  for(int i=0;i<numaff; i++){
+    getdendr(i)->init(inputf,Vinit); // Important init returns inital values for V, dVdt
+    float *p=Va[i];
+    float *p1=dVdt[i];
+    for(int j=0;j<numnodes;j++){ // Initialize Va and dVdt arrays with initial values
+      *p++=Vinit;
+      *p1++=0.0F;
     }
   }
 }
@@ -103,9 +99,10 @@ void DendriticRlist::restart(ifstream& restartf, PropagNet *ppropagnet, ConnectM
   restartf.ignore(200,58); // Throwaway title line uptil colon
   int expectaff;
   restartf >> expectaff; // Read in number of dendritic responses expected for this population
-  cerr << expectaff << numaff << endl;
-  if (expectaff!=numaff)
-    cerr << "Number of afferent populations expected from connection matrix and that stated here are inconsistent";
+  if (expectaff!=numaff){
+    cerr << "Number of afferent populations expected from connection matrix and that stated here are inconsistent" << endl;
+    exit(EXIT_FAILURE);
+  }
   for(int i=0;i<numaff; i++)
     getdendr(i)->restart(restartf);
 // initialize localP pointer array
@@ -129,6 +126,7 @@ void DendriticRlist::restart(ifstream& restartf, PropagNet *ppropagnet, ConnectM
 //
 
 void DendriticRlist::stepVa(float timestep){
+ #pragma OMP parallel for
   for(int i=0;i<numaff;i++){
     getdendr(i)->stepVab(localP[i], Va[i], dVdt[i], numnodes, timestep);
     }

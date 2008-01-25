@@ -44,27 +44,37 @@ void ConnectMat::init(ifstream& inputf){
         qphiconnect[counter]=i/nump;
 	counter++;
       }	
-      else cerr << counter << "Too many connections in connection matrix relative to stated number of connections" <<endl;
+      else {
+	cerr << counter <<"Too many connections in connection matrix relative to stated number of connections" <<endl;
+        exit(EXIT_FAILURE);
+      }
     }
   }
-  if(counter!=numconnect) cerr << "Too few connections in connection matrix relative to stated number of connections" <<endl;
+  if(counter!=numconnect){
+    cerr << "Too few connections in connection matrix relative to stated number of connections" <<endl;
+    exit(EXIT_FAILURE);
+  }
   //
   // This part takes the raw connection matrix and generates a drphiconnect index table
   // the drphiconnect index table allows a dendritic response list with index drphiconnect[i]
   // to REVERSE lookup the index i of the connected phi population
   counter=0;
-  for(int i=0;i<nump;i++){
-    for(int j=0;j<nump;j++){
-      if(rawcntmat[i+j*nump]!=0){
-        if(counter<numconnect){
-          drphiconnect[counter]=i;
-	  counter++;
-	}
-        else cerr << counter << numconnect << "Too many connections in connection matrix relative to stated number of connections" <<endl;
+  for(int i=0;i<(nump*nump);i++){
+    if(rawcntmat[i]!=0){
+      if(counter<numconnect){
+        drphiconnect[counter]=i%nump;
+	counter++;
+      }	
+      else {
+	cerr << counter <<"Too many connections in connection matrix relative to stated number of connections" <<endl;
+        exit(EXIT_FAILURE);
       }
     }
   }
-  if(counter!=numconnect) cerr << "Too few connections in connection matrix relative to stated number of connections" <<endl;
+  if(counter!=numconnect){
+    cerr << "Too few connections in connection matrix relative to stated number of connections" <<endl;
+    exit(EXIT_FAILURE);
+  }
   //
   // This part builds drlength array
   for(int i=0;i<nump;i++){

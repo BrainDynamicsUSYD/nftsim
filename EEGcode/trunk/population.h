@@ -17,7 +17,8 @@ using std::endl;
 
 #include"firingr.h"
 #include"dendriticrlist.h"
-class ConnectMat; //forward declare ConnectMat since we are only using a pointer to it
+#include"stimulus.h"
+class ConnectMat; //forward declare ConnectMat. Header file included in .cpp file
 class PropagNet; //forward declare PropagNet since we are only using a pointer to it
 
 class Population {
@@ -28,13 +29,14 @@ public:
   void dump(ofstream& dumpf);
   void restart(ifstream& restartf, PropagNet * ppropagnet, ConnectMat *pconnectmat);
   void stepPop(float timestep);
-  float * V;  // Array of soma potential in population
   float * Q;  // Array of firing rate in population
-  Population * next;  // Next population in linked list of Populations
 private:
+  bool isstimulus; // TRUE if this population is a stimulus population (i.e. has no attached populations on dendrite tree
+  float * V;  // Array of soma potential in population (NULL if this is a stimulus population)
   const long nodes; // number of nodes in this population
-  FiringR fr;  // Firing Response of the neural population
-  DendriticRlist dr; // List of dendritic responses of afferent neural populations
+  FiringR* pfr;  // Pointer to Firing Response of the neural population (NULL if this is a stimulus population)
+  DendriticRlist* pdr; // Pointer to List of dendritic responses of afferent neural populations (NULL if this is a stimulus population)
+  Stimulus* pstimulus; // Pointer to Stimulus of the neural population (NULL is this is not a stimulus population)
 };
 
 #endif

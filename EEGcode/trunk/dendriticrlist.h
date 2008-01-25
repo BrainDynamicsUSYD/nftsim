@@ -31,7 +31,7 @@ public:
   void SumAfferent(float *V); //Sum sub potentials Va matrix to yield potential V for neural population
 
 private: 
-  DendriticR * firstlink; // link to first dendritic response in the dendritic response linked list
+  DendriticR ** drarray; // Array of pointers to dendritic responses
   int numaff; //number of afferent neural populations connected to this population
   const long numnodes;
   const int popindex; // population index number of the population in which this dendritic response list is contained

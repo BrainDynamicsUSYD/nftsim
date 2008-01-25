@@ -29,7 +29,7 @@ public:
   void stepPops(float timestep);
   Population * get(int popindex);
 private:
-  Population * firstlink; // link to first population in the population linked list
+  Population** poparray; // Array of pointers to population objects
   const int numpops; //number of populations in linked list of populations
 };
 

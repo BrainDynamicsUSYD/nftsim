@@ -28,6 +28,7 @@ void FiringR::getQ(float *V, float *Q, long totalnodes){
   qmax=qmaxobj.get() ;
   for(long i=0; i<totalnodes; i++)
     Q[i] = qmax/(1.0F+exp(-(V[i]-theta)/sigma));
+  
 }
 
 void FiringR::dump(ofstream& dumpf){

@@ -1,3 +1,3 @@
 #! /bin/sh
-c++ -pg -pedantic -Wno-deprecated -O2 -lm -Wall -o eegcode main.cpp connectmat.cpp poplist.cpp population.cpp dendriticrlist.cpp dendriticr.cpp firingr.cpp propagnet.cpp qhistorylist.cpp qhistory.cpp couplinglist.cpp coupling.cpp proplist.cpp waveeqn.cpp stimulus.cpp random.cpp phiout.cpp istrm.cpp propag.cpp parameter.cpp pmap.cpp eqnset.cpp weqn.cpp wavefield.cpp prefact.cpp
+c++ -O2 -lm -o tst main.cpp connectmat.cpp poplist.cpp population.cpp dendriticrlist.cpp dendriticr.cpp firingr.cpp alpha.cpp beta.cpp theta.cpp sigma.cpp qmax.cpp propagnet.cpp qhistorylist.cpp qhistory.cpp couplinglist.cpp coupling.cpp nu.cpp waveeqnlist.cpp waveeqn.cpp effrange.cpp gamma.cpp stimulus.cpp random.cpp phiout.cpp
 

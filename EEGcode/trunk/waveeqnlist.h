@@ -29,7 +29,7 @@ public:
   void stepWaveEqns(float **Eta, Qhistorylist * pqhistorylist, ConnectMat * pconnectmat); // Transform Q to Eta via stepping forward multiple wave equations
 
 private:
-  WaveEqn * firstlink; // link to first wave equation in the wave equation linked list
+  WaveEqn ** waveeqnarray; // Array of pointers to wave equation objects
   WaveEqn * getwaveeq(int index); // method to obtain pointer to "i"th wave equation
   const int numwaveeq; //number of wave equation objects in the list
 };

@@ -5,28 +5,32 @@
     email                : peter@physics.usyd.edu.au
  ***************************************************************************/
 
-#include"math.h"
+#include<math.h>
 #include "propagnet.h"
 
 //
-// Write constructor for Propagnet
+// Constructor for Propagnet
 //
-PropagNet::PropagNet(float deltat, float deltax, long totalnodes, int numpops, int numconct)
+PropagNet::PropagNet(float deltat, float deltax, long totalnodes, int numpops, int numconct, ifstream& inputf, ofstream& dumpf)
                       :numconnects(numconct),nodes(totalnodes){
   gridsize=static_cast<long>((sqrt(nodes)+2)*(sqrt(nodes)+2));
+  if (sqrt( static_cast<float>(nodes)) != floor(sqrt( static_cast<float>(nodes)))){
+    cerr << "Wave equation solver assumes square grid. Nodes per population must be a perfect square number" << endl;
+    exit(EXIT_FAILURE);
+  }
   P = new float *[numconnects];
   for(int i=0;i<numconnects;i++)
     P[i]= new float[nodes]; 
   Eta = new float *[numconnects];
   for(int i=0;i<numconnects;i++)
     Eta[i]= new float[nodes]; 
-  pqhistorylist = new Qhistorylist(numpops,gridsize);
+  pqhistorylist = new Qhistorylist(inputf,dumpf,numpops,gridsize);
   pwaveeqnlist = new WaveEqnlist(numconct,gridsize,deltat,deltax);
   pcouplinglist = new Couplinglist(numconct);
 }
 
 //
-// Write destructor for Propagnet
+// Destructor for Propagnet
 //
 PropagNet::~PropagNet(){
   for(int i=0;i<numconnects;i++){
@@ -40,6 +44,9 @@ PropagNet::~PropagNet(){
   delete pqhistorylist;
   delete pwaveeqnlist;
   delete pcouplinglist;
+//
+//
+  if (pphiout) delete pphiout; // Free Phiout object if it was initialized by PropagNet::initoutput()
 }
 
 void PropagNet::init(ifstream& inputf, Poplist *ppoplist){
@@ -71,4 +78,12 @@ void PropagNet::stepQtoP(Poplist * ppoplist, ConnectMat * pconnectmat){
   pqhistorylist->updateQhistories(ppoplist); // Get new Q histories and add them to the keyrings
   pwaveeqnlist->stepWaveEqns(Eta, pqhistorylist, pconnectmat); // Transform Q to Eta via stepping forward multiple wave equations
   pcouplinglist->updateP(P, Eta, nodes); // Weight signal strengths for links between neural populations
+}
+
+void PropagNet::initoutput(ifstream& inputf, ofstream& outputf){
+  pphiout = new Phiout(inputf, outputf);
+}
+
+void PropagNet::output(ofstream& outputf){
+  pphiout->output(outputf, Eta);
 }

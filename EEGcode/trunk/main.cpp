@@ -16,7 +16,6 @@ using std::ios;
 #include <iostream>
 using std::cerr;
 using std::endl;
-#include <stdlib.h>
 
 #include"connectmat.h"
 #include"propagnet.h"
@@ -30,8 +29,10 @@ int main(int argc, char* argv[])
 // Open file for dumping data for restart
 //
   ofstream dumpf("eegcode.dump",ios::out);
-  if( !dumpf )
+  if( !dumpf ){
     cerr << "Unable to open 'eegcode.dump' for output \n";
+    exit(EXIT_FAILURE);
+  }
 //
 // Read in the global simulation parameters
 //
@@ -39,8 +40,10 @@ int main(int argc, char* argv[])
   int numpops=0;
   int numconct=0;
   ifstream inputf("eegcode.conf",ios::in); //open file for reading input data
-  if( !inputf )
+  if( !inputf ){
     cerr << "Unable to open 'eegcode.conf' for input \n";
+    exit(EXIT_FAILURE);
+  }
   readglobalparams(inputf, dumpf, totalnodes, numpops, numconct);
   ConnectMat connectmat(numpops,numconct);
   connectmat.init(inputf);
@@ -61,7 +64,7 @@ int main(int argc, char* argv[])
   inputf.ignore(200,32); //throwaway space line before start of populations
   dumpf << "Deltax :" << deltax << endl;
   Poplist poplist(totalnodes,numpops, &connectmat);
-  PropagNet propagnet(deltat,deltax,totalnodes,numpops,numconct);
+  PropagNet propagnet(deltat,deltax,totalnodes,numpops,numconct,inputf,dumpf);
   inputf.ignore(200,32); //throwaway space line before start of populations
   if(argc==1){
 //
@@ -78,11 +81,26 @@ int main(int argc, char* argv[])
     propagnet.restart(inputf, &poplist);
   }
 //
+//  Initialize the output routine
+//
+//
+// Open file for outputting data 
+//
+  ofstream outputf("eegcode.output",ios::out);
+  if( !outputf ){
+    cerr << "Unable to open 'eegcode.output' for output \n";
+    exit(EXIT_FAILURE);
+  }
+  outputf << "Deltat :" << deltat << endl;
+  outputf << "Number of integration steps :" << nsteps << endl;
+  propagnet.initoutput(inputf,outputf);
+//
 //  Main integration Loop
 //
   for(int k=1;k<nsteps+1;k++){
     propagnet.stepQtoP(&poplist, &connectmat);
     poplist.stepPops(deltat);
+    propagnet.output(outputf);
   }
 //
 // Dump data for restart
@@ -108,7 +126,10 @@ void readglobalparams(ifstream& datainf, ofstream& dumpf, long& totalnodes, int&
   datainf.ignore(200,58); // throwaway everything before ASCII 58 ":"
   datainf >> numconct;
   dumpf << "Number of neural connections: " << numconct << endl;
-  if(numconct>(numpops*numpops)) cerr << "Number of connections cannot exceed the square of the number of populations";
+  if(numconct>(numpops*numpops)){
+    cerr << "Number of connections cannot exceed the square of the number of populations" << endl;
+    exit(EXIT_FAILURE);
+  }
   datainf.ignore(200,32); // throwaway reaminder of line after Number of connections
 }
 

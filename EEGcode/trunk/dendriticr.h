@@ -8,6 +8,7 @@
 #ifndef DENDRITICR_H
 #define DENDRITICR_H
 
+#include<math.h>
 #include<fstream>
 using std::ifstream;
 using std::ofstream;
@@ -22,16 +23,15 @@ class DendriticR {
 public: 
   DendriticR();
   ~DendriticR();
-  void init(ifstream& inputf);
+  void init(ifstream& inputf, float& Vinit);
   void dump(ofstream& dumpf);
   void restart(ifstream& restartf);
   void stepVab(float *Pab, float * Vab, float *dVabdt, long nodes, float timestep);
-  DendriticR* next; // next dendritic response in linked list of dendritic responses
 private: 
-  void rk4(double* y, float timestep, float nodePab); // Helper routine for stepVab
-  void rkderivs(double* y, float nodePab, double* dydt); // Helper routine for stepVab
   float alpha;  // Holding variable of alpha at this moment
   float beta;  // Holding variable of alpha at this moment
+  float expalpha; // Factor in exactstep
+  float expbeta; // Factor in exactstep
   Alpha alphaobj; // Object which initializes and get alpha values
   Beta betaobj; // Object which initializes and gets beta values
 };

@@ -26,7 +26,6 @@ public:
   void restart(ifstream& restartf); // restart the nu variable
   void restart();
   void updatePa(float *Pa, float *Etaa, long nodes);
-  Coupling * next; // link to next coupling in linked list
 
 private:
   Nu nuobj;
