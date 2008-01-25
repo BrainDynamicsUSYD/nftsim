@@ -9,7 +9,6 @@
 #define PHIOUT_H
 
 #include<fstream>
-using std::ifstream;
 using std::ofstream;
 #include<iostream>
 using std::cerr;
@@ -17,9 +16,11 @@ using std::endl;
 #include<iomanip>
 using std::setprecision;
 
+#include"istrm.h"
+
 class Phiout {
 public:
-  Phiout(ifstream& inputf, ofstream& outputf);
+  Phiout(Istrm& inputf, ofstream& outputf);
   ~Phiout();
   void output(ofstream& outputf, float **Eta);
 private:

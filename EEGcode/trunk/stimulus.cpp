@@ -8,38 +8,36 @@
 #include "stimulus.h"
 
 Stimulus::Stimulus(){
-  idum=-94761025;
-  random.ran(idum); // initialize the random number generator
 }
 Stimulus::~Stimulus(){
 }
  
-void Stimulus::init(ifstream& inputf){
-  inputf.ignore(200,58); //throwaway everything before colon character
+void Stimulus::init(Istrm& inputf){
+  inputf.validate("Stimulus mode",58);
   inputf >> mode;
-  inputf.ignore(200,58); //throwaway everything before colon character
+  inputf.validate("Time to start of stimulus",58);
   inputf >> ts;
   switch (mode) {
     case 1: //  Pulse stimulus pattern 
-      inputf.ignore(200,58); // throwaway everything before colon character
+      inputf.validate("Amplitude",58);
       inputf >> amp;
-      inputf.ignore(200,58); // throwaway everything before colon character
+      inputf.validate("Pulse Duration",58);
       inputf >> pdur;
-      inputf.ignore(200,58); // throwaway everything before colon character
+      inputf.validate("Pulse repetition period",58);
       inputf >> tperiod;
       break;
     case 2: //  White noise stimulus pattern 
-      inputf.ignore(200,58); // throwaway everything before colon character
+      inputf.validate("Amplitude",58);
       inputf >> amp;
       break;
     case 3: //  Sinusoidal stimulus pattern 
-      inputf.ignore(200,58); // throwaway everything before colon character
+      inputf.validate("Amplitude",58);
       inputf >> amp;
-      inputf.ignore(200,58); // throwaway everything before colon character
+      inputf.validate("Modulation Frequency",58);
       inputf >> freq;
       break;
     case 4: //  Coherent white noise stimulus pattern 
-      inputf.ignore(200,58); // throwaway everything before colon character
+      inputf.validate("Amplitude",58);
       inputf >> amp;
       break;
     default: // No stimulation
@@ -48,55 +46,55 @@ void Stimulus::init(ifstream& inputf){
 }
 
 void Stimulus::dump(ofstream& dumpf){
-  dumpf << "Stimulus mode :" << mode << " " << endl;
-  dumpf << "Time to start of stimulus :" << ts << " ";
+  dumpf << "Stimulus mode:" << mode << " " << endl;
+  dumpf << "Time to start of stimulus:" << ts << " ";
   switch (mode) {
     case 1: //  Pulse stimulus pattern 
-      dumpf << "Alpha :" << amp << " ";
-      dumpf << "Pulse Duration :" << pdur << " ";
-      dumpf << "Pulse repetition period :" << tperiod << endl;
+      dumpf << "Amplitude:" << amp << " ";
+      dumpf << "Pulse Duration:" << pdur << " ";
+      dumpf << "Pulse repetition period:" << tperiod << endl;
       break;
     case 2: //  White noise stimulus pattern 
-      dumpf << "Alpha :" << amp << endl;
+      dumpf << "Amplitude:" << amp << endl;
       break;
     case 3: //  Sinusoidal stimulus pattern 
-      dumpf << "Alpha :" << amp << " ";
+      dumpf << "Amplitude:" << amp << endl;
       dumpf << "Modulation frequency :" << freq << endl;
       break;
     case 4: //  Coherent white noise stimulus pattern 
-      dumpf << "Alpha :" << amp << endl;
+      dumpf << "Amplitude:" << amp << endl;
       break;
     default: // No stimulation
       break;
     }
 }
 
-void Stimulus::restart(ifstream& restartf){
-  restartf.ignore(200,58); //throwaway every before colon character
+void Stimulus::restart(Istrm& restartf){
+  restartf.validate("Stimulus mode",58);
   restartf >> mode;
-  restartf.ignore(200,58); //throwaway every before colon character
+  restartf.validate("Time to start of stimulus",58);
   restartf >> ts;
   switch (mode) {
     case 1: //  Pulse stimulus pattern 
-      restartf.ignore(200,58); // throwaway everything before colon character
+      restartf.validate("Amplitude",58);
       restartf >> amp;
-      restartf.ignore(200,58); // throwaway everything before colon character
+      restartf.validate("Pulse Duration",58);
       restartf >> pdur;
-      restartf.ignore(200,58); // throwaway everything before colon character
+      restartf.validate("Pulse repetition period",58);
       restartf >> tperiod;
       break;
     case 2: //  White noise stimulus pattern 
-      restartf.ignore(200,58); // throwaway everything before colon character
+      restartf.validate("Amplitude",58);
       restartf >> amp;
       break;
     case 3: //  Sinusoidal stimulus pattern 
-      restartf.ignore(200,58); // throwaway everything before colon character
+      restartf.validate("Amplitude",58);
       restartf >> amp;
-      restartf.ignore(200,58); // throwaway everything before colon character
+      restartf.validate("Modulation Frequency",58);
       restartf >> freq;
       break;
     case 4: //  Coherent white noise stimulus pattern 
-      restartf.ignore(200,58); // throwaway everything before colon character
+      restartf.validate("Amplitude",58);
       restartf >> amp;
       break;
     default: // No stimulation
@@ -203,8 +201,8 @@ void Stimulus::getQstim(float timestep, float *Q, const long nodes){
 void Stimulus::gaussian(float& deviate1, float& deviate2){
   double x, y, norm, factor;
   do {
-    x=2*random.ran(idum) - 1; // throw two uniform deviates in square circumscribing unit circle
-    y=2*random.ran(idum) - 1;
+    x=2*random.ran() - 1; // throw two uniform deviates in square circumscribing unit circle
+    y=2*random.ran() - 1;
     norm = x*x+y*y; 
   } while (norm > 1.0 || norm == 0);  // test whether in unit circle
   factor=sqrt(-2.0*log(norm)/norm);

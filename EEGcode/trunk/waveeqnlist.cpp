@@ -8,7 +8,7 @@
 #include "waveeqnlist.h"
 
 //
-// Constructor for WaveEqnlist creates a linked list of wave equation objects
+// Constructor creates an array of ponters to wave equation objects
 //
 
 WaveEqnlist::WaveEqnlist(int numconnects, long gridsize, float deltat, float deltax):numwaveeq(numconnects){
@@ -40,7 +40,7 @@ WaveEqn * WaveEqnlist::getwaveeq(int index){
 //  init method initializes wave equation object in turn
 //
 
-void WaveEqnlist::init(ifstream& inputf){
+void WaveEqnlist::init(Istrm& inputf){
   for(int i=0; i<numwaveeq; i++)
     getwaveeq(i)->init(inputf);
 }
@@ -55,7 +55,7 @@ void WaveEqnlist::dump(ofstream& dumpf){
     }
 }
 
-void WaveEqnlist::restart(ifstream& restartf){
+void WaveEqnlist::restart(Istrm& restartf){
   for(int i=0; i<numwaveeq; i++)
     getwaveeq(i)->restart(restartf);
 }

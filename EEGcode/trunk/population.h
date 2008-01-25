@@ -9,12 +9,12 @@
 #define POPULATION_H
 
 #include<fstream>
-using std::ifstream;
 using std::ofstream;
 #include<iostream>
 using std::cerr;
 using std::endl;
 
+#include"istrm.h"
 #include"firingr.h"
 #include"dendriticrlist.h"
 #include"stimulus.h"
@@ -25,9 +25,9 @@ class Population {
 public:
   Population(long totalnodes, int popindex, ConnectMat *pconnectmat);
   ~Population();
-  void init(ifstream& inputf, PropagNet * ppropagnet, ConnectMat *pconnectmat);
+  void init(Istrm& inputf, PropagNet * ppropagnet, ConnectMat *pconnectmat);
   void dump(ofstream& dumpf);
-  void restart(ifstream& restartf, PropagNet * ppropagnet, ConnectMat *pconnectmat);
+  void restart(Istrm& restartf, PropagNet * ppropagnet, ConnectMat *pconnectmat);
   void stepPop(float timestep);
   float * Q;  // Array of firing rate in population
 private:

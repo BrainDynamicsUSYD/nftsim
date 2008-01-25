@@ -12,8 +12,9 @@ class Random {
 public: 
   Random();
   ~Random();
-  float ran(long& idum);
+  float ran();
 private:
+  long idum;
   enum {IA=16807}; // Use "enum hack" to obtain more portable static const int
   enum {IM=2147483647}; // Use "enum hack" to obtain more portable static const int
   enum {IQ=127773}; // Use "enum hack" to obtain more portable static const int

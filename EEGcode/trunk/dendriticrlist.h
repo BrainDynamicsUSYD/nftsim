@@ -9,12 +9,12 @@
 #define DENDRITICRLIST_H
 
 #include<fstream>
-using std::ifstream;
 using std::ofstream;
 #include<iostream>
 using std::cerr;
 using std::endl;
 
+#include"istrm.h"
 #include"dendriticr.h"
 class ConnectMat; // Forward reference here as only use pointer. Header file included in .cpp file
 class PropagNet; // Use a forward reference here, the class deference the pointer so propagnet.h is
@@ -24,9 +24,9 @@ class DendriticRlist {
 public: 
   DendriticRlist(long nodes, int popindex, ConnectMat * pconnectmat);
   ~DendriticRlist();
-  void init(ifstream& inputf, PropagNet * ppropagnet, ConnectMat * pconnectmat);  // initialize dendritic response list including initializing localP a pointer table to the correct part of ppropagnet->P data
+  void init(Istrm& inputf, PropagNet * ppropagnet, ConnectMat * pconnectmat);  // initialize dendritic response list including initializing localP a pointer table to the correct part of ppropagnet->P data
   void dump(ofstream& dumpf);
-  void restart(ifstream& restartf, PropagNet * ppropagnet, ConnectMat * pconnectmat);  // restart dendritic response list including initializing localP a pointer table to the correct part of ppropagnet->P data
+  void restart(Istrm& restartf, PropagNet * ppropagnet, ConnectMat * pconnectmat);  // restart dendritic response list including initializing localP a pointer table to the correct part of ppropagnet->P data
   void stepVa(float timestep); // Integrates each dendritic subpopulation one timestep forward
   void SumAfferent(float *V); //Sum sub potentials Va matrix to yield potential V for neural population
 

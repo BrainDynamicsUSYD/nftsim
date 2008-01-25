@@ -1,31 +1,31 @@
 /***************************************************************************
-                          effrange.h  -  description
+                          istrm.h  -  description
                              -------------------
     copyright            : (C) 2005 by Peter Drysdale
     email                : peter@physics.usyd.edu.au
  ***************************************************************************/
 
-#ifndef EFFRANGE_H
-#define EFFRANGE_H
+#ifndef ISTRM_H
+#define ISTRM_H
 
 #include<fstream>
+using std::ifstream;
 using std::ofstream;
+using std::ios;
 #include<iostream>
 using std::cerr;
 using std::endl;
+#include<cstring>
+using std::strlen;
+using std::strcmp;
 
-#include"istrm.h"
-
-class EffRange {
+class Istrm: public ifstream {
 public: 
-  EffRange();
-  ~EffRange();
-  float get();
-  void init(Istrm& inputf);
-  void dump(ofstream& dumpf);
-  void restart(Istrm& restartf);
+  Istrm(const char* filename);
+  ~Istrm();
+  void validate(const char* check, char delim);
 private:
-  float effrange;
+  char * pbuffer;
 };
 
 #endif

@@ -32,21 +32,19 @@ Population::Population(long totalnodes, int popindex, ConnectMat *pconnectmat)
 //
 Population::~Population(){
   delete[ ] Q;
-//  if (!isstimulus) {
   if (V)  delete[ ] V;
   if (pfr) delete pfr;
   if (pdr)  delete pdr;
   if (pstimulus)  delete pstimulus;
-//  }
 }
 
 //
 // init method
 //
-void Population::init(ifstream& inputf, PropagNet *ppropagnet, ConnectMat *pconnectmat){
+void Population::init(Istrm& inputf, PropagNet *ppropagnet, ConnectMat *pconnectmat){
   inputf.ignore(200,32); //throwaway line naming population
   float Qsteady;
-  inputf.ignore(200,58); //throwaway everything upto colon character
+  inputf.validate("Steady State Q",58);
   inputf >> Qsteady;
   for(long i=0; i<nodes; i++)
       Q[i]=Qsteady;
@@ -78,7 +76,7 @@ void Population::dump(ofstream& dumpf){
 //
 // restart method
 //
-void Population::restart(ifstream& restartf, PropagNet *ppropagnet, ConnectMat *pconnectmat){
+void Population::restart(Istrm& restartf, PropagNet *ppropagnet, ConnectMat *pconnectmat){
   restartf.ignore(200,32); // Throwaway title line for population
   restartf.ignore(200,58); // Throwaway upto colon i.e. Q array :
   for(long i=0; i<nodes; i++)

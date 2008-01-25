@@ -12,8 +12,8 @@ Theta::Theta(){
 Theta::~Theta(){
 }
 
-void Theta::init(ifstream& inputf){
-  inputf.ignore(200,58); // throwaway uptil colon
+void Theta::init(Istrm& inputf){
+  inputf.validate("Theta",58);
   inputf >> theta;
 }
 
@@ -21,8 +21,8 @@ void Theta::dump(ofstream& dumpf){
   dumpf << "Theta:" << theta <<" ";
 }
 
-void Theta::restart(ifstream & restartf){
-  restartf.ignore(200,58); // throwaway uptil colon
+void Theta::restart(Istrm& restartf){
+  restartf.validate("Theta",58);
   restartf >> theta;
 }
 

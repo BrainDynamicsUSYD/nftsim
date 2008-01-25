@@ -9,12 +9,12 @@
 #define FIRINGR_H
 
 #include<fstream>
-using std::ifstream;
 using std::ofstream;
 #include<iostream>
 using std::cerr;
 using std::endl;
 
+#include"istrm.h"
 #include"theta.h"
 #include"sigma.h"
 #include"qmax.h"
@@ -23,9 +23,9 @@ class FiringR {
 public: 
   FiringR();
   ~FiringR();
-  void init(ifstream& inputf);
+  void init(Istrm& inputf);
   void dump(ofstream& dumpf);
-  void restart(ifstream& restartf);
+  void restart(Istrm& restartf);
   void getQ(float *V, float *Q, long totalnodes);
 private: 
   Theta thetaobj;

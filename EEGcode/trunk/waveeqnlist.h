@@ -9,12 +9,12 @@
 #define WAVEEQNLIST_H
 
 #include<fstream>
-using std::ifstream;
 using std::ofstream;
 #include<iostream>
 using std::cerr;
 using std::endl;
 
+#include"istrm.h"
 #include"waveeqn.h"
 #include"qhistorylist.h"
 #include"connectmat.h"
@@ -23,9 +23,9 @@ class WaveEqnlist {
 public: 
   WaveEqnlist(int numconnects, long gridsize, float deltat, float deltax);
   ~WaveEqnlist();
-  void init(ifstream& inputf);
+  void init(Istrm& inputf);
   void dump(ofstream& dumpf);
-  void restart(ifstream& restartf);
+  void restart(Istrm& restartf);
   void stepWaveEqns(float **Eta, Qhistorylist * pqhistorylist, ConnectMat * pconnectmat); // Transform Q to Eta via stepping forward multiple wave equations
 
 private:

@@ -12,8 +12,8 @@ Sigma::Sigma(){
 Sigma::~Sigma(){
 }
 
-void Sigma::init(ifstream& inputf){
-  inputf.ignore(200,58); // throwaway everything uptil colon
+void Sigma::init(Istrm& inputf){
+  inputf.validate("Sigma",58);
   inputf >> sigma;
 }
 
@@ -21,8 +21,8 @@ void Sigma::dump(ofstream& dumpf){
   dumpf << "Sigma:" << sigma <<" ";
 }
 
-void Sigma::restart(ifstream& restartf){
-  restartf.ignore(200,58); // throwaway everything uptil colon
+void Sigma::restart(Istrm& restartf){
+  restartf.validate("Sigma",58);
   restartf >> sigma;
 }
 

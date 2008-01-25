@@ -9,21 +9,21 @@
 #define QHISTORY_H
 
 #include<fstream>
-using std::ifstream;
 using std::ofstream;
 #include<iostream>
 using std::cerr;
 using std::endl;
 
+#include"istrm.h"
 class Poplist; //forward declare poplist. Header file is included in .cpp file
 
 class Qhistory {
 public: 
   Qhistory(int qdepth, long gridsize, int indexQ); // construct a Qhistory with depth qdepth
   ~Qhistory();
-  void init(ifstream& inputf, Poplist *ppoplist); 
+  void init(Istrm& inputf, Poplist *ppoplist); 
   void dump(ofstream& dumpf); // dump history data for restart
-  void restart(ifstream& restartf, Poplist *ppoplist);
+  void restart(Istrm& restartf, Poplist *ppoplist);
   void updateQhistory(Poplist *ppoplist); // Update Qhistory by reading in Q from populations and moving pointers
   float * getQbytime(int index){return qhistory[timeindex[index]];}; // Get a pointer to the Q array with time index "index"
                              // In this case indexx="0" Q for current time, index="1" Q one time step in the past etc.

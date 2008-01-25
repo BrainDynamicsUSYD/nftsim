@@ -12,8 +12,8 @@ EffRange::EffRange(){
 EffRange::~EffRange(){
 }
 
-void EffRange::init(ifstream& inputf){
-  inputf.ignore(200,58); // throwaway every before the colon character
+void EffRange::init(Istrm& inputf){
+  inputf.validate("Effective range",58);
   inputf >> effrange;
 }
 
@@ -21,8 +21,8 @@ void EffRange::dump(ofstream& dumpf){
   dumpf << "Effective range: " << effrange <<" ";
 }
 
-void EffRange::restart(ifstream& restartf){
-  restartf.ignore(200,58); // throwaway every before the colon character
+void EffRange::restart(Istrm& restartf){
+  restartf.validate("Effective range",58);
   restartf >> effrange;
 }
 

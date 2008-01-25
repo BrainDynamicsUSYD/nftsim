@@ -12,7 +12,7 @@ Coupling::Coupling(){
 Coupling::~Coupling(){
 }
 
-void Coupling::init(ifstream& inputf){
+void Coupling::init(Istrm& inputf){
   nuobj.init(inputf);
 }
 
@@ -20,7 +20,7 @@ void Coupling::dump(ofstream& dumpf){
   nuobj.dump(dumpf);
 }
 
-void Coupling::restart(ifstream& restartf){
+void Coupling::restart(Istrm& restartf){
   nuobj.restart(restartf);
 }
 

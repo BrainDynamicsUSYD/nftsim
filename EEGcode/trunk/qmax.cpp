@@ -12,8 +12,8 @@ Qmax::Qmax(){
 Qmax::~Qmax(){
 }
 
-void Qmax::init(ifstream& inputf){
-  inputf.ignore(200,58); // throwaway everything uptil colon
+void Qmax::init(Istrm& inputf){
+  inputf.validate("Qmax",58);
   inputf >> qmax;
 }
 
@@ -21,8 +21,8 @@ void Qmax::dump(ofstream& dumpf){
   dumpf << "Qmax :" << qmax << " ";
 }
 
-void Qmax::restart(ifstream& restartf){
-  restartf.ignore(200,58); // throwaway everything uptil colon
+void Qmax::restart(Istrm& restartf){
+  restartf.validate("Qmax",58);
   restartf >> qmax;
 }
 

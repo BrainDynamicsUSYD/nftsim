@@ -23,15 +23,15 @@ WaveEqn::~WaveEqn(){
   delete[ ] Phi_2;
 }
 
-void WaveEqn::init(ifstream& inputf){
-  inputf.ignore(200,58); // throw away everything before the colon character
+void WaveEqn::init(Istrm& inputf){
+  inputf.validate("Steady State Phi",58);
   float Phi_steady;
   inputf >> Phi_steady;
   for(long i=0; i<gridsize; i++){
     Phi_1[i]=Phi_steady;
     Phi_2[i]=Phi_steady;
   }
-  inputf.ignore(200,58); // throw away everything before the colon character
+  inputf.validate("Tauab",58);
   inputf >> tauab;
   effrangeobj.init(inputf);
   gammaobj.init(inputf);
@@ -64,7 +64,7 @@ void WaveEqn::dump(ofstream& dumpf){
   dumpf << endl;
 }
 
-void WaveEqn::restart(ifstream& restartf){
+void WaveEqn::restart(Istrm& restartf){
   restartf.ignore(200,58); // throw away everything before the colon character
   restartf >> tauab;
   effrangeobj.restart(restartf);

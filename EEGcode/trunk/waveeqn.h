@@ -9,12 +9,12 @@
 #define WAVEEQN_H
 
 #include<fstream>
-using std::ifstream;
 using std::ofstream;
 #include<iostream>
 using std::cerr;
 using std::endl;
 
+#include"istrm.h"
 #include"effrange.h"
 #include"gamma.h"
 #include"qhistory.h"
@@ -23,9 +23,9 @@ class WaveEqn {
 public: 
   WaveEqn(long gridsize, float deltat, float deltax);
   ~WaveEqn();
-  void init(ifstream& inputf);
+  void init(Istrm& inputf);
   void dump(ofstream& dumpf);
-  void restart(ifstream& restartf);
+  void restart(Istrm& restartf);
   void stepwaveeq(float *Phi, Qhistory* qhistory);
 private:
   Gamma gammaobj;

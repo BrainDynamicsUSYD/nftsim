@@ -1,5 +1,5 @@
 /***************************************************************************
-                          dendriticrlist.cpp  -  A linked list of dendritic
+                          dendriticrlist.cpp  -  Aan array of dendritic
                                                  response for afferent neural
                                                  populations
                              -------------------
@@ -12,7 +12,7 @@
 #include"propagnet.h"
 
 //
-// Constructor for DendriticRList creates a linked list of dendritic responses for
+// Constructor creates an array of dendritic responses for
 // all incoming afferent neural populations
 //
 
@@ -33,7 +33,7 @@ DendriticRlist::DendriticRlist(long nodes, int popid, ConnectMat *pconnectmat)
 }
 
 //
-// Destructor sucessively deletes each object in the linked list
+// Destructor deletes each DendriticR object and then array holding them
 //
 
 DendriticRlist::~DendriticRlist(){
@@ -57,7 +57,7 @@ DendriticR * DendriticRlist::getdendr(int index){
   return drarray[index];
 }
 
-void DendriticRlist::init(ifstream& inputf, PropagNet *ppropagnet, ConnectMat *pconnectmat){
+void DendriticRlist::init(Istrm& inputf, PropagNet *ppropagnet, ConnectMat *pconnectmat){
 // initialize localP pointer array
   int end=ppropagnet->numconnects;
   int counter=0;
@@ -68,7 +68,7 @@ void DendriticRlist::init(ifstream& inputf, PropagNet *ppropagnet, ConnectMat *p
     }
   }
 // Read data from inputf
-  inputf.ignore(200,58); // Throwaway title line uptil colon
+  inputf.validate("Number of Dendritic responses",58);
   int expectaff;
   inputf >> expectaff; // Read in number of dendritic responses expected for this population
   if (expectaff!=numaff){
@@ -94,7 +94,7 @@ void DendriticRlist::dump(ofstream& dumpf){
     getdendr(i)->dump(dumpf);
 }
 
-void DendriticRlist::restart(ifstream& restartf, PropagNet *ppropagnet, ConnectMat *pconnectmat){
+void DendriticRlist::restart(Istrm& restartf, PropagNet *ppropagnet, ConnectMat *pconnectmat){
 // Read data from restartf
   restartf.ignore(200,58); // Throwaway title line uptil colon
   int expectaff;

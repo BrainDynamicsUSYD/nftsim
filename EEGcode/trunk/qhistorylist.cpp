@@ -12,7 +12,7 @@
 // is passed a depth for its history
 //
 
-Qhistorylist::Qhistorylist(ifstream& inputf, ofstream& dumpf, int numpops, long gridsize):numhistories(numpops){
+Qhistorylist::Qhistorylist(Istrm& inputf, ofstream& dumpf, int numpops, long gridsize):numhistories(numpops){
   depthofhistory= new int[numhistories]; // create depth of history array
   getdepths(inputf,dumpf); // initialize depth of history array
    
@@ -37,7 +37,7 @@ Qhistory * Qhistorylist::getQhist(int index){
   return Qhistarray[index];
 }
 
-void Qhistorylist::init(ifstream& inputf, Poplist *ppoplist){
+void Qhistorylist::init(Istrm& inputf, Poplist *ppoplist){
   for(int i=0;i<numhistories; i++)
     getQhist(i)->init(inputf, ppoplist);
 }
@@ -49,12 +49,12 @@ void Qhistorylist::dump(ofstream& dumpf){
   }
 }
 
-void Qhistorylist::restart(ifstream& restartf, Poplist *ppoplist){
+void Qhistorylist::restart(Istrm& restartf, Poplist *ppoplist){
   for(int i=0;i<numhistories; i++)
     getQhist(i)->restart(restartf, ppoplist);
 }
 
-void Qhistorylist::getdepths(ifstream & inputf, ofstream& dumpf){
+void Qhistorylist::getdepths(Istrm& inputf, ofstream& dumpf){
   int temp;
   dumpf << "Q delay depths ";
   for(int i=0;i<numhistories; i++){

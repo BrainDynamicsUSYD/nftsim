@@ -12,8 +12,8 @@ Nu::Nu(){
 Nu::~Nu(){
 }
 
-void Nu::init(ifstream& inputf){
-  inputf.ignore(200,58); // throwaway every before the colon character
+void Nu::init(Istrm& inputf){
+  inputf.validate("Nu",58);
   inputf >> nu;
 }
 
@@ -21,8 +21,8 @@ void Nu::dump(ofstream& dumpf){
   dumpf << "Nu: " << nu << " ";
 }
 
-void Nu::restart(ifstream& restartf){
-  restartf.ignore(200,58); // throwaway every before the colon character
+void Nu::restart(Istrm& restartf){
+  restartf.validate("Nu",58);
   restartf >> nu;
 }
 

@@ -12,8 +12,8 @@ Beta::Beta(){
 Beta::~Beta(){
 }
 
-void Beta::init(ifstream& inputf){
-  inputf.ignore(200,58); //throwaway everything before colon character
+void Beta::init(Istrm& inputf){
+  inputf.validate("beta",58);
   inputf >> beta;
 }
 
@@ -21,8 +21,8 @@ void Beta::dump(ofstream& dumpf){
   dumpf << "beta: " << beta << endl;
 }
 
-void Beta::restart(ifstream& restartf){
-  restartf.ignore(200,58); //throwaway everything before colon character
+void Beta::restart(Istrm& restartf){
+  restartf.validate("beta",58); 
   restartf >> beta;
 }
 

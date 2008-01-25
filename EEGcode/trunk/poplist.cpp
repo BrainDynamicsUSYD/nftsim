@@ -37,7 +37,7 @@ Population * Poplist::get(int index){
 //
 // init method
 //
-void Poplist::init(ifstream& inputf, PropagNet *ppropagnet, ConnectMat *pconnectmat){
+void Poplist::init(Istrm& inputf, PropagNet *ppropagnet, ConnectMat *pconnectmat){
   for(int i=0; i<numpops; i++)
     get(i)->init(inputf, ppropagnet, pconnectmat);
 }
@@ -53,7 +53,7 @@ void Poplist::dump(ofstream& dumpf){
 //
 // restart method
 //
-void Poplist::restart(ifstream& restartf, PropagNet *ppropagnet, ConnectMat *pconnectmat){
+void Poplist::restart(Istrm& restartf, PropagNet *ppropagnet, ConnectMat *pconnectmat){
   for(int i=0; i<numpops; i++)
     get(i)->restart(restartf, ppropagnet, pconnectmat);
 }

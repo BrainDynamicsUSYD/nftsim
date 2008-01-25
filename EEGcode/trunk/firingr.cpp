@@ -13,7 +13,7 @@ FiringR::FiringR(){
 FiringR::~FiringR(){
 }
 
-void FiringR::init(ifstream& inputf){
+void FiringR::init(Istrm& inputf){
   thetaobj.init(inputf);
   sigmaobj.init(inputf);
   qmaxobj.init(inputf);
@@ -39,7 +39,7 @@ void FiringR::dump(ofstream& dumpf){
   dumpf << endl; //Append endl at end of firing response figures
 }
 
-void FiringR::restart(ifstream& restartf){
+void FiringR::restart(Istrm& restartf){
   thetaobj.restart(restartf);
   sigmaobj.restart(restartf);
   qmaxobj.restart(restartf);

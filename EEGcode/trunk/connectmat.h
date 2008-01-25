@@ -9,17 +9,18 @@
 #define CONNECTMAT_H
 
 #include<fstream>
-using std::ifstream;
 using std::ofstream;
 #include<iostream>
 using std::cerr;
 using std::endl;
 
+#include"istrm.h"
+
 class ConnectMat {
 public: 
   ConnectMat(int numpops, int numconct);
   ~ConnectMat();
-  void init(ifstream& inputf); // Read in raw connection matrix and setup qphiconnect
+  void init(Istrm& inputf); // Read in raw connection matrix and setup qphiconnect
   void dump(ofstream& dumpf); // Write out raw connection matrix
   int getQindex(int index){return qphiconnect[index];}; // Return population index number of Q for given wave equation index
   int getDRindex(int index){return drphiconnect[index];}; // Return population index number for DR for given wave equation index

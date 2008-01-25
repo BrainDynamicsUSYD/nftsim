@@ -10,12 +10,12 @@
 
 #include<math.h>
 #include<fstream>
-using std::ifstream;
 using std::ofstream;
 #include<iostream>
 using std::cerr;
 using std::endl;
 
+#include"istrm.h"
 #include"alpha.h"
 #include"beta.h"
 
@@ -23,9 +23,9 @@ class DendriticR {
 public: 
   DendriticR();
   ~DendriticR();
-  void init(ifstream& inputf, float& Vinit);
+  void init(Istrm& inputf, float& Vinit);
   void dump(ofstream& dumpf);
-  void restart(ifstream& restartf);
+  void restart(Istrm& restartf);
   void stepVab(float *Pab, float * Vab, float *dVabdt, long nodes, float timestep);
 private: 
   float alpha;  // Holding variable of alpha at this moment

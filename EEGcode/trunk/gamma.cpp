@@ -12,17 +12,17 @@ Gamma::Gamma(){
 Gamma::~Gamma(){
 }
 
-void Gamma::init(ifstream& inputf){
-  inputf.ignore(200,58); // throwaway everything uptil colon character
+void Gamma::init(Istrm& inputf){
+  inputf.validate("gamma",58);
   inputf >> gamma;
 }
 
 void Gamma::dump(ofstream& dumpf){
-  dumpf << "gamma :" << gamma << " ";
+  dumpf << "gamma:" << gamma << " ";
 }
 
-void Gamma::restart(ifstream& restartf){
-  restartf.ignore(200,58); // throwaway everything uptil colon character
+void Gamma::restart(Istrm& restartf){
+  restartf.validate("gamma",58);
   restartf >> gamma;
 }
 

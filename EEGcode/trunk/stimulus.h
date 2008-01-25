@@ -9,22 +9,22 @@
 #define STIMULUS_H
 
 #include<fstream>
-using std::ifstream;
 using std::ofstream;
 #include<iostream>
 using std::cerr;
 using std::endl;
 #include<math.h>
 
+#include"istrm.h"
 #include"random.h"
 
 class Stimulus {
 public: 
   Stimulus();
   ~Stimulus();
-  void init(ifstream& inputf);
+  void init(Istrm& inputf);
   void dump(ofstream& dumpf);
-  void restart(ifstream& restartf);
+  void restart(Istrm& restartf);
   void getQstim(float timestep, float *Q, const long nodes);
 private:
   float t; // Current time
@@ -36,7 +36,6 @@ private:
   float tperiod; // Period of between pulse repetitions
   void gaussian(float& deviate1, float& deviate2);
   Random random; // Uniform random number generator object
-  long idum; // Seed for random number generator
 };
 
 #endif

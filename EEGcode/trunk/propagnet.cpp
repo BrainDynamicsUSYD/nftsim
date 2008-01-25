@@ -11,7 +11,7 @@
 //
 // Constructor for Propagnet
 //
-PropagNet::PropagNet(float deltat, float deltax, long totalnodes, int numpops, int numconct, ifstream& inputf, ofstream& dumpf)
+PropagNet::PropagNet(float deltat, float deltax, long totalnodes, int numpops, int numconct, Istrm& inputf, ofstream& dumpf)
                       :numconnects(numconct),nodes(totalnodes){
   gridsize=static_cast<long>((sqrt(nodes)+2)*(sqrt(nodes)+2));
   if (sqrt( static_cast<float>(nodes)) != floor(sqrt( static_cast<float>(nodes)))){
@@ -49,7 +49,7 @@ PropagNet::~PropagNet(){
   if (pphiout) delete pphiout; // Free Phiout object if it was initialized by PropagNet::initoutput()
 }
 
-void PropagNet::init(ifstream& inputf, Poplist *ppoplist){
+void PropagNet::init(Istrm& inputf, Poplist *ppoplist){
   inputf.ignore(200,32); // Throwaway blank line
   inputf.ignore(200,32); // Throwaway title line of propagation data
   pqhistorylist->init(inputf, ppoplist);
@@ -65,7 +65,7 @@ void PropagNet::dump(ofstream& dumpf){
 }
 
 //
-void PropagNet::restart(ifstream& restartf, Poplist *ppoplist){
+void PropagNet::restart(Istrm& restartf, Poplist *ppoplist){
   restartf.ignore(200,32); // Throwaway blank line
   pqhistorylist->restart(restartf, ppoplist);
   pwaveeqnlist->restart(restartf);
@@ -80,7 +80,7 @@ void PropagNet::stepQtoP(Poplist * ppoplist, ConnectMat * pconnectmat){
   pcouplinglist->updateP(P, Eta, nodes); // Weight signal strengths for links between neural populations
 }
 
-void PropagNet::initoutput(ifstream& inputf, ofstream& outputf){
+void PropagNet::initoutput(Istrm& inputf, ofstream& outputf){
   pphiout = new Phiout(inputf, outputf);
 }
 

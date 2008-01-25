@@ -12,17 +12,17 @@ Alpha::Alpha(){
 Alpha::~Alpha(){
 }
  
-void Alpha::init(ifstream& inputf){
-  inputf.ignore(200,58); //throwawy every before colon character
+void Alpha::init(Istrm& inputf){
+  inputf.validate("alpha",58);
   inputf >> alpha;
 }
 
 void Alpha::dump(ofstream& dumpf){
-  dumpf << "alpha :" << alpha << " ";
+  dumpf << "alpha:" << alpha << " ";
 }
 
-void Alpha::restart(ifstream& restartf){
-  restartf.ignore(200,58); //throwawy every before colon character
+void Alpha::restart(Istrm& restartf){
+  restartf.validate("alpha",58);
   restartf >> alpha;
 }
 

@@ -21,7 +21,7 @@ ConnectMat::~ConnectMat(){
   delete [ ] drlength;
 }
 
-void ConnectMat::init(ifstream& inputf){
+void ConnectMat::init(Istrm& inputf){
   //
   // This part reads in the raw connection matrix
   //

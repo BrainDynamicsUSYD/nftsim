@@ -7,7 +7,7 @@
 
 #include "phiout.h"
 
-Phiout::Phiout(ifstream& inputf, ofstream& outputf){
+Phiout::Phiout(Istrm& inputf, ofstream& outputf){
   inputf.ignore(200,58); // throwaway everything up to colon character
   inputf >> numtraces;
   outputf << "Output Data - Number of traces: " << numtraces << endl;

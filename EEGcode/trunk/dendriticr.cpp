@@ -12,8 +12,8 @@ DendriticR::DendriticR(){
 DendriticR::~DendriticR(){
 }
 
-void DendriticR::init(ifstream& inputf, float& Vinit){
-  inputf.ignore(200,58); //throwawy every before colon character
+void DendriticR::init(Istrm& inputf, float& Vinit){
+  inputf.validate("V initial",58);
   inputf >> Vinit;
   alphaobj.init(inputf);
   betaobj.init(inputf);
@@ -25,7 +25,7 @@ void DendriticR::dump(ofstream& dumpf){
   betaobj.dump(dumpf);
 }
 
-void DendriticR::restart(ifstream& restartf){
+void DendriticR::restart(Istrm& restartf){
   alphaobj.restart(restartf);
   betaobj.restart(restartf);
 }

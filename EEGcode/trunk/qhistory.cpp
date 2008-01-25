@@ -40,7 +40,7 @@ Qhistory::~Qhistory(){
 //
 // Finish by copying q throughout the q history at start
 //
-void Qhistory::init(ifstream& inputf, Poplist *ppoplist){
+void Qhistory::init(Istrm& inputf, Poplist *ppoplist){
   copyQfrompop(ppoplist); //Update Q to qdepth
 //
 // Set Q back in time to initial conditions
@@ -68,7 +68,7 @@ void Qhistory::dump(ofstream& dumpf){
   dumpf << endl;
 }
 
-void Qhistory::restart(ifstream& restartf, Poplist *ppoplist){
+void Qhistory::restart(Istrm& restartf, Poplist *ppoplist){
   for(int i=0;i<depthq+3;i++){
     float *q=qhistory[i];
     float qtemp;
