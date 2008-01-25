@@ -60,27 +60,44 @@ void DendriticR::stepVab(double *Pab, double * Vab, double *dVabdt, double times
 //  computed variables are used to speed up the calculation.
 //
   double adjustedPab;
-  double alphaminusbeta;
   double factoralphabeta;
   double deltaPdeltat;
   double C1;
-  double C1expalpha;
-  double C2expbeta;
 
   alpha=alphaobj.get();
   beta=betaobj.get();
   expalpha=exp(-alpha*timestep);
-  expbeta=exp(-beta*timestep);
-  alphaminusbeta=alpha-beta;
   factoralphabeta=(1.0/alpha)+(1.0/beta);
-  for(long i=0; i<nodes; i++){
-    deltaPdeltat=(Pab[i]-previousPab[i])/timestep;
-    adjustedPab=previousPab[i]-factoralphabeta*deltaPdeltat-Vab[i];
-    C1=(adjustedPab*beta-dVabdt[i]+deltaPdeltat)/alphaminusbeta;
-    C1expalpha=C1*expalpha;
-    C2expbeta=expbeta*(-C1-adjustedPab);
-    Vab[i]=C1expalpha+C2expbeta+Pab[i]-factoralphabeta*deltaPdeltat;
-    dVabdt[i]=C1expalpha*(-alpha)+C2expbeta*(-beta)+deltaPdeltat;
-    previousPab[i]=Pab[i]; //Save current pulse density for next step
+  if(alpha!=beta){
+    double alphaminusbeta;
+    double C1expalpha;
+    double C2expbeta;
+    expbeta=exp(-beta*timestep);
+    alphaminusbeta=alpha-beta;
+//
+#pragma omp parallel for private(adjustedPab,factoralphabeta,deltaPdeltat)
+//
+    for(long i=0; i<nodes; i++){
+      deltaPdeltat=(Pab[i]-previousPab[i])/timestep;
+      adjustedPab=previousPab[i]-factoralphabeta*deltaPdeltat-Vab[i];
+      C1=(adjustedPab*beta-dVabdt[i]+deltaPdeltat)/alphaminusbeta;
+      C1expalpha=C1*expalpha;
+      C2expbeta=expbeta*(-C1-adjustedPab);
+      Vab[i]=C1expalpha+C2expbeta+Pab[i]-factoralphabeta*deltaPdeltat;
+      dVabdt[i]=C1expalpha*(-alpha)+C2expbeta*(-beta)+deltaPdeltat;
+      previousPab[i]=Pab[i]; //Save current pulse density for next step
+    }
+  } 
+  else{
+    double C1deltatplusc2;
+    for(long i=0; i<nodes; i++){
+      deltaPdeltat=(Pab[i]-previousPab[i])/timestep;
+      adjustedPab=previousPab[i]-factoralphabeta*deltaPdeltat-Vab[i];
+      C1=dVabdt[i]-alpha*adjustedPab-deltaPdeltat;
+      C1deltatplusc2=C1*timestep-adjustedPab;
+      Vab[i]=C1deltatplusc2*expalpha+Pab[i]-factoralphabeta*deltaPdeltat;
+      dVabdt[i]=(C1-alpha*C1deltatplusc2)*expalpha+deltaPdeltat;
+      previousPab[i]=Pab[i]; //Save current pulse density for next step
+    }
   }
 }

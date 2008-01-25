@@ -27,7 +27,8 @@ Modcouple::~Modcouple(){
   delete [ ] h;
   delete [ ] dhdt;
   delete [ ] nu;
-  if(nodeoftrace) delete [ ] nodeoftrace;
+  if(synnodes) delete [ ] synnodes;
+  if(concnodes) delete [ ] concnodes;
   if(pconcobj) delete pconcobj;
 }
 
@@ -88,42 +89,86 @@ void Modcouple::initoutput(Istrm& inputf, int coupleid){
   coupleid++; // (coupleid+1) is to ensure numbering from one not zero in output
   stringstream ss(stringstream::in | stringstream::out);
   ss << "eegcode.synaptout." << coupleid;
-  outputf.open(ss.str().c_str(),ios::out);
-  if( !outputf ){
+  synapoutf.open(ss.str().c_str(),ios::out);
+  if( !synapoutf ){
     cerr << "Unable to open 'eegcode.synaptout." << coupleid << "' for output \n";
     exit(EXIT_FAILURE);
   }
   int optionnum;
   inputf.validate("traces",58); 
-  inputf >> numtraces;
-  outputf << "Output Synapse - Number of traces: " << numtraces << " ";
-  nodeoftrace = new long [numtraces];
+  inputf >> synaptraces;
+  synapoutf << "Output Synapse - Number of traces: " << synaptraces << " ";
+  synnodes = new long [synaptraces];
   long i=0;
-  while(i<numtraces){
+  while(i<synaptraces){
     long temp1;
     inputf.validate("Single/All",58); 
     optionnum=inputf.choose("Single:1 All:2 ",32);
-    outputf << "Single/All nodes:";
+    synapoutf << "Single/All nodes:";
     if(1==optionnum){
-      outputf << " Single ";
+      synapoutf << " Single ";
       inputf.ignore(200,58); // throwaway everything up to colon character
       inputf >> temp1;
       if(temp1>nodes || temp1<1){
-        cerr << "Node number " << temp1 << " requested for output is invalid" << endl;
+        cerr << "Synaptic node number " << temp1 << " requested for output is invalid" << endl;
         exit(EXIT_FAILURE);
       }     
-      nodeoftrace[i]=temp1-1; //'-1' as nodeoftrace runs [0:n-1] rather than [1:n]
-      outputf << "Node Number : "<< temp1 << endl;
+      synnodes[i]=temp1-1; //'-1' as nodeoftrace runs [0:n-1] rather than [1:n]
+      synapoutf << "Node Number : "<< temp1 << endl;
     }
     if(2==optionnum){
-      outputf << " All nodes";
+      synapoutf << " All nodes";
       inputf.ignore(200,32); // throwaway everything up to colon character
-      nodeoftrace[i]=0; // Request the first node be outputted
+      synnodes[i]=0; // Request the first node be outputted
       for(long j=1;j<nodes;j++){ // Request the remaining nodes be outputted
-	nodeoftrace[i+j]=j;
+	    synnodes[i+j]=j;
       }
       i+=nodes-1; // increment by number of traces now requested (except the one in outer loop)
-      if( i>(numtraces-1) ){
+      if( i>(synaptraces-1) ){
+        cerr << "Not enough traces specified to output all - please increase" << endl;
+	exit(EXIT_FAILURE);
+      }
+    }
+    i++;
+  }
+  stringstream ss1(stringstream::in | stringstream::out);
+  ss1 << "eegcode.concout." << coupleid;
+  concoutf.open(ss1.str().c_str(),ios::out);
+  if( !concoutf ){
+    cerr << "Unable to open 'eegcode.concout." << coupleid << "' for output \n";
+    exit(EXIT_FAILURE);
+  }
+  inputf.validate("conc.traces",58);
+  inputf >> conctraces;
+  concoutf << "Output Concentration - Number of traces: " << conctraces << " ";
+  concnodes = new long [conctraces];
+  i=0;
+  while(i<conctraces){
+    long temp1;
+    inputf.validate("Single/All",58); 
+    optionnum=inputf.choose("Single:1 All:2 ",32);
+    concoutf << "Single/All nodes:";
+    if(1==optionnum){
+                     
+      concoutf << " Single ";
+      inputf.ignore(200,58); // throwaway everything up to colon character
+      inputf >> temp1;
+      if(temp1>nodes || temp1<1){
+        cerr << "Concentration node number " << temp1 << " requested for output is invalid" << endl;
+        exit(EXIT_FAILURE);
+      }     
+      concnodes[i]=temp1-1; //'-1' as nodeoftrace runs [0:n-1] rather than [1:n]
+      concoutf << "Node Number : "<< temp1 << endl;
+    }
+    if(2==optionnum){
+      concoutf << " All nodes";
+      inputf.ignore(200,32); // throwaway everything up to colon character
+      concnodes[i]=0; // Request the first node be outputted
+      for(long j=1;j<nodes;j++){ // Request the remaining nodes be outputted
+	    concnodes[i+j]=j;
+      }
+      i+=nodes-1; // increment by number of traces now requested (except the one in outer loop)
+      if( i>(conctraces-1) ){
         cerr << "Not enough traces specified to output all - please increase" << endl;
 	exit(EXIT_FAILURE);
       }
@@ -133,10 +178,14 @@ void Modcouple::initoutput(Istrm& inputf, int coupleid){
 }
 
 void Modcouple::output(){
-  for(long i=0; i<numtraces;i++){
-    outputf << setprecision(14) << *(nu+nodeoftrace[i]) << endl; // Add a field with value at Nu point requested
+  for(long i=0; i<synaptraces;i++){
+    synapoutf << setprecision(14) << *(nu+synnodes[i]) << endl; // Add a field with value at Nu point requested
   }
-  outputf << endl; // Insert a blank line at the end of the record
+  synapoutf << endl; // Insert a blank line at the end of the record
+  for(long i=0; i<conctraces;i++){
+    concoutf << setprecision(14) << *(conc+concnodes[i]) << endl; // Add a field with value at Nu point requested
+  }
+  concoutf << endl; // Insert a blank line at the end of the record
 }
 
 //
@@ -155,30 +204,46 @@ void Modcouple::updatePa(double *Pa, double *Etaa){
 //  computed variables are used to speed up the calculation.
 
   double adjustedconc;
-  double muminuslambda;
   double factormulambda;
   double deltaconcdeltat;
   double C1;
-  double C1expmu;
-  double C2explambda;
-  
+    
   pconcobj->get(timestep, conc, nodes);
   expmu=exp(-mu*timestep);
-  explambda=exp(-lambda*timestep);
-  muminuslambda=mu-lambda;
   factormulambda=(1.0/mu)+(1.0/lambda);
-  for(int i=0; i<nodes; i++){
+  if(mu!=lambda){
+    double muminuslambda;
+    double C1expmu;
+    double C2explambda;
+    explambda=exp(-lambda*timestep);
+    muminuslambda=mu-lambda;
+    for(long i=0; i<nodes; i++){
 //
-    deltaconcdeltat=(conc[i]-previousconc[i])/timestep;
-    adjustedconc=previousconc[i]-factormulambda*deltaconcdeltat-h[i];
-    C1=(adjustedconc*lambda-dhdt[i]+deltaconcdeltat)/muminuslambda;
-    C1expmu=C1*expmu;
-    C2explambda=explambda*(-C1-adjustedconc);
-    h[i]=C1expmu+C2explambda+conc[i]-factormulambda*deltaconcdeltat;
-    dhdt[i]=C1expmu*(-mu)+C2explambda*(-lambda)+deltaconcdeltat;
-    previousconc[i]=conc[i]; //Save neurotransmitter concentration for next step
+      deltaconcdeltat=(conc[i]-previousconc[i])/timestep;
+      adjustedconc=previousconc[i]-factormulambda*deltaconcdeltat-h[i];
+      C1=(adjustedconc*lambda-dhdt[i]+deltaconcdeltat)/muminuslambda;
+      C1expmu=C1*expmu;
+      C2explambda=explambda*(-C1-adjustedconc);
+      h[i]=C1expmu+C2explambda+conc[i]-factormulambda*deltaconcdeltat;
+      dhdt[i]=C1expmu*(-mu)+C2explambda*(-lambda)+deltaconcdeltat;
+      previousconc[i]=conc[i]; //Save neurotransmitter concentration for next step
+    }
+  }
+  else{
+    double C1deltatplusc2;
+    for(long i=0; i<nodes; i++){
+      deltaconcdeltat=(conc[i]-previousconc[i])/timestep;
+      adjustedconc=previousconc[i]-factormulambda*deltaconcdeltat-h[i];
+      C1=dhdt[i]-mu*adjustedconc-deltaconcdeltat;
+      C1deltatplusc2=C1*timestep+adjustedconc;
+      h[i]=C1deltatplusc2*expmu+conc[i]-factormulambda*deltaconcdeltat;
+      dhdt[i]=(C1-mu*C1deltatplusc2)*expmu+deltaconcdeltat;
+      previousconc[i]=conc[i]; // Save current conc for next step
+    }
+  }
 //    
+  for(long i=0; i<nodes; i++){
     nu[i]=nuzero*((1-nuscal)*exp(-h[i]/k) + nuscal);
     Pa[i]=nu[i]*Etaa[i];
-    }
+  }
 }

@@ -128,6 +128,7 @@ void WaveEqn::stepwaveeq(double *Phi, Qhistory *pqhistory){
                  +expfact1*(0.5)*p2*(sumphi+0.5*sumphidiag)-expfact2*Phi_2[icentre];
       Phi[iphi]+=drive;
       icentre++,itop++,ibottom++,ileft++,iright++; // increment position indexes
+      itopleft++,itopright++,ibottomleft++,ibottomright++; // as above
       iphi++; // increment phi position index
     }
     icentre+=2,itop+=2,ibottom+=2,ileft+=2,iright+=2; // reposition indexes to start of next row, they were already incremented

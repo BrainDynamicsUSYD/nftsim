@@ -86,7 +86,10 @@ void Proplist::restart(Istrm& restartf){
 //
 
 void Proplist::step(double **Eta, Qhistorylist* pqhistorylist, ConnectMat* pconnectmat){
-  for(int i=0;i<numpropag;i++){
+//
+#pragma omp parallel for
+//
+for(int i=0;i<numpropag;i++){
     Qhistory* pqhistory=pqhistorylist->getQhist(pconnectmat->getQindex(i));
     getpropag(i)->stepwaveeq(Eta[i], pqhistory);
     }

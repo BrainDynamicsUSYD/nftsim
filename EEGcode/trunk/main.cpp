@@ -163,7 +163,7 @@ void writedefault(ofstream& defaultf){
   defaultf << "Number of integration steps: 100000 Deltat: 0.0001 " << endl;
   defaultf << "Q delay depths: 420 : 0 : 0 : 420 :0" << endl;
   defaultf << "Propagator types 1: Waveeqn 2: Waveeqn 3: Waveeqn 4: Waveeqn 5: Mapping $" << endl;
-  defaultf << "6: Mapping 7: Mapping 8: Waveeqn 9: Waveeqn 10: Mapping 11: Mapping $" << endl;
+  defaultf << "6: Mapping 7: Mapping 8: Mapping 9: Mapping 10: Mapping 11: Mapping $" << endl;
   defaultf << "" << endl;
   defaultf << "Coupling types 1: Simple 2: Simple 3: Simple 4: Simple 5: Simple 6: Simple $" << endl;
   defaultf << "7: Simple 8: Simple 9: Simple 10: Simple 11: Simple $" << endl;
@@ -210,8 +210,8 @@ void writedefault(ofstream& defaultf){
   defaultf << "Propagator 5  - Tauab: 0   " << endl;
   defaultf << "Propagator 6  - Tauab: 0   " << endl;
   defaultf << "Propagator 7  - Tauab: 0   " << endl;
-  defaultf << "Propagator 8  - Initial Phi: 4.81117 Deltax: 0.0035 Tauab: 420 Effective range: 0.08 gamma: 100.0" << endl;
-  defaultf << "Propagator 9  - Initial Phi: 4.81117 Deltax: 0.0035 Tauab: 420 Effective range: 0.08 gamma: 100.0" << endl;
+  defaultf << "Propagator 8  - Tauab: 420" << endl;
+  defaultf << "Propagator 9  - Tauab: 420" << endl;
   defaultf << "Propagator 10 - Tauab: 0   " << endl;
   defaultf << "Propagator 11 - Tauab: 0   " << endl;
   defaultf << "Coupling data 1  - Nu: 0.0012" << endl;

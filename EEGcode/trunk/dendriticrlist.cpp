@@ -148,6 +148,9 @@ void DendriticRlist::restart(Istrm& restartf, PropagNet *ppropagnet, ConnectMat 
 //
 
 void DendriticRlist::stepVa(double timestep){
+//
+//#pragma omp parallel for
+//
   for(int i=0;i<numaff;i++){
     getdendr(i)->stepVab(localP[i], Va[i], dVdt[i],timestep);
     }

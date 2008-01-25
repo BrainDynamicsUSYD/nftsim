@@ -48,9 +48,12 @@ private:
   double expmu; // Factor in exactstep
   double explambda; // Factor in exactstep
   Concentration* pconcobj; // Neurotransmitter concetration object
-  long numtraces;
-  long * nodeoftrace; // Array containing node numbers of requested traces
-  ofstream outputf; // Stream 'eegcode.synapout'
+  long synaptraces; // number of synaptic traces to output
+  long conctraces; // number of concentration traces to output
+  long * synnodes; // Array containing node numbers of outputted synaptic traces
+  long * concnodes; // Array containing node numbers of outputted concentration traces
+  ofstream synapoutf; // Stream 'eegcode.synapout'
+  ofstream concoutf; // Stream 'eegcode.concout'
 };
 
 #endif
