@@ -1,12 +1,12 @@
 /***************************************************************************
-                          firingr.h  -  description
+                          prefact.h  -  description
                              -------------------
     copyright            : (C) 2005 by Peter Drysdale
     email                : peter@physics.usyd.edu.au
  ***************************************************************************/
 
-#ifndef FIRINGR_H
-#define FIRINGR_H
+#ifndef PREFACT_H
+#define PREFACT_H
 
 #include<fstream>
 using std::ofstream;
@@ -17,21 +17,16 @@ using std::endl;
 #include"istrm.h"
 #include"parameter.h"
 
-class FiringR {
+class Prefact {
 public: 
-  FiringR();
-  ~FiringR();
-  void init(Istrm& inputf);
-  void dump(ofstream& dumpf);
-  void restart(Istrm& restartf);
-  void getQ(double *V, double *Q, long totalnodes);
-private: 
-  Parameter thetaobj;
-  Parameter sigmaobj;
-  Parameter qmaxobj;
-  double theta;
-  double sigma;
-  double qmax;
+  Prefact(long gsize);
+  ~Prefact();
+  void precalcfact(double* kvect, double deltax, long centrex, long centrey);
+  double* factRe;
+  double* factIm;
+private:
+  void wrapbndry(double* array,long sidelength, long rowlength);
+  long gridsize;
 };
 
 #endif

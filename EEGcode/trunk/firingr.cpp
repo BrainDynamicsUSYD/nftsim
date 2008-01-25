@@ -22,7 +22,7 @@ void FiringR::init(Istrm& inputf){
 //
 // Method to transform V into Q via sigmoid firing response
 //
-void FiringR::getQ(float *V, float *Q, long totalnodes){
+void FiringR::getQ(double *V, double *Q, long totalnodes){
   theta=thetaobj.get();
   sigma=sigmaobj.get();
   qmax=qmaxobj.get() ;

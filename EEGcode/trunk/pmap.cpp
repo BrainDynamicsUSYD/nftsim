@@ -8,7 +8,7 @@
 #include "pmap.h"
 #include<math.h>
 
-Pmap::Pmap(long gsize, float dt):gridsize(gsize),deltat(dt){
+Pmap::Pmap(long gsize, double dt):gridsize(gsize),deltat(dt){
   rowlength=static_cast<long>(sqrt(gridsize));
   sidelength=rowlength-2;
   startfirstrow=rowlength+1;
@@ -33,8 +33,8 @@ void Pmap::restart(Istrm& restartf){
   restartf >> tauab;
 }
 
-void Pmap::stepwaveeq(float *Phi, Qhistory *pqhistory){
-  float* Q= pqhistory->getQbytime(tauab);
+void Pmap::stepwaveeq(double *Phi, Qhistory *pqhistory){
+  double* Q= pqhistory->getQbytime(tauab);
   // initialize five indexes to spatial positions
   icentre=startfirstrow;
   iphi=0;

@@ -24,7 +24,7 @@ public:
   virtual void init(Istrm& inputf) = 0; 
   virtual void dump(ofstream& dumpf) = 0; 
   virtual void restart(Istrm& restartf) = 0; 
-  virtual void stepwaveeq(float *Phi, Qhistory* qhistory) = 0; 
+  virtual void stepwaveeq(double *Phi, Qhistory* qhistory) = 0; 
 };
 
 #endif

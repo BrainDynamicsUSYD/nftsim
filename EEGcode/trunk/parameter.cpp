@@ -26,6 +26,6 @@ void Parameter::restart(Istrm& restartf){
   restartf >> param;
 }
 
-float Parameter::get(){
+double Parameter::get(){
   return param;
 }

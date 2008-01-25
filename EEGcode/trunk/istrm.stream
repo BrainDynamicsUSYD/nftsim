@@ -30,9 +30,6 @@ void Istrm::validate(const char* check, char delim){
      cerr << "Unable to find next input variable :'";
      cerr.write(check,std::strlen(check));
      cerr << "' "<< endl;
-     cerr << "Last read was :'";
-     cerr.write(pbuffer,std::strlen(pbuffer));
-     cerr << "' "<< endl;
      cerr << "Please check eegcode.conf for correct sequence of parameters" << endl;
      exit(EXIT_FAILURE);
    }

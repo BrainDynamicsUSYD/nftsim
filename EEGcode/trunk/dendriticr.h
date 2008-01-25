@@ -20,17 +20,19 @@ using std::endl;
 
 class DendriticR {
 public: 
-  DendriticR();
+  DendriticR(long nodes);
   ~DendriticR();
-  void init(Istrm& inputf, float& Vinit);
+  void init(Istrm& inputf, double& Vinit);
   void dump(ofstream& dumpf);
   void restart(Istrm& restartf);
-  void stepVab(float *Pab, float * Vab, float *dVabdt, long nodes, float timestep);
-private: 
-  float alpha;  // Holding variable of alpha at this moment
-  float beta;  // Holding variable of alpha at this moment
-  float expalpha; // Factor in exactstep
-  float expbeta; // Factor in exactstep
+  void stepVab(double *Pab, double * Vab, double *dVabdt, double timestep);
+private:
+  long nodes;
+  double* previousPab; // Holds Pab from one time step in the past 
+  double alpha;  // Holding variable of alpha at this moment
+  double beta;  // Holding variable of alpha at this moment
+  double expalpha; // Factor in exactstep
+  double expbeta; // Factor in exactstep
   Parameter alphaobj; // Object which initializes and get alpha values
   Parameter betaobj; // Object which initializes and gets beta values
 };

@@ -30,6 +30,8 @@ void Stimulus::init(Istrm& inputf){
     case 2: //  White noise stimulus pattern 
       inputf.validate("Amplitude",58);
       inputf >> amp;
+      inputf.validate("Mean",58);
+      inputf >> mean;
       break;
     case 3: //  Sinusoidal stimulus pattern 
       inputf.validate("Amplitude",58);
@@ -40,6 +42,8 @@ void Stimulus::init(Istrm& inputf){
     case 4: //  Coherent white noise stimulus pattern 
       inputf.validate("Amplitude",58);
       inputf >> amp;
+      inputf.validate("Mean",58);
+      inputf >> mean;
       break;
     default: // No stimulation
       break;
@@ -57,6 +61,7 @@ void Stimulus::dump(ofstream& dumpf){
       break;
     case 2: //  White noise stimulus pattern 
       dumpf << "Amplitude:" << amp << endl;
+      dumpf << "Mean:" << mean << endl;
       break;
     case 3: //  Sinusoidal stimulus pattern 
       dumpf << "Amplitude:" << amp << endl;
@@ -64,6 +69,7 @@ void Stimulus::dump(ofstream& dumpf){
       break;
     case 4: //  Coherent white noise stimulus pattern 
       dumpf << "Amplitude:" << amp << endl;
+      dumpf << "Mean:" << mean << endl;
       break;
     default: // No stimulation
       break;
@@ -87,6 +93,8 @@ void Stimulus::restart(Istrm& restartf){
     case 2: //  White noise stimulus pattern 
       restartf.validate("Amplitude",58);
       restartf >> amp;
+      restartf.validate("Mean",58);
+      restartf >> mean;
       break;
     case 3: //  Sinusoidal stimulus pattern 
       restartf.validate("Amplitude",58);
@@ -97,14 +105,16 @@ void Stimulus::restart(Istrm& restartf){
     case 4: //  Coherent white noise stimulus pattern 
       restartf.validate("Amplitude",58);
       restartf >> amp;
+      restartf.validate("Mean",58);
+      restartf >> mean;
       break;
     default: // No stimulation
       break;
     }
 }
 
-void Stimulus::getQstim(float timestep, float *Q, const long nodes){
-  if(t>ts){
+void Stimulus::getQstim(double timestep, double *Q, const long nodes){
+  if(t>=ts){
     switch (mode) {
       case 1:{ // Pulse stimulus pattern 
 	      // Similar to Rennie CPULSE
@@ -124,18 +134,18 @@ void Stimulus::getQstim(float timestep, float *Q, const long nodes){
 	// For efficiency reasons random.gaussian random deviates are usually calculated in pairs.
 	// This is the reason for slightly more complex updating routine here
 	//
-        float deviate1, deviate2;
-	float *p;
+        double deviate1, deviate2;
+	double *p;
 	p=Q;
         for(long i=0; i<nodes-1; i+=2){ // if nodes is even then update every point in Q[]
 		                        // if nodes is odd then update all but the last point in Q[]
 	  random.gaussian(deviate1,deviate2);	
-          *p++=amp*deviate1;
-          *p++=amp*deviate2;
+          *p++=amp*deviate1 + mean;
+          *p++=amp*deviate2 + mean;
         }
 	if(nodes%2){ // if nodes is odd update last point which was otherwise not updated above
 	  random.gaussian(deviate1,deviate2);
-	  *p=amp*deviate1;
+	  *p=amp*deviate1 + mean;
 	}
         break;
       }
@@ -148,10 +158,10 @@ void Stimulus::getQstim(float timestep, float *Q, const long nodes){
       }
       case 4:{ // Coherent white noise stimulus pattern
 	      // Similar to Rennie CWGAUSS
-        float deviate1, deviate2;
+        double deviate1, deviate2;
 	random.gaussian(deviate1,deviate2);
 	for(long i=0; i<nodes; i++){
-          Q[i]=amp*deviate1;
+          Q[i]=amp*deviate1 + mean;
         }
         break;
       }
@@ -162,8 +172,8 @@ void Stimulus::getQstim(float timestep, float *Q, const long nodes){
 	  // For efficiency reasons random.gaussian random deviates are usually calculated in pairs.
 	  // This is the reason for slightly more complex updating routine here
 	  //
-            float deviate1, deviate2;
-	    float *p;
+            double deviate1, deviate2;
+	    double *p;
 	    p=Q;
             for(long i=0; i<nodes-1; i+=2){ // if nodes is even then update every point in Q[]
                                             // if nodes is odd then update all but the last point in Q[]

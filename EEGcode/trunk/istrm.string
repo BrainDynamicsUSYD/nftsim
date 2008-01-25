@@ -7,11 +7,9 @@
 
 #include "istrm.h"
 #include <string>
-using std::string;
 #include <iostream>
-#include <sstream>
-using std::stringstream;
-#include<cstring>
+#include <cstring>
+#include <cstdlib>
 
 Istrm::Istrm(const char* filename):ifstream(filename,ios::in){
   pbuffer = new char[200];
@@ -28,11 +26,9 @@ void Istrm::validate(const char* check, char delim){
    p=pbuffer+std::strlen(pbuffer)-std::strlen(check);
    if(std::strcmp(p,check)){
      cerr << "Unable to find next input variable :'";
-     cerr.write(check,std::strlen(check));
-     cerr << "' "<< endl;
-     cerr << "Last read was :'";
-     cerr.write(pbuffer,std::strlen(pbuffer));
-     cerr << "' "<< endl;
+     cerr.write(check,std::strlen(check)) << "'"<< endl;
+     cerr << "Last read from file:'";
+     cerr.write(pbuffer,std::strlen(check)) << "'" << endl;
      cerr << "Please check eegcode.conf for correct sequence of parameters" << endl;
      exit(EXIT_FAILURE);
    }
@@ -43,16 +39,19 @@ void Istrm::validate(const char* check, char delim){
 }
 
 int Istrm::choose(const char* ch, char delim){
-  string choice;
-  string list(ch);
-  stringstream ss(stringstream::in | stringstream::out);
+  std::string choice;
+  std::string list(ch);
+  const char* aretval;
   int retval;
 
   if (32==this->peek()) this->ignore(1); //remove space character if there is one
   std::getline(*this, choice, delim);
   std::string::size_type indx;
   indx=list.find(choice)+choice.length()+1; // Find index to start of choice number
-  ss << list.substr(indx); // Pass choice number to stringstream to convert to int
-  ss >> retval; // extract choice number from string stream as int
+  std::string::size_type indxend;
+  indxend=list.find(32,indx); //Find index past end of choice number
+  aretval=list.substr(indx,(indxend-indx)).c_str(); // get string of choice number
+  retval=atoi(aretval); // Convert string of choice number to int
+  exit(1);
   return retval;
 }

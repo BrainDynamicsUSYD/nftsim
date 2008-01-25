@@ -12,8 +12,8 @@ class Random {
 public: 
   Random();
   ~Random();
-  float ran();
-  void gaussian(float& deviate1, float& deviate2);
+  double ran();
+  void gaussian(double& deviate1, double& deviate2);
 private:
   long idum;
   enum {IA=16807}; // Use "enum hack" to obtain more portable static const int

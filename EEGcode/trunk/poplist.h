@@ -26,7 +26,7 @@ public:
   void init(Istrm& inputf, PropagNet * ppropagnet, ConnectMat * pconnectmat);
   void dump(ofstream& dumpf);
   void restart(Istrm& restartf, PropagNet * ppropagnet, ConnectMat * pconnectmat);
-  void stepPops(float timestep);
+  void stepPops(double timestep);
   Population * get(int popindex);
 private:
   Population** poparray; // Array of pointers to population objects

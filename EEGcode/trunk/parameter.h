@@ -22,12 +22,12 @@ class Parameter {
 public: 
   Parameter(const char *);
   ~Parameter();
-  float get();
+  double get();
   void init(Istrm& inputf);
   void dump(ofstream& dumpf);
   void restart(Istrm& restartf);
 private:
-  float param;
+  double param;
   string ident;
 };
 

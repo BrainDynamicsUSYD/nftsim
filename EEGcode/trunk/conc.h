@@ -1,12 +1,12 @@
 /***************************************************************************
-                          stimulus.h  -  description
+                          conc.h  -  
                              -------------------
-    copyright            : (C) 2005 by Peter Drysdale
+    copyright            : (C) 2007 by Peter Drysdale
     email                : peter@physics.usyd.edu.au
  ***************************************************************************/
 
-#ifndef STIMULUS_H
-#define STIMULUS_H
+#ifndef CONC_H
+#define CONC_H
 
 #include<fstream>
 using std::ofstream;
@@ -17,24 +17,30 @@ using std::endl;
 #include"istrm.h"
 #include"random.h"
 
-class Stimulus {
+class Concentration {
 public: 
-  Stimulus();
-  ~Stimulus();
-  void init(Istrm& inputf);
+  Concentration();
+  ~Concentration();
+  float init(Istrm& inputf);
   void dump(ofstream& dumpf);
-  void restart(Istrm& restartf);
-  void getQstim(double timestep, double *Q, const long nodes);
+  float restart(Istrm& restartf);
+  void get(double timestep, double *Q, const long nodes);
 private:
   double t; // Current time
   int mode; // Number representing mode of stimulus
   double ts; // Time before stimulus onset
+  double tpeak; // Time to stimulus peak
   double amp; // Amplitude of stimulus
   double freq; // Frequency of sine stimulus
   double pdur; // Pulse duration of stimulus
   double tperiod; // Period of between pulse repetitions
-  double mean; // Mean firing rate of stimulus
-  Random random; // Random number generator object
+  double mean; //Mean firing rate of stimulus
+ double deltax; //Grid spacing for stimulus
+  double xcent; //x coordinate of Gaussian centre
+  double ycent; //y coordinate of Gaussian centre
+  double xspread; //Spread of Gaussian in x direction
+ double yspread; //Spread of Gaussian in y direction
+  Random random; //Random number generator object
 };
 
 #endif

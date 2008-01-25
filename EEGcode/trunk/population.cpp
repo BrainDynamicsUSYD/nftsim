@@ -11,7 +11,7 @@
 
 Population::Population(long totalnodes, int popindex, ConnectMat *pconnectmat)
              :nodes(totalnodes) {
-  Q = new float[totalnodes];
+  Q = new double[totalnodes];
   isstimulus=true;
   V = 0;
   pfr = 0;
@@ -19,7 +19,7 @@ Population::Population(long totalnodes, int popindex, ConnectMat *pconnectmat)
   pstimulus = 0;
   if (pconnectmat->getDRlength(popindex)) { // If populations are attached to this dendritic tree this is not a stimulus population
     isstimulus=false;
-    V = new float[totalnodes];
+    V = new double[totalnodes];
     pfr = new FiringR();
     pdr = new DendriticRlist(totalnodes,popindex,pconnectmat);
   } else {
@@ -43,7 +43,7 @@ Population::~Population(){
 //
 void Population::init(Istrm& inputf, PropagNet *ppropagnet, ConnectMat *pconnectmat){
   inputf.ignore(200,32); //throwaway line naming population
-  float Qinitial;
+  double Qinitial;
   inputf.validate("Initial Q",58);
   inputf >> Qinitial;
   for(long i=0; i<nodes; i++)
@@ -93,7 +93,7 @@ void Population::restart(Istrm& restartf, PropagNet *ppropagnet, ConnectMat *pco
 //
 // Step forward population one timestep method
 //
-void Population::stepPop(float timestep){
+void Population::stepPop(double timestep){
   if (isstimulus) {
     pstimulus->getQstim(timestep, Q, nodes);
   } else {

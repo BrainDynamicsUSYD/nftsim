@@ -61,7 +61,7 @@ void Poplist::restart(Istrm& restartf, PropagNet *ppropagnet, ConnectMat *pconne
 //
 // Step forward in time each of the neural populations method
 //
-void Poplist::stepPops(float timestep){
+void Poplist::stepPops(double timestep){
   for(int i=0; i<numpops; i++)
     get(i)->stepPop(timestep);
 }

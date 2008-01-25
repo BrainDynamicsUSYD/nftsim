@@ -7,12 +7,14 @@
 
 #include "coupling.h"
 
-Coupling::Coupling():nuobj("Nu"){
+Coupling::Coupling(long numnodes, double deltat)
+  :nodes(numnodes),nuobj("Nu"){
 }
+
 Coupling::~Coupling(){
 }
 
-void Coupling::init(Istrm& inputf){
+void Coupling::init(Istrm& inputf, int coupleid){
   nuobj.init(inputf);
 }
 
@@ -20,15 +22,18 @@ void Coupling::dump(ofstream& dumpf){
   nuobj.dump(dumpf);
 }
 
-void Coupling::restart(Istrm& restartf){
+void Coupling::restart(Istrm& restartf, int coupleid){
   nuobj.restart(restartf);
 }
 
 //
 // Sum the coupling terms
 //
-void Coupling::updatePa(float *Pa, float *Etaa, long nodes){
+void Coupling::updatePa(double *Pa, double *Etaa){
   nu=nuobj.get();
   for(int i=0; i<nodes; i++)
     *Pa++=nu*(*Etaa++);
+}
+
+void Coupling::output(){
 }

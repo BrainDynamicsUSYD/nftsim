@@ -11,22 +11,22 @@
 //
 // Constructor for Propagnet
 //
-PropagNet::PropagNet(float deltat, long totalnodes, int numpops, int numconct, Istrm& inputf, ofstream& dumpf)
+PropagNet::PropagNet(double deltat, long totalnodes, int numpops, int numconct, Istrm& inputf, ofstream& dumpf)
                       :numconnects(numconct),nodes(totalnodes){
   gridsize=static_cast<long>((sqrt(nodes)+2)*(sqrt(nodes)+2));
-  if (sqrt( static_cast<float>(nodes)) != floor(sqrt( static_cast<float>(nodes)))){
+  if (sqrt( static_cast<double>(nodes)) != floor(sqrt( static_cast<double>(nodes)))){
     cerr << "Wave equation solver assumes square grid. Nodes per population must be a perfect square number" << endl;
     exit(EXIT_FAILURE);
   }
-  P = new float *[numconnects];
+  P = new double *[numconnects];
   for(int i=0;i<numconnects;i++)
-    P[i]= new float[nodes]; 
-  Eta = new float *[numconnects];
+    P[i]= new double[nodes]; 
+  Eta = new double *[numconnects];
   for(int i=0;i<numconnects;i++)
-    Eta[i]= new float[nodes]; 
+    Eta[i]= new double[nodes]; 
   pqhistorylist = new Qhistorylist(inputf,dumpf,numpops,gridsize);
   pproplist = new Proplist(inputf,dumpf,numconct,gridsize,deltat);
-  pcouplinglist = new Couplinglist(numconct);
+  pcouplinglist = new Couplinglist(inputf,dumpf,numconct,nodes,deltat);
 }
 
 //
@@ -77,13 +77,18 @@ void PropagNet::restart(Istrm& restartf, Poplist *ppoplist){
 void PropagNet::stepQtoP(Poplist * ppoplist, ConnectMat * pconnectmat){
   pqhistorylist->updateQhistories(ppoplist); // Get new Q histories and add them to the keyrings
   pproplist->step(Eta, pqhistorylist, pconnectmat); // Transform Q to Eta via stepping forward multiple wave equations
-  pcouplinglist->updateP(P, Eta, nodes); // Weight signal strengths for links between neural populations
+  pcouplinglist->updateP(P, Eta); // Weight signal strengths for links between neural populations
 }
 
-void PropagNet::initoutput(Istrm& inputf, ofstream& outputf){
-  pphiout = new Phiout(inputf, outputf);
+void PropagNet::initoutput(Istrm& inputf, ofstream& outputf, int numconct, long totalnodes){
+  pphiout = new Phiout(inputf, outputf, numconct, totalnodes);
+}
+
+void PropagNet::dumpoutput(ofstream& dumpf){
+  pphiout->dump(dumpf);
 }
 
 void PropagNet::output(ofstream& outputf){
   pphiout->output(outputf, Eta);
+  pcouplinglist->output();
 }

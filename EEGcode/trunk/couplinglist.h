@@ -1,7 +1,7 @@
 /***************************************************************************
                           couplinglist.h  -  description
                              -------------------
-    copyright            : (C) 2005 by Peter Drysdale
+    copyright            : (C) 2007 by Peter Drysdale
     email                : peter@physics.usyd.edu.au
  ***************************************************************************/
 
@@ -15,23 +15,21 @@ using std::cerr;
 using std::endl;
 
 #include"istrm.h"
-class Coupling; // forward reference Coupling as only using pointer here. Header is included in .cpp
+class Couple; // forward reference Couple as only using pointer here. Header is included in .cpp
 
 class Couplinglist {
 public: 
-  Couplinglist(int numconnects);
+  Couplinglist(Istrm& inputf, ofstream& dump, int numconnects, long nodes, double deltat);
   ~Couplinglist();
   void init(Istrm& inputf); // initialize each coupling object in list
   void dump(ofstream& dumpf); // dump each coupling coefficient for restart
   void restart(Istrm& restartf); // restart each coupling object in list
-  void updateP(float **P, float **Eta, long nodes); // Transform Eta to P via coupling terms
-                                                    // NOTE: CRUCIAL that coupling maps between larger
-						    // periodic boundary conditions "gridsize" and
-						    // smaller "nodes" grid
+  void updateP(double **P, double **Eta); // Transform Eta to P via coupling terms
+  void output(); // Output the nu data
 
 private:
-  Coupling ** couparray; // Array of pointers to coupling objects
-  Coupling * getcoup(int index); // method to obtain pointer to "index" coupling object array 
+  Couple ** couparray; // Array of pointers to coupling objects
+  Couple * getcoup(int index); // method to obtain pointer to "index" coupling object array 
   const int numcoup; // Number of coupling objects in coupling list
 };
 

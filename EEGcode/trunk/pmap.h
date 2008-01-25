@@ -21,16 +21,16 @@ using std::endl;
 
 class Pmap: public Propag {
 public: 
-  Pmap(long gridsize, float deltat);
+  Pmap(long gridsize, double deltat);
   ~Pmap();
   void init(Istrm& inputf);
   void dump(ofstream& dumpf);
   void restart(Istrm& restartf);
-  void stepwaveeq(float *Phi, Qhistory* qhistory);
+  void stepwaveeq(double *Phi, Qhistory* qhistory);
 private:
   const long gridsize;
   int tauab;
-  const float deltat; // Grid spacing in time
+  const double deltat; // Grid spacing in time
   long icentre;
   long iphi;
   long rowlength;

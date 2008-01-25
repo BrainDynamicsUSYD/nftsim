@@ -25,10 +25,10 @@ public:
   void dump(ofstream& dumpf); // dump history data for restart
   void restart(Istrm& restartf, Poplist *ppoplist);
   void updateQhistory(Poplist *ppoplist); // Update Qhistory by reading in Q from populations and moving pointers
-  float * getQbytime(int index){return qhistory[timeindex[index]];}; // Get a pointer to the Q array with time index "index"
+  double * getQbytime(int index){return qhistory[timeindex[index]];}; // Get a pointer to the Q array with time index "index"
                              // In this case indexx="0" Q for current time, index="1" Q one time step in the past etc.
 private:
-  float **qhistory; // Array of pointers to float arrays of qhistories
+  double **qhistory; // Array of pointers to double arrays of qhistories
   void copyQfrompop(Poplist *ppoplist); // Copies Q array from the version stored in the population
   int * timeindex; // Array of indexes with current time array positions
   const int indexofQ; // [0:numhistories) this is an identifier matching the qhistory with its corresponding population

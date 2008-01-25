@@ -7,15 +7,33 @@
 
 #include"couplinglist.h"
 #include"coupling.h"
+#include"modcouple.h"
 
 //
 // Constructor for Couplinglist creates an array of coupling objects
 //
 
-Couplinglist::Couplinglist(int numconnects):numcoup(numconnects){
-  couparray = new Coupling *[numcoup];
+Couplinglist::Couplinglist(Istrm& inputf, ofstream& dumpf
+  ,int numconnects, long nodes, double deltat):numcoup(numconnects){
+  couparray = new Couple *[numcoup];
+  inputf.validate("Coupling type",115);// search for "propagator types NB:- the s is ASCII 115
+  dumpf << "Coupling types ";
+  int optionnum;
   for(int i=0;i<numcoup;i++){
-    couparray[i] = new Coupling();
+    inputf.ignore(200,58);
+    optionnum=inputf.choose("Simple:1 Modulate:2 ",32);
+    if(1==optionnum){
+      couparray[i] = new Coupling(nodes,deltat);
+      dumpf << (i+1) << ": Simple ";
+    }
+    if(2==optionnum){
+      couparray[i] = new Modcouple(nodes,deltat);
+      dumpf << (i+1) << ": Modulate ";
+    }
+    if(1!=optionnum && 2!=optionnum){
+      cerr << "Invalid Coupling type" << endl;
+      exit(EXIT_FAILURE);
+    }
   }
 }
 
@@ -33,13 +51,13 @@ Couplinglist::~Couplinglist(){
 // getcoup method returns a pointer to the "index"th coupling object in the list
 //
 
-Coupling * Couplinglist::getcoup(int index){
+Couple * Couplinglist::getcoup(int index){
   return couparray[index];
 }
 
 void Couplinglist::init(Istrm& inputf){
   for(int i=0; i<numcoup; i++)
-    getcoup(i)->init(inputf);
+    getcoup(i)->init(inputf,i);
 }
 
 void Couplinglist::dump(ofstream& dumpf){
@@ -52,7 +70,7 @@ void Couplinglist::dump(ofstream& dumpf){
 
 void Couplinglist::restart(Istrm& restartf){
   for(int i=0; i<numcoup; i++){
-    getcoup(i)->restart(restartf);
+    getcoup(i)->restart(restartf,i);
     restartf.ignore(200,32); // throwaway endl of each coupling data 
   }
 }
@@ -60,9 +78,14 @@ void Couplinglist::restart(Istrm& restartf){
 //
 // updateP method updates P via each coupling object 
 
-void Couplinglist::updateP(float **P, float **Eta, long nodes){
+void Couplinglist::updateP(double **P, double **Eta){
   for(int i=0;i<numcoup;i++){
-    getcoup(i)->updatePa(P[i],Eta[i],nodes);
+    getcoup(i)->updatePa(P[i],Eta[i]);
     }
 }
 
+void Couplinglist::output(){
+  for(int i=0;i<numcoup;i++){
+    getcoup(i)->output();
+    }
+}

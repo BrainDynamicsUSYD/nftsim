@@ -5,6 +5,7 @@
     email                : peter@physics.usyd.edu.au
  ***************************************************************************/
 
+#include<cstdlib>
 #include"connectmat.h"
 
 ConnectMat::ConnectMat(int numpops,int numconct):numconnect(numconct),nump(numpops){
@@ -29,8 +30,20 @@ void ConnectMat::init(Istrm& inputf){
   for(int i=0;i<(nump*nump);i++){
     inputf.ignore(200,58); // throwaway everything upto colon character
     int readval;
-    inputf >> readval; // read in a connection number 0 or 1
+    inputf >> readval; // read in a connection number 0 or connection number
     rawcntmat[i]=readval;
+  }
+  // 
+  // To simplify parsing of the raw matrix, the matrix is transposed before parsing
+  // The matrix will be returned to correct form at the end of the parsing
+  //
+  int swap;
+  for(int i=0;i<nump;i++){
+    for(int j=(i+1);j<nump;j++){
+    swap=rawcntmat[i*nump+j];
+    rawcntmat[i*nump+j]=rawcntmat[j*nump+i];
+    rawcntmat[j*nump+i]=swap;
+    }
   }
   //
   // This part takes the raw connection matrix and generates a qphiconnect index table
@@ -84,6 +97,16 @@ void ConnectMat::init(Istrm& inputf){
        counter++;
     }
   drlength[i]=counter;
+  }
+  //
+  // Return the raw connection matrix back to its correct form now that parsing is finished
+  //
+  for(int i=0;i<nump;i++){
+    for(int j=(i+1);j<nump;j++){
+    swap=rawcntmat[i*nump+j];
+    rawcntmat[i*nump+j]=rawcntmat[j*nump+i];
+    rawcntmat[j*nump+i]=swap;
+    }
   }
 }
 

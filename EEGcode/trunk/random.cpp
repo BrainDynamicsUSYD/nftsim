@@ -9,6 +9,7 @@
 #include <math.h>
 
 Random::Random():EPS(1.2e-7),RNMX(1.0-EPS),AM(1.0/IM){
+  idum=-98716872;
   int j;
   long k;
   iv = new long[NTAB];
@@ -28,10 +29,10 @@ Random::~Random(){
   delete [ ] iv;
 }
  
-float Random::ran(){
+double Random::ran(){
   int j;
   long k;
-  float retval;
+  double retval;
 
   k=idum/IQ;
   idum=IA*(idum-k*IQ)-IR*k;
@@ -39,7 +40,7 @@ float Random::ran(){
   j=iy/NDIV;
   iy=iv[j];
   iv[j]=idum;
-  if ((retval=static_cast<float>(AM*iy)) > RNMX) return RNMX;
+  if ((retval=static_cast<double>(AM*iy)) > RNMX) return RNMX;
   else return retval;
 }
 
@@ -47,7 +48,7 @@ float Random::ran(){
 // Returns two gaussian random deviates
 //  following a algorithm suggested by Knuth
 //
-void Random::gaussian(float& deviate1, float& deviate2){
+void Random::gaussian(double& deviate1, double& deviate2){
   double x, y, norm, factor;
   do {
     x=2*ran() - 1; // throw two uniform deviates in square circumscribing unit circle
@@ -55,6 +56,6 @@ void Random::gaussian(float& deviate1, float& deviate2){
     norm = x*x+y*y; 
   } while (norm > 1.0 || norm == 0);  // test whether in unit circle
   factor=sqrt(-2.0*log(norm)/norm);
-  deviate1=static_cast<float>(x*factor);
-  deviate2=static_cast<float>(y*factor);
+  deviate1=static_cast<double>(x*factor);
+  deviate2=static_cast<double>(y*factor);
 }

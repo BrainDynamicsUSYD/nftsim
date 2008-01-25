@@ -8,15 +8,15 @@
 #include "waveeqn.h"
 #include<math.h>
 
-WaveEqn::WaveEqn(long gsize, float dt):gammaobj("gamma"),
+WaveEqn::WaveEqn(long gsize, double dt):gammaobj("gamma"),
            effrangeobj("Effective range"),gridsize(gsize), 
 	   deltat(dt){
   rowlength=static_cast<long>(sqrt(gridsize));
   sidelength=rowlength-2;
   startfirstrow=rowlength+1;
   startlastrow=rowlength*sidelength+1;
-  Phi_1 = new float[gridsize];
-  Phi_2 = new float[gridsize];
+  Phi_1 = new double[gridsize];
+  Phi_2 = new double[gridsize];
 }
 
 
@@ -27,7 +27,7 @@ WaveEqn::~WaveEqn(){
 
 void WaveEqn::init(Istrm& inputf){
   inputf.validate("Initial Phi",58);
-  float Phi_initial;
+  double Phi_initial;
   inputf >> Phi_initial;
   for(long i=0; i<gridsize; i++){
     Phi_1[i]=Phi_initial;
@@ -81,20 +81,26 @@ void WaveEqn::restart(Istrm& restartf){
   for(long i=0; i<gridsize; i++)
     restartf >> Phi_2[i];
   restartf.ignore(200,32); // throw away endl
+  deltat2divided12=(deltat*deltat)/12.0F; //factor in wave equation
+  deltatdivideddeltaxallsquared=(deltat*deltat)/(deltax*deltax);
 }
 
-void WaveEqn::stepwaveeq(float *Phi, Qhistory *pqhistory){
-  float sumphi;
-  float sumq;
-  float drive;
-  float* Q= pqhistory->getQbytime(tauab);
-  float* Q_1= pqhistory->getQbytime(tauab+1);
-  float* Q_2= pqhistory->getQbytime(tauab+2);
+void WaveEqn::stepwaveeq(double *Phi, Qhistory *pqhistory){
+  double sumphi;
+  double sumphidiag;
+  double sumq;
+  double sumqdiag;
+  double drive;
+  double* Q= pqhistory->getQbytime(tauab);
+  double* Q_1= pqhistory->getQbytime(tauab+1);
+  double* Q_2= pqhistory->getQbytime(tauab+2);
   gamma=gammaobj.get(); //Update the gamma value
   effrange=effrangeobj.get(); //Update the effective range value
   p2=deltatdivideddeltaxallsquared*(effrange*effrange*gamma*gamma)  ; // Square of mesh ratio, dimensionless
-  twominusfourp2=2.0F-4.0F*p2; // factor in wave algorithm
-  tenminusfourp2=10.0F-4*p2; //factor in wave algorithm
+//  twominusfourp2=2.0F-4.0F*p2; // factor in wave algorithm
+  twominusthreep2=2.0F-3.0F*p2; // factor in wave algorithm
+//  tenminusfourp2=10.0F-4*p2; //factor in wave algorithm
+  tenminusthreep2=10.0F-3.0F*p2; //factor in wave algorithm
   dfact=deltat2divided12*gamma*gamma; // Factor of deltat^2 /gamma^2 / 12
   expfact1=exp(-1.0F*deltat*gamma);
   expfact2=exp(-2.0F*deltat*gamma);
@@ -104,20 +110,29 @@ void WaveEqn::stepwaveeq(float *Phi, Qhistory *pqhistory){
   ibottom=startfirstrow+rowlength;
   ileft=startfirstrow-1;
   iright=startfirstrow+1;
+  itopleft=itop-1;
+  itopright=itop+1;
+  ibottomleft=ibottom-1;
+  ibottomright=ibottom+1;
   iphi=0;
   // loop over nodes
   for(long i=0; i<sidelength; i++){
     for(long j=0; j<sidelength; j++){
       sumphi=Phi_1[itop]+Phi_1[ibottom]+Phi_1[ileft]+Phi_1[iright];
-      sumq=Q_1[icentre]+Q_1[ibottom]+Q_1[ileft]+Q_1[iright];
-      drive=dfact*(tenminusfourp2*expfact1*Q_1[icentre]+Q[icentre]+expfact2*Q_2[icentre]+ p2*expfact1*sumq);
-      Phi[iphi]=twominusfourp2*expfact1*Phi_1[icentre]+p2*expfact1*sumphi-expfact2*Phi_2[icentre];
+      sumphidiag=Phi_1[itopleft]+Phi_1[itopright]+Phi_1[ibottomleft]+Phi_1[ibottomright];
+      sumq=Q_1[itop]+Q_1[ibottom]+Q_1[ileft]+Q_1[iright];
+      sumqdiag=Q_1[itopleft]+Q_1[itopright]+Q_1[ibottomleft]+Q_1[ibottomright];
+      drive=dfact*(tenminusthreep2*expfact1*Q_1[icentre]+Q[icentre]+expfact2*Q_2[icentre]
+                 +expfact1*(0.5)*p2*(sumq+0.5*sumqdiag));
+      Phi[iphi]=twominusthreep2*expfact1*Phi_1[icentre]
+                 +expfact1*(0.5)*p2*(sumphi+0.5*sumphidiag)-expfact2*Phi_2[icentre];
       Phi[iphi]+=drive;
       icentre++,itop++,ibottom++,ileft++,iright++; // increment position indexes
       iphi++; // increment phi position index
     }
     icentre+=2,itop+=2,ibottom+=2,ileft+=2,iright+=2; // reposition indexes to start of next row, they were already incremented
         					      // one space within inner loop
+    itopleft+=2,itopright+=2,ibottomleft+=2,ibottomright+=2; // as above
   }
   //
   // Copy Phi_1[i] back to Phi_2[i]
@@ -127,11 +142,11 @@ void WaveEqn::stepwaveeq(float *Phi, Qhistory *pqhistory){
   //
   // Copy Phi[i] to Phi_1[i] taking into account array size differences
   //
-  float * pPhi=Phi; // Get pointer to start of Phi array
-  float * pPhi_1=Phi_1; // Get pointer to start of Phi_1 array
+  double * pPhi=Phi; // Get pointer to start of Phi array
+  double * pPhi_1=Phi_1; // Get pointer to start of Phi_1 array
 // Next part copies middle of Phi values grid across
-  float * pp1=pPhi_1+startfirstrow;
-  float * pp=pPhi;
+  double * pp1=pPhi_1+startfirstrow;
+  double * pp=pPhi;
   for(long i=0; i<sidelength;i++){
     for(long j=0; j<sidelength;j++){
       *pp1++=*pp++;
@@ -164,4 +179,9 @@ void WaveEqn::stepwaveeq(float *Phi, Qhistory *pqhistory){
     pp1+=rowlength;
     pp+=sidelength;
   }
+// Next part copies four corners
+  *pPhi_1=*(pPhi_1+sidelength); // top left corner
+  *(pPhi_1+sidelength+1)=*(pPhi_1+1); // top right corner
+  *(pPhi_1+gridsize-1)=*(pPhi_1+rowlength+1); //bottom right corner
+  *(pPhi_1+gridsize-rowlength)=*(pPhi_1+gridsize-2); //bottom left corner
 }

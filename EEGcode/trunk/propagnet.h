@@ -24,16 +24,17 @@ class Poplist; // Forward declaration of Poplist since we only use pointer to it
 
 class PropagNet {
 public: 
-   PropagNet(float deltat, long totalnodes, int numpops, int numconct, Istrm& inputf, ofstream& dumpf);
+   PropagNet(double deltat, long totalnodes, int numpops, int numconct, Istrm& inputf, ofstream& dumpf);
    ~PropagNet();
    void init(Istrm& inputf, Poplist *ppoplist);
    void dump(ofstream& dumpf);
    void restart(Istrm& restartf, Poplist *ppoplist);
    void stepQtoP(Poplist *ppoplist, ConnectMat *pconnectmat); // Propagate the firing response of each population to pulse densities arriving at the dendrite trees of other populations
-   void initoutput(Istrm& inputf, ofstream& outputf);
+   void dumpoutput(ofstream& dumpf);
+   void initoutput(Istrm& inputf, ofstream& outputf, int numconct, long totalnodes);
    void output(ofstream& outputf);
-   float **P; // Array storing pointers to the Pab arrays. There are numconct of them
-   float **Eta; // Array storing pointers to the Etaab arrays
+   double **P; // Array storing pointers to the Pab arrays. There are numconct of them
+   double **Eta; // Array storing pointers to the Etaab arrays
    int numconnects; //Number of Connections between neural populations
    
 private:

@@ -13,10 +13,10 @@
 
 Qhistory::Qhistory(int qdepth, long gsize, int indexQ)
 	       :indexofQ(indexQ),depthq(qdepth),gridsize(gsize){
-  qhistory = new float*[qdepth+3];
-  float *q;
+  qhistory = new double*[qdepth+3];
+  double *q;
   for(int i=0;i<qdepth+3;i++){
-    qhistory[i] = new float[gridsize];
+    qhistory[i] = new double[gridsize];
     // Initialize q arrays to zero
     q = qhistory[i];
     for(long j=0;j<gridsize;j++)
@@ -46,8 +46,8 @@ void Qhistory::init(Istrm& inputf, Poplist *ppoplist){
 // Set Q back in time to initial conditions
 //
   for(int i=0;i<depthq+2;i++){
-    float *qnew = qhistory[i];
-    float *q = qhistory[depthq+2];
+    double *qnew = qhistory[i];
+    double *q = qhistory[depthq+2];
     for(long j=0;j<gridsize;j++)
       *qnew++=*q++;
   }
@@ -55,7 +55,7 @@ void Qhistory::init(Istrm& inputf, Poplist *ppoplist){
 
 void Qhistory::dump(ofstream& dumpf){
   for(int i=0;i<depthq+3;i++){
-    float *q=qhistory[i];
+    double *q=qhistory[i];
     dumpf << "Qhistory index " << i << " :";
     for(long j=0;j<gridsize;j++)
       dumpf << *q++ <<" ";
@@ -70,8 +70,8 @@ void Qhistory::dump(ofstream& dumpf){
 
 void Qhistory::restart(Istrm& restartf, Poplist *ppoplist){
   for(int i=0;i<depthq+3;i++){
-    float *q=qhistory[i];
-    float qtemp;
+    double *q=qhistory[i];
+    double qtemp;
     restartf.ignore(200,58); // throw away Qhistorydepth xx :
     for(long j=0;j<gridsize;j++){
       restartf >> qtemp;
@@ -106,11 +106,11 @@ void Qhistory::updateQhistory(Poplist *ppoplist){
 void Qhistory::copyQfrompop(Poplist *ppoplist){
 // First, copy the Q array incoming from Q in each population to Q array in Qhistory which is larger sized array due
 // to periodic boundary conditions
-  float * pnewq=getQbytime(depthq+2); // Get pointer to start of the oldest Q array which is going to be overwritten
-  float * pQpop=ppoplist->get(indexofQ)->Q; // Get pointer to incoming Q data originating from Q in each population
+  double * pnewq=getQbytime(depthq+2); // Get pointer to start of the oldest Q array which is going to be overwritten
+  double * pQpop=ppoplist->get(indexofQ)->Q; // Get pointer to incoming Q data originating from Q in each population
 // Next part copies middle of Q values grid across
-  float * pq1=pnewq+startfirstrow;
-  float * pq=pQpop;
+  double * pq1=pnewq+startfirstrow;
+  double * pq=pQpop;
   for(long i=0; i<sidelength;i++){
     for(long j=0; j<sidelength;j++){
       *pq1++=*pq++;
@@ -143,4 +143,10 @@ void Qhistory::copyQfrompop(Poplist *ppoplist){
      pq1+=rowlength;
      pq+=sidelength;
   }
+  // Next part copies four corners
+  *pnewq=*(pnewq+sidelength); // top left corner
+  *(pnewq+sidelength+1)=*(pnewq+1); // top right corner
+  *(pnewq+gridsize-1)=*(pnewq+rowlength+1); //bottom right corner
+  *(pnewq+gridsize-rowlength)=*(pnewq+gridsize-2); //bottom left corner
+
 }

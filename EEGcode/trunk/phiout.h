@@ -20,9 +20,10 @@ using std::setprecision;
 
 class Phiout {
 public:
-  Phiout(Istrm& inputf, ofstream& outputf);
+  Phiout(Istrm& inputf, ofstream& outputf, int numconct, long totalnodes);
   ~Phiout();
-  void output(ofstream& outputf, float **Eta);
+  void output(ofstream& outputf, double **Eta);
+  void dump(ofstream& dumpf);
 private:
   long numtraces; // Number of traces to be outputted
   int * idoftrace; // Array containing wave equation id numbers of requested traces

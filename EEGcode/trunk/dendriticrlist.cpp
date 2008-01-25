@@ -21,15 +21,15 @@ DendriticRlist::DendriticRlist(long nodes, int popid, ConnectMat *pconnectmat)
   numaff=pconnectmat->getDRlength(popindex);
   drarray = new DendriticR *[numaff];
   for(int i=0;i<numaff;i++){
-    drarray[i] = new DendriticR();
+    drarray[i] = new DendriticR(nodes);
   }
-  Va = new float *[numaff];
-  dVdt = new float *[numaff];
+  Va = new double *[numaff];
+  dVdt = new double *[numaff];
   for(int i=0;i<numaff;i++){
-    Va[i] = new float[nodes];
-    dVdt[i] = new float[nodes];
+    Va[i] = new double[nodes];
+    dVdt[i] = new double[nodes];
   }
-  localP = new float*[numaff];
+  localP = new double*[numaff];
 }
 
 //
@@ -76,12 +76,12 @@ void DendriticRlist::init(Istrm& inputf, PropagNet *ppropagnet, ConnectMat *pcon
     cerr << expectaff << " " << numaff << endl;
     exit(EXIT_FAILURE);
   }
-  float Vinit;
+  double Vinit;
   for(int i=0;i<numaff; i++){
     getdendr(i)->init(inputf,Vinit); // Important init returns inital values for V, dVdt
-    float *p=Va[i];
-    float *p1=dVdt[i];
-    for(int j=0;j<numnodes;j++){ // Initialize Va and dVdt arrays with initial values
+    double *p=Va[i];
+    double *p1=dVdt[i];
+    for(long j=0;j<numnodes;j++){ // Initialize Va and dVdt arrays with initial values
       *p++=Vinit;
       *p1++=0.0F;
     }
@@ -92,6 +92,14 @@ void DendriticRlist::dump(ofstream& dumpf){
   dumpf << "Number of Dendritic responses: " << numaff <<endl;
   for(int i=0; i<numaff; i++)
     getdendr(i)->dump(dumpf);
+  dumpf << "Va, dVdt data:";
+  for(int i=0;i<numaff; i++){
+    double *p=Va[i];
+    double *p1=dVdt[i];
+    for(long j=0; j<numnodes; j++){
+      dumpf << p[j] << " " << p1[j] << " ";
+    }
+  }
 }
 
 void DendriticRlist::restart(Istrm& restartf, PropagNet *ppropagnet, ConnectMat *pconnectmat){
@@ -114,6 +122,20 @@ void DendriticRlist::restart(Istrm& restartf, PropagNet *ppropagnet, ConnectMat 
      counter++;
     }
   }
+  restartf.validate("Va, dVdt data",58);
+  double tempV;
+  double tempdVdt;
+  for(int i=0;i<numaff; i++){
+    double *p=Va[i];
+    double *p1=dVdt[i];
+    for(long j=0; j<numnodes; j++){
+      restartf >> tempV;
+      restartf >> tempdVdt;
+      p[j]=tempV;
+      p1[j]=tempdVdt;
+    }
+  }
+  
 }
 
 //
@@ -125,10 +147,9 @@ void DendriticRlist::restart(Istrm& restartf, PropagNet *ppropagnet, ConnectMat 
 // the Pab which connect to this populations dendritic tree each time stepVa is called
 //
 
-void DendriticRlist::stepVa(float timestep){
- #pragma OMP parallel for
+void DendriticRlist::stepVa(double timestep){
   for(int i=0;i<numaff;i++){
-    getdendr(i)->stepVab(localP[i], Va[i], dVdt[i], numnodes, timestep);
+    getdendr(i)->stepVab(localP[i], Va[i], dVdt[i],timestep);
     }
 }
 
@@ -137,9 +158,9 @@ void DendriticRlist::stepVa(float timestep){
 // Physically this is summing the afferent subpotentials in the dendritites
 // to obtain the soma potential
 //
-void DendriticRlist::SumAfferent(float *V){
-  float *Voffset;
-  float *Vaoffset;
+void DendriticRlist::SumAfferent(double *V){
+  double *Voffset;
+  double *Vaoffset;
   Voffset=V;
   Vaoffset=Va[0];
   for(long i=0;i<numnodes;i++)

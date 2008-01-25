@@ -16,20 +16,23 @@ using std::endl;
 
 #include"istrm.h"
 #include"parameter.h"
+#include"couple.h"
 
-class Coupling {
+class Coupling: public Couple {
 public: 
-  Coupling();
+  Coupling(long nodes, double deltat);
   ~Coupling();
-  void init(Istrm& inputf); // initialize the nu variable
+  void init(Istrm& inputf, int coupleid); // initialize the nu variable
   void dump(ofstream& dumpf); // dump nu for restart
-  void restart(Istrm& restartf); // restart the nu variable
+  void restart(Istrm& restartf, int coupleid); // restart the nu variable
   void restart();
-  void updatePa(float *Pa, float *Etaa, long nodes);
+  void updatePa(double *Pa, double *Etaa);
+  void output(); // dummy output routine - no output is generated
 
 private:
+  long nodes;
   Parameter nuobj;
-  float nu;
+  double nu;
 };
 
 #endif

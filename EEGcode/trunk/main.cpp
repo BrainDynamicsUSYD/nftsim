@@ -15,6 +15,8 @@ using std::ios;
 #include <iostream>
 using std::cerr;
 using std::endl;
+#include<iomanip>
+using std::setprecision;
 
 #include"istrm.h"
 #include"connectmat.h"
@@ -34,6 +36,7 @@ int main(int argc, char* argv[])
     cerr << "Unable to open 'eegcode.dump' for output \n";
     exit(EXIT_FAILURE);
   }
+  dumpf << setprecision(14);
 //
 // Read in the global simulation parameters
 //
@@ -66,10 +69,10 @@ int main(int argc, char* argv[])
   inputf.validate("integration steps",58); 
   inputf >> nsteps;
   dumpf << "Number of integration steps:" << nsteps << " ";
-  float deltat;
+  double deltat;
   inputf.validate("Deltat",58);
   inputf >> deltat;
-  dumpf << "Deltat :" << deltat << " ";
+  dumpf << "Deltat:" << deltat << " ";
   inputf.ignore(200,32); //throwaway space line before start of populations
   Poplist poplist(totalnodes,numpops, &connectmat);
   PropagNet propagnet(deltat,totalnodes,numpops,numconct,inputf,dumpf);
@@ -99,9 +102,9 @@ int main(int argc, char* argv[])
     cerr << "Unable to open 'eegcode.output' for output \n";
     exit(EXIT_FAILURE);
   }
-  outputf << "Deltat :" << deltat << endl;
-  outputf << "Number of integration steps :" << nsteps << endl;
-  propagnet.initoutput(inputf,outputf);
+  outputf << "Deltat:" << deltat << endl;
+  outputf << "Number of integration steps:" << nsteps << endl;
+  propagnet.initoutput(inputf,outputf,numconct,totalnodes);
 //
 //  Main integration Loop
 //
@@ -115,6 +118,7 @@ int main(int argc, char* argv[])
 //
   poplist.dump(dumpf);
   propagnet.dump(dumpf);
+  propagnet.dumpoutput(dumpf);
 
   return EXIT_SUCCESS;
 }
@@ -151,15 +155,18 @@ void writedefault(ofstream& defaultf){
   defaultf << "Number of neural connections: 11" << endl;
   defaultf << "" << endl;
   defaultf << "Population connection matrix  1   2   3   4   5" << endl;
-  defaultf << "1			     :1  :2  :3  :4  :0" << endl;
-  defaultf << "2			     :5  :6  :0  :0  :0" << endl;
-  defaultf << "3			     :0  :0  :0  :7  :0" << endl;
-  defaultf << "4			     :8  :9  :10 :0  :0" << endl;
-  defaultf << "5			     :0  :0  :0  :11 :0 " << endl;
+  defaultf << "1			     :1  :5  :0  :8  :0" << endl;
+  defaultf << "2			     :2  :6  :0  :9  :0" << endl;
+  defaultf << "3			     :3  :0  :0  :10 :0" << endl;
+  defaultf << "4			     :4  :0  :7  :0  :11" << endl;
+  defaultf << "5			     :0  :0  :0  :0  :0 " << endl;
   defaultf << "Number of integration steps: 100000 Deltat: 0.0001 " << endl;
   defaultf << "Q delay depths: 420 : 0 : 0 : 420 :0" << endl;
   defaultf << "Propagator types 1: Waveeqn 2: Waveeqn 3: Waveeqn 4: Waveeqn 5: Mapping $" << endl;
   defaultf << "6: Mapping 7: Mapping 8: Waveeqn 9: Waveeqn 10: Mapping 11: Mapping $" << endl;
+  defaultf << "" << endl;
+  defaultf << "Coupling types 1: Simple 2: Simple 3: Simple 4: Simple 5: Simple 6: Simple $" << endl;
+  defaultf << "7: Simple 8: Simple 9: Simple 10: Simple 11: Simple $" << endl;
   defaultf << "" << endl;
   defaultf << "Population 1 - Excitory neurons" << endl;
   defaultf << " Initial Q: 8.87145" << endl;
@@ -194,7 +201,7 @@ void writedefault(ofstream& defaultf){
   defaultf << "" << endl;
   defaultf << "Population 5 - Stimulus neurons" << endl;
   defaultf << "  Initial Q: 0.0" << endl;
-  defaultf << "  Stimulus mode: 4 Time to start of stimulus: 0.0002 Amplitude: 20" << endl;
+  defaultf << "  Stimulus mode: 4 Time to start of stimulus: 0.0002 Amplitude: 2 Mean: 5" << endl;
   defaultf << "Propagation data" << endl;
   defaultf << "Propagator 1  - Initial Phi: 8.87145 Deltax: 0.0035 Tauab: 0   Effective range: 0.08 gamma: 100.0" << endl;
   defaultf << "Propagator 2  - Initial Phi: 8.87145 Deltax: 0.0035 Tauab: 0   Effective range: 0.08 gamma: 100.0" << endl;
@@ -220,8 +227,8 @@ void writedefault(ofstream& defaultf){
   defaultf << "Coupling data 11 - Nu: 0.00015" << endl;
   defaultf << "" << endl;
   defaultf << "Output Data - Number of traces : 4 " << endl;
-  defaultf << "Wave Equation Number :0 node number :1" << endl;
-  defaultf << "Wave Equation Number :4 node number :1" << endl;
-  defaultf << "Wave Equation Number :6 node number :1" << endl;
-  defaultf << "Wave Equation Number :7 node number :1" << endl;
+  defaultf << "Propagator Number :1 Single/All: Single node number :1" << endl;
+  defaultf << "Propagator Number :5 Single/All: Single node number :1" << endl;
+  defaultf << "Propagator Number :7 Single/All: Single node number :1" << endl;
+  defaultf << "Propagator Number :8 Single/All: Single node number :1" << endl;
 }
