@@ -25,7 +25,7 @@ PropagNet::PropagNet(float deltat, long totalnodes, int numpops, int numconct, I
   for(int i=0;i<numconnects;i++)
     Eta[i]= new float[nodes]; 
   pqhistorylist = new Qhistorylist(inputf,dumpf,numpops,gridsize);
-  pproplist = new Proplist(numconct,gridsize,deltat);
+  pproplist = new Proplist(inputf,dumpf,numconct,gridsize,deltat);
   pcouplinglist = new Couplinglist(numconct);
 }
 

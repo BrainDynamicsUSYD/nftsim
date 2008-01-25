@@ -6,6 +6,7 @@
  ***************************************************************************/
 
 #include "random.h"
+#include <math.h>
 
 Random::Random():EPS(1.2e-7),RNMX(1.0-EPS),AM(1.0/IM){
   int j;
@@ -40,4 +41,20 @@ float Random::ran(){
   iv[j]=idum;
   if ((retval=static_cast<float>(AM*iy)) > RNMX) return RNMX;
   else return retval;
+}
+
+//
+// Returns two gaussian random deviates
+//  following a algorithm suggested by Knuth
+//
+void Random::gaussian(float& deviate1, float& deviate2){
+  double x, y, norm, factor;
+  do {
+    x=2*ran() - 1; // throw two uniform deviates in square circumscribing unit circle
+    y=2*ran() - 1;
+    norm = x*x+y*y; 
+  } while (norm > 1.0 || norm == 0);  // test whether in unit circle
+  factor=sqrt(-2.0*log(norm)/norm);
+  deviate1=static_cast<float>(x*factor);
+  deviate2=static_cast<float>(y*factor);
 }

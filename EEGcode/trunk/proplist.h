@@ -17,12 +17,13 @@ using std::endl;
 #include"istrm.h"
 #include"propag.h"
 #include"waveeqn.h"
+#include"pmap.h"
 #include"qhistorylist.h"
 #include"connectmat.h"
 
 class Proplist {
 public: 
-  Proplist(int numconnects, long gridsize, float deltat);
+  Proplist(Istrm& inputf, ofstream& dumpf, int numconnects, long gridsize, float deltat);
   ~Proplist();
   void init(Istrm& inputf);
   void dump(ofstream& dumpf);

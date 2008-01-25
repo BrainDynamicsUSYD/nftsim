@@ -41,9 +41,7 @@ void WaveEqn::init(Istrm& inputf){
   gammaobj.init(inputf);
   gamma=gammaobj.get(); //Update the gamma value
   effrange=effrangeobj.get(); //Update the effective range value
-  islocal=false;
-  if(5.0/gamma < deltat && 5.0*effrange < deltax) islocal=true; // set flag for localized approximation 
-  if( (!islocal) && (gamma/2.0 < deltat || effrange/2.0 < deltax)){
+  if(gamma/2.0 < deltat || effrange/2.0 < deltax){
     cerr << "Wave equation with gamma: " << gamma << " effrange: " << effrange << endl;
     cerr << "Is neither adequately captured by grid spacing chosen" << endl;
     cerr << "nor sufficiently localized so the potential can be approximated by Q" << endl;
@@ -108,30 +106,18 @@ void WaveEqn::stepwaveeq(float *Phi, Qhistory *pqhistory){
   iright=startfirstrow+1;
   iphi=0;
   // loop over nodes
-  if(islocal){
-    for(long i=0; i<sidelength; i++){
-      for(long j=0; j<sidelength; j++){
-	Phi[iphi]=Q[icentre];
-        icentre++,itop++,ibottom++,ileft++,iright++; // increment position indexes
-        iphi++; // increment phi position index
-      }
-      icentre+=2,itop+=2,ibottom+=2,ileft+=2,iright+=2; // reposition indexes to start of next row, they were already incremented
-                                                        // one space within inner loop
+  for(long i=0; i<sidelength; i++){
+    for(long j=0; j<sidelength; j++){
+      sumphi=Phi_1[itop]+Phi_1[ibottom]+Phi_1[ileft]+Phi_1[iright];
+      sumq=Q_1[icentre]+Q_1[ibottom]+Q_1[ileft]+Q_1[iright];
+      drive=dfact*(tenminusfourp2*expfact1*Q_1[icentre]+Q[icentre]+expfact2*Q_2[icentre]+ p2*expfact1*sumq);
+      Phi[iphi]=twominusfourp2*expfact1*Phi_1[icentre]+p2*expfact1*sumphi-expfact2*Phi_2[icentre];
+      Phi[iphi]+=drive;
+      icentre++,itop++,ibottom++,ileft++,iright++; // increment position indexes
+      iphi++; // increment phi position index
     }
-  } else {
-    for(long i=0; i<sidelength; i++){
-      for(long j=0; j<sidelength; j++){
-        sumphi=Phi_1[itop]+Phi_1[ibottom]+Phi_1[ileft]+Phi_1[iright];
-        sumq=Q_1[icentre]+Q_1[ibottom]+Q_1[ileft]+Q_1[iright];
-        drive=dfact*(tenminusfourp2*expfact1*Q_1[icentre]+Q[icentre]+expfact2*Q_2[icentre]+ p2*expfact1*sumq);
-        Phi[iphi]=twominusfourp2*expfact1*Phi_1[icentre]+p2*expfact1*sumphi-expfact2*Phi_2[icentre];
-        Phi[iphi]+=drive;
-        icentre++,itop++,ibottom++,ileft++,iright++; // increment position indexes
-        iphi++; // increment phi position index
-      }
-      icentre+=2,itop+=2,ibottom+=2,ileft+=2,iright+=2; // reposition indexes to start of next row, they were already incremented
-                                                        // one space within inner loop
-    }
+    icentre+=2,itop+=2,ibottom+=2,ileft+=2,iright+=2; // reposition indexes to start of next row, they were already incremented
+        					      // one space within inner loop
   }
   //
   // Copy Phi_1[i] back to Phi_2[i]

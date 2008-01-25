@@ -13,6 +13,7 @@ public:
   Random();
   ~Random();
   float ran();
+  void gaussian(float& deviate1, float& deviate2);
 private:
   long idum;
   enum {IA=16807}; // Use "enum hack" to obtain more portable static const int

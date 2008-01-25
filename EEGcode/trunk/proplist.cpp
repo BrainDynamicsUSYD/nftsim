@@ -11,10 +11,20 @@
 // Constructor creates an array of pointers to propagator objects
 //
 
-Proplist::Proplist(int numconnects, long gridsize, float deltat):numpropag(numconnects){
+Proplist::Proplist(Istrm& inputf, ofstream& dumpf, int numconnects,
+            long gridsize, float deltat):numpropag(numconnects){
   propagarray = new Propag *[numpropag];
+  inputf.validate("Propagator type",115);
+  int optionnum;
   for(int i=0;i<numpropag;i++){
-    propagarray[i] = new WaveEqn(gridsize, deltat);
+    inputf.ignore(200,58);
+    optionnum=inputf.choose("Waveeqn:1 Mapping:2",32);
+    if(1==optionnum) propagarray[i] = new WaveEqn(gridsize, deltat);
+    if(2==optionnum) propagarray[i] = new Pmap(gridsize, deltat);
+    if(1!=optionnum && 2!=optionnum){
+      cerr << "Invalid Propagator type" << endl;
+      exit(EXIT_FAILURE);
+    }
   }
 }
 

@@ -13,7 +13,6 @@ using std::ofstream;
 #include<iostream>
 using std::cerr;
 using std::endl;
-#include<math.h>
 
 #include"istrm.h"
 #include"random.h"
@@ -34,8 +33,7 @@ private:
   float freq; // Frequency of sine stimulus
   float pdur; // Pulse duration of stimulus
   float tperiod; // Period of between pulse repetitions
-  void gaussian(float& deviate1, float& deviate2);
-  Random random; // Uniform random number generator object
+  Random random; // Random number generator object
 };
 
 #endif

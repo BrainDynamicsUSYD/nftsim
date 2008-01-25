@@ -158,6 +158,8 @@ void writedefault(ofstream& defaultf){
   defaultf << "5			     :0  :0  :0  :11 :0 " << endl;
   defaultf << "Number of integration steps: 100000 Deltat: 0.0001 " << endl;
   defaultf << "Q delay depths: 420 : 0 : 0 : 420 :0" << endl;
+  defaultf << "Propagator types 1: Waveeqn 2: Waveeqn 3: Waveeqn 4: Waveeqn 5: Mapping $" << endl;
+  defaultf << "6: Mapping 7: Mapping 8: Waveeqn 9: Waveeqn 10: Mapping 11: Mapping $" << endl;
   defaultf << "" << endl;
   defaultf << "Population 1 - Excitory neurons" << endl;
   defaultf << " Initial Q: 8.87145" << endl;
@@ -198,13 +200,13 @@ void writedefault(ofstream& defaultf){
   defaultf << "Propagator 2  - Initial Phi: 8.87145 Deltax: 0.0035 Tauab: 0   Effective range: 0.08 gamma: 100.0" << endl;
   defaultf << "Propagator 3  - Initial Phi: 8.87145 Deltax: 0.0035 Tauab: 420 Effective range: 0.08 gamma: 100.0" << endl;
   defaultf << "Propagator 4  - Initial Phi: 8.87145 Deltax: 0.0035 Tauab: 420 Effective range: 0.08 gamma: 100.0" << endl;
-  defaultf << "Propagator 5  - Initial Phi: 8.87145 Deltax: 0.0035 Tauab: 0   Effective range: 0.0001 gamma: 80000.0" << endl;
-  defaultf << "Propagator 6  - Initial Phi: 8.87145 Deltax: 0.0035 Tauab: 0   Effective range: 0.0001 gamma: 80000.0" << endl;
-  defaultf << "Propagator 7  - Initial Phi: 15.7298 Deltax: 0.0035 Tauab: 0   Effective range: 0.0001 gamma: 80000.0" << endl;
+  defaultf << "Propagator 5  - Tauab: 0   " << endl;
+  defaultf << "Propagator 6  - Tauab: 0   " << endl;
+  defaultf << "Propagator 7  - Tauab: 0   " << endl;
   defaultf << "Propagator 8  - Initial Phi: 4.81117 Deltax: 0.0035 Tauab: 420 Effective range: 0.08 gamma: 100.0" << endl;
   defaultf << "Propagator 9  - Initial Phi: 4.81117 Deltax: 0.0035 Tauab: 420 Effective range: 0.08 gamma: 100.0" << endl;
-  defaultf << "Propagator 10 - Initial Phi: 4.81117 Deltax: 0.0035 Tauab: 0   Effective range: 0.0001 gamma: 80000.0" << endl;
-  defaultf << "Propagator 11 - Initial Phi: 0.0     Deltax: 0.0035 Tauab: 0   Effective range: 0.0001 gamma: 80000.0" << endl;
+  defaultf << "Propagator 10 - Tauab: 0   " << endl;
+  defaultf << "Propagator 11 - Tauab: 0   " << endl;
   defaultf << "Coupling data 1  - Nu: 0.0012" << endl;
   defaultf << "Coupling data 2  - Nu: 0.0012" << endl;
   defaultf << "Coupling data 3  - Nu: 0.0002" << endl;

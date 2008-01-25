@@ -7,10 +7,8 @@
 
 #include "istrm.h"
 #include <string>
-using std::string;
 #include <iostream>
 #include <sstream>
-using std::stringstream;
 #include<cstring>
 
 Istrm::Istrm(const char* filename):ifstream(filename,ios::in){
@@ -29,6 +27,7 @@ void Istrm::validate(const char* check, char delim){
    if(std::strcmp(p,check)){
      cerr << "Unable to find next input variable :'";
      cerr.write(check,std::strlen(check));
+     cerr.write(pbuffer,std::strlen(check));
      cerr << "' "<< endl;
      cerr << "Please check eegcode.conf for correct sequence of parameters" << endl;
      exit(EXIT_FAILURE);
@@ -40,9 +39,9 @@ void Istrm::validate(const char* check, char delim){
 }
 
 int Istrm::choose(const char* ch, char delim){
-  string choice;
-  string list(ch);
-  stringstream ss(stringstream::in | stringstream::out);
+  std::string choice;
+  std::string list(ch);
+  std::stringstream ss(std::stringstream::in | std::stringstream::out);
   int retval;
 
   if (32==this->peek()) this->ignore(1); //remove space character if there is one

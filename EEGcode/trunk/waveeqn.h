@@ -33,7 +33,6 @@ private:
   float gamma;
   float effrange;
   int tauab;
-  bool islocal;
   float p2; // Square of mesh ratio, dimensionless equal to (deltat effrange gamma/deltax)^2
   const long gridsize; // size of grids for integration of wave equation
   const float deltat; // Grid spacing in time

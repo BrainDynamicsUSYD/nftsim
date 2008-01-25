@@ -6,8 +6,9 @@
  ***************************************************************************/
 
 #include "stimulus.h"
+#include <math.h>
 
-Stimulus::Stimulus(){
+Stimulus::Stimulus():t(0){ //start time is t=0
 }
 Stimulus::~Stimulus(){
 }
@@ -120,7 +121,7 @@ void Stimulus::getQstim(float timestep, float *Q, const long nodes){
       case 2:{ // White noise pulse stimulus pattern
 	      // Similar to Rennie WWGAUSS
 	//
-	// For efficiency reasons gaussian random deviates are usually calculated in pairs.
+	// For efficiency reasons random.gaussian random deviates are usually calculated in pairs.
 	// This is the reason for slightly more complex updating routine here
 	//
         float deviate1, deviate2;
@@ -128,12 +129,12 @@ void Stimulus::getQstim(float timestep, float *Q, const long nodes){
 	p=Q;
         for(long i=0; i<nodes-1; i+=2){ // if nodes is even then update every point in Q[]
 		                        // if nodes is odd then update all but the last point in Q[]
-	  gaussian(deviate1,deviate2);	
+	  random.gaussian(deviate1,deviate2);	
           *p++=amp*deviate1;
           *p++=amp*deviate2;
         }
 	if(nodes%2){ // if nodes is odd update last point which was otherwise not updated above
-	  gaussian(deviate1,deviate2);
+	  random.gaussian(deviate1,deviate2);
 	  *p=amp*deviate1;
 	}
         break;
@@ -148,7 +149,7 @@ void Stimulus::getQstim(float timestep, float *Q, const long nodes){
       case 4:{ // Coherent white noise stimulus pattern
 	      // Similar to Rennie CWGAUSS
         float deviate1, deviate2;
-	gaussian(deviate1,deviate2);
+	random.gaussian(deviate1,deviate2);
 	for(long i=0; i<nodes; i++){
           Q[i]=amp*deviate1;
         }
@@ -158,7 +159,7 @@ void Stimulus::getQstim(float timestep, float *Q, const long nodes){
 	      // Similar to Rennie WPULSE
         if(fmod((t-ts),tperiod) < pdur){
 	  //
-	  // For efficiency reasons gaussian random deviates are usually calculated in pairs.
+	  // For efficiency reasons random.gaussian random deviates are usually calculated in pairs.
 	  // This is the reason for slightly more complex updating routine here
 	  //
             float deviate1, deviate2;
@@ -166,12 +167,12 @@ void Stimulus::getQstim(float timestep, float *Q, const long nodes){
 	    p=Q;
             for(long i=0; i<nodes-1; i+=2){ // if nodes is even then update every point in Q[]
                                             // if nodes is odd then update all but the last point in Q[]
-	      gaussian(deviate1,deviate2);	
+	      random.gaussian(deviate1,deviate2);	
               *p++=amp*deviate1;
               *p++=amp*deviate2;
             }
             if(nodes%2){ // if nodes is odd update last point which was otherwise not updated above
-	      gaussian(deviate1,deviate2);
+	      random.gaussian(deviate1,deviate2);
               *p=amp*deviate1;
             }
         } else {
@@ -193,20 +194,3 @@ void Stimulus::getQstim(float timestep, float *Q, const long nodes){
   }
   t+=timestep; // Update the current time
 }
-
-//
-// Returns two gaussian random deviates
-//  following a algorithm suggested by Knuth
-//
-void Stimulus::gaussian(float& deviate1, float& deviate2){
-  double x, y, norm, factor;
-  do {
-    x=2*random.ran() - 1; // throw two uniform deviates in square circumscribing unit circle
-    y=2*random.ran() - 1;
-    norm = x*x+y*y; 
-  } while (norm > 1.0 || norm == 0);  // test whether in unit circle
-  factor=sqrt(-2.0*log(norm)/norm);
-  deviate1=static_cast<float>(x*factor);
-  deviate2=static_cast<float>(y*factor);
-}
-
