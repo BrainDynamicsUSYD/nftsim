@@ -16,7 +16,7 @@ using std::endl;
 
 #include"istrm.h"
 #include"qhistorylist.h"
-#include"waveeqnlist.h"
+#include"proplist.h"
 #include"couplinglist.h"
 #include"connectmat.h"
 #include"phiout.h"
@@ -24,7 +24,7 @@ class Poplist; // Forward declaration of Poplist since we only use pointer to it
 
 class PropagNet {
 public: 
-   PropagNet(float deltat, float deltax, long totalnodes, int numpops, int numconct, Istrm& inputf, ofstream& dumpf);
+   PropagNet(float deltat, long totalnodes, int numpops, int numconct, Istrm& inputf, ofstream& dumpf);
    ~PropagNet();
    void init(Istrm& inputf, Poplist *ppoplist);
    void dump(ofstream& dumpf);
@@ -40,7 +40,7 @@ private:
    long gridsize;
    const long nodes;
    Qhistorylist *pqhistorylist;
-   WaveEqnlist *pwaveeqnlist;
+   Proplist *pproplist;
    Couplinglist *pcouplinglist;
    Phiout *pphiout; // Pointer to Phi output object. NULL if not initialized by PropagNet::initoutput
 };

@@ -16,8 +16,7 @@ using std::cerr;
 using std::endl;
 
 #include"istrm.h"
-#include"alpha.h"
-#include"beta.h"
+#include"parameter.h"
 
 class DendriticR {
 public: 
@@ -32,8 +31,8 @@ private:
   float beta;  // Holding variable of alpha at this moment
   float expalpha; // Factor in exactstep
   float expbeta; // Factor in exactstep
-  Alpha alphaobj; // Object which initializes and get alpha values
-  Beta betaobj; // Object which initializes and gets beta values
+  Parameter alphaobj; // Object which initializes and get alpha values
+  Parameter betaobj; // Object which initializes and gets beta values
 };
 
 #endif

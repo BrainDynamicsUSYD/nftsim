@@ -15,17 +15,17 @@ using std::ios;
 #include<iostream>
 using std::cerr;
 using std::endl;
-#include<cstring>
-using std::strlen;
-using std::strcmp;
 
 class Istrm: public ifstream {
 public: 
   Istrm(const char* filename);
   ~Istrm();
   void validate(const char* check, char delim);
+  int choose(const char* ch, char delim);
 private:
   char * pbuffer;
+  Istrm(const Istrm& other); // Block copy constructor
+  Istrm& operator=(const Istrm& other); // Block assignment operator
 };
 
 #endif

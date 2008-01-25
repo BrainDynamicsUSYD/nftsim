@@ -15,9 +15,7 @@ using std::cerr;
 using std::endl;
 
 #include"istrm.h"
-#include"theta.h"
-#include"sigma.h"
-#include"qmax.h"
+#include"parameter.h"
 
 class FiringR {
 public: 
@@ -28,9 +26,9 @@ public:
   void restart(Istrm& restartf);
   void getQ(float *V, float *Q, long totalnodes);
 private: 
-  Theta thetaobj;
-  Sigma sigmaobj;
-  Qmax qmaxobj;
+  Parameter thetaobj;
+  Parameter sigmaobj;
+  Parameter qmaxobj;
   float theta;
   float sigma;
   float qmax;

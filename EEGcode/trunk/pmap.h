@@ -1,12 +1,12 @@
 /***************************************************************************
-                          alpha.h  -  description
+                          pmap.h  -  description
                              -------------------
     copyright            : (C) 2005 by Peter Drysdale
     email                : peter@physics.usyd.edu.au
  ***************************************************************************/
 
-#ifndef ALPHA_H
-#define ALPHA_H
+#ifndef PMAP_H
+#define PMAP_H
 
 #include<fstream>
 using std::ofstream;
@@ -15,17 +15,27 @@ using std::cerr;
 using std::endl;
 
 #include"istrm.h"
+#include"parameter.h"
+#include"qhistory.h"
+#include"propag.h"
 
-class Alpha {
+class Pmap: public Propag {
 public: 
-  Alpha();
-  ~Alpha();
-  float get();
+  Pmap(long gridsize, float deltat);
+  ~Pmap();
   void init(Istrm& inputf);
   void dump(ofstream& dumpf);
   void restart(Istrm& restartf);
+  void stepwaveeq(float *Phi, Qhistory* qhistory);
 private:
-  float alpha;
+  const long gridsize;
+  int tauab;
+  const float deltat; // Grid spacing in time
+  long icentre;
+  long iphi;
+  long rowlength;
+  long sidelength;
+  long startfirstrow;
 };
 
 #endif

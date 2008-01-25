@@ -11,7 +11,7 @@
 //
 // Constructor for Propagnet
 //
-PropagNet::PropagNet(float deltat, float deltax, long totalnodes, int numpops, int numconct, Istrm& inputf, ofstream& dumpf)
+PropagNet::PropagNet(float deltat, long totalnodes, int numpops, int numconct, Istrm& inputf, ofstream& dumpf)
                       :numconnects(numconct),nodes(totalnodes){
   gridsize=static_cast<long>((sqrt(nodes)+2)*(sqrt(nodes)+2));
   if (sqrt( static_cast<float>(nodes)) != floor(sqrt( static_cast<float>(nodes)))){
@@ -25,7 +25,7 @@ PropagNet::PropagNet(float deltat, float deltax, long totalnodes, int numpops, i
   for(int i=0;i<numconnects;i++)
     Eta[i]= new float[nodes]; 
   pqhistorylist = new Qhistorylist(inputf,dumpf,numpops,gridsize);
-  pwaveeqnlist = new WaveEqnlist(numconct,gridsize,deltat,deltax);
+  pproplist = new Proplist(numconct,gridsize,deltat);
   pcouplinglist = new Couplinglist(numconct);
 }
 
@@ -42,7 +42,7 @@ PropagNet::~PropagNet(){
   }
   delete [ ] Eta;
   delete pqhistorylist;
-  delete pwaveeqnlist;
+  delete pproplist;
   delete pcouplinglist;
 //
 //
@@ -53,14 +53,14 @@ void PropagNet::init(Istrm& inputf, Poplist *ppoplist){
   inputf.ignore(200,32); // Throwaway blank line
   inputf.ignore(200,32); // Throwaway title line of propagation data
   pqhistorylist->init(inputf, ppoplist);
-  pwaveeqnlist->init(inputf);
+  pproplist->init(inputf);
   pcouplinglist->init(inputf);
 }
 
 void PropagNet::dump(ofstream& dumpf){
   dumpf << "Propagation data" << endl;
   pqhistorylist->dump(dumpf);
-  pwaveeqnlist->dump(dumpf);
+  pproplist->dump(dumpf);
   pcouplinglist->dump(dumpf);
 }
 
@@ -68,7 +68,7 @@ void PropagNet::dump(ofstream& dumpf){
 void PropagNet::restart(Istrm& restartf, Poplist *ppoplist){
   restartf.ignore(200,32); // Throwaway blank line
   pqhistorylist->restart(restartf, ppoplist);
-  pwaveeqnlist->restart(restartf);
+  pproplist->restart(restartf);
   pcouplinglist->restart(restartf);
 }
 
@@ -76,7 +76,7 @@ void PropagNet::restart(Istrm& restartf, Poplist *ppoplist){
 //
 void PropagNet::stepQtoP(Poplist * ppoplist, ConnectMat * pconnectmat){
   pqhistorylist->updateQhistories(ppoplist); // Get new Q histories and add them to the keyrings
-  pwaveeqnlist->stepWaveEqns(Eta, pqhistorylist, pconnectmat); // Transform Q to Eta via stepping forward multiple wave equations
+  pproplist->step(Eta, pqhistorylist, pconnectmat); // Transform Q to Eta via stepping forward multiple wave equations
   pcouplinglist->updateP(P, Eta, nodes); // Weight signal strengths for links between neural populations
 }
 

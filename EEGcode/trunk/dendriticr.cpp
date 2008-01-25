@@ -7,7 +7,7 @@
 
 #include "dendriticr.h"
 
-DendriticR::DendriticR(){
+DendriticR::DendriticR():alphaobj("alpha"), betaobj("beta"){
 }
 DendriticR::~DendriticR(){
 }
@@ -23,6 +23,7 @@ void DendriticR::dump(ofstream& dumpf){
   dumpf << "Dendritic Response from population ";
   alphaobj.dump(dumpf);
   betaobj.dump(dumpf);
+  dumpf << endl; // Add endline to dendritic response input
 }
 
 void DendriticR::restart(Istrm& restartf){

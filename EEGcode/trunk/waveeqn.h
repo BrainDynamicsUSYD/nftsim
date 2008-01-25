@@ -15,21 +15,21 @@ using std::cerr;
 using std::endl;
 
 #include"istrm.h"
-#include"effrange.h"
-#include"gamma.h"
+#include"parameter.h"
 #include"qhistory.h"
+#include"propag.h"
 
-class WaveEqn {
+class WaveEqn: public Propag {
 public: 
-  WaveEqn(long gridsize, float deltat, float deltax);
+  WaveEqn(long gridsize, float deltat);
   ~WaveEqn();
   void init(Istrm& inputf);
   void dump(ofstream& dumpf);
   void restart(Istrm& restartf);
   void stepwaveeq(float *Phi, Qhistory* qhistory);
 private:
-  Gamma gammaobj;
-  EffRange effrangeobj;
+  Parameter gammaobj;
+  Parameter effrangeobj;
   float gamma;
   float effrange;
   int tauab;
@@ -37,7 +37,7 @@ private:
   float p2; // Square of mesh ratio, dimensionless equal to (deltat effrange gamma/deltax)^2
   const long gridsize; // size of grids for integration of wave equation
   const float deltat; // Grid spacing in time
-  const float deltax; // Grid spacing in space
+  float deltax; // Grid spacing in space
   float deltatdivideddeltaxallsquared; //Factor in p2 definition
   float twominusfourp2; // factor in wave algorithm
   float tenminusfourp2; //factor in wave algorithm

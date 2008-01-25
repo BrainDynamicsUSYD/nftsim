@@ -8,7 +8,7 @@
 #include "firingr.h"
 #include<math.h>
 
-FiringR::FiringR(){
+FiringR::FiringR():thetaobj("Theta"),sigmaobj("Sigma"),qmaxobj("Qmax"){
 }
 FiringR::~FiringR(){
 }

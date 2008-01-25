@@ -43,11 +43,11 @@ Population::~Population(){
 //
 void Population::init(Istrm& inputf, PropagNet *ppropagnet, ConnectMat *pconnectmat){
   inputf.ignore(200,32); //throwaway line naming population
-  float Qsteady;
-  inputf.validate("Steady State Q",58);
-  inputf >> Qsteady;
+  float Qinitial;
+  inputf.validate("Initial Q",58);
+  inputf >> Qinitial;
   for(long i=0; i<nodes; i++)
-      Q[i]=Qsteady;
+      Q[i]=Qinitial;
   if (isstimulus) {
     pstimulus->init(inputf);
   } else {

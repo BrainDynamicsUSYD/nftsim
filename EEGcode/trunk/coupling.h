@@ -15,7 +15,7 @@ using std::cerr;
 using std::endl;
 
 #include"istrm.h"
-#include"nu.h"
+#include"parameter.h"
 
 class Coupling {
 public: 
@@ -28,7 +28,7 @@ public:
   void updatePa(float *Pa, float *Etaa, long nodes);
 
 private:
-  Nu nuobj;
+  Parameter nuobj;
   float nu;
 };
 

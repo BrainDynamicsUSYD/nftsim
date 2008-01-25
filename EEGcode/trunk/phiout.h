@@ -27,6 +27,8 @@ private:
   long numtraces; // Number of traces to be outputted
   int * idoftrace; // Array containing wave equation id numbers of requested traces
   long * nodeoftrace; // Array containing node numbers of requested traces
+  Phiout(const Phiout& other); // Block copy constructor
+  Phiout& operator=(const Phiout& other); // Block assignment operator 
 };
 
 #endif

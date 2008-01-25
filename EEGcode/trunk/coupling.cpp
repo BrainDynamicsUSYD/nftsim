@@ -7,7 +7,7 @@
 
 #include "coupling.h"
 
-Coupling::Coupling(){
+Coupling::Coupling():nuobj("Nu"){
 }
 Coupling::~Coupling(){
 }

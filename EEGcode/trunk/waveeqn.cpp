@@ -8,7 +8,9 @@
 #include "waveeqn.h"
 #include<math.h>
 
-WaveEqn::WaveEqn(long gsize, float dt, float dx):gridsize(gsize), deltat(dt),deltax(dx){
+WaveEqn::WaveEqn(long gsize, float dt):gammaobj("gamma"),
+           effrangeobj("Effective range"),gridsize(gsize), 
+	   deltat(dt){
   rowlength=static_cast<long>(sqrt(gridsize));
   sidelength=rowlength-2;
   startfirstrow=rowlength+1;
@@ -24,13 +26,15 @@ WaveEqn::~WaveEqn(){
 }
 
 void WaveEqn::init(Istrm& inputf){
-  inputf.validate("Steady State Phi",58);
-  float Phi_steady;
-  inputf >> Phi_steady;
+  inputf.validate("Initial Phi",58);
+  float Phi_initial;
+  inputf >> Phi_initial;
   for(long i=0; i<gridsize; i++){
-    Phi_1[i]=Phi_steady;
-    Phi_2[i]=Phi_steady;
+    Phi_1[i]=Phi_initial;
+    Phi_2[i]=Phi_initial;
   }
+  inputf.validate("Deltax",58);
+  inputf >> deltax;
   inputf.validate("Tauab",58);
   inputf >> tauab;
   effrangeobj.init(inputf);
@@ -51,6 +55,7 @@ void WaveEqn::init(Istrm& inputf){
 
 void WaveEqn::dump(ofstream& dumpf){
   dumpf << "Tau_ab: " << tauab << " ";
+  dumpf << "Deltax: " << deltax << " ";
   effrangeobj.dump(dumpf);
   gammaobj.dump(dumpf);
   dumpf << endl;
@@ -67,6 +72,8 @@ void WaveEqn::dump(ofstream& dumpf){
 void WaveEqn::restart(Istrm& restartf){
   restartf.ignore(200,58); // throw away everything before the colon character
   restartf >> tauab;
+  restartf.validate("Deltax",58);
+  restartf >> deltax;
   effrangeobj.restart(restartf);
   gammaobj.restart(restartf);
   restartf.ignore(200,58); //throw away endl and then Phi_1: 
@@ -77,10 +84,6 @@ void WaveEqn::restart(Istrm& restartf){
     restartf >> Phi_2[i];
   restartf.ignore(200,32); // throw away endl
 }
-
-//
-// Important still to do - copy Phi back in time noting different gridsizes for Phi and Phi_1 and Phi_2
-//
 
 void WaveEqn::stepwaveeq(float *Phi, Qhistory *pqhistory){
   float sumphi;

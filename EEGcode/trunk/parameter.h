@@ -1,31 +1,34 @@
 /***************************************************************************
-                          effrange.h  -  description
+                          parameter.h  -  description
                              -------------------
-    copyright            : (C) 2005 by Peter Drysdale
+    copyright            : (C) 2006 by Peter Drysdale
     email                : peter@physics.usyd.edu.au
  ***************************************************************************/
 
-#ifndef EFFRANGE_H
-#define EFFRANGE_H
+#ifndef PARAMETER_H
+#define PARAMETER_H
 
 #include<fstream>
 using std::ofstream;
 #include<iostream>
 using std::cerr;
 using std::endl;
+#include<string>
+using std::string;
 
 #include"istrm.h"
 
-class EffRange {
+class Parameter {
 public: 
-  EffRange();
-  ~EffRange();
+  Parameter(const char *);
+  ~Parameter();
   float get();
   void init(Istrm& inputf);
   void dump(ofstream& dumpf);
   void restart(Istrm& restartf);
 private:
-  float effrange;
+  float param;
+  string ident;
 };
 
 #endif

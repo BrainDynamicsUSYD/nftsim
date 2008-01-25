@@ -40,7 +40,6 @@ int main(int argc, char* argv[])
   long totalnodes=0;
   int numpops=0;
   int numconct=0;
-  cerr << argc << endl;
   if(argc==3){
     ofstream defaultf("eegcode.conf",ios::out);
     if( !defaultf ){
@@ -67,16 +66,13 @@ int main(int argc, char* argv[])
   inputf.validate("integration steps",58); 
   inputf >> nsteps;
   dumpf << "Number of integration steps:" << nsteps << " ";
-  float deltat, deltax;
+  float deltat;
   inputf.validate("Deltat",58);
   inputf >> deltat;
   dumpf << "Deltat :" << deltat << " ";
-  inputf.validate("Deltax",58);
-  inputf >> deltax;
-  dumpf << "Deltax:" << deltax << endl;
   inputf.ignore(200,32); //throwaway space line before start of populations
   Poplist poplist(totalnodes,numpops, &connectmat);
-  PropagNet propagnet(deltat,deltax,totalnodes,numpops,numconct,inputf,dumpf);
+  PropagNet propagnet(deltat,totalnodes,numpops,numconct,inputf,dumpf);
   inputf.ignore(200,32); //throwaway space line before start of populations
   if(argc==1 || argc==3){
 //
@@ -160,11 +156,11 @@ void writedefault(ofstream& defaultf){
   defaultf << "3			     :0  :0  :0  :7  :0" << endl;
   defaultf << "4			     :8  :9  :10 :0  :0" << endl;
   defaultf << "5			     :0  :0  :0  :11 :0 " << endl;
-  defaultf << "Number of integration steps: 100000 Deltat: 0.0001 Deltax: 0.0035" << endl;
+  defaultf << "Number of integration steps: 100000 Deltat: 0.0001 " << endl;
   defaultf << "Q delay depths: 420 : 0 : 0 : 420 :0" << endl;
   defaultf << "" << endl;
   defaultf << "Population 1 - Excitory neurons" << endl;
-  defaultf << " Steady State Q: 8.87145" << endl;
+  defaultf << " Initial Q: 8.87145" << endl;
   defaultf << " Firing response Theta: 0.013 Sigma: 0.0038 Qmax: 250.0" << endl;
   defaultf << " Number of Dendritic responses: 3" << endl;
   defaultf << "  Dendritic response from population 1 V initial: 0.0106457 alpha: 75.0 beta: 285.0 " << endl;
@@ -172,7 +168,7 @@ void writedefault(ofstream& defaultf){
   defaultf << "  Dendritic response from population 4 V initial: 0.0057734 alpha: 75.0 beta: 285.0" << endl;
   defaultf << "" << endl;
   defaultf << "Population 2 - Inhibitory neurons" << endl;
-  defaultf << "  Steady State Q: 8.87145" << endl;
+  defaultf << "  Initial Q: 8.87145" << endl;
   defaultf << "  Firing response Theta: 0.013 Sigma: 0.0038 Qmax: 250.0" << endl;
   defaultf << "  Number of Dendritic responses: 3" << endl;
   defaultf << "   Dendritic response from population 1 V initial: 0.0106457 alpha: 75.0 beta: 285.0" << endl;
@@ -180,14 +176,14 @@ void writedefault(ofstream& defaultf){
   defaultf << "   Dendritic response from population 4 V initial: 0.0057734 alpha: 75.0 beta: 285.0" << endl;
   defaultf << "" << endl;
   defaultf << "Population 3 - Reticular nucleus neurons" << endl;
-  defaultf << "  Steady State Q: 15.7298" << endl;
+  defaultf << "  Initial Q: 15.7298" << endl;
   defaultf << "  Firing response Theta: 0.013 Sigma: 0.0038 Qmax: 250.0" << endl;
   defaultf << "  Number of Dendritic responses: 2" << endl;
   defaultf << "   Dendritic response from population 1 V initial: 0.00177429 alpha: 75.0 beta: 285.0" << endl;
   defaultf << "   Dendritic response from population 4 V initial: 0.000962233 alpha: 75.0 beta: 285.0" << endl;
   defaultf << "" << endl;
   defaultf << "Population 4 - Relay nuclei neurons" << endl;
-  defaultf << "  Steady State Q: 4.81117" << endl;
+  defaultf << "  Initial Q: 4.81117" << endl;
   defaultf << "  Firing response Theta: 0.013 Sigma: 0.0038 Qmax: 250.0" << endl;
   defaultf << "  Number of Dendritic responses: 3" << endl;
   defaultf << "   Dendritic response from population 1 V initial: 0.0106457 alpha: 75.0 beta: 285.0" << endl;
@@ -195,20 +191,20 @@ void writedefault(ofstream& defaultf){
   defaultf << "   Dendritic response from population 5 V initial: 0.00	  alpha: 75.0 beta: 285.0" << endl;
   defaultf << "" << endl;
   defaultf << "Population 5 - Stimulus neurons" << endl;
-  defaultf << "  Steady State Q: 0.0" << endl;
+  defaultf << "  Initial Q: 0.0" << endl;
   defaultf << "  Stimulus mode: 4 Time to start of stimulus: 0.0002 Amplitude: 20" << endl;
   defaultf << "Propagation data" << endl;
-  defaultf << "Wave equation 1  - Steady State Phi: 8.87145 Tauab: 0	Effective range: 0.08 gamma: 100.0" << endl;
-  defaultf << "Wave equation 2  - Steady State Phi: 8.87145 Tauab: 0	Effective range: 0.08 gamma: 100.0" << endl;
-  defaultf << "Wave equation 3  - Steady State Phi: 8.87145 Tauab: 420 Effective range: 0.08 gamma: 100.0" << endl;
-  defaultf << "Wave equation 4  - Steady State Phi: 8.87145 Tauab: 420 Effective range: 0.08 gamma: 100.0" << endl;
-  defaultf << "Wave equation 5  - Steady State Phi: 8.87145 Tauab: 0	Effective range: 0.0001 gamma: 80000.0" << endl;
-  defaultf << "Wave equation 6  - Steady State Phi: 8.87145 Tauab: 0	Effective range: 0.0001 gamma: 80000.0" << endl;
-  defaultf << "Wave equation 7  - Steady State Phi: 15.7298 Tauab: 0	Effective range: 0.0001 gamma: 80000.0" << endl;
-  defaultf << "Wave equation 8  - Steady State Phi: 4.81117 Tauab: 420 Effective range: 0.08 gamma: 100.0" << endl;
-  defaultf << "Wave equation 9  - Steady State Phi: 4.81117 Tauab: 420 Effective range: 0.08 gamma: 100.0" << endl;
-  defaultf << "Wave equation 10 - Steady State Phi: 4.81117 Tauab: 0	Effective range: 0.0001 gamma: 80000.0" << endl;
-  defaultf << "Wave equation 11 - Steady State Phi: 0.0     Tauab: 0	Effective range: 0.0001 gamma: 80000.0" << endl;
+  defaultf << "Propagator 1  - Initial Phi: 8.87145 Deltax: 0.0035 Tauab: 0   Effective range: 0.08 gamma: 100.0" << endl;
+  defaultf << "Propagator 2  - Initial Phi: 8.87145 Deltax: 0.0035 Tauab: 0   Effective range: 0.08 gamma: 100.0" << endl;
+  defaultf << "Propagator 3  - Initial Phi: 8.87145 Deltax: 0.0035 Tauab: 420 Effective range: 0.08 gamma: 100.0" << endl;
+  defaultf << "Propagator 4  - Initial Phi: 8.87145 Deltax: 0.0035 Tauab: 420 Effective range: 0.08 gamma: 100.0" << endl;
+  defaultf << "Propagator 5  - Initial Phi: 8.87145 Deltax: 0.0035 Tauab: 0   Effective range: 0.0001 gamma: 80000.0" << endl;
+  defaultf << "Propagator 6  - Initial Phi: 8.87145 Deltax: 0.0035 Tauab: 0   Effective range: 0.0001 gamma: 80000.0" << endl;
+  defaultf << "Propagator 7  - Initial Phi: 15.7298 Deltax: 0.0035 Tauab: 0   Effective range: 0.0001 gamma: 80000.0" << endl;
+  defaultf << "Propagator 8  - Initial Phi: 4.81117 Deltax: 0.0035 Tauab: 420 Effective range: 0.08 gamma: 100.0" << endl;
+  defaultf << "Propagator 9  - Initial Phi: 4.81117 Deltax: 0.0035 Tauab: 420 Effective range: 0.08 gamma: 100.0" << endl;
+  defaultf << "Propagator 10 - Initial Phi: 4.81117 Deltax: 0.0035 Tauab: 0   Effective range: 0.0001 gamma: 80000.0" << endl;
+  defaultf << "Propagator 11 - Initial Phi: 0.0     Deltax: 0.0035 Tauab: 0   Effective range: 0.0001 gamma: 80000.0" << endl;
   defaultf << "Coupling data 1  - Nu: 0.0012" << endl;
   defaultf << "Coupling data 2  - Nu: 0.0012" << endl;
   defaultf << "Coupling data 3  - Nu: 0.0002" << endl;
