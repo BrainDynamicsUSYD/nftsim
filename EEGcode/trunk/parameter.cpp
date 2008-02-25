@@ -17,6 +17,10 @@ void Parameter::init(Istrm& inputf){
   inputf >> param;
 }
 
+void Parameter::init(double initval){
+  param = initval;
+}
+
 void Parameter::dump(ofstream& dumpf){
   dumpf << ident << ":" << param << " ";
 }
@@ -24,6 +28,10 @@ void Parameter::dump(ofstream& dumpf){
 void Parameter::restart(Istrm& restartf){
   restartf.validate(ident.c_str(),58);
   restartf >> param;
+}
+
+void Parameter::restart(double initval){
+  param = initval;
 }
 
 double Parameter::get(){

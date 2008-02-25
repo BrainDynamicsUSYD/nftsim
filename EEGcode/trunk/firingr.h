@@ -16,22 +16,26 @@ using std::endl;
 
 #include"istrm.h"
 #include"parameter.h"
+#include"modtheta.h"
 
 class FiringR {
 public: 
-  FiringR();
+  FiringR(int popindex);
   ~FiringR();
   void init(Istrm& inputf);
   void dump(ofstream& dumpf);
   void restart(Istrm& restartf);
-  void getQ(double *V, double *Q, long totalnodes);
+  void getQ(double *V, double *Q, long totalnodes, double timestep);
 private: 
-  Parameter thetaobj;
+  Parameter* pthetaobj;
+  Modtheta* pmthetaobj;
+  bool ismodtheta; // TRUE if theta is modulated
   Parameter sigmaobj;
   Parameter qmaxobj;
   double theta;
   double sigma;
   double qmax;
+  int pindex;
 };
 
 #endif

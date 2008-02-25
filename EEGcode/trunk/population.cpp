@@ -20,7 +20,7 @@ Population::Population(long totalnodes, int popindex, ConnectMat *pconnectmat)
   if (pconnectmat->getDRlength(popindex)) { // If populations are attached to this dendritic tree this is not a stimulus population
     isstimulus=false;
     V = new double[totalnodes];
-    pfr = new FiringR();
+    pfr = new FiringR(popindex);
     pdr = new DendriticRlist(totalnodes,popindex,pconnectmat);
   } else {
     pstimulus = new Stimulus();
@@ -99,7 +99,7 @@ void Population::stepPop(double timestep){
   } else {
     pdr->stepVa(timestep);
     pdr->SumAfferent(V);
-    pfr->getQ(V,Q,nodes);
+    pfr->getQ(V,Q,nodes,timestep);
   }
 }
 
