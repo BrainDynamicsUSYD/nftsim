@@ -13,6 +13,7 @@ FiringR::FiringR(int popindex):sigmaobj("Sigma"),qmaxobj("Qmax"),pindex(popindex
 
 FiringR::~FiringR(){
   if (pmthetaobj) delete pmthetaobj;
+  if (pm1thetaobj) delete pm1thetaobj;
   if (pthetaobj) delete pthetaobj;
 }
 
@@ -21,7 +22,7 @@ void FiringR::init(Istrm& inputf){
   inputf.validate("respo",110); 
   inputf.validate("s",101); // Read succesively upto the end of "Firing response"
   int optionnum;
-  optionnum=inputf.choose("Theta:1 ModTheta:2",58);
+  optionnum=inputf.choose("Theta:1 ModTheta:2 ModTheta1:3",58);
   if(1==optionnum){
     pthetaobj = new Parameter("Theta");
     double initval;
@@ -33,6 +34,13 @@ void FiringR::init(Istrm& inputf){
     pmthetaobj = new Modtheta();
     pmthetaobj->init(inputf,pindex);
     ismodtheta=true;
+    modthetatype=0;
+  }
+  if(3==optionnum){
+    pm1thetaobj = new Modtheta1();
+    pm1thetaobj->init(inputf,pindex);
+    ismodtheta=true;
+    modthetatype=1;
   }
   sigmaobj.init(inputf);
   qmaxobj.init(inputf);
@@ -42,10 +50,13 @@ void FiringR::init(Istrm& inputf){
 // Method to transform V into Q via sigmoid firing response
 //
 void FiringR::getQ(double *V, double *Q, long totalnodes, double timestep){
-  if(ismodtheta) {theta=pmthetaobj->get(timestep);}
-  else {theta=pthetaobj->get();}
   sigma=sigmaobj.get();
   qmax=qmaxobj.get() ;
+  if(ismodtheta) {
+    if(0==modthetatype){theta=pmthetaobj->get(timestep);}
+    else{theta=pm1thetaobj->get(timestep,V,theta,sigma);}
+  }
+  else {theta=pthetaobj->get();}
   for(long i=0; i<totalnodes; i++)
     Q[i] = qmax/(1.0F+exp(-(V[i]-theta)/sigma));
   
@@ -53,7 +64,10 @@ void FiringR::getQ(double *V, double *Q, long totalnodes, double timestep){
 
 void FiringR::dump(ofstream& dumpf){
   dumpf << "Firing response "; // Insert Firing Response title
-  if(ismodtheta) {pmthetaobj->dump(dumpf);}
+  if(ismodtheta) {
+    if(0==modthetatype){pmthetaobj->dump(dumpf);}
+    else{pm1thetaobj->dump(dumpf);}
+  }
   else {pthetaobj->dump(dumpf);}
   sigmaobj.dump(dumpf);
   qmaxobj.dump(dumpf);
@@ -65,7 +79,7 @@ void FiringR::restart(Istrm& restartf){
   restartf.validate("respo",110); 
   restartf.validate("s",101); // Read succesively upto the end of "Firing response"
   int optionnum;
-  optionnum=restartf.choose("Theta:1 ModTheta:2",58);
+  optionnum=restartf.choose("Theta:1 ModTheta:2 Modtheta1:3",58);
   if(1==optionnum){
     pthetaobj = new Parameter("Theta");
     double initval;
@@ -77,6 +91,14 @@ void FiringR::restart(Istrm& restartf){
     pmthetaobj = new Modtheta();
     pmthetaobj->restart(restartf,pindex);
     ismodtheta=true;
+    modthetatype=0;
+  }
+  if(3==optionnum){
+    pm1thetaobj = new Modtheta1();
+    pm1thetaobj->init(restartf,pindex);
+    ismodtheta=true;
+    modthetatype=1;
+    
   }
   sigmaobj.restart(restartf);
   qmaxobj.restart(restartf);

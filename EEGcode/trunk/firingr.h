@@ -17,6 +17,7 @@ using std::endl;
 #include"istrm.h"
 #include"parameter.h"
 #include"modtheta.h"
+#include"modtheta1.h"
 
 class FiringR {
 public: 
@@ -29,7 +30,9 @@ public:
 private: 
   Parameter* pthetaobj;
   Modtheta* pmthetaobj;
+  Modtheta1* pm1thetaobj;
   bool ismodtheta; // TRUE if theta is modulated
+  int modthetatype;
   Parameter sigmaobj;
   Parameter qmaxobj;
   double theta;
