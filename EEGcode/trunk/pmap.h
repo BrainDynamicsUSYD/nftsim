@@ -1,7 +1,8 @@
 /***************************************************************************
-                          pmap.h  -  description
+                          pmap.h  -  Propagator which directly maps
+                                     \phi(t)= Q(t-\tau)
                              -------------------
-    copyright            : (C) 2005 by Peter Drysdale
+    copyright            : (C) 2008 by Peter Drysdale
     email                : peter@physics.usyd.edu.au
  ***************************************************************************/
 
@@ -21,21 +22,16 @@ using std::endl;
 
 class Pmap: public Propag {
 public: 
-  Pmap(long gridsize, double deltat);
+  Pmap(long totalnodes, double deltat);
   ~Pmap();
-  void init(Istrm& inputf);
+  void init(Istrm& inputf, Qhistory* qhistory);
   void dump(ofstream& dumpf);
   void restart(Istrm& restartf);
   void stepwaveeq(double *Phi, Qhistory* qhistory);
 private:
-  const long gridsize;
+  const long nodes;
   int tauab;
   const double deltat; // Grid spacing in time
-  long icentre;
-  long iphi;
-  long rowlength;
-  long sidelength;
-  long startfirstrow;
 };
 
 #endif

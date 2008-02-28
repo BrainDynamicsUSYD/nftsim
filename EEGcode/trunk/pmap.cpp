@@ -1,24 +1,20 @@
 /***************************************************************************
-                          pmap.cpp  -  description
+                          pmap.cpp  -  Propagator which maps \phi(t)=Q(t-\tau)
                              -------------------
-    copyright            : (C) 2005 by Peter Drysdale
+    copyright            : (C) 2008 by Peter Drysdale
     email                : peter@physics.usyd.edu.au
  ***************************************************************************/
 
 #include "pmap.h"
 #include<math.h>
 
-Pmap::Pmap(long gsize, double dt):gridsize(gsize),deltat(dt){
-  rowlength=static_cast<long>(sqrt(gridsize));
-  sidelength=rowlength-2;
-  startfirstrow=rowlength+1;
+Pmap::Pmap(long totalnodes, double dt):nodes(totalnodes),deltat(dt){
 }
-
 
 Pmap::~Pmap(){
 }
 
-void Pmap::init(Istrm& inputf){
+void Pmap::init(Istrm& inputf, Qhistory* qhistory){
   inputf.validate("Tauab",58);
   inputf >> tauab;
 }
@@ -35,17 +31,7 @@ void Pmap::restart(Istrm& restartf){
 
 void Pmap::stepwaveeq(double *Phi, Qhistory *pqhistory){
   double* Q= pqhistory->getQbytime(tauab);
-  // initialize five indexes to spatial positions
-  icentre=startfirstrow;
-  iphi=0;
-  // loop over nodes
-  for(long i=0; i<sidelength; i++){
-    for(long j=0; j<sidelength; j++){
-      Phi[iphi]=Q[icentre];
-      icentre++; // increment position indexes
-      iphi++; // increment phi position index
-      }
-    icentre+=2; // reposition indexes to start of next row, they were already incremented
-                // one space within inner loop
-    }
+  for(long i=0; i<nodes; i++){
+      Phi[i]=Q[i];
+  }
 }

@@ -1,7 +1,7 @@
 /***************************************************************************
-                          proplist.h  -  description
+                          proplist.h  -  Propagator list
                              -------------------
-    copyright            : (C) 2005 by Peter Drysdale
+    copyright            : (C) 2008 by Peter Drysdale
     email                : peter@physics.usyd.edu.au
  ***************************************************************************/
 
@@ -24,9 +24,9 @@ using std::endl;
 
 class Proplist {
 public: 
-  Proplist(Istrm& inputf, ofstream& dumpf, int numconnects, long gridsize, double deltat);
+  Proplist(Istrm& inputf, ofstream& dumpf, int numconnects, long nodes, double deltat);
   ~Proplist();
-  void init(Istrm& inputf);
+  void init(Istrm& inputf, Qhistorylist * pqhistorylist, ConnectMat * pconnectmat);
   void dump(ofstream& dumpf);
   void restart(Istrm& restartf);
   void step(double **Eta, Qhistorylist * pqhistorylist, ConnectMat * pconnectmat); // Transform Q to Eta via stepping forward multiple wave equations

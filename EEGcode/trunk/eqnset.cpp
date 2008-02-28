@@ -2,7 +2,7 @@
                           eqnset.cpp  -  Propagator for wave equation with
                                          K extention
                              -------------------
-    copyright            : (C) 2006 by Peter Drysdale
+    copyright            : (C) 2008 by Peter Drysdale
     email                : peter@physics.usyd.edu.au
  ***************************************************************************/
 
@@ -10,14 +10,18 @@
 #include "prefact.h"
 #include<math.h>
 
-Eqnset::Eqnset(long gsize, double deltat):
-               gridsize(gsize){
+Eqnset::Eqnset(long nodes, double deltat){
+  gridsize=static_cast<long>((sqrt(nodes)+2)*(sqrt(nodes)+2));
+  if (sqrt( static_cast<double>(nodes)) != floor(sqrt( static_cast<double>(nodes)))){
+    cerr << "Wave equation solver assumes square grid. Nodes per population must be a perfect square number" << endl;
+    exit(EXIT_FAILURE);
+  }
   rowlength=static_cast<long>(sqrt(gridsize));
-  sidelength=rowlength-2;
-  startfirstrow=rowlength+1;
-  totalnodes=sidelength*sidelength;
-  uRe = new double[totalnodes];
-  uIm = new double[totalnodes];
+  longsidelength=rowlength-2;
+  shortsidelength=rowlength-2;
+  startfirstrow=longsidelength+3;
+  uRe = new double[nodes];
+  uIm = new double[nodes];
   weqnobj = new Weqn(gridsize, deltat);
 }
 
@@ -30,17 +34,19 @@ Eqnset::~Eqnset(){
   }
   if (karray) delete [ ] karray;
   for(int i=0; i<numk; i++){
-    if (field[i]) delete field[i];
+    if (fieldRe[i]) delete fieldRe[i];
+    if (fieldIm[i]) delete fieldIm[i];
     if (scalfactarr[i]) delete scalfactarr[i];
   }
-  if (field) delete [ ] field;
+  if (fieldRe) delete [ ] fieldRe;
+  if (fieldIm) delete [ ] fieldIm;
   if (scalfactarr) delete [ ] scalfactarr;
 }
 
-void Eqnset::init(Istrm& inputf){
+void Eqnset::init(Istrm& inputf, Qhistory* qhistory){
   inputf.validate("Deltax",58);
   inputf >> deltax;
-  weqnobj->init(inputf,deltax);
+  weqnobj->init(inputf,deltax,qhistory);
   inputf.validate("Geometric centre",58);
   inputf >> centrex;
   inputf.validate("",58);
@@ -60,11 +66,14 @@ void Eqnset::init(Istrm& inputf){
     inputf >> ktmp;
     kvect[1]=ktmp;
   }
-  field = new Wavefield *[numk];
+  fieldRe = new Field *[numk];
+  fieldIm = new Field *[numk];
   scalfactarr = new Prefact *[numk];
   for(int i=0; i<numk; i++){
-    field[i]= new Wavefield(gridsize);
-    field[i]->init(inputf);
+    fieldRe[i]= new Field(gridsize,"URe");
+    fieldRe[i]->init(inputf);
+    fieldIm[i]= new Field(gridsize,"UIm");
+    fieldIm[i]->init(inputf);
     scalfactarr[i]= new Prefact(gridsize);
     scalfactarr[i]->precalcfact(karray[i], deltax, centrex, centrey);
   }
@@ -88,8 +97,10 @@ void Eqnset::dump(ofstream& dumpf){
 //
 // Dump wavefields
 //
-  for(int i=0; i<numk; i++)
-    field[i]->dump(dumpf);
+  for(int i=0; i<numk; i++){
+    fieldRe[i]->dump(dumpf);
+    fieldIm[i]->dump(dumpf);
+  }
 }
 
 void Eqnset::restart(Istrm& restartf){
@@ -115,43 +126,47 @@ void Eqnset::restart(Istrm& restartf){
     restartf >> ktmp;
     kvect[1]=ktmp;
   }
-  field = new Wavefield *[numk];
+  fieldRe = new Field *[numk];
+  fieldIm = new Field *[numk];
   for(int i=0; i<numk; i++){
-    field[i]= new Wavefield(gridsize);
-    field[i]->restart(restartf);
+    fieldRe[i]= new Field(gridsize,"URe");
+    fieldRe[i]->restart(restartf);
+    fieldIm[i]= new Field(gridsize,"UIm");
+    fieldIm[i]->restart(restartf);
   }
 }
 
 void Eqnset::stepwaveeq(double* Phi, Qhistory* qhistory){
   for(int i=0; i<numk; i++){
-    weqnobj->stepwaveeq(uRe,uIm,qhistory,field[i],scalfactarr[i]);
-    field[i]->update(uRe,uIm);
+    weqnobj->stepwaveeq(uRe,uIm,qhistory,fieldRe[i],fieldIm[i],scalfactarr[i]);
+    fieldRe[i]->update(uRe);
+    fieldIm[i]->update(uIm);
   }
 //
 // the following lines sum the U fields to form the Phi field
 //
-  double* URe=field[0]->U_1Re;
-  double* UIm=field[0]->U_1Im;
+  double* URe=fieldRe[0]->U_1;
+  double* UIm=fieldIm[0]->U_1;
   double* prefactRe=scalfactarr[0]->factRe;
   double* prefactIm=scalfactarr[0]->factIm;
   iphi=0;
   icentre=startfirstrow;
-  for(long i=0; i<sidelength; i++){
-    for(long j=0; j<sidelength; j++){
+  for(long i=0; i<shortsidelength; i++){
+    for(long j=0; j<longsidelength; j++){
       Phi[iphi] = prefactRe[icentre]*URe[iphi] + prefactIm[icentre]*UIm[iphi];
       icentre++,iphi++;
     }
     icentre+=2;
   }
   for(int i=1; i<numk; i++){
-    double* URe=field[i]->U_1Re;
-    double* UIm=field[i]->U_1Im;
+    double* URe=fieldRe[i]->U_1;
+    double* UIm=fieldIm[i]->U_1;
     double* prefactRe=scalfactarr[i]->factRe;
     double* prefactIm=scalfactarr[i]->factIm;
     iphi=0;
     icentre=startfirstrow;
-    for(long k=0; k<sidelength; k++){
-      for(long j=0; j<sidelength; j++){
+    for(long k=0; k<shortsidelength; k++){
+      for(long j=0; j<longsidelength; j++){
         Phi[iphi] += prefactRe[icentre]*URe[iphi] + prefactIm[icentre]*UIm[iphi];
         icentre++,iphi++;
       }
@@ -159,4 +174,3 @@ void Eqnset::stepwaveeq(double* Phi, Qhistory* qhistory){
     }
   }
 }
-

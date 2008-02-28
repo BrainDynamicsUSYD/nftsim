@@ -18,17 +18,17 @@ using std::endl;
 #include"parameter.h"
 #include"qhistory.h"
 #include"propag.h"
-#include"wavefield.h"
+#include"field.h"
 #include"prefact.h"
 
 class Weqn {
 public: 
   Weqn(long gridsize, double deltat);
   ~Weqn();
-  void init(Istrm& inputf, double deltax);
+  void init(Istrm& inputf, double deltax, Qhistory* pqhistory);
   void dump(ofstream& dumpf);
   void restart(Istrm& restartf, double deltax);
-  void stepwaveeq(double *PhiRe, double *PhiIm, Qhistory* qhistory, Wavefield* fieldobj, Prefact* prefactobj);
+  void stepwaveeq(double *PhiRe, double *PhiIm, Qhistory* qhistory, Field* fieldReobj, Field* filedImobj, Prefact* prefactobj);
 private:
   Parameter gammaobj;
   Parameter effrangeobj;
@@ -46,11 +46,14 @@ private:
   double dfact; //factor in wave equation equal to ((gamma deltat)^2)/12.
   double expfact1; //factor of Exp(- gamma deltat)
   double expfact2; //factor of Exp(- 2 gamma deltat)
+  Field *Qpast; // Field object holding Q in the past in larger array
   long rowlength;
-  long sidelength; // number of nodes along one side length of square node population
+  long longsidelength;
+  long shortsidelength;
   long startfirstrow;
   long startlastrow;
   long icentre, itop, ibottom, ileft, iright;
+  long itopleft,itopright,ibottomleft,ibottomright;
   long iphi;
 };
 

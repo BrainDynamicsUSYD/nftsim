@@ -1,7 +1,7 @@
 /***************************************************************************
                           qhistory.h  -  description
                              -------------------
-    copyright            : (C) 2005 by Peter Drysdale
+    copyright            : (C) 2008 by Peter Drysdale
     email                : peter@physics.usyd.edu.au
  ***************************************************************************/
 
@@ -19,7 +19,7 @@ class Poplist; //forward declare poplist. Header file is included in .cpp file
 
 class Qhistory {
 public: 
-  Qhistory(int qdepth, long gridsize, int indexQ); // construct a Qhistory with depth qdepth
+  Qhistory(int qdepth, long totalnodes, int indexQ); // construct a Qhistory with depth qdepth
   ~Qhistory();
   void init(Istrm& inputf, Poplist *ppoplist); 
   void dump(ofstream& dumpf); // dump history data for restart
@@ -33,11 +33,7 @@ private:
   int * timeindex; // Array of indexes with current time array positions
   const int indexofQ; // [0:numhistories) this is an identifier matching the qhistory with its corresponding population
   const int depthq;
-  const long gridsize;
-  long rowlength;
-  long sidelength; // number of nodes along one side length of square node population
-  long startfirstrow;
-  long startlastrow;
+  const long nodes;
 };
 
 #endif

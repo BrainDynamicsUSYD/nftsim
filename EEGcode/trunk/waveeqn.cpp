@@ -1,38 +1,37 @@
 /***************************************************************************
-                          waveeqn.cpp  -  description
+                          waveeqn.cpp  -  Wave equation propagator
                              -------------------
-    copyright            : (C) 2005 by Peter Drysdale
+    copyright            : (C) 2008 by Peter Drysdale
     email                : peter@physics.usyd.edu.au
  ***************************************************************************/
 
 #include "waveeqn.h"
 #include<math.h>
 
-WaveEqn::WaveEqn(long gsize, double dt):gammaobj("gamma"),
-           effrangeobj("Effective range"),gridsize(gsize), 
-	   deltat(dt){
+WaveEqn::WaveEqn(long nodes, double dt):gammaobj("gamma"),
+           effrangeobj("Effective range"),deltat(dt){
+  gridsize=static_cast<long>((sqrt(nodes)+2)*(sqrt(nodes)+2));
+  if (sqrt( static_cast<double>(nodes)) != floor(sqrt( static_cast<double>(nodes)))){
+    cerr << "Wave equation solver assumes square grid. Nodes per population must be a perfect square number" << endl;
+    exit(EXIT_FAILURE);
+  }
   rowlength=static_cast<long>(sqrt(gridsize));
-  sidelength=rowlength-2;
-  startfirstrow=rowlength+1;
-  startlastrow=rowlength*sidelength+1;
-  Phi_1 = new double[gridsize];
-  Phi_2 = new double[gridsize];
+  longsidelength=rowlength-2;
+  shortsidelength=rowlength-2;
+  startfirstrow=longsidelength+3;
+  startlastrow=(longsidelength+2)*shortsidelength+1;
+  phipast = new Field(gridsize,"Phi");
+  Qpast = new Field(gridsize,"Q");
 }
 
 
 WaveEqn::~WaveEqn(){
-  delete[ ] Phi_1;
-  delete[ ] Phi_2;
+  delete phipast;
+  delete Qpast;
 }
 
-void WaveEqn::init(Istrm& inputf){
-  inputf.validate("Initial Phi",58);
-  double Phi_initial;
-  inputf >> Phi_initial;
-  for(long i=0; i<gridsize; i++){
-    Phi_1[i]=Phi_initial;
-    Phi_2[i]=Phi_initial;
-  }
+void WaveEqn::init(Istrm& inputf, Qhistory* pqhistory){
+  phipast->init(inputf);
   inputf.validate("Deltax",58);
   inputf >> deltax;
   inputf.validate("Tauab",58);
@@ -47,6 +46,8 @@ void WaveEqn::init(Istrm& inputf){
     cerr << "nor sufficiently localized so the potential can be approximated by Q" << endl;
     exit(EXIT_FAILURE);
   }
+  double* Q= pqhistory->getQbytime(tauab);
+  Qpast->init(Q);
   deltat2divided12=(deltat*deltat)/12.0F; //factor in wave equation
   deltatdivideddeltaxallsquared=(deltat*deltat)/(deltax*deltax);
 }
@@ -57,14 +58,8 @@ void WaveEqn::dump(ofstream& dumpf){
   effrangeobj.dump(dumpf);
   gammaobj.dump(dumpf);
   dumpf << endl;
-  dumpf << "Phi_1: " ;
-  for(long i=0; i<gridsize; i++)
-    dumpf << Phi_1[i] << " ";
-  dumpf << endl;
-  dumpf << "Phi_2: " ;
-  for(long i=0; i<gridsize; i++)
-    dumpf << Phi_2[i] << " ";
-  dumpf << endl;
+  phipast->dump(dumpf);
+  Qpast->dump(dumpf);
 }
 
 void WaveEqn::restart(Istrm& restartf){
@@ -74,13 +69,8 @@ void WaveEqn::restart(Istrm& restartf){
   restartf >> deltax;
   effrangeobj.restart(restartf);
   gammaobj.restart(restartf);
-  restartf.ignore(200,58); //throw away endl and then Phi_1: 
-  for(long i=0; i<gridsize; i++)
-    restartf >> Phi_1[i];
-  restartf.ignore(200,58); //throw away endl and the Phi_2:
-  for(long i=0; i<gridsize; i++)
-    restartf >> Phi_2[i];
-  restartf.ignore(200,32); // throw away endl
+  phipast->restart(restartf);
+  Qpast->restart(restartf);
   deltat2divided12=(deltat*deltat)/12.0F; //factor in wave equation
   deltatdivideddeltaxallsquared=(deltat*deltat)/(deltax*deltax);
 }
@@ -91,9 +81,11 @@ void WaveEqn::stepwaveeq(double *Phi, Qhistory *pqhistory){
   double sumq;
   double sumqdiag;
   double drive;
+  double* Phi_1= phipast->U_1;
+  double* Phi_2= phipast->U_2;
   double* Q= pqhistory->getQbytime(tauab);
-  double* Q_1= pqhistory->getQbytime(tauab+1);
-  double* Q_2= pqhistory->getQbytime(tauab+2);
+  double* Q_1= Qpast->U_1;
+  double* Q_2= Qpast->U_2;
   gamma=gammaobj.get(); //Update the gamma value
   effrange=effrangeobj.get(); //Update the effective range value
   p2=deltatdivideddeltaxallsquared*(effrange*effrange*gamma*gamma)  ; // Square of mesh ratio, dimensionless
@@ -106,8 +98,8 @@ void WaveEqn::stepwaveeq(double *Phi, Qhistory *pqhistory){
   expfact2=exp(-2.0F*deltat*gamma);
   // initialize five indexes to spatial positions
   icentre=startfirstrow;
-  itop=startfirstrow-rowlength;
-  ibottom=startfirstrow+rowlength;
+  itop=startfirstrow-(longsidelength+2);
+  ibottom=startfirstrow+(longsidelength+2);
   ileft=startfirstrow-1;
   iright=startfirstrow+1;
   itopleft=itop-1;
@@ -116,13 +108,13 @@ void WaveEqn::stepwaveeq(double *Phi, Qhistory *pqhistory){
   ibottomright=ibottom+1;
   iphi=0;
   // loop over nodes
-  for(long i=0; i<sidelength; i++){
-    for(long j=0; j<sidelength; j++){
+  for(long i=0; i<shortsidelength; i++){
+    for(long j=0; j<longsidelength; j++){
       sumphi=Phi_1[itop]+Phi_1[ibottom]+Phi_1[ileft]+Phi_1[iright];
       sumphidiag=Phi_1[itopleft]+Phi_1[itopright]+Phi_1[ibottomleft]+Phi_1[ibottomright];
       sumq=Q_1[itop]+Q_1[ibottom]+Q_1[ileft]+Q_1[iright];
       sumqdiag=Q_1[itopleft]+Q_1[itopright]+Q_1[ibottomleft]+Q_1[ibottomright];
-      drive=dfact*(tenminusthreep2*expfact1*Q_1[icentre]+Q[icentre]+expfact2*Q_2[icentre]
+      drive=dfact*(tenminusthreep2*expfact1*Q_1[icentre]+Q[iphi]+expfact2*Q_2[icentre]
                  +expfact1*(0.5)*p2*(sumq+0.5*sumqdiag));
       Phi[iphi]=twominusthreep2*expfact1*Phi_1[icentre]
                  +expfact1*(0.5)*p2*(sumphi+0.5*sumphidiag)-expfact2*Phi_2[icentre];
@@ -135,54 +127,6 @@ void WaveEqn::stepwaveeq(double *Phi, Qhistory *pqhistory){
         					      // one space within inner loop
     itopleft+=2,itopright+=2,ibottomleft+=2,ibottomright+=2; // as above
   }
-  //
-  // Copy Phi_1[i] back to Phi_2[i]
-  //
-  for(long i=0; i<gridsize; i++)
-    Phi_2[i]=Phi_1[i];
-  //
-  // Copy Phi[i] to Phi_1[i] taking into account array size differences
-  //
-  double * pPhi=Phi; // Get pointer to start of Phi array
-  double * pPhi_1=Phi_1; // Get pointer to start of Phi_1 array
-// Next part copies middle of Phi values grid across
-  double * pp1=pPhi_1+startfirstrow;
-  double * pp=pPhi;
-  for(long i=0; i<sidelength;i++){
-    for(long j=0; j<sidelength;j++){
-      *pp1++=*pp++;
-    }
-    pp1+=2; // reposition at start of next row
-  }
-// Next part copies top line based on last row
-  pp1=pPhi_1+1;
-  pp=pPhi+ sidelength*(sidelength-1);
-  for(long i=0; i<sidelength;i++)
-    *pp1++=*pp++;
-// Next part copies bottom line based on first row
-  pp1=pPhi_1+startlastrow+rowlength;
-  pp=pPhi;
-  for(long i=0; i<sidelength;i++)
-    *pp1++=*pp++;
-// Next part copies left line based on last column 
-  pp1=pPhi_1+startfirstrow-1;
-  pp=pPhi+sidelength-1;
-  for(long i=0; i<sidelength;i++){
-   *pp1=*pp;
-   pp1+=rowlength;
-   pp+=sidelength;
-  }
-// Next part copies right line based on first column 
-  pp1=pPhi_1+startfirstrow+sidelength;
-  pp=pPhi;
-  for(long i=0; i<sidelength;i++){
-    *pp1=*pp;
-    pp1+=rowlength;
-    pp+=sidelength;
-  }
-// Next part copies four corners
-  *pPhi_1=*(pPhi_1+sidelength); // top left corner
-  *(pPhi_1+sidelength+1)=*(pPhi_1+1); // top right corner
-  *(pPhi_1+gridsize-1)=*(pPhi_1+rowlength+1); //bottom right corner
-  *(pPhi_1+gridsize-rowlength)=*(pPhi_1+gridsize-2); //bottom left corner
+  phipast->update(Phi); // Store current phi value in past value arrays for next step
+  Qpast->update(Q); // Store current Q value in past value array for next step of PDE
 }

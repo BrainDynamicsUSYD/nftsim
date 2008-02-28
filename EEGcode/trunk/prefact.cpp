@@ -2,7 +2,7 @@
                           prefact.cpp  - precalculated factor
                                          exp(-I* K dot r) 
                              -------------------
-    copyright            : (C) 2006 by Peter Drysdale
+    copyright            : (C) 2008 by Peter Drysdale
     email                : peter@physics.usyd.edu.au
  ***************************************************************************/
 
@@ -22,11 +22,13 @@ Prefact::~Prefact(){
 void Prefact::precalcfact(double* kvect, double deltax, long centrex, long centrey){
   long rowlength=static_cast<long>(sqrt(gridsize));
   long sidelength=rowlength-2;
-  long startfirstrow=rowlength+1;
+  long longsidelength=rowlength-2;
+  long shortsidelength=rowlength-2;
+  long startfirstrow=longsidelength+3;
   long icentre=startfirstrow;
   double phaseang;
-  for(long x=0; x<sidelength; x++){
-    for(long y=0; y<sidelength; y++){
+  for(long x=0; x<shortsidelength; x++){
+    for(long y=0; y<longsidelength; y++){
       phaseang=deltax*(kvect[0]*(x-centrex) + kvect[1]*(y-centrey));
       factRe[icentre]=cos(phaseang);
       factIm[icentre]=-1.0*sin(phaseang);

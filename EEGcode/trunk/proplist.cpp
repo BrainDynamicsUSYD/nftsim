@@ -1,7 +1,8 @@
 /***************************************************************************
-                          proplist.cpp  -  description
+                          proplist.cpp  -  list of propagators connecting neural
+                                           populations
                              -------------------
-    copyright            : (C) 2005 by Peter Drysdale
+    copyright            : (C) 2008 by Peter Drysdale
     email                : peter@physics.usyd.edu.au
  ***************************************************************************/
 
@@ -12,7 +13,7 @@
 //
 
 Proplist::Proplist(Istrm& inputf, ofstream& dumpf, int numconnects,
-            long gridsize, double deltat):numpropag(numconnects){
+            long nodes, double deltat):numpropag(numconnects){
   propagarray = new Propag *[numpropag];
   inputf.validate("Propagator type",115); // search for "propagator types NB:- the s is ASCII 115
   dumpf << "Propagator types ";
@@ -21,15 +22,15 @@ Proplist::Proplist(Istrm& inputf, ofstream& dumpf, int numconnects,
     inputf.ignore(200,58);
     optionnum=inputf.choose("Waveeqn:1 Mapping:2 Eqnset:3 ",32);
     if(1==optionnum){
-      propagarray[i] = new WaveEqn(gridsize, deltat);
+      propagarray[i] = new WaveEqn(nodes, deltat);
       dumpf << (i+1) << ": Waveeqn ";
     }
     if(2==optionnum){
-      propagarray[i] = new Pmap(gridsize, deltat);
+      propagarray[i] = new Pmap(nodes, deltat);
       dumpf << (i+1) << ": Mapping ";
     }
     if(3==optionnum){
-      propagarray[i] = new Eqnset(gridsize, deltat);
+      propagarray[i] = new Eqnset(nodes, deltat);
       dumpf << (i+1) << ": Eqnset ";
     }
     if(1!=optionnum && 2!=optionnum && 3!=optionnum){
@@ -61,9 +62,11 @@ Propag * Proplist::getpropag(int index){
 //  init method initializes propagator object in turn
 //
 
-void Proplist::init(Istrm& inputf){
-  for(int i=0; i<numpropag; i++)
-    getpropag(i)->init(inputf);
+void Proplist::init(Istrm& inputf, Qhistorylist* pqhistorylist, ConnectMat* pconnectmat){
+  for(int i=0; i<numpropag; i++){
+    Qhistory* pqhistory=pqhistorylist->getQhist(pconnectmat->getQindex(i));
+    getpropag(i)->init(inputf,pqhistory);
+  }
 }
 
 //
@@ -89,9 +92,9 @@ void Proplist::step(double **Eta, Qhistorylist* pqhistorylist, ConnectMat* pconn
 //
 #pragma omp parallel for
 //
-for(int i=0;i<numpropag;i++){
+  for(int i=0;i<numpropag;i++){
     Qhistory* pqhistory=pqhistorylist->getQhist(pconnectmat->getQindex(i));
-    getpropag(i)->stepwaveeq(Eta[i], pqhistory);
+    getpropag(i)->stepwaveeq(Eta[i],pqhistory);
     }
 }
 

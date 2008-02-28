@@ -20,13 +20,14 @@ using std::endl;
 #include"couplinglist.h"
 #include"connectmat.h"
 #include"phiout.h"
+class ConnectMat; //forward declare ConnectMat. Since we only use pointer to it no need for header
 class Poplist; // Forward declaration of Poplist since we only use pointer to it
 
 class PropagNet {
 public: 
    PropagNet(double deltat, long totalnodes, int numpops, int numconct, Istrm& inputf, ofstream& dumpf);
    ~PropagNet();
-   void init(Istrm& inputf, Poplist *ppoplist);
+   void init(Istrm& inputf, Poplist *ppoplist, ConnectMat * pconnectmat);
    void dump(ofstream& dumpf);
    void restart(Istrm& restartf, Poplist *ppoplist);
    void stepQtoP(Poplist *ppoplist, ConnectMat *pconnectmat); // Propagate the firing response of each population to pulse densities arriving at the dendrite trees of other populations

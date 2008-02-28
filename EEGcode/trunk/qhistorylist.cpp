@@ -12,13 +12,13 @@
 // is passed a depth for its history
 //
 
-Qhistorylist::Qhistorylist(Istrm& inputf, ofstream& dumpf, int numpops, long gridsize):numhistories(numpops){
+Qhistorylist::Qhistorylist(Istrm& inputf, ofstream& dumpf, int numpops, long nodes):numhistories(numpops){
   depthofhistory= new int[numhistories]; // create depth of history array
   getdepths(inputf,dumpf); // initialize depth of history array
    
   Qhistarray = new Qhistory *[numhistories];
   for(int i=0;i<numpops;i++){
-    Qhistarray[i] = new Qhistory(depthofhistory[i], gridsize, i);
+    Qhistarray[i] = new Qhistory(depthofhistory[i], nodes, i);
   }
 }
 

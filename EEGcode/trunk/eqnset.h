@@ -2,7 +2,7 @@
                           eqnset.h  -  wave equation propagator with K 
 			               extention
                              -------------------
-    copyright            : (C) 2006 by Peter Drysdale
+    copyright            : (C) 2008 by Peter Drysdale
     email                : peter@physics.usyd.edu.au
  ***************************************************************************/
 
@@ -16,26 +16,27 @@ using std::cerr;
 using std::endl;
 
 #include"istrm.h"
-#include"wavefield.h"
+#include"field.h"
 #include"weqn.h"
 #include"qhistory.h"
 #include"prefact.h"
 
 class Eqnset: public Propag {
 public: 
-  Eqnset(long gridsize, double deltat);
+  Eqnset(long nodes, double deltat);
   ~Eqnset();
-  void init(Istrm& inputf); 
+  void init(Istrm& inputf, Qhistory* qhistory); 
   void dump(ofstream& dumpf); 
   void restart(Istrm& restartf); 
   void stepwaveeq(double* Phi, Qhistory* qhistory);
 private:
-  const long gridsize;
-  long sidelength;
+  long gridsize;
+  long longsidelength;
+  long shortsidelength;
   long rowlength;
   long startfirstrow;
-  long totalnodes;
-  Wavefield **field; // An array of wave field objects storing past values of wave field
+  Field **fieldRe; // An array of field objects storing past Re values of wave field
+  Field **fieldIm; // An array of field objects storing past Im values of wave field
   Weqn *weqnobj;
   double* uRe; // Array for temporarily holding current u value for a component
   double* uIm; // Array for temporarily holding current u value for a component

@@ -54,7 +54,7 @@ void FiringR::getQ(double *V, double *Q, long totalnodes, double timestep){
   qmax=qmaxobj.get() ;
   if(ismodtheta) {
     if(0==modthetatype){theta=pmthetaobj->get(timestep);}
-    else{theta=pm1thetaobj->get(timestep,V,Qmax,sigma);}
+    else{theta=pm1thetaobj->get(timestep,V,qmax,sigma);}
   }
   else {theta=pthetaobj->get();}
   for(long i=0; i<totalnodes; i++)

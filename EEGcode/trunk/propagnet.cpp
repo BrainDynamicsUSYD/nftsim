@@ -1,37 +1,26 @@
 /***************************************************************************
-                          propagnet.cpp  -  description
+                          propagnet.cpp  -  Network of propagator
                              -------------------
-    copyright            : (C) 2005 by Peter Drysdale
+    copyright            : (C) 2008 by Peter Drysdale
     email                : peter@physics.usyd.edu.au
  ***************************************************************************/
 
 #include<math.h>
 #include "propagnet.h"
 
-//
-// Constructor for Propagnet
-//
 PropagNet::PropagNet(double deltat, long totalnodes, int numpops, int numconct, Istrm& inputf, ofstream& dumpf)
                       :numconnects(numconct),nodes(totalnodes){
-  gridsize=static_cast<long>((sqrt(nodes)+2)*(sqrt(nodes)+2));
-  if (sqrt( static_cast<double>(nodes)) != floor(sqrt( static_cast<double>(nodes)))){
-    cerr << "Wave equation solver assumes square grid. Nodes per population must be a perfect square number" << endl;
-    exit(EXIT_FAILURE);
-  }
   P = new double *[numconnects];
   for(int i=0;i<numconnects;i++)
     P[i]= new double[nodes]; 
   Eta = new double *[numconnects];
   for(int i=0;i<numconnects;i++)
     Eta[i]= new double[nodes]; 
-  pqhistorylist = new Qhistorylist(inputf,dumpf,numpops,gridsize);
-  pproplist = new Proplist(inputf,dumpf,numconct,gridsize,deltat);
+  pqhistorylist = new Qhistorylist(inputf,dumpf,numpops,nodes);
+  pproplist = new Proplist(inputf,dumpf,numconct,nodes,deltat);
   pcouplinglist = new Couplinglist(inputf,dumpf,numconct,nodes,deltat);
 }
 
-//
-// Destructor for Propagnet
-//
 PropagNet::~PropagNet(){
   for(int i=0;i<numconnects;i++){
     delete [ ] P[i];
@@ -49,11 +38,11 @@ PropagNet::~PropagNet(){
   if (pphiout) delete pphiout; // Free Phiout object if it was initialized by PropagNet::initoutput()
 }
 
-void PropagNet::init(Istrm& inputf, Poplist *ppoplist){
+void PropagNet::init(Istrm& inputf, Poplist *ppoplist, ConnectMat *pconnectmat){
   inputf.ignore(200,32); // Throwaway blank line
   inputf.ignore(200,32); // Throwaway title line of propagation data
   pqhistorylist->init(inputf, ppoplist);
-  pproplist->init(inputf);
+  pproplist->init(inputf,pqhistorylist,pconnectmat);
   pcouplinglist->init(inputf);
 }
 

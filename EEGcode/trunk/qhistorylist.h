@@ -20,7 +20,7 @@ class Poplist;
 
 class Qhistorylist {
 public:
-  Qhistorylist(Istrm& inputf, ofstream& dumpf, int numpops, long gridsize);  
+  Qhistorylist(Istrm& inputf, ofstream& dumpf, int numpops, long nodes);  
   ~Qhistorylist(); 
   void init(Istrm& inputf, Poplist *ppoplist); // initialize each Q history
   void dump(ofstream& dumpf);

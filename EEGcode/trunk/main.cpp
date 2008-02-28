@@ -82,7 +82,7 @@ int main(int argc, char* argv[])
 //      Read in remaining init parameters and initialize the classes
 //
     poplist.init(inputf, &propagnet, &connectmat);
-    propagnet.init(inputf, &poplist);
+    propagnet.init(inputf, &poplist, &connectmat);
   }   
   else{
 //
