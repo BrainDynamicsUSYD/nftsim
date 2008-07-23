@@ -15,7 +15,7 @@ using std::stringstream;
 Modtheta::Modtheta():currenttime(0){
   y = new double[2];
   dydt = new double[2];
-  pI = new Timeseries();
+  pI = new Timeseries("",""); // I drive no idenfication for back. compatability
 }
 
 Modtheta::~Modtheta(){

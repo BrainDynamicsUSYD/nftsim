@@ -18,7 +18,7 @@ using std::setprecision;
 
 #include"istrm.h"
 #include"couple.h"
-#include"conc.h"
+#include"timeseries.h"
 
 class Modcouple: public Couple {
 public: 
@@ -32,6 +32,7 @@ public:
 
 private:
   void initoutput(Istrm& inputf, int coupleid); // initialize output routine for nu
+  double t; //current time
   long nodes;
   double timestep;
   double nuzero; // \nu_0, the zero concentration signal strength
@@ -46,7 +47,7 @@ private:
   double *nu; // Array of nu synaptic strengths
   double expmu; // Factor in exactstep
   double explambda; // Factor in exactstep
-  Concentration* pconcobj; // Neurotransmitter concetration object
+  Timeseries* pconcobj; // Neurotransmitter concentration timeseries
   long synaptraces; // number of synaptic traces to output
   long conctraces; // number of concentration traces to output
   long * synnodes; // Array containing node numbers of outputted synaptic traces

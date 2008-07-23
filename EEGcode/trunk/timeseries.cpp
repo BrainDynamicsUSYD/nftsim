@@ -7,16 +7,23 @@
 
 #include "timeseries.h"
 #include <math.h>
+#include<sstream>
+using std::stringstream;
 
-Timeseries::Timeseries(){
+Timeseries::Timeseries(const char * typeid1, const char * typeid2):id1(typeid1),
+                        id2(typeid2){
 }
 Timeseries::~Timeseries(){
 }
  
 float Timeseries::init(Istrm& inputf){
-  inputf.validate("mode",58);
+  stringstream message1(stringstream::in | stringstream::out);
+  message1 << id1 << " mode";
+  inputf.validate(message1.str().c_str(),58);
   inputf >> mode;
-  inputf.validate("Time to start",58);
+  stringstream message2(stringstream::in | stringstream::out);
+  message2 << "Time to start" << id2;
+  inputf.validate(message2.str().c_str(),58);
   inputf >> ts;
   switch (mode) {
     case 1: //  Pulse pattern 
@@ -68,6 +75,20 @@ float Timeseries::init(Istrm& inputf){
       inputf.validate("Mean",58);
       inputf >> mean;
       break;
+    case 8: //  JC's Ramped input
+      inputf.validate("Step height",58);
+      inputf >> stepheight;
+      inputf.validate("Step width",58);
+      inputf >> stepwidth;
+      break;
+    case 9: //  JC's Gaussian Pulse pattern 
+      inputf.validate("Amplitude",58);
+      inputf >> amp;
+      inputf.validate("Pulse Duration",58);
+      inputf >> pdur;
+      inputf.validate("Time at peak",58);
+      inputf >> tpeak;
+      break;
     default: // No pattern
       break;
     }
@@ -108,15 +129,28 @@ void Timeseries::dump(ofstream& dumpf){
     case 7: // Constant
       dumpf << "Mean:" << mean << " ";
       break;
+    case 8: // Ramped Input
+      dumpf << "Step height:" << stepheight << " ";
+      dumpf << "Step width:" << stepwidth << " ";
+      break;
+    case 9: //  Gaussian Pulse pattern
+      dumpf << "Amplitude:" << amp << " ";
+      dumpf << "Pulse Duration:" << pdur << " ";
+      dumpf << "Time at peak:" << tpeak << " ";
+      break;
     default: // No pattern
       break;
     }
 }
 
 float Timeseries::restart(Istrm& restartf){
-  restartf.validate("mode",58);
+  stringstream message1(stringstream::in | stringstream::out);
+  message1 << id1 << " mode";
+  restartf.validate(message1.str().c_str(),58);
   restartf >> mode;
-  restartf.validate("Time to start",58);
+  stringstream message2(stringstream::in | stringstream::out);
+  message2 << "Time to start" << id2;
+  restartf.validate(message2.str().c_str(),58);
   restartf >> ts;
   switch (mode) {
     case 1: //  Pulse pattern 
@@ -168,7 +202,21 @@ float Timeseries::restart(Istrm& restartf){
       restartf.validate("Mean",58);
       restartf >> mean;
       break;
-    default: // No pattern
+    case 8: // Ramped input
+      restartf.validate("Step height",58);
+      restartf >> stepheight;
+      restartf.validate("Step width",58);
+      restartf >> stepwidth;
+      break;
+    case 9: //  Gaussian Pulse pattern 
+      restartf.validate("Amplitude",58);
+      restartf >> amp;
+      restartf.validate("Pulse Duration",58);
+      restartf >> pdur;
+      restartf.validate("Time at peak",58);
+      restartf >> tpeak;
+      break;
+     default: // No pattern
       break;
     }
   return mean;
@@ -188,7 +236,7 @@ void Timeseries::get(double t, double *tseries, const long nodes){
 	}
         break;
       }
-      case 2:{ // White noise pulse pattern
+      case 2:{ // White noise pattern
 	//
 	// For efficiency reasons random.gaussian random deviates are usually calculated in pairs.
 	// This is the reason for slightly more complex updating routine here
@@ -208,7 +256,7 @@ void Timeseries::get(double t, double *tseries, const long nodes){
 	}
         break;
       }
-      case 3:{ // Sinusoidal pattern
+      case 3:{ // Sinusoidal pattern - spatial coherent
 	for(long i=0; i<nodes; i++){
 	  tseries[i]=amp*sin(6.2831853F*freq*t);
 	}
@@ -273,6 +321,22 @@ void Timeseries::get(double t, double *tseries, const long nodes){
         for(long i=0; i<nodes; i++)
           tseries[i]=mean;
 	break;
+      }
+      case 8:{ // JC's Ramp Concentration pattern
+	if((fmod((t-ts),stepwidth)-stepwidth) == 0){
+         printf("%f\n", t);
+	 for(long i=0; i<nodes; i++){
+	    tseries[i] = tseries[i] + stepheight;
+	 }
+	}
+	break;
+      }
+      case 9: { // JC's Gaussian pulse pattern
+        for(long i=0; i<nodes; i++){
+          tseries[i]=amp * (1 / (sqrt(6.2831853)*pdur)) * 
+	  (exp(-0.5*pow((t-tpeak), 2) / (pdur*pdur))); //3.1415926F 
+        }
+        break;
       }
       default:{ // Default is No pattern
         for(long i=0; i<nodes; i++)

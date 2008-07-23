@@ -16,7 +16,15 @@ Pmap::~Pmap(){
 
 void Pmap::init(Istrm& inputf, Qhistory* qhistory){
   inputf.validate("Tauab",58);
-  inputf >> tauab;
+  float tauabfloat;
+  inputf >> tauabfloat;
+  tauab=int(tauabfloat);
+  if(tauabfloat<1 && tauabfloat>0){
+    cerr << "Last read Tauab: " << tauabfloat << endl;
+    cerr << "Tauab must be greater than 1 as it is measured in" << endl;
+    cerr << "time steps not a time measured in seconds" << endl;
+    exit(EXIT_FAILURE);
+  }
 }
 
 void Pmap::dump(ofstream& dumpf){

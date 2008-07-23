@@ -102,7 +102,7 @@ int main(int argc, char* argv[])
     cerr << "Unable to open 'eegcode.output' for output \n";
     exit(EXIT_FAILURE);
   }
-  outputf << "Deltat:" << deltat << endl;
+  outputf << "Deltat: " << deltat << endl;
   outputf << "Number of integration steps:" << nsteps << endl;
   propagnet.initoutput(inputf,outputf,numconct,totalnodes);
 //

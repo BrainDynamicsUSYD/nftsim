@@ -123,7 +123,7 @@ void Modtheta1::rkderivs(double steptime, double* y, double* dydt, double* V,
   double thetatemp=(Ic-3*Ib*y[1]+(Ib-Ia)*y[0])/mu;
   double Qfiring=Qmax/(1+exp(-(V[1]-thetatemp)/sigma));
   double xinfinity;
-  if((Qfiring*Ax)<0) {xinfinity = Ax*Qfiring;}
+  if((Qfiring*Ax)>0) {xinfinity = Ax*Qfiring;}
   else {xinfinity=0;}
   dydt[0] = (3*y[1]-y[0])/tauh; // Differential equation defining H^tilda
   dydt[1] = (xinfinity-y[1])/taux; // Differential equaiton defining X^tilda

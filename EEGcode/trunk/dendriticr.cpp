@@ -7,7 +7,7 @@
 
 #include "dendriticr.h"
 
-DendriticR::DendriticR(long numnodes):nodes(numnodes),
+DendriticR::DendriticR(long nodes):nodes(nodes),
              alphaobj("alpha"), betaobj("beta"){
   previousPab = new double [nodes];
 }

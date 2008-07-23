@@ -10,7 +10,7 @@
 #include "connectmat.h"
 
 Population::Population(long totalnodes, int popindex, ConnectMat *pconnectmat)
-             :nodes(totalnodes) {
+             :t(0),nodes(totalnodes) {
   Q = new double[totalnodes];
   isstimulus=true;
   V = 0;
@@ -23,7 +23,7 @@ Population::Population(long totalnodes, int popindex, ConnectMat *pconnectmat)
     pfr = new FiringR(popindex);
     pdr = new DendriticRlist(totalnodes,popindex,pconnectmat);
   } else {
-    pstimulus = new Stimulus();
+    pstimulus = new Timeseries("Stimulus"," of stimulus");
   }
 }
 
@@ -95,11 +95,12 @@ void Population::restart(Istrm& restartf, PropagNet *ppropagnet, ConnectMat *pco
 //
 void Population::stepPop(double timestep){
   if (isstimulus) {
-    pstimulus->getQstim(timestep, Q, nodes);
+    pstimulus->get(t, Q, nodes);
   } else {
     pdr->stepVa(timestep);
     pdr->SumAfferent(V);
     pfr->getQ(V,Q,nodes,timestep);
   }
+  t+=timestep;
 }
 

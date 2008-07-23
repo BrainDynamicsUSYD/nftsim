@@ -13,7 +13,7 @@ using std::stringstream;
 #include "modcouple.h"
 
 Modcouple::Modcouple(long numnodes, double deltat)
-  :nodes(numnodes),timestep(deltat){
+  :t(0),nodes(numnodes),timestep(deltat){
   conc = new double[nodes];
   previousconc = new double[nodes];
   h = new double[nodes];
@@ -44,7 +44,7 @@ void Modcouple::init(Istrm& inputf, int coupleid){
   inputf.validate("k",58);
   inputf >> k;
   float mean;
-  pconcobj = new Concentration();
+  pconcobj = new Timeseries("Concentration"," of Concentration");
   mean=pconcobj->init(inputf);
   for(int i=0; i<nodes; i++){
     previousconc[i]=mean;
@@ -75,7 +75,7 @@ void Modcouple::restart(Istrm& restartf, int coupleid){
   restartf.validate("k",58);
   restartf >> k;
   float mean;
-  pconcobj = new Concentration();
+  pconcobj = new Timeseries("Concentration"," of Concentration");
   mean=pconcobj->restart(restartf);
   for(int i=0; i<nodes; i++){
     previousconc[i]=mean;
@@ -208,7 +208,7 @@ void Modcouple::updatePa(double *Pa, double *Etaa){
   double deltaconcdeltat;
   double C1;
     
-  pconcobj->get(timestep, conc, nodes);
+  pconcobj->get(t, conc, nodes);
   expmu=exp(-mu*timestep);
   factormulambda=(1.0/mu)+(1.0/lambda);
   if(mu!=lambda){
@@ -241,7 +241,8 @@ void Modcouple::updatePa(double *Pa, double *Etaa){
       previousconc[i]=conc[i]; // Save current conc for next step
     }
   }
-//    
+//
+  t+=timestep;   
   for(long i=0; i<nodes; i++){
     nu[i]=nuzero*((1-nuscal)*exp(-h[i]/k) + nuscal);
     Pa[i]=nu[i]*Etaa[i];
