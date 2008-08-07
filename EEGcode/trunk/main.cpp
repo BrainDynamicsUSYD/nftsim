@@ -29,11 +29,19 @@ void writedefault(ofstream& defaultf);
 int main(int argc, char* argv[])
 {
 //
-// Open file for dumping data for restart
+// Open file for dumping data for restart -default is eegcode.dump
 //
-  ofstream dumpf("eegcode.dump",ios::out);
+  int idumparg=0; // Index No. of dump file name in argv
+  if(argc>2){
+    for(int i=1;i<(argc-1);i++){
+      if(strcmp(argv[i],"-d")==0){
+        idumparg=i+1;
+      }
+    }
+  }
+  ofstream dumpf(idumparg?argv[idumparg]:"eegcode.dump",ios::out);
   if( !dumpf ){
-    cerr << "Unable to open 'eegcode.dump' for output \n";
+    cerr << "Unable to open "<< (idumparg?argv[idumparg]:"eegcode.dump") << " for output \n";
     exit(EXIT_FAILURE);
   }
   dumpf << setprecision(14);
@@ -43,7 +51,8 @@ int main(int argc, char* argv[])
   long totalnodes=0;
   int numpops=0;
   int numconct=0;
-  if(argc==3){
+  if(argc==3 && (strcmp(argv[1],"write")==0)
+             && (strcmp(argv[2],"defaults")==0)){
     ofstream defaultf("eegcode.conf",ios::out);
     if( !defaultf ){
       cerr << "Unable to open 'eegcode.conf' for output of default parameters \n";
@@ -53,9 +62,20 @@ int main(int argc, char* argv[])
     cerr << "Written 'eegcode.conf' file" << endl;
     defaultf.close();
   }
-  Istrm inputf("eegcode.conf"); //open file for reading input data
+//
+// Open conf file - default is eegcode.conf
+//
+  int inamearg=0;
+  if(argc>2){
+    for(int i=1;i<(argc-1);i++){
+      if(strcmp(argv[i],"-i")==0){
+        inamearg=i+1;
+      }
+    }
+  }
+  Istrm inputf(inamearg?argv[inamearg]:"eegcode.conf"); //open file for reading input data
   if( !inputf ){
-    cerr << "Unable to open 'eegcode.conf' for input \n";
+    cerr << "Unable to open "<< (inamearg?argv[inamearg]:"eegcode.conf") << " for input \n";
     exit(EXIT_FAILURE);
   }
   readglobalparams(inputf, dumpf, totalnodes, numpops, numconct);
@@ -77,7 +97,7 @@ int main(int argc, char* argv[])
   Poplist poplist(totalnodes,numpops, &connectmat);
   PropagNet propagnet(deltat,totalnodes,numpops,numconct,inputf,dumpf);
   inputf.ignore(200,32); //throwaway space line before start of populations
-  if(argc==1 || argc==3){
+  if( !(argc==2 && (strcmp(argv[1],"restart")==0)) ){
 //
 //      Read in remaining init parameters and initialize the classes
 //
@@ -97,9 +117,17 @@ int main(int argc, char* argv[])
 //
 // Open file for outputting data 
 //
-  ofstream outputf("eegcode.output",ios::out);
+  int ioutarg=0;
+  if(argc>2){
+    for(int i=1;i<(argc-1);i++){
+      if(strcmp(argv[i],"-o")==0){
+        ioutarg=i+1;
+      }
+    }
+  }
+  ofstream outputf(ioutarg?argv[ioutarg]:"eegcode.output",ios::out);
   if( !outputf ){
-    cerr << "Unable to open 'eegcode.output' for output \n";
+    cerr << "Unable to open "<< (ioutarg?argv[ioutarg]:"eegcode.output") << " for output \n";
     exit(EXIT_FAILURE);
   }
   outputf << "Deltat: " << deltat << endl;
