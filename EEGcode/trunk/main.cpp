@@ -90,9 +90,19 @@ int main(int argc, char* argv[])
   inputf >> nsteps;
   dumpf << "Number of integration steps:" << nsteps << " ";
   double deltat;
-  inputf.validate("Deltat",58);
-  inputf >> deltat;
-  dumpf << "Deltat:" << deltat << " ";
+  long skippts;
+  int optionnum;
+  optionnum=inputf.choose("Deltat:1 Skippoints:2 ",58);
+  if(1==optionnum){
+    inputf >> deltat;
+    skippts=0;
+    dumpf << "Deltat:" << deltat << " ";
+  } else {
+    inputf >> skippts;
+    inputf.validate("Deltat",58);
+    inputf >> deltat;
+    dumpf << "Skippoints:"<< skippts << " " << "Deltat:" << deltat << " ";
+  }
   inputf.ignore(200,32); //throwaway space line before start of populations
   Poplist poplist(totalnodes,numpops, &connectmat);
   PropagNet propagnet(deltat,totalnodes,numpops,numconct,inputf,dumpf);
@@ -130,16 +140,23 @@ int main(int argc, char* argv[])
     cerr << "Unable to open "<< (ioutarg?argv[ioutarg]:"eegcode.output") << " for output \n";
     exit(EXIT_FAILURE);
   }
+  if(skippts!=0) outputf << "Skippoints: " << skippts << " ";
   outputf << "Deltat: " << deltat << endl;
   outputf << "Number of integration steps:" << nsteps << endl;
   propagnet.initoutput(inputf,outputf,numconct,totalnodes);
 //
 //  Main integration Loop
 //
+  long skip=skippts;
   for(int k=1;k<nsteps+1;k++){
     propagnet.stepQtoP(&poplist, &connectmat);
     poplist.stepPops(deltat);
-    propagnet.output(outputf);
+    if(0==skip){
+      propagnet.output(outputf);
+      skip=skippts;
+    } else {
+      skip--;
+    }
   }
 //
 // Dump data for restart
