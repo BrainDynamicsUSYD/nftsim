@@ -22,6 +22,9 @@ void FiringR::init(Istrm& inputf){
   inputf.validate("respo",110); 
   inputf.validate("s",101); // Read succesively upto the end of "Firing response"
   int optionnum;
+  pthetaobj=0;
+  pmthetaobj=0;
+  pm1thetaobj=0;
   optionnum=inputf.choose("Theta:1 ModTheta:2 ModTheta1:3",58);
   if(1==optionnum){
     pthetaobj = new Parameter("Theta");
