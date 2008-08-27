@@ -96,8 +96,8 @@ float Timeseries::init(Istrm& inputf){
 }
 
 void Timeseries::dump(ofstream& dumpf){
-  dumpf << "mode:" << mode << " ";
-  dumpf << "Time to start:" << ts << " ";
+  dumpf << id1 << " mode:" << mode << " ";
+  dumpf << "Time to start" << id2 << ":" << ts << " ";
   switch (mode) {
     case 1: //  Pulse pattern 
       dumpf << "Amplitude:" << amp << " ";
