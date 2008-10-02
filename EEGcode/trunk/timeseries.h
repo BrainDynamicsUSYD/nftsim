@@ -45,7 +45,8 @@ private:
   double yspread; //Spread of Gaussian in y direction
   double stepheight; // Step height in JC's ramped input
   double stepwidth; // Step width in JC's ramped input
-  Random random; //Random number generator object
+  Random *random; //Pointer to Random number generator object
+  long seed; // seed for random number generator
 };
 
 #endif

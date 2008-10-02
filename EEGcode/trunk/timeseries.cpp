@@ -12,11 +12,15 @@ using std::stringstream;
 
 Timeseries::Timeseries(const char * typeid1, const char * typeid2):id1(typeid1),
                         id2(typeid2){
+  random=0; // Set pointer to null in case random is not created
+  seed=-98716872;
 }
 Timeseries::~Timeseries(){
+  if(random) delete random;
 }
  
 float Timeseries::init(Istrm& inputf){
+  int optionnum;
   stringstream message1(stringstream::in | stringstream::out);
   message1 << id1 << " mode";
   inputf.validate(message1.str().c_str(),58);
@@ -35,9 +39,16 @@ float Timeseries::init(Istrm& inputf){
       inputf >> tperiod;
       mean=0.0;
       break;
-    case 2: //  White noise pattern 
-      inputf.validate("Amplitude",58);
-      inputf >> amp;
+    case 2: //  White noise pattern
+      optionnum=inputf.choose("Amplitude:1 Ranseed:2",58);
+      if(1==optionnum){
+        inputf >> amp;
+      } else {
+        inputf >> seed;
+        inputf.validate("Amplitude",58);
+        inputf >> amp;
+      }
+      random = new Random(seed);
       inputf.validate("Mean",58);
       inputf >> mean;
       break;
@@ -48,8 +59,15 @@ float Timeseries::init(Istrm& inputf){
       inputf >> freq;
       break;
     case 4: //  Coherent white noise pattern 
-      inputf.validate("Amplitude",58);
-      inputf >> amp;
+      optionnum=inputf.choose("Amplitude:1 Ranseed:2",58);
+      if(1==optionnum){
+        inputf >> amp;
+      } else {
+        inputf >> seed;
+        inputf.validate("Amplitude",58);
+        inputf >> amp;
+      }
+      random = new Random(seed);
       inputf.validate("Mean",58);
       inputf >> mean;
       break;
@@ -144,6 +162,7 @@ void Timeseries::dump(ofstream& dumpf){
 }
 
 float Timeseries::restart(Istrm& restartf){
+  int optionnum;
   stringstream message1(stringstream::in | stringstream::out);
   message1 << id1 << " mode";
   restartf.validate(message1.str().c_str(),58);
@@ -163,8 +182,15 @@ float Timeseries::restart(Istrm& restartf){
       mean=0.0;
       break;
     case 2: //  White noise pattern 
-      restartf.validate("Amplitude",58);
-      restartf >> amp;
+      optionnum=restartf.choose("Amplitude:1 Ranseed:2",58);
+      if(1==optionnum){
+        restartf >> amp;
+      } else {
+        restartf >> seed;
+        restartf.validate("Amplitude",58);
+        restartf >> amp;
+      }
+      random = new Random(seed);
       restartf.validate("Mean",58);
       restartf >> mean;
       break;
@@ -175,8 +201,15 @@ float Timeseries::restart(Istrm& restartf){
       restartf >> freq;
       break;
     case 4: //  Coherent white noise pattern 
-      restartf.validate("Amplitude",58);
-      restartf >> amp;
+      optionnum=restartf.choose("Amplitude:1 Ranseed:2",58);
+      if(1==optionnum){
+        restartf >> amp;
+      } else {
+        restartf >> seed;
+        restartf.validate("Amplitude",58);
+        restartf >> amp;
+      }
+      random = new Random(seed);
       restartf.validate("Mean",58);
       restartf >> mean;
       break;
@@ -246,12 +279,12 @@ void Timeseries::get(double t, double *tseries, const long nodes){
 	p=tseries;
         for(long i=0; i<nodes-1; i+=2){ // if nodes is even then update every point in tseries[]
 		              // if nodes is odd then update all but the last point in tseries[]
-	  random.gaussian(deviate1,deviate2);	
+	  random->gaussian(deviate1,deviate2);	
           *p++=amp*deviate1 + mean;
           *p++=amp*deviate2 + mean;
         }
 	if(nodes%2){ // if nodes is odd update last point which was otherwise not updated above
-	  random.gaussian(deviate1,deviate2);
+	  random->gaussian(deviate1,deviate2);
 	  *p=amp*deviate1 + mean;
 	}
         break;
@@ -264,7 +297,7 @@ void Timeseries::get(double t, double *tseries, const long nodes){
       }
       case 4:{ // Coherent white noise pattern
         double deviate1, deviate2;
-	random.gaussian(deviate1,deviate2);
+	random->gaussian(deviate1,deviate2);
 	for(long i=0; i<nodes; i++){
           tseries[i]=amp*deviate1 + mean;
         }
@@ -281,12 +314,12 @@ void Timeseries::get(double t, double *tseries, const long nodes){
 	    p=tseries;
             for(long i=0; i<nodes-1; i+=2){ // if nodes is even then update every point in tseries[]
                                   // if nodes is odd then update all but the last point in tseries[]
-	      random.gaussian(deviate1,deviate2);	
+	      random->gaussian(deviate1,deviate2);	
               *p++=amp*deviate1;
               *p++=amp*deviate2;
             }
             if(nodes%2){ // if nodes is odd update last point which was otherwise not updated above
-	      random.gaussian(deviate1,deviate2);
+	      random->gaussian(deviate1,deviate2);
               *p=amp*deviate1;
             }
         } else {
@@ -323,7 +356,7 @@ void Timeseries::get(double t, double *tseries, const long nodes){
 	break;
       }
       case 8:{ // JC's Ramp Concentration pattern
-	if((fmod((t-ts),stepwidth)-stepwidth) == 0){
+	if(0 == (fmod((t-ts),stepwidth)-stepwidth) ){
          printf("%f\n", t);
 	 for(long i=0; i<nodes; i++){
 	    tseries[i] = tseries[i] + stepheight;

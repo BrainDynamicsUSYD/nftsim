@@ -10,7 +10,7 @@
 
 class Random {
 public: 
-  Random();
+  Random(long seed);
   ~Random();
   double ran();
   void gaussian(double& deviate1, double& deviate2);

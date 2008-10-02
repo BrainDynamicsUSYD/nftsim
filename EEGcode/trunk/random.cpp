@@ -7,9 +7,11 @@
 
 #include "random.h"
 #include <math.h>
+#include <iostream>
+using std::cerr;
 
-Random::Random():EPS(1.2e-7),RNMX(1.0-EPS),AM(1.0/IM){
-  idum=-98716872;
+Random::Random(long seed):EPS(1.2e-7),RNMX(1.0-EPS),AM(1.0/IM){
+  idum=seed;
   int j;
   long k;
   iv = new long[NTAB];
@@ -54,7 +56,7 @@ void Random::gaussian(double& deviate1, double& deviate2){
     x=2*ran() - 1; // throw two uniform deviates in square circumscribing unit circle
     y=2*ran() - 1;
     norm = x*x+y*y; 
-  } while (norm > 1.0 || norm == 0);  // test whether in unit circle
+  } while (norm > 1.0 || 0 == norm );  // test whether in unit circle
   factor=sqrt(-2.0*log(norm)/norm);
   deviate1=static_cast<double>(x*factor);
   deviate2=static_cast<double>(y*factor);
