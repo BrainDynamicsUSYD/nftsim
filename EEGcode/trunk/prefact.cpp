@@ -9,7 +9,8 @@
 #include "prefact.h"
 #include <math.h>
 
-Prefact::Prefact(long gsize):gridsize(gsize){
+Prefact::Prefact(long gsize,long longside,long shortside):
+    gridsize(gsize),longsidelength(longside),shortsidelength(shortside){
   factRe= new double [gridsize];
   factIm= new double [gridsize];
 }
@@ -20,10 +21,6 @@ Prefact::~Prefact(){
 }
 
 void Prefact::precalcfact(double* kvect, double deltax, long centrex, long centrey){
-  long rowlength=static_cast<long>(sqrt(gridsize));
-  long sidelength=rowlength-2;
-  long longsidelength=rowlength-2;
-  long shortsidelength=rowlength-2;
   long startfirstrow=longsidelength+3;
   long icentre=startfirstrow;
   double phaseang;
@@ -36,37 +33,42 @@ void Prefact::precalcfact(double* kvect, double deltax, long centrex, long centr
     }	      
     icentre+=2; //increment position to next row
   }
-  wrapbndry(factRe,sidelength,rowlength);
-  wrapbndry(factIm,sidelength,rowlength);
+  wrapbndry(factRe);
+  wrapbndry(factIm);
 }
 
-void Prefact::wrapbndry(double* array,long sidelength, long rowlength){
+void Prefact::wrapbndry(double* array){
   double* pp;
   double* pp1;
 // This part copies to top line based on last row
   pp1=array+1;
-  pp=array+ (rowlength-1)*(rowlength-1);
-  for(long i=0; i<sidelength;i++)
+  pp=array+ (longsidelength+2)*shortsidelength+1;
+  for(long i=0; i<longsidelength;i++)
     *pp1++=*pp++;
 // Next part copies to bottom line based on first row
-  pp1=array+ rowlength*rowlength-rowlength+1;
-  pp=array+ rowlength+1;
-  for(long i=0; i<sidelength;i++)
+  pp1=array+ (longsidelength+2)*(shortsidelength+1)+1;
+  pp=array+ longsidelength+3;
+  for(long i=0; i<longsidelength;i++)
     *pp1++=*pp++;
 // Next part copies to left line based on last column
-  pp1=array+rowlength;
-  pp=array+ 2*rowlength-2;
-  for(long i=0; i<sidelength;i++){
+  pp1=array+longsidelength+2;
+  pp=array+ 2*longsidelength+2;
+  for(long i=0; i<shortsidelength;i++){
     *pp1=*pp;
-    pp1+=rowlength;
-    pp+=rowlength;
+    pp1+=longsidelength+2;
+    pp+=longsidelength+2;
   }
 // Next part copies to right line based on first column
-  pp1=array+ 2*rowlength-1;
-  pp=array+ rowlength+1;
-  for(long i=0; i<sidelength;i++){
+  pp1=array+ 2*longsidelength+3;
+  pp=array+ longsidelength+3;
+  for(long i=0; i<shortsidelength;i++){
     *pp1=*pp;
-    pp1+=rowlength;
-    pp+=rowlength;
+    pp1+=longsidelength+2;
+    pp+=longsidelength+2;
   }
+// Next part copies four corners
+  *array=*(array+longsidelength); // top left corner
+  *(array+longsidelength+1)=*(array+1); // top right corner
+  *(array+gridsize-1)=*(array+longsidelength+3); //bottom right corner
+  *(array+gridsize-longsidelength-2)=*(array+gridsize-2); //bottom left corner
 }

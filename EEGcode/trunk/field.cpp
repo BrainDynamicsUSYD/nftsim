@@ -9,12 +9,11 @@
 #include "field.h"
 #include<math.h>
 
-Field::Field(long gsize,const char * fname):ident(fname),gridsize(gsize){
+Field::Field(long gsize,long longside,long shortside,const char * fname):
+               ident(fname),gridsize(gsize),longsidelength(longside),
+	       shortsidelength(shortside){
   U_A = new double[gridsize];
   U_B = new double[gridsize];
-  rowlength=static_cast<long>(sqrt(gridsize));
-  shortsidelength=rowlength-2;
-  longsidelength=rowlength-2;
   startfirstrow=longsidelength+3;
 }
 
@@ -28,10 +27,8 @@ void Field::init(Istrm& inputf){
   inputf.ignore(200,58); // Spike up to colon to find Initial value
   double U_initial;
   inputf >> U_initial;
-  for(long i=0; i<gridsize; i++){
-    U_A[i]=U_initial;
-    U_B[i]=U_initial;
-  }
+  for(long i=0; i<gridsize; i++) U_A[i]=U_initial;
+  for(long i=0; i<gridsize; i++) U_B[i]=U_initial;
   U_1=U_A;
   U_2=U_B;
 }

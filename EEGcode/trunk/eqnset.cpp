@@ -25,6 +25,27 @@ Eqnset::Eqnset(long nodes, double deltat){
   weqnobj = new Weqn(gridsize, deltat);
 }
 
+Eqnset::Eqnset(long nodes,double deltat,long longside){
+  longsidelength=longside;
+  if (nodes%longsidelength != 0){
+    cerr << "To define a rectangular grid nodes: " << nodes <<endl;
+    cerr << "divided by Longside: " << longside << endl;
+    cerr << "must have no remainder" << endl;
+    exit(EXIT_FAILURE); 
+  }
+  shortsidelength=nodes/longsidelength;
+  if(longsidelength<2 || shortsidelength<2){
+    cerr << "Error: The shortest dimension in Waveeqnrect" << endl;
+    cerr << "must be 2 or greater" << endl;
+    exit(EXIT_FAILURE);
+  }
+  gridsize=(longsidelength+2)*(shortsidelength+2);
+  startfirstrow=longsidelength+3;
+  uRe = new double[nodes];
+  uIm = new double[nodes];
+  weqnobj = new Weqn(gridsize,deltat,longsidelength,shortsidelength);
+}
+
 Eqnset::~Eqnset(){
   delete[] uRe;
   delete[] uIm;
@@ -70,11 +91,11 @@ void Eqnset::init(Istrm& inputf, Qhistory* qhistory){
   fieldIm = new Field *[numk];
   scalfactarr = new Prefact *[numk];
   for(int i=0; i<numk; i++){
-    fieldRe[i]= new Field(gridsize,"URe");
+    fieldRe[i]= new Field(gridsize,longsidelength,shortsidelength,"URe");
     fieldRe[i]->init(inputf);
-    fieldIm[i]= new Field(gridsize,"UIm");
+    fieldIm[i]= new Field(gridsize,longsidelength,shortsidelength,"UIm");
     fieldIm[i]->init(inputf);
-    scalfactarr[i]= new Prefact(gridsize);
+    scalfactarr[i]= new Prefact(gridsize,longsidelength,shortsidelength);
     scalfactarr[i]->precalcfact(karray[i], deltax, centrex, centrey);
   }
 }
@@ -87,7 +108,7 @@ void Eqnset::dump(ofstream& dumpf){
 //
 // Next lines dump array of k values
 //
-  dumpf << "Num. K components:";
+  dumpf << "Num. K:";
   dumpf << numk << endl;
   double* kvect;
   for(int i=0; i<numk; i++){
@@ -111,7 +132,7 @@ void Eqnset::restart(Istrm& restartf){
   restartf >> centrex;
   restartf.validate("",58);
   restartf >> centrey;
-  restartf.validate("Num. K components",58);
+  restartf.validate("Num. K",58);
   restartf >> numk;
   karray= new double *[numk];
   double ktmp;
@@ -129,9 +150,9 @@ void Eqnset::restart(Istrm& restartf){
   fieldRe = new Field *[numk];
   fieldIm = new Field *[numk];
   for(int i=0; i<numk; i++){
-    fieldRe[i]= new Field(gridsize,"URe");
+    fieldRe[i]= new Field(gridsize,longsidelength,shortsidelength,"URe");
     fieldRe[i]->restart(restartf);
-    fieldIm[i]= new Field(gridsize,"UIm");
+    fieldIm[i]= new Field(gridsize,longsidelength,shortsidelength,"UIm");
     fieldIm[i]->restart(restartf);
   }
 }

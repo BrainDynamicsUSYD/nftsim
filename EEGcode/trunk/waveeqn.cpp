@@ -20,10 +20,30 @@ WaveEqn::WaveEqn(long nodes, double dt):gammaobj("gamma"),
   shortsidelength=rowlength-2;
   startfirstrow=longsidelength+3;
   startlastrow=(longsidelength+2)*shortsidelength+1;
-  phipast = new Field(gridsize,"Phi");
-  Qpast = new Field(gridsize,"Q");
+  phipast = new Field(gridsize,longsidelength,shortsidelength,"Phi");
+  Qpast = new Field(gridsize,longsidelength,shortsidelength,"Q");
 }
 
+WaveEqn::WaveEqn(long nodes, double dt, long longside):gammaobj("gamma"),
+           effrangeobj("Effective range"),deltat(dt),longsidelength(longside){
+  if (nodes%longsidelength != 0){
+    cerr << "To define a rectangular grid nodes: " << nodes <<endl;
+    cerr << "divided by Longside: " << longside << endl;
+    cerr << "must have no remainder" << endl;
+    exit(EXIT_FAILURE); 
+  }
+  shortsidelength=nodes/longsidelength;
+  if(longsidelength<2 || shortsidelength<2){
+    cerr << "Error: The shortest dimension in Waveeqnrect" << endl;
+    cerr << "must be 2 or greater" << endl;
+    exit(EXIT_FAILURE);
+  }
+  gridsize=(longsidelength+2)*(shortsidelength+2);
+  startfirstrow=longsidelength+3;
+  startlastrow=(longsidelength+2)*shortsidelength+1;
+  phipast = new Field(gridsize,longsidelength,shortsidelength,"Phi");
+  Qpast = new Field(gridsize,longsidelength,shortsidelength,"Q");
+}
 
 WaveEqn::~WaveEqn(){
   delete phipast;

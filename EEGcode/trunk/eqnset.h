@@ -23,7 +23,8 @@ using std::endl;
 
 class Eqnset: public Propag {
 public: 
-  Eqnset(long nodes, double deltat);
+  Eqnset(long nodes, double deltat); // For square boundary
+  Eqnset(long nodes, double deltat, long longsidelength); // For rectangular boundary
   ~Eqnset();
   void init(Istrm& inputf, Qhistory* qhistory); 
   void dump(ofstream& dumpf); 

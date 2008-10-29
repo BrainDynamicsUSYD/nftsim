@@ -19,14 +19,16 @@ using std::endl;
 
 class Prefact {
 public: 
-  Prefact(long gsize);
+  Prefact(long gsize,long longside,long shortside);
   ~Prefact();
   void precalcfact(double* kvect, double deltax, long centrex, long centrey);
   double* factRe;
   double* factIm;
 private:
-  void wrapbndry(double* array,long sidelength, long rowlength);
+  void wrapbndry(double* array);
   long gridsize;
+  long longsidelength;
+  long shortsidelength;
 };
 
 #endif

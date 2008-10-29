@@ -23,7 +23,8 @@ using std::endl;
 
 class Weqn {
 public: 
-  Weqn(long gridsize, double deltat);
+  Weqn(long gridsize, double deltat); // For square boundary
+  Weqn(long gridsize,double deltat,long longsidelength,long shortsidelength); // For rectangular boudary
   ~Weqn();
   void init(Istrm& inputf, double deltax, Qhistory* pqhistory);
   void dump(ofstream& dumpf);
@@ -40,8 +41,8 @@ private:
   const double deltat; // Grid spacing in time
   double deltax; // Grid spacing in space
   double deltatdivideddeltaxallsquared; //Factor in p2 definition
-  double twominusfourp2; // factor in wave algorithm
-  double tenminusfourp2; //factor in wave algorithm
+  double twominusthreep2; // factor in wave algorithm
+  double tenminusthreep2; //factor in wave algorithm
   double deltat2divided12; //factor in wave equation
   double dfact; //factor in wave equation equal to ((gamma deltat)^2)/12.
   double expfact1; //factor of Exp(- gamma deltat)

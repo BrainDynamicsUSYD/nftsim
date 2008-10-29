@@ -20,22 +20,39 @@ Proplist::Proplist(Istrm& inputf, ofstream& dumpf, int numconnects,
   int optionnum;
   for(int i=0;i<numpropag;i++){
     inputf.ignore(200,58);
-    optionnum=inputf.choose("Waveeqn:1 Mapping:2 Eqnset:3 ",32);
-    if(1==optionnum){
-      propagarray[i] = new WaveEqn(nodes, deltat);
-      dumpf << (i+1) << ": Waveeqn ";
-    }
-    if(2==optionnum){
-      propagarray[i] = new Pmap(nodes, deltat);
-      dumpf << (i+1) << ": Mapping ";
-    }
-    if(3==optionnum){
-      propagarray[i] = new Eqnset(nodes, deltat);
-      dumpf << (i+1) << ": Eqnset ";
-    }
-    if(1!=optionnum && 2!=optionnum && 3!=optionnum){
-      cerr << "Invalid Propagator type" << endl;
-      exit(EXIT_FAILURE);
+    long longside; // declare longside now in case we use it below
+    optionnum=inputf.choose(
+        "Waveeqn:1 Mapping:2 Eqnset:3 Waveeqnrect:4 Eqnsetrect:5",32);
+    switch(optionnum){
+      case 1:
+        propagarray[i] = new WaveEqn(nodes, deltat);
+        dumpf << (i+1) << ": Waveeqn ";
+	break;
+      case 2:
+        propagarray[i] = new Pmap(nodes, deltat);
+        dumpf << (i+1) << ": Mapping ";
+        break;
+      case 3:
+        propagarray[i] = new Eqnset(nodes, deltat);
+        dumpf << (i+1) << ": Eqnset ";
+	break;
+      case 4:
+        inputf.validate("Longside",58);
+	inputf >> longside;
+        propagarray[i] = new WaveEqn(nodes,deltat,longside);
+	dumpf << (i+1) << ": Waveeqnrect ";
+	dumpf << "(Longside:" << longside <<") ";
+	break;
+      case 5:
+        inputf.validate("Longside",58);
+	inputf >> longside;
+        propagarray[i] = new Eqnset(nodes,deltat,longside);
+        dumpf << (i+1) << ": Eqnsetrect ";
+	dumpf << "(Longside:" << longside <<") ";
+	break;	
+      default:
+        cerr << "Invalid Propagator type" << endl;
+        exit(EXIT_FAILURE);
     }
   }
 }

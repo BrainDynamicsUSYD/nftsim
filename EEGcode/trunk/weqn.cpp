@@ -16,7 +16,17 @@ Weqn::Weqn(long gsize, double dt):gammaobj("gamma"),
   shortsidelength=rowlength-2;
   startfirstrow=longsidelength+3;
   startlastrow=(longsidelength+2)*shortsidelength+1;
-  Qpast = new Field(gridsize,"Q");
+  Qpast = new Field(gridsize,longsidelength,shortsidelength,"Q");
+}
+
+Weqn::Weqn(long gsize,double dt,long longside,long shortside):gammaobj("gamma"),
+           effrangeobj("Effective range"),gridsize(gsize),
+	   deltat(dt){
+  longsidelength=longside;
+  shortsidelength=shortside;
+  startfirstrow=longsidelength+3;
+  startlastrow=(longsidelength+2)*shortsidelength+1;
+  Qpast = new Field(gridsize,longsidelength,shortsidelength,"Q");
 }
 
 Weqn::~Weqn(){
@@ -87,8 +97,10 @@ void Weqn::stepwaveeq(double *PhiRe, double *PhiIm, Qhistory *pqhistory, Field* 
   gamma=gammaobj.get(); //Update the gamma value
   effrange=effrangeobj.get(); //Update the effective range value
   p2=deltatdivideddeltaxallsquared*(effrange*effrange*gamma*gamma)  ; // Square of mesh ratio, dimensionless
-  twominusfourp2=2.0F-4.0F*p2; // factor in wave algorithm
-  tenminusfourp2=10.0F-4*p2; //factor in wave algorithm
+//  twominusfourp2=2.0F-4.0F*p2; // factor in wave algorithm
+  twominusthreep2=2.0F-3.0F*p2; // factor in wave algorithm
+//  tenminusfourp2=10.0F-4*p2; //factor in wave algorithm
+  tenminusthreep2=10.0F-3.0F*p2; //factor in wave algorithm
   dfact=deltat2divided12*gamma*gamma; // Factor of deltat^2 /gamma^2 / 12
   expfact1=exp(-1.0F*deltat*gamma);
   expfact2=exp(-2.0F*deltat*gamma);
@@ -119,12 +131,12 @@ void Weqn::stepwaveeq(double *PhiRe, double *PhiIm, Qhistory *pqhistory, Field* 
       sumqImdiag=factIm[itopleft]*Q_1[itopleft]+factIm[itopright]*Q_1[itopright]
 	         +factIm[ibottomleft]*Q_1[ibottomleft]+factIm[ibottomright]*Q_1[ibottomright];
       driveRe=dfact*( p2*expfact1*(0.5)*(sumqRe+0.5*sumqRediag) + factRe[icentre]*
-	      (tenminusfourp2*expfact1*Q_1[icentre]+Q[iphi]+expfact2*Q_2[icentre]) );
+	      (tenminusthreep2*expfact1*Q_1[icentre]+Q[iphi]+expfact2*Q_2[icentre]) );
       driveIm=dfact*( p2*expfact1*(0.5)*(sumqIm+0.5*sumqImdiag) + factIm[icentre]*
-	      (tenminusfourp2*expfact1*Q_1[icentre]+Q[iphi]+expfact2*Q_2[icentre]) );
-      PhiRe[iphi]=twominusfourp2*expfact1*Phi_1Re[icentre]
+	      (tenminusthreep2*expfact1*Q_1[icentre]+Q[iphi]+expfact2*Q_2[icentre]) );
+      PhiRe[iphi]=twominusthreep2*expfact1*Phi_1Re[icentre]
              +p2*expfact1*(0.5)*(sumphiRe+0.5*sumphiRediag)-expfact2*Phi_2Re[icentre];
-      PhiIm[iphi]=twominusfourp2*expfact1*Phi_1Im[icentre]
+      PhiIm[iphi]=twominusthreep2*expfact1*Phi_1Im[icentre]
              +p2*expfact1*(0.5)*(sumphiIm+0.5*sumphiImdiag)-expfact2*Phi_2Im[icentre];
       PhiRe[iphi]+=driveRe;
       PhiIm[iphi]+=driveIm;

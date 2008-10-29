@@ -22,7 +22,8 @@ using std::endl;
 
 class WaveEqn: public Propag {
 public: 
-  WaveEqn(long nodes, double deltat);
+  WaveEqn(long nodes, double deltat); // For square boundary
+  WaveEqn(long nodes, double deltat, long longside); // For rectangular boundary
   ~WaveEqn();
   void init(Istrm& inputf, Qhistory* qhistory);
   void dump(ofstream& dumpf);

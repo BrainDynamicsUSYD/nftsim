@@ -21,7 +21,7 @@ using std::string;
 
 class Field {
 public: 
-  Field(long gridsize, const char * fname);
+  Field(long gridsize,long longsidelength,long shortsidelength,const char * fname);
   ~Field();
   void init(Istrm& inputf);
   void init(double* Uinit);
@@ -36,9 +36,8 @@ private:
   double *U_A; // One of two keys in keyring storing field one and two steps in past
   double *U_B; // One of two keys in keyring storing field one and two steps in past  
   const long gridsize; // size of grid for integration of wave equation
-  long rowlength;
-  long shortsidelength;
-  long longsidelength;
+  const long longsidelength;
+  const long shortsidelength;
   long startfirstrow;
  };
 
