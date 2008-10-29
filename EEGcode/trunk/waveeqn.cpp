@@ -65,7 +65,21 @@ void WaveEqn::init(Istrm& inputf, Qhistory* pqhistory){
     exit(EXIT_FAILURE);
   }
   effrangeobj.init(inputf);
-  gammaobj.init(inputf);
+  int optionnum;
+  optionnum=inputf.choose("gamma:1 velocity:2",58);
+  if(1==optionnum){
+    inputf >> gamma;
+    gammaobj.init(gamma);
+  }
+  if(2==optionnum){
+    double velocity;
+    inputf >> velocity;
+    gammaobj.init( velocity/effrangeobj.get() );
+  }
+  if( !((1==optionnum)||(2==optionnum)) ){
+    cerr << "Last read looking for gamma or velocity found neither" << endl;
+    exit(EXIT_FAILURE);
+  }
   gamma=gammaobj.get(); //Update the gamma value
   effrange=effrangeobj.get(); //Update the effective range value
   if(gamma/2.0 < deltat || effrange/2.0 < deltax){
@@ -96,7 +110,21 @@ void WaveEqn::restart(Istrm& restartf){
   restartf.validate("Deltax",58);
   restartf >> deltax;
   effrangeobj.restart(restartf);
-  gammaobj.restart(restartf);
+  int optionnum;
+  optionnum=restartf.choose("gamma:1 velocity:2",58);
+  if(1==optionnum){
+    restartf >> gamma;
+    gammaobj.restart(gamma);
+  }
+  if(2==optionnum){
+    double velocity;
+    restartf >> velocity;
+    gammaobj.restart( velocity/effrangeobj.get() );
+  }
+  if( !((1==optionnum)||(2==optionnum)) ){
+    cerr << "Last read looking for gamma or velocity found neither" << endl;
+    exit(EXIT_FAILURE);
+  }
   phipast->restart(restartf);
   Qpast->restart(restartf);
   deltat2divided12=(deltat*deltat)/12.0F; //factor in wave equation
