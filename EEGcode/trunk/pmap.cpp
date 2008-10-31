@@ -15,9 +15,22 @@ Pmap::~Pmap(){
 }
 
 void Pmap::init(Istrm& inputf, Qhistory* qhistory){
-  inputf.validate("Tauab",58);
+  inputf.ignore(200,45); // Throw away everything up to the dash char
+  int optionnum;
+  optionnum=inputf.choose("Tauab:1 Tauabt:2",58);
   float tauabfloat;
-  inputf >> tauabfloat;
+  if(1==optionnum){
+    inputf >> tauabfloat;
+  }
+  if(2==optionnum){
+    double tauabt;
+    inputf >> tauabt;
+    tauabfloat=tauabt/deltat;
+  }
+  if( !((1==optionnum)||(2==optionnum)) ){
+    cerr << "Last read looking for Tauab or Taubt found neither" << endl;
+    exit(EXIT_FAILURE);
+  }
   tauab=int(tauabfloat);
   if(tauabfloat<1 && tauabfloat>0){
     cerr << "Last read Tauab: " << tauabfloat << endl;
@@ -28,13 +41,13 @@ void Pmap::init(Istrm& inputf, Qhistory* qhistory){
 }
 
 void Pmap::dump(ofstream& dumpf){
-  dumpf << "Tau_ab: " << tauab << " ";
+  dumpf << "- Tauab: " << tauab << " ";
   dumpf << endl;
 }
 
 void Pmap::restart(Istrm& restartf){
-  restartf.ignore(200,58); // throw away everything before the colon character
-  restartf >> tauab;
+  Qhistory* dummy;
+  init(restartf,dummy);
 }
 
 void Pmap::stepwaveeq(double *Phi, Qhistory *pqhistory){

@@ -34,9 +34,21 @@ Weqn::~Weqn(){
 }
 
 void Weqn::init(Istrm& inputf, double deltax, Qhistory* pqhistory){
-  inputf.validate("Tauab",58);
+  int optionnum;
+  optionnum=inputf.choose("Tauab:1 Tauabt:2",58);
   float tauabfloat;
-  inputf >> tauabfloat;
+  if(1==optionnum){
+    inputf >> tauabfloat;
+  }
+  if(2==optionnum){
+    double tauabt;
+    inputf >> tauabt;
+    tauabfloat=tauabt/deltat;
+  }
+  if( !((1==optionnum)||(2==optionnum)) ){
+    cerr << "Last read looking for Tauab or Taubt found neither" << endl;
+    exit(EXIT_FAILURE);
+  }
   tauab=int(tauabfloat);
   if(tauabfloat<1 && tauabfloat>0){
     cerr << "Last read Tauab: " << tauabfloat << endl;
@@ -45,7 +57,20 @@ void Weqn::init(Istrm& inputf, double deltax, Qhistory* pqhistory){
     exit(EXIT_FAILURE);
   }
   effrangeobj.init(inputf);
-  gammaobj.init(inputf);
+  optionnum=inputf.choose("gamma:1 velocity:2",58);
+  if(1==optionnum){
+    inputf >> gamma;
+    gammaobj.init(gamma);
+  }
+  if(2==optionnum){
+    double velocity;
+    inputf >> velocity;
+    gammaobj.init( velocity/effrangeobj.get() );
+  }
+  if( !((1==optionnum)||(2==optionnum)) ){
+    cerr << "Last read looking for gamma or velocity found neither" << endl;
+    exit(EXIT_FAILURE);
+  }
   gamma=gammaobj.get(); //Update the gamma value
   effrange=effrangeobj.get(); //Update the effective range value
   if(gamma/2.0 < deltat || effrange/2.0 < deltax){
@@ -61,7 +86,7 @@ void Weqn::init(Istrm& inputf, double deltax, Qhistory* pqhistory){
 }
 
 void Weqn::dump(ofstream& dumpf){
-  dumpf << "Tau_ab: " << tauab << " ";
+  dumpf << "- Tauab: " << tauab << " ";
   effrangeobj.dump(dumpf);
   gammaobj.dump(dumpf);
   dumpf << endl;
@@ -69,10 +94,44 @@ void Weqn::dump(ofstream& dumpf){
 }
 
 void Weqn::restart(Istrm& restartf, double deltax){
-  restartf.ignore(200,58); // throw away everything before the colon character
-  restartf >> tauab;
+  restartf.ignore(200,45); // Throw away everything up to the dash char
+  int optionnum;
+  optionnum=restartf.choose("Tauab:1 Tauabt:2",58);
+  float tauabfloat;
+  if(1==optionnum){
+    restartf >> tauabfloat;
+  }
+  if(2==optionnum){
+    double tauabt;
+    restartf >> tauabt;
+    tauabfloat=tauabt/deltat;
+  }
+  if( !((1==optionnum)||(2==optionnum)) ){
+    cerr << "Last read looking for Tauab or Taubt found neither" << endl;
+    exit(EXIT_FAILURE);
+  }
+  tauab=int(tauabfloat);
+  if(tauabfloat<1 && tauabfloat>0){
+    cerr << "Last read Tauab: " << tauabfloat << endl;
+    cerr << "Tauab must be greater than 1 as it is measured in" << endl;
+    cerr << "time steps not a time measured in seconds" << endl;
+    exit(EXIT_FAILURE);
+  }
   effrangeobj.restart(restartf);
-  gammaobj.restart(restartf);
+  optionnum=restartf.choose("gamma:1 velocity:2",58);
+  if(1==optionnum){
+    restartf >> gamma;
+    gammaobj.restart(gamma);
+  }
+  if(2==optionnum){
+    double velocity;
+    restartf >> velocity;
+    gammaobj.restart( velocity/effrangeobj.get() );
+  }
+  if( !((1==optionnum)||(2==optionnum)) ){
+    cerr << "Last read looking for gamma or velocity found neither" << endl;
+    exit(EXIT_FAILURE);
+  }
   restartf.ignore(200,32); // throw away endl
   Qpast->restart(restartf);
   deltat2divided12=(deltat*deltat)/12.0F; //factor in wave equation
