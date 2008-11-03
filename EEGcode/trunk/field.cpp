@@ -84,8 +84,8 @@ void Field::copyarr(double* Ufrom, double* Uto){
   double * pU=Ufrom; // Get pointer to start of U array the smaller array
   double * pU_1=Uto; // Get pointer to start of U_1 array the larger array
   // Next part copies middle of U values grid across
-  double * pp1=pU_1+startfirstrow;
-  double * pp=pU;
+  double * __restrict__ pp1=pU_1+startfirstrow;
+  double * __restrict__ pp=pU;
   for(long i=0; i<shortsidelength;i++){
     for(long j=0; j<longsidelength;j++){
        *pp1++=*pp++;

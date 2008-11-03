@@ -50,9 +50,10 @@ void Pmap::restart(Istrm& restartf){
   init(restartf,dummy);
 }
 
-void Pmap::stepwaveeq(double *Phi, Qhistory *pqhistory){
-  double* Q= pqhistory->getQbytime(tauab);
-  for(long i=0; i<nodes; i++){
+void Pmap::stepwaveeq(double * __restrict__ Phi, Qhistory *pqhistory){
+  double* __restrict__ Q= pqhistory->getQbytime(tauab);
+  long n=nodes;
+  for(long i=0; i<n; i++){
       Phi[i]=Q[i];
   }
 }

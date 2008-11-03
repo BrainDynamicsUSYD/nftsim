@@ -29,10 +29,11 @@ void Coupling::restart(Istrm& restartf, int coupleid){
 //
 // Sum the coupling terms
 //
-void Coupling::updatePa(double *Pa, double *Etaa){
-  nu=nuobj.get();
-  for(int i=0; i<nodes; i++)
-    *Pa++=nu*(*Etaa++);
+void Coupling::updatePa(double * __restrict__ Pa, double * __restrict__ Etaa){
+  double nu=nuobj.get();
+  long n=nodes;
+  for(int i=0; i<n; i++)
+    Pa[i]=nu*Etaa[i];
 }
 
 void Coupling::output(){

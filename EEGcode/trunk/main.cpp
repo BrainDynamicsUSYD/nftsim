@@ -246,7 +246,7 @@ void writedefault(ofstream& defaultf){
   defaultf << "" << endl;
   defaultf << "Population 5 - Stimulus neurons" << endl;
   defaultf << "  Initial Q: 0.0" << endl;
-  defaultf << "  Stimulus mode: 4 Time to start of stimulus: 0.0002 Amplitude: 2 Mean: 5" << endl;
+  defaultf << "  Stimulus mode: 2 Time to start of stimulus: 0.0002 Amplitude: 2 Mean: 5" << endl;
   defaultf << "Propagation data" << endl;
   defaultf << "Propagator 1  - Initial Phi: 8.87145 Deltax: 0.0035 Tauab: 0   Effective range: 0.08 gamma: 100.0" << endl;
   defaultf << "Propagator 2  - Initial Phi: 8.87145 Deltax: 0.0035 Tauab: 0   Effective range: 0.08 gamma: 100.0" << endl;

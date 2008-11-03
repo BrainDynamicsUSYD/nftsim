@@ -40,8 +40,8 @@ void Qhistory::init(Istrm& inputf, Poplist *ppoplist){
 // Set Q back in time to initial conditions
 //
   for(int i=0;i<depth-1;i++){
-    double *qnew = qhistory[i];
-    double *q = qhistory[depth-1];
+    double * __restrict__ qnew = qhistory[i];
+    double * __restrict__ q = qhistory[depth-1];
     for(long j=0;j<nodes;j++)
       *qnew++=*q++;
   }
@@ -87,8 +87,8 @@ void Qhistory::updateQhistory(Poplist *ppoplist){
 
 void Qhistory::copyQfrompop(Poplist *ppoplist){
 // Copy the Q array incoming from Q in each population to Q array in Qhistory
-  double * pnewq=getQbytime(depth-1); // Get pointer to start of the oldest Q array which is going to be overwritten
-  double * pQpop=ppoplist->get(indexofQ)->Q; // Get pointer to incoming Q data originating from Q in each population
+  double * __restrict__ pnewq=getQbytime(depth-1); // Get pointer to start of the oldest Q array which is going to be overwritten
+  double * __restrict__ pQpop=ppoplist->get(indexofQ)->Q; // Get pointer to incoming Q data originating from Q in each population
   for(long i=0; i<nodes; i++){
       *pnewq++=*pQpop++;
   }

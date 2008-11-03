@@ -255,7 +255,8 @@ float Timeseries::restart(Istrm& restartf){
   return mean;
 }
 
-void Timeseries::get(double t, double *tseries, const long nodes){
+void Timeseries::get(double t, double * __restrict__ tseries, const long nodes)
+__restrict__ {
   if(t>=ts){
     switch (mode) {
       case 1:{ // Pulse pattern 

@@ -76,15 +76,15 @@ void DendriticRlist::init(Istrm& inputf, PropagNet *ppropagnet, ConnectMat *pcon
     cerr << expectaff << " " << numaff << endl;
     exit(EXIT_FAILURE);
   }
-  double Vinit;
   for(int i=0;i<numaff; i++){
+    double Vinit;
     getdendr(i)->init(inputf,Vinit); // Important init returns inital values for V, dVdt
-    double *p=Va[i];
-    double *p1=dVdt[i];
-    for(long j=0;j<numnodes;j++){ // Initialize Va and dVdt arrays with initial values
-      *p++=Vinit;
-      *p1++=0.0F;
-    }
+    double * __restrict__ p=Va[i];
+    double * __restrict__ p1=dVdt[i];
+    long n=numnodes;
+    double Vi=Vinit;
+    for(long j=0;j<n;j++) *p++=Vi; // Initialize Va arrays with initial values
+    for(long j=0;j<n;j++) *p1++=0.0F;// Init dVdt arrays with initial values
   }
 }
 
@@ -161,20 +161,17 @@ void DendriticRlist::stepVa(double timestep){
 // Physically this is summing the afferent subpotentials in the dendritites
 // to obtain the soma potential
 //
-void DendriticRlist::SumAfferent(double *V){
-  double *Voffset;
-  double *Vaoffset;
-  Voffset=V;
-  Vaoffset=Va[0];
-  for(long i=0;i<numnodes;i++)
-    *Voffset++=*Vaoffset++;  // load soma potential array with first subpotential values
+void DendriticRlist::SumAfferent(double * __restrict__ V){
+  double * __restrict__ Vout=V;
+  double * __restrict__ Vin=Va[0];
+  long n=numnodes;
+  for(long i=0;i<n;i++)
+    Vout[i]=Vin[i];  // load soma potential array with first subpotential values
   for(int i=1;i<numaff;i++){
-    Voffset=V;
-    Vaoffset=Va[i];
-    for(long j=0;j<numnodes;j++){  // add other rest of sub potential arrays to some potential arrays
-      *Voffset+=*Vaoffset;
-      Voffset++;
-      Vaoffset++;
+    double * __restrict__ Vo=V;
+    double * __restrict__ Vi=Va[i];
+    for(long j=0;j<n;j++){  // add other rest of sub potential arrays to some potential arrays
+      Vo[j] += Vi[j];
     }
   }
 }

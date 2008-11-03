@@ -32,7 +32,6 @@ public:
 private:
   long nodes;
   Parameter nuobj;
-  double nu;
 };
 
 #endif
