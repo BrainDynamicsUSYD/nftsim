@@ -79,6 +79,13 @@ void Weqn::init(Istrm& inputf, double deltax, Qhistory* pqhistory){
     cerr << "nor sufficiently localized so the potential can be approximated by Q" << endl;
     exit(EXIT_FAILURE);
   }
+  if(gamma*effrange*deltat/deltax>1.41){
+    cerr << "Wave equation with gamma: " << gamma << " effrange: " << effrange << endl;
+    cerr << "and deltat: " << deltat << " deltax: " << deltax << endl;
+    cerr << "does not fulfill the Courant condition" << endl;
+    cerr << "Courant number is : " << (gamma*effrange*deltat/deltax) << endl;
+    exit(EXIT_FAILURE);
+  }
   double* Q= pqhistory->getQbytime(tauab);
   Qpast->init(Q);
   deltat2divided12=(deltat*deltat)/12.0F; //factor in wave equation
@@ -130,6 +137,13 @@ void Weqn::restart(Istrm& restartf, double deltax){
   }
   if( !((1==optionnum)||(2==optionnum)) ){
     cerr << "Last read looking for gamma or velocity found neither" << endl;
+    exit(EXIT_FAILURE);
+  }
+  if(gamma*effrange*deltat/deltax>1.41){
+    cerr << "Wave equation with gamma: " << gamma << " effrange: " << effrange << endl;
+    cerr << "and deltat: " << deltat << " deltax: " << deltax << endl;
+    cerr << "does not fulfill the Courant condition" << endl;
+    cerr << "Courant number is : " << (gamma*effrange*deltat/deltax) << endl;
     exit(EXIT_FAILURE);
   }
   restartf.ignore(200,32); // throw away endl
