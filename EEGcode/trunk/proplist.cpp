@@ -22,7 +22,7 @@ Proplist::Proplist(Istrm& inputf, ofstream& dumpf, int numconnects,
     inputf.ignore(200,58);
     long longside; // declare longside now in case we use it below
     optionnum=inputf.choose(
-        "Waveeqn:1 Mapping:2 Eqnset:3 Waveeqnrect:4 Eqnsetrect:5",32);
+        "Waveeqn:1 Mapping:2 Eqnset:3 Waveeqnrect:4 Eqnsetrect:5 Harmonic:6",32);
     switch(optionnum){
       case 1:
         propagarray[i] = new WaveEqn(nodes, deltat);
@@ -50,6 +50,10 @@ Proplist::Proplist(Istrm& inputf, ofstream& dumpf, int numconnects,
         dumpf << (i+1) << ": Eqnsetrect ";
 	dumpf << "(Longside:" << longside <<") ";
 	break;	
+      case 6:
+        propagarray[i] = new Pharmonic(nodes, deltat);
+        dumpf << (i+1) << ": Harmonic ";
+	break;
       default:
         cerr << "Invalid Propagator type" << endl;
         exit(EXIT_FAILURE);

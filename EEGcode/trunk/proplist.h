@@ -19,6 +19,7 @@ using std::endl;
 #include"waveeqn.h"
 #include"pmap.h"
 #include"eqnset.h"
+#include"pharmonic.h"
 #include"qhistorylist.h"
 #include"connectmat.h"
 
