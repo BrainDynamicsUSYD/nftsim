@@ -83,7 +83,7 @@ void Population::restart(Istrm& restartf, PropagNet *ppropagnet, ConnectMat *pco
     restartf >> Q[i];
   restartf.ignore(200,32); // Throwaway appended endl at end of Q array
   if (isstimulus) {
-    pstimulus->restart(restartf);
+    pstimulus->init(restartf);
   } else {
     pfr->restart(restartf);
     pdr->restart(restartf,ppropagnet,pconnectmat);

@@ -26,8 +26,6 @@ public:
   void init(Istrm& inputf);
   void init(double initval);
   void dump(ofstream& dumpf);
-  void restart(Istrm& restartf);
-  void restart(double initval);
 private:
   double param;
   string ident;

@@ -85,7 +85,7 @@ void Modtheta::restart(Istrm& restartf, int popindex){
   restartf >> initHtilda;
   y[0] = initHtilda;
   y[1] = initXtilda;
-  pI->restart(restartf);
+  pI->init(restartf);
 //
 //  
   initoutput(restartf,popindex);

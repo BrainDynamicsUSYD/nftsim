@@ -124,16 +124,16 @@ void Weqn::restart(Istrm& restartf, double deltax){
     cerr << "time steps not a time measured in seconds" << endl;
     exit(EXIT_FAILURE);
   }
-  effrangeobj.restart(restartf);
+  effrangeobj.init(restartf);
   optionnum=restartf.choose("gamma:1 velocity:2",58);
   if(1==optionnum){
     restartf >> gamma;
-    gammaobj.restart(gamma);
+    gammaobj.init(gamma);
   }
   if(2==optionnum){
     double velocity;
     restartf >> velocity;
-    gammaobj.restart( velocity/effrangeobj.get() );
+    gammaobj.init( velocity/effrangeobj.get() );
   }
   if( !((1==optionnum)||(2==optionnum)) ){
     cerr << "Last read looking for gamma or velocity found neither" << endl;

@@ -25,7 +25,6 @@ public:
   void init(Istrm& inputf, int coupleid); // initialize the nu variable
   void dump(ofstream& dumpf); // dump nu for restart
   void restart(Istrm& restartf, int coupleid); // restart the nu variable
-  void restart();
   void updatePa(double *Pa, double *Etaa);
   void output(); // dummy output routine - no output is generated
 

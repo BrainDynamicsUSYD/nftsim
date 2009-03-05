@@ -102,7 +102,7 @@ void Pharmonic::restart(Istrm& restartf){
     cerr << "time steps not a time measured in seconds" << endl;
     exit(EXIT_FAILURE);
   }
-  gammaobj.restart(restartf);
+  gammaobj.init(restartf);
   double temp;
   restartf.validate("Q_previous",58);
   for(long i=0; i<nodes; i++){

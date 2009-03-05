@@ -136,7 +136,7 @@ void Timeseries::dump(ofstream& dumpf){
       break;
     case 6: // Spatial-Temporal Gaussian
       dumpf << "Amplitude:" << amp << " ";
-      dumpf << "Time to peak:" << tpeak << " ";
+      dumpf << "Time to peak of stimulus:" << tpeak << " ";
       dumpf << "Pulse Duration:" << pdur << " ";
       dumpf << "Grid SPacing:" << deltax << " ";
       dumpf << "x location:" << xcent << " ";
@@ -159,100 +159,6 @@ void Timeseries::dump(ofstream& dumpf){
     default: // No pattern
       break;
     }
-}
-
-float Timeseries::restart(Istrm& restartf){
-  int optionnum;
-  stringstream message1(stringstream::in | stringstream::out);
-  message1 << id1 << " mode";
-  restartf.validate(message1.str().c_str(),58);
-  restartf >> mode;
-  stringstream message2(stringstream::in | stringstream::out);
-  message2 << "Time to start" << id2;
-  restartf.validate(message2.str().c_str(),58);
-  restartf >> ts;
-  switch (mode) {
-    case 1: //  Pulse pattern 
-      restartf.validate("Amplitude",58);
-      restartf >> amp;
-      restartf.validate("Pulse Duration",58);
-      restartf >> pdur;
-      restartf.validate("Pulse repetition period",58);
-      restartf >> tperiod;
-      mean=0.0;
-      break;
-    case 2: //  White noise pattern 
-      optionnum=restartf.choose("Amplitude:1 Ranseed:2",58);
-      if(1==optionnum){
-        restartf >> amp;
-      } else {
-        restartf >> seed;
-        restartf.validate("Amplitude",58);
-        restartf >> amp;
-      }
-      random = new Random(seed);
-      restartf.validate("Mean",58);
-      restartf >> mean;
-      break;
-    case 3: //  Sinusoidal pattern 
-      restartf.validate("Amplitude",58);
-      restartf >> amp;
-      restartf.validate("Modulation Frequency",58);
-      restartf >> freq;
-      break;
-    case 4: //  Coherent white noise pattern 
-      optionnum=restartf.choose("Amplitude:1 Ranseed:2",58);
-      if(1==optionnum){
-        restartf >> amp;
-      } else {
-        restartf >> seed;
-        restartf.validate("Amplitude",58);
-        restartf >> amp;
-      }
-      random = new Random(seed);
-      restartf.validate("Mean",58);
-      restartf >> mean;
-      break;
-    case 6: //  Spatial-Temporal Gaussian    
-      restartf.validate("Amplitude",58);
-      restartf >> amp;
-      restartf.validate("Time to peak",58);
-      restartf >> tpeak;
-      restartf.validate("Pulse Duration",58);
-      restartf >> pdur;
-      restartf.validate("Grid Spacing",58);
-      restartf >> deltax;
-      restartf.validate("x location",58);
-      restartf >> xcent;
-      restartf.validate("y location",58);
-      restartf >> ycent;
-      restartf.validate("x spread",58);
-      restartf >> xspread;
-      restartf.validate("y spread",58);
-      restartf >> yspread;
-      break;
-    case 7: // Constant
-      restartf.validate("Mean",58);
-      restartf >> mean;
-      break;
-    case 8: // Ramped input
-      restartf.validate("Step height",58);
-      restartf >> stepheight;
-      restartf.validate("Step width",58);
-      restartf >> stepwidth;
-      break;
-    case 9: //  Gaussian Pulse pattern 
-      restartf.validate("Amplitude",58);
-      restartf >> amp;
-      restartf.validate("Pulse Duration",58);
-      restartf >> pdur;
-      restartf.validate("Time at peak",58);
-      restartf >> tpeak;
-      break;
-     default: // No pattern
-      break;
-    }
-  return mean;
 }
 
 void Timeseries::get(double t, double * __restrict__ tseries, const long nodes)

@@ -76,7 +76,7 @@ void Modcouple::restart(Istrm& restartf, int coupleid){
   restartf >> k;
   float mean;
   pconcobj = new Timeseries("Concentration"," of Concentration");
-  mean=pconcobj->restart(restartf);
+  mean=pconcobj->init(restartf);
   for(int i=0; i<nodes; i++){
     previousconc[i]=mean;
     h[i]=mean;

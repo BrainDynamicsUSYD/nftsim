@@ -87,12 +87,12 @@ void FiringR::restart(Istrm& restartf){
     pthetaobj = new Parameter("Theta");
     double initval;
     restartf  >> initval;
-    pthetaobj->restart(initval);
+    pthetaobj->init(initval);
     ismodtheta=false;
   }
   if(2==optionnum){
     pmthetaobj = new Modtheta();
-    pmthetaobj->restart(restartf,pindex);
+    pmthetaobj->init(restartf,pindex);
     ismodtheta=true;
     modthetatype=0;
   }
@@ -103,7 +103,7 @@ void FiringR::restart(Istrm& restartf){
     modthetatype=1;
     
   }
-  sigmaobj.restart(restartf);
-  qmaxobj.restart(restartf);
+  sigmaobj.init(restartf);
+  qmaxobj.init(restartf);
   restartf.ignore(200,32); // Ignore appended endline at end of firing response
 }

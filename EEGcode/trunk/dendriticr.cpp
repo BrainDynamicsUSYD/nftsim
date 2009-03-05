@@ -37,8 +37,8 @@ void DendriticR::dump(ofstream& dumpf){
 }
 
 void DendriticR::restart(Istrm& restartf){
-  alphaobj.restart(restartf);
-  betaobj.restart(restartf);
+  alphaobj.init(restartf);
+  betaobj.init(restartf);
   double tempPab;
   restartf.validate("Pab_previous",58);
   for(long i=0; i<nodes; i++){
@@ -49,7 +49,7 @@ void DendriticR::restart(Istrm& restartf){
 
 void DendriticR::stepVab(double *Pab, double * Vab, double *dVabdt, double timestep){
 //
-// Steps Pab(t+Timestep) using current Pab(t) and current Vab(t)
+// Steps Vab(t+Timestep) using Pab(t+Timestep), current Pab(t) and current Vab(t)
 //
 //  The program assumes that alpha, beta are constant and Pab(t) is linear for the time step
 //  This is since it is very costly to obtain Pab(t).

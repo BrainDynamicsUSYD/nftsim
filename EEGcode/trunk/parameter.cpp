@@ -25,15 +25,6 @@ void Parameter::dump(ofstream& dumpf){
   dumpf << ident << ":" << param << " ";
 }
 
-void Parameter::restart(Istrm& restartf){
-  restartf.validate(ident.c_str(),58);
-  restartf >> param;
-}
-
-void Parameter::restart(double initval){
-  param = initval;
-}
-
 double Parameter::get(){
   return param;
 }

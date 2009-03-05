@@ -25,7 +25,6 @@ public:
   ~Timeseries();
   float init(Istrm& inputf);
   void dump(ofstream& dumpf);
-  float restart(Istrm& restartf);
   void get(double t, double *tseries, const long nodes);
 private:
   string id1; // name of type of time series used in mode e.g. "Concentration" .. modes

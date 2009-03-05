@@ -23,7 +23,7 @@ void Coupling::dump(ofstream& dumpf){
 }
 
 void Coupling::restart(Istrm& restartf, int coupleid){
-  nuobj.restart(restartf);
+  init(restartf,coupleid);
 }
 
 //
