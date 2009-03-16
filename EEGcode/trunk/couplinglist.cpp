@@ -78,9 +78,9 @@ void Couplinglist::restart(Istrm& restartf){
 //
 // updateP method updates P via each coupling object 
 
-void Couplinglist::updateP(double **P, double **Eta){
+void Couplinglist::updateP(double **P,double **Eta,Qhistorylist* pqhistorylist,ConnectMat* pconnectmat){
   for(int i=0;i<numcoup;i++){
-    getcoup(i)->updatePa(P[i],Eta[i]);
+    getcoup(i)->updatePa(P[i],Eta[i],pqhistorylist,pconnectmat);
     }
 }
 

@@ -161,8 +161,7 @@ void Timeseries::dump(ofstream& dumpf){
     }
 }
 
-void Timeseries::get(double t, double * __restrict__ tseries, const long nodes)
-__restrict__ {
+void Timeseries::get(double t, double *tseries, const long nodes){
   if(t>=ts){
     switch (mode) {
       case 1:{ // Pulse pattern 

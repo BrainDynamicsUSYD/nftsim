@@ -15,6 +15,8 @@ using std::cerr;
 using std::endl;
 
 #include"istrm.h"
+#include"qhistorylist.h"
+#include"connectmat.h"
 
 class Couple { // Abstract Base class for coupling type objects
 public: 
@@ -23,7 +25,7 @@ public:
   virtual void init(Istrm& inputf, int coupleid) = 0; 
   virtual void dump(ofstream& dumpf) = 0; 
   virtual void restart(Istrm& restartf, int coupleid) = 0; 
-  virtual void updatePa(double *Pa, double *Etaa) = 0;
+  virtual void updatePa(double *Pa, double *Etaa, Qhistorylist* pqhistorylist, ConnectMat* pconnectmat) = 0;
   virtual void output() = 0; 
 };
 

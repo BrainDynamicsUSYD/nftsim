@@ -29,7 +29,7 @@ void Coupling::restart(Istrm& restartf, int coupleid){
 //
 // Sum the coupling terms
 //
-void Coupling::updatePa(double * __restrict__ Pa, double * __restrict__ Etaa){
+void Coupling::updatePa(double * __restrict__ Pa,double * __restrict__ Etaa,Qhistorylist* pqhistorylist,ConnectMat* pconnectmat){
   double nu=nuobj.get();
   long n=nodes;
   for(int i=0; i<n; i++)

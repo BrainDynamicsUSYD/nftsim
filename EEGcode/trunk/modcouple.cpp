@@ -191,7 +191,7 @@ void Modcouple::output(){
 //
 // Sum the coupling terms
 //
-void Modcouple::updatePa(double *Pa, double *Etaa){
+void Modcouple::updatePa(double *Pa, double *Etaa,Qhistorylist* pqhistorylist,ConnectMat* pconnectmat){
 //
 // Steps h(t+Timestep) using current conc(t) and current h(t)
 //

@@ -15,6 +15,8 @@ using std::cerr;
 using std::endl;
 
 #include"istrm.h"
+#include"qhistorylist.h"
+#include"connectmat.h"
 class Couple; // forward reference Couple as only using pointer here. Header is included in .cpp
 
 class Couplinglist {
@@ -24,7 +26,7 @@ public:
   void init(Istrm& inputf); // initialize each coupling object in list
   void dump(ofstream& dumpf); // dump each coupling coefficient for restart
   void restart(Istrm& restartf); // restart each coupling object in list
-  void updateP(double **P, double **Eta); // Transform Eta to P via coupling terms
+  void updateP(double **P, double **Eta, Qhistorylist* pqhistorylist, ConnectMat* pconnectmat); // Transform Eta to P via coupling terms
   void output(); // Output the nu data
 
 private:

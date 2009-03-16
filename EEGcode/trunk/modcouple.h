@@ -19,6 +19,8 @@ using std::setprecision;
 #include"istrm.h"
 #include"couple.h"
 #include"timeseries.h"
+#include"qhistorylist.h"
+#include"connectmat.h"
 
 class Modcouple: public Couple {
 public: 
@@ -28,7 +30,7 @@ public:
   void dump(ofstream& dumpf); // dump nu for restart
   void restart(Istrm& restartf, int coupleid); // restart the nu variable
   void output(); // output nu variable as needed
-  void updatePa(double *Pa, double *Etaa);
+  void updatePa(double *Pa, double *Etaa, Qhistorylist* pqhistorylist, ConnectMat* pconnectmat);
 
 private:
   void initoutput(Istrm& inputf, int coupleid); // initialize output routine for nu
