@@ -7,12 +7,13 @@
 
 #include "dendriticr.h"
 
-DendriticR::DendriticR(long nodes):nodes(nodes),
-             alphaobj("alpha"), betaobj("beta"){
+DendriticR::DendriticR(long nodes):nodes(nodes){
   previousPab = new double [nodes];
 }
 DendriticR::~DendriticR(){
   delete[ ] previousPab;
+  delete alphaobj;
+  delete betaobj;
 }
 
 void DendriticR::init(Istrm& inputf, double& Vinit){
@@ -21,14 +22,14 @@ void DendriticR::init(Istrm& inputf, double& Vinit){
   for(long i=0; i<nodes; i++){
     previousPab[i]=Vinit;
   } 
-  alphaobj.init(inputf);
-  betaobj.init(inputf);
+  alphaobj = new Parameter("alpha",inputf);
+  betaobj = new Parameter("beta",inputf);
 }
 
 void DendriticR::dump(ofstream& dumpf){
   dumpf << "Dendritic Response from population ";
-  alphaobj.dump(dumpf);
-  betaobj.dump(dumpf);
+  alphaobj->dump(dumpf);
+  betaobj->dump(dumpf);
   dumpf << "Pab_previous:";
   for(long i=0; i<nodes; i++){
     dumpf << previousPab[i] << " ";
@@ -37,8 +38,8 @@ void DendriticR::dump(ofstream& dumpf){
 }
 
 void DendriticR::restart(Istrm& restartf){
-  alphaobj.init(restartf);
-  betaobj.init(restartf);
+  alphaobj = new Parameter("alpha",restartf);
+  betaobj = new Parameter("beta",restartf);
   double tempPab;
   restartf.validate("Pab_previous",58);
   for(long i=0; i<nodes; i++){
@@ -64,8 +65,8 @@ void DendriticR::stepVab(double *Pab, double * Vab, double *dVabdt, double times
   double deltaPdeltat;
   double C1;
 
-  alpha=alphaobj.get();
-  beta=betaobj.get();
+  alpha=alphaobj->get();
+  beta=betaobj->get();
   expalpha=exp(-alpha*timestep);
   factoralphabeta=(1.0/alpha)+(1.0/beta);
   if(alpha!=beta){

@@ -28,7 +28,6 @@ public:
   ~Modcouple();
   void init(Istrm& inputf, int coupleid); 
   void dump(ofstream& dumpf); // dump nu for restart
-  void restart(Istrm& restartf, int coupleid); // restart the nu variable
   void output(); // output nu variable as needed
   void updatePa(double *Pa, double *Etaa, Qhistorylist* pqhistorylist, ConnectMat* pconnectmat);
 

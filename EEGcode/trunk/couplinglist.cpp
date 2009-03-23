@@ -70,7 +70,7 @@ void Couplinglist::dump(ofstream& dumpf){
 
 void Couplinglist::restart(Istrm& restartf){
   for(int i=0; i<numcoup; i++){
-    getcoup(i)->restart(restartf,i);
+    getcoup(i)->init(restartf,i);
     restartf.ignore(200,32); // throwaway endl of each coupling data 
   }
 }

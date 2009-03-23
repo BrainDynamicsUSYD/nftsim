@@ -18,9 +18,8 @@ using std::endl;
 
 class ConnectMat {
 public: 
-  ConnectMat(int numpops, int numconct);
+  ConnectMat(int numpops, int numconct, Istrm& inputf); // Read in raw connection matrix and setup qphiconnect
   ~ConnectMat();
-  void init(Istrm& inputf); // Read in raw connection matrix and setup qphiconnect
   void dump(ofstream& dumpf); // Write out raw connection matrix
   int getQindex(int index){return qphiconnect[index];}; // Return population index number of Q for given wave equation index
   int getDRindex(int index){return drphiconnect[index];}; // Return population index number for DR for given wave equation index

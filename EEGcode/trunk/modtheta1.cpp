@@ -12,17 +12,9 @@ using std::string;
 using std::stringstream;
 #include "modtheta1.h"
 
-Modtheta1::Modtheta1():currenttime(0){
+Modtheta1::Modtheta1(Istrm& inputf, int popindex):currenttime(0){
   y = new double[2];
   dydt = new double[2];
-}
-
-Modtheta1::~Modtheta1(){
-  delete [ ] y;
-  delete [ ] dydt;
-}
-
-void Modtheta1::init(Istrm& inputf, int popindex){
   inputf.validate("Ia",58);
   inputf >> Ia;
   inputf.validate("Ib",58);
@@ -48,6 +40,11 @@ void Modtheta1::init(Istrm& inputf, int popindex){
   initoutput(inputf,popindex);
 }
 
+Modtheta1::~Modtheta1(){
+  delete [ ] y;
+  delete [ ] dydt;
+}
+
 void Modtheta1::dump(ofstream& dumpf){
   dumpf << "Ia: " << Ia << " ";
   dumpf << "Ib: " << Ib << " ";
@@ -60,31 +57,6 @@ void Modtheta1::dump(ofstream& dumpf){
   dumpf << "Htilda:" << y[0] << " ";
 }
 
-void Modtheta1::restart(Istrm& restartf, int popindex){
-  restartf.validate("Ia",58);
-  restartf >> Ia;
-  restartf.validate("Ib",58);
-  restartf >> Ib;
-  restartf.validate("Ic",58);
-  restartf >> Ic;
-  restartf.validate("Taux",58);
-  restartf >> taux;
-  restartf.validate("Tauh",58);
-  restartf >> tauh;
-  restartf.validate("Ax",58);
-  restartf >> Ax;
-  restartf.validate("Mu",58);
-  restartf >> mu;
-  restartf.validate("Xtilda",58);
-  restartf >> initXtilda;
-  restartf.validate("Htilda",58);
-  restartf >> initHtilda;
-  y[0] = initHtilda;
-  y[1] = initXtilda;
-//
-//  
-  initoutput(restartf,popindex);
-}
 double Modtheta1::get(double timestep, double* V, double Qmax, double sigma){
   rk4(currenttime,y,timestep,V,Qmax,sigma);
   currenttime+=timestep;
@@ -149,4 +121,3 @@ void Modtheta1::output(double* y, double itheta, double V){
   threshoutf << V << endl;
   threshoutf << endl;
 }
-

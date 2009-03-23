@@ -20,11 +20,9 @@ using std::setprecision;
 
 class Modtheta1 {
 public: 
-  Modtheta1();
+  Modtheta1(Istrm& inputf,int popindex);
   ~Modtheta1();
-  void init(Istrm& inputf, int popindex); 
   void dump(ofstream& dumpf); // dump ithreshold params for restart
-  void restart(Istrm& restartf, int popindex); // restart
   double get(double timestep,double* V,double Qmax,double sigma); // return theta value for modulated threshold
 
 private:

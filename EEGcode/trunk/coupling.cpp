@@ -8,29 +8,25 @@
 #include "coupling.h"
 
 Coupling::Coupling(long numnodes, double deltat)
-  :nodes(numnodes),nuobj("Nu"){
+  :nodes(numnodes){
 }
 
 Coupling::~Coupling(){
+  delete nuobj;
 }
 
 void Coupling::init(Istrm& inputf, int coupleid){
-  nuobj.init(inputf);
+  nuobj = new Parameter("Nu",inputf);
 }
 
 void Coupling::dump(ofstream& dumpf){
-  nuobj.dump(dumpf);
+  nuobj->dump(dumpf);
 }
-
-void Coupling::restart(Istrm& restartf, int coupleid){
-  init(restartf,coupleid);
-}
-
 //
 // Sum the coupling terms
 //
 void Coupling::updatePa(double * __restrict__ Pa,double * __restrict__ Etaa,Qhistorylist* pqhistorylist,ConnectMat* pconnectmat){
-  double nu=nuobj.get();
+  double nu=nuobj->get();
   long n=nodes;
   for(int i=0; i<n; i++)
     Pa[i]=nu*Etaa[i];

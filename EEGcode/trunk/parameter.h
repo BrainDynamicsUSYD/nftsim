@@ -20,11 +20,10 @@ using std::string;
 
 class Parameter {
 public: 
-  Parameter(const char *);
+  Parameter(const char *,Istrm& inputf);
+  Parameter(const char *,double initval);
   ~Parameter();
-  double get();
-  void init(Istrm& inputf);
-  void init(double initval);
+  double get(){return param;};
   void dump(ofstream& dumpf);
 private:
   double param;

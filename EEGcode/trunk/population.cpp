@@ -17,7 +17,7 @@ Population::Population(long totalnodes, int popindex, ConnectMat *pconnectmat)
   pfr = 0;
   pdr = 0;
   pstimulus = 0;
-  if (pconnectmat->getDRlength(popindex)) { // If populations are attached to this dendritic tree this is not a stimulus population
+  if (pconnectmat->getDRlength(popindex)) { //If populations are attached to this dendritic tree it is not a stimulus population
     isstimulus=false;
     V = new double[totalnodes];
     pfr = new FiringR(popindex);
@@ -38,9 +38,6 @@ Population::~Population(){
   if (pstimulus)  delete pstimulus;
 }
 
-//
-// init method
-//
 void Population::init(Istrm& inputf, PropagNet *ppropagnet, ConnectMat *pconnectmat){
   inputf.ignore(200,32); //throwaway line naming population
   double Qinitial;
@@ -56,9 +53,7 @@ void Population::init(Istrm& inputf, PropagNet *ppropagnet, ConnectMat *pconnect
     inputf.ignore(200,32); //throwaway space line between populations
   }
 }
-//
-// dump method gives diagnostic information on the population
-//
+
 void Population::dump(ofstream& dumpf){
   dumpf << "Population " << endl; // Write a title line for the population
   dumpf << "Q array : ";
@@ -73,9 +68,6 @@ void Population::dump(ofstream& dumpf){
   }
 }
 
-//
-// restart method
-//
 void Population::restart(Istrm& restartf, PropagNet *ppropagnet, ConnectMat *pconnectmat){
   restartf.ignore(200,32); // Throwaway title line for population
   restartf.ignore(200,58); // Throwaway upto colon i.e. Q array :
@@ -89,7 +81,6 @@ void Population::restart(Istrm& restartf, PropagNet *ppropagnet, ConnectMat *pco
     pdr->restart(restartf,ppropagnet,pconnectmat);
   }
 }
-
 //
 // Step forward population one timestep method
 //
@@ -103,4 +94,3 @@ void Population::stepPop(double timestep){
   }
   t+=timestep;
 }
-

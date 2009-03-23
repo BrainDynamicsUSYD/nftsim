@@ -31,8 +31,8 @@ public:
   void restart(Istrm& restartf, double deltax);
   void stepwaveeq(double *PhiRe, double *PhiIm, Qhistory* qhistory, Field* fieldReobj, Field* filedImobj, Prefact* prefactobj);
 private:
-  Parameter gammaobj;
-  Parameter effrangeobj;
+  Parameter* gammaobj;
+  Parameter* effrangeobj;
   double gamma;
   double effrange;
   int tauab;

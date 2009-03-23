@@ -71,17 +71,10 @@ Proplist::~Proplist(){
   delete [ ] propagarray;
 }
 
-//
 // get method returns a pointer to the "index"th propagator object in the list
-//
-
 Propag * Proplist::getpropag(int index){
   return propagarray[index];
 }
-
-//
-//  init method initializes propagator object in turn
-//
 
 void Proplist::init(Istrm& inputf, Qhistorylist* pqhistorylist, ConnectMat* pconnectmat){
   for(int i=0; i<numpropag; i++){
@@ -90,9 +83,6 @@ void Proplist::init(Istrm& inputf, Qhistorylist* pqhistorylist, ConnectMat* pcon
   }
 }
 
-//
-//  dump method dumps propagator objects in turn for restart
-//
 void Proplist::dump(ofstream& dumpf){
   for(int i=0; i<numpropag; i++){
     dumpf << "Propagator "<< (i+1) << " ";
@@ -105,10 +95,7 @@ void Proplist::restart(Istrm& restartf){
     getpropag(i)->restart(restartf);
 }
 
-//
 // step method steps each propagator object forward in time
-//
-
 void Proplist::step(double **Eta, Qhistorylist* pqhistorylist, ConnectMat* pconnectmat){
 //
 #pragma omp parallel for
@@ -118,4 +105,3 @@ void Proplist::step(double **Eta, Qhistorylist* pqhistorylist, ConnectMat* pconn
     getpropag(i)->stepwaveeq(Eta[i],pqhistory);
     }
 }
-

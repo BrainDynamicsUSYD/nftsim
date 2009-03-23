@@ -79,8 +79,7 @@ int main(int argc, char* argv[])
     exit(EXIT_FAILURE);
   }
   readglobalparams(inputf, dumpf, totalnodes, numpops, numconct);
-  ConnectMat connectmat(numpops,numconct);
-  connectmat.init(inputf);
+  ConnectMat connectmat(numpops,numconct,inputf);
   connectmat.dump(dumpf);
 //
 // Construct the classes

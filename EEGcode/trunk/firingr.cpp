@@ -8,13 +8,15 @@
 #include "firingr.h"
 #include<math.h>
 
-FiringR::FiringR(int popindex):sigmaobj("Sigma"),qmaxobj("Qmax"),pindex(popindex){
+FiringR::FiringR(int popindex):pindex(popindex){
 }
 
 FiringR::~FiringR(){
   if (pmthetaobj) delete pmthetaobj;
   if (pm1thetaobj) delete pm1thetaobj;
   if (pthetaobj) delete pthetaobj;
+  delete sigmaobj;
+  delete qmaxobj;
 }
 
 void FiringR::init(Istrm& inputf){
@@ -27,34 +29,31 @@ void FiringR::init(Istrm& inputf){
   pm1thetaobj=0;
   optionnum=inputf.choose("Theta:1 ModTheta:2 ModTheta1:3",58);
   if(1==optionnum){
-    pthetaobj = new Parameter("Theta");
     double initval;
-    inputf  >> initval;
-    pthetaobj->init(initval);
+    inputf >> initval;
+    pthetaobj = new Parameter("Theta",initval);
     ismodtheta=false;
   }
   if(2==optionnum){
-    pmthetaobj = new Modtheta();
-    pmthetaobj->init(inputf,pindex);
+    pmthetaobj = new Modtheta(inputf,pindex);
     ismodtheta=true;
     modthetatype=0;
   }
   if(3==optionnum){
-    pm1thetaobj = new Modtheta1();
-    pm1thetaobj->init(inputf,pindex);
+    pm1thetaobj = new Modtheta1(inputf,pindex);
     ismodtheta=true;
     modthetatype=1;
   }
-  sigmaobj.init(inputf);
-  qmaxobj.init(inputf);
+  sigmaobj = new Parameter("Sigma",inputf);
+  qmaxobj = new Parameter("Qmax",inputf);
 }
 
 //
 // Method to transform V into Q via sigmoid firing response
 //
 void FiringR::getQ(double *V, double *Q, long totalnodes, double timestep){
-  sigma=sigmaobj.get();
-  qmax=qmaxobj.get() ;
+  sigma=sigmaobj->get();
+  qmax=qmaxobj->get() ;
   if(ismodtheta) {
     if(0==modthetatype){theta=pmthetaobj->get(timestep);}
     else{theta=pm1thetaobj->get(timestep,V,qmax,sigma);}
@@ -72,8 +71,8 @@ void FiringR::dump(ofstream& dumpf){
     else{pm1thetaobj->dump(dumpf);}
   }
   else {pthetaobj->dump(dumpf);}
-  sigmaobj.dump(dumpf);
-  qmaxobj.dump(dumpf);
+  sigmaobj->dump(dumpf);
+  qmaxobj->dump(dumpf);
   dumpf << endl; //Append endl at end of firing response figures
 }
 
@@ -84,26 +83,23 @@ void FiringR::restart(Istrm& restartf){
   int optionnum;
   optionnum=restartf.choose("Theta:1 ModTheta:2 Modtheta1:3",58);
   if(1==optionnum){
-    pthetaobj = new Parameter("Theta");
     double initval;
-    restartf  >> initval;
-    pthetaobj->init(initval);
+    restartf >> initval;
+    pthetaobj = new Parameter("Theta",initval);
     ismodtheta=false;
   }
   if(2==optionnum){
-    pmthetaobj = new Modtheta();
-    pmthetaobj->init(restartf,pindex);
+    pmthetaobj = new Modtheta(restartf,pindex);
     ismodtheta=true;
     modthetatype=0;
   }
   if(3==optionnum){
-    pm1thetaobj = new Modtheta1();
-    pm1thetaobj->init(restartf,pindex);
+    pm1thetaobj = new Modtheta1(restartf,pindex);
     ismodtheta=true;
     modthetatype=1;
     
   }
-  sigmaobj.init(restartf);
-  qmaxobj.init(restartf);
+  sigmaobj = new Parameter("Sigma",restartf);
+  qmaxobj = new Parameter("Qmax",restartf);
   restartf.ignore(200,32); // Ignore appended endline at end of firing response
 }

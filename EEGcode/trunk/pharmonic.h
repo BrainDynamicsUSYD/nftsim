@@ -35,7 +35,7 @@ private:
   double* previousQ; // Store one step in past firing rate field
   double* previousPhi; // Store one step in past phi field
   double* dPhidt; // Store estimated Phi time derivative
-  Parameter gammaobj;
+  Parameter* gammaobj;
 };
 
 #endif

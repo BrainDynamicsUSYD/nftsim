@@ -12,19 +12,10 @@ using std::string;
 using std::stringstream;
 #include "modtheta.h"
 
-Modtheta::Modtheta():currenttime(0){
+Modtheta::Modtheta(Istrm& inputf, int popindex):currenttime(0){
   y = new double[2];
   dydt = new double[2];
   pI = new Timeseries("",""); // I drive no idenfication for back. compatability
-}
-
-Modtheta::~Modtheta(){
-  delete [ ] y;
-  delete [ ] dydt;
-  delete pI;
-}
-
-void Modtheta::init(Istrm& inputf, int popindex){
   inputf.validate("Ia",58);
   inputf >> Ia;
   inputf.validate("Ib",58);
@@ -46,9 +37,14 @@ void Modtheta::init(Istrm& inputf, int popindex){
   y[0] = initHtilda;
   y[1] = initXtilda;
   pI->init(inputf);
-//
-//  
+// 
   initoutput(inputf,popindex);
+}
+
+Modtheta::~Modtheta(){
+  delete [ ] y;
+  delete [ ] dydt;
+  delete pI;
 }
 
 void Modtheta::dump(ofstream& dumpf){
@@ -64,32 +60,6 @@ void Modtheta::dump(ofstream& dumpf){
   pI->dump(dumpf);
 }
 
-void Modtheta::restart(Istrm& restartf, int popindex){
-  restartf.validate("Ia",58);
-  restartf >> Ia;
-  restartf.validate("Ib",58);
-  restartf >> Ib;
-  restartf.validate("Ic",58);
-  restartf >> Ic;
-  restartf.validate("Taux",58);
-  restartf >> taux;
-  restartf.validate("Tauh",58);
-  restartf >> tauh;
-  restartf.validate("Ax",58);
-  restartf >> Ax;
-  restartf.validate("Mu",58);
-  restartf >> mu;
-  restartf.validate("Xtilda",58);
-  restartf >> initXtilda;
-  restartf.validate("Htilda",58);
-  restartf >> initHtilda;
-  y[0] = initHtilda;
-  y[1] = initXtilda;
-  pI->init(restartf);
-//
-//  
-  initoutput(restartf,popindex);
-}
 double Modtheta::get(double timestep){
   rk4(currenttime,y,timestep);
   currenttime+=timestep;
@@ -155,4 +125,3 @@ void Modtheta::output(double* y, double itheta){
   threshoutf << y[1] << endl;
   threshoutf << endl;
 }
-

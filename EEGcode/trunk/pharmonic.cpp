@@ -10,7 +10,7 @@
 #include<math.h>
 
 Pharmonic::Pharmonic(long totalnodes, double dt):nodes(totalnodes),
-            timestep(dt),gammaobj("gamma"){
+            timestep(dt){
   previousQ = new double [nodes];
   previousPhi = new double [nodes];
   dPhidt = new double [nodes];
@@ -20,6 +20,7 @@ Pharmonic::~Pharmonic(){
   delete[ ] previousQ;
   delete[ ] previousPhi;
   delete[ ] dPhidt;
+  delete gammaobj;
 }
 
 void Pharmonic::init(Istrm& inputf, Qhistory* qhistory){
@@ -54,12 +55,12 @@ void Pharmonic::init(Istrm& inputf, Qhistory* qhistory){
     cerr << "time steps not a time measured in seconds" << endl;
     exit(EXIT_FAILURE);
   }
-  gammaobj.init(inputf);
+  gammaobj = new Parameter("gamma",inputf);
 }
 
 void Pharmonic::dump(ofstream& dumpf){
   dumpf << "- Tauab: " << tauab << " ";
-  gammaobj.dump(dumpf);
+  gammaobj->dump(dumpf);
   dumpf << endl;
   dumpf << "Q_previous:";
   for(long i=0; i<nodes; i++){
@@ -102,7 +103,7 @@ void Pharmonic::restart(Istrm& restartf){
     cerr << "time steps not a time measured in seconds" << endl;
     exit(EXIT_FAILURE);
   }
-  gammaobj.init(restartf);
+  gammaobj = new Parameter("gamma",restartf);
   double temp;
   restartf.validate("Q_previous",58);
   for(long i=0; i<nodes; i++){
@@ -138,7 +139,7 @@ void Pharmonic::stepwaveeq(double * Phi, Qhistory* pqhistory){
   double C1deltatplusc2;
 
   double* Q=pqhistory->getQbytime(tauab);
-  double gamma=gammaobj.get();
+  double gamma=gammaobj->get();
   double expgamma=exp(-gamma*timestep);
   factorgamma=(2.0/gamma);
   for(long i=0; i<nodes; i++){

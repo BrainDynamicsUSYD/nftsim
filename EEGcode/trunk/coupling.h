@@ -26,13 +26,12 @@ public:
   ~Coupling();
   void init(Istrm& inputf, int coupleid); // initialize the nu variable
   void dump(ofstream& dumpf); // dump nu for restart
-  void restart(Istrm& restartf, int coupleid); // restart the nu variable
   void updatePa(double *Pa, double *Etaa, Qhistorylist* pqhistorylist, ConnectMat* pconnectmat);
   void output(); // dummy output routine - no output is generated
 
 private:
   long nodes;
-  Parameter nuobj;
+  Parameter* nuobj;
 };
 
 #endif

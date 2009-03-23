@@ -8,8 +8,7 @@
 #include "waveeqn.h"
 #include<math.h>
 
-WaveEqn::WaveEqn(long nodes, double dt):gammaobj("gamma"),
-           effrangeobj("Effective range"),deltat(dt){
+WaveEqn::WaveEqn(long nodes, double dt):deltat(dt){
   gridsize=static_cast<long>((sqrt(nodes)+2)*(sqrt(nodes)+2));
   if (sqrt( static_cast<double>(nodes)) != floor(sqrt( static_cast<double>(nodes)))){
     cerr << "Wave equation solver assumes square grid. Nodes per population must be a perfect square number" << endl;
@@ -24,8 +23,7 @@ WaveEqn::WaveEqn(long nodes, double dt):gammaobj("gamma"),
   Qpast = new Field(gridsize,longsidelength,shortsidelength,"Q");
 }
 
-WaveEqn::WaveEqn(long nodes, double dt, long longside):gammaobj("gamma"),
-           effrangeobj("Effective range"),deltat(dt),longsidelength(longside){
+WaveEqn::WaveEqn(long nodes, double dt, long longside):deltat(dt),longsidelength(longside){
   if (nodes%longsidelength != 0){
     cerr << "To define a rectangular grid nodes: " << nodes <<endl;
     cerr << "divided by Longside: " << longside << endl;
@@ -48,6 +46,8 @@ WaveEqn::WaveEqn(long nodes, double dt, long longside):gammaobj("gamma"),
 WaveEqn::~WaveEqn(){
   delete phipast;
   delete Qpast;
+  delete gammaobj;
+  delete effrangeobj;
 }
 
 void WaveEqn::init(Istrm& inputf, Qhistory* pqhistory){
@@ -76,23 +76,23 @@ void WaveEqn::init(Istrm& inputf, Qhistory* pqhistory){
     cerr << "time steps not a time measured in seconds" << endl;
     exit(EXIT_FAILURE);
   }
-  effrangeobj.init(inputf);
+  effrangeobj = new Parameter("Effective range",inputf);
   optionnum=inputf.choose("gamma:1 velocity:2",58);
   if(1==optionnum){
     inputf >> gamma;
-    gammaobj.init(gamma);
+    gammaobj = new Parameter("gamma",gamma);
   }
   if(2==optionnum){
     double velocity;
     inputf >> velocity;
-    gammaobj.init( velocity/effrangeobj.get() );
+    gammaobj = new Parameter("gamma", velocity/effrangeobj->get() );
   }
   if( !((1==optionnum)||(2==optionnum)) ){
     cerr << "Last read looking for gamma or velocity found neither" << endl;
     exit(EXIT_FAILURE);
   }
-  gamma=gammaobj.get(); //Update the gamma value
-  effrange=effrangeobj.get(); //Update the effective range value
+  gamma=gammaobj->get(); //Update the gamma value
+  effrange=effrangeobj->get(); //Update the effective range value
   if(gamma/2.0 < deltat || effrange/2.0 < deltax){
     cerr << "Wave equation with gamma: " << gamma << " effrange: " << effrange << endl;
     cerr << "Is neither adequately captured by grid spacing chosen" << endl;
@@ -115,8 +115,8 @@ void WaveEqn::init(Istrm& inputf, Qhistory* pqhistory){
 void WaveEqn::dump(ofstream& dumpf){
   dumpf << "- Tauab: " << tauab << " ";
   dumpf << "Deltax: " << deltax << " ";
-  effrangeobj.dump(dumpf);
-  gammaobj.dump(dumpf);
+  effrangeobj->dump(dumpf);
+  gammaobj->dump(dumpf);
   dumpf << endl;
   phipast->dump(dumpf);
   Qpast->dump(dumpf);
@@ -148,16 +148,16 @@ void WaveEqn::restart(Istrm& restartf){
   }
   restartf.validate("Deltax",58);
   restartf >> deltax;
-  effrangeobj.init(restartf);
+  effrangeobj = new Parameter("Effective range",restartf);
   optionnum=restartf.choose("gamma:1 velocity:2",58);
   if(1==optionnum){
     restartf >> gamma;
-    gammaobj.init(gamma);
+    gammaobj = new Parameter("gamma",gamma);
   }
   if(2==optionnum){
     double velocity;
     restartf >> velocity;
-    gammaobj.init( velocity/effrangeobj.get() );
+    gammaobj = new Parameter("gamma", velocity/effrangeobj->get() );
   }
   if( !((1==optionnum)||(2==optionnum)) ){
     cerr << "Last read looking for gamma or velocity found neither" << endl;
@@ -187,8 +187,8 @@ void WaveEqn::stepwaveeq(double *Phi, Qhistory *pqhistory){
   double* Q= pqhistory->getQbytime(tauab);
   double* Q_1= Qpast->U_1;
   double* Q_2= Qpast->U_2;
-  gamma=gammaobj.get(); //Update the gamma value
-  effrange=effrangeobj.get(); //Update the effective range value
+  gamma=gammaobj->get(); //Update the gamma value
+  effrange=effrangeobj->get(); //Update the effective range value
   p2=deltatdivideddeltaxallsquared*(effrange*effrange*gamma*gamma)  ; // Square of mesh ratio, dimensionless
 //  twominusfourp2=2.0F-4.0F*p2; // factor in wave algorithm
   twominusthreep2=2.0F-3.0F*p2; // factor in wave algorithm

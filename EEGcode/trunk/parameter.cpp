@@ -7,24 +7,18 @@
 
 #include "parameter.h"
 
-Parameter::Parameter(const char * pname):ident(pname){
-}
-Parameter::~Parameter(){
-}
- 
-void Parameter::init(Istrm& inputf){
+Parameter::Parameter(const char * pname, Istrm& inputf):ident(pname){
   inputf.validate(ident.c_str(),58);
   inputf >> param;
 }
 
-void Parameter::init(double initval){
+Parameter::Parameter(const char * pname, double initval):ident(pname){
   param = initval;
 }
 
+Parameter::~Parameter(){
+}
+ 
 void Parameter::dump(ofstream& dumpf){
   dumpf << ident << ":" << param << " ";
-}
-
-double Parameter::get(){
-  return param;
 }

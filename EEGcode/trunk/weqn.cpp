@@ -8,9 +8,7 @@
 #include "weqn.h"
 #include<math.h>
 
-Weqn::Weqn(long gsize, double dt):gammaobj("gamma"),
-           effrangeobj("Effective range"),gridsize(gsize), 
-	   deltat(dt){
+Weqn::Weqn(long gsize, double dt):gridsize(gsize),deltat(dt){
   rowlength=static_cast<long>(sqrt(gridsize));
   longsidelength=rowlength-2;
   shortsidelength=rowlength-2;
@@ -19,8 +17,7 @@ Weqn::Weqn(long gsize, double dt):gammaobj("gamma"),
   Qpast = new Field(gridsize,longsidelength,shortsidelength,"Q");
 }
 
-Weqn::Weqn(long gsize,double dt,long longside,long shortside):gammaobj("gamma"),
-           effrangeobj("Effective range"),gridsize(gsize),
+Weqn::Weqn(long gsize,double dt,long longside,long shortside):gridsize(gsize),
 	   deltat(dt){
   longsidelength=longside;
   shortsidelength=shortside;
@@ -31,6 +28,8 @@ Weqn::Weqn(long gsize,double dt,long longside,long shortside):gammaobj("gamma"),
 
 Weqn::~Weqn(){
   delete Qpast;
+  delete gammaobj;
+  delete effrangeobj;
 }
 
 void Weqn::init(Istrm& inputf, double deltax, Qhistory* pqhistory){
@@ -56,23 +55,23 @@ void Weqn::init(Istrm& inputf, double deltax, Qhistory* pqhistory){
     cerr << "time steps not a time measured in seconds" << endl;
     exit(EXIT_FAILURE);
   }
-  effrangeobj.init(inputf);
+  effrangeobj = new Parameter("Effective range",inputf);
   optionnum=inputf.choose("gamma:1 velocity:2",58);
   if(1==optionnum){
     inputf >> gamma;
-    gammaobj.init(gamma);
+    gammaobj = new Parameter("gamma",gamma);
   }
   if(2==optionnum){
     double velocity;
     inputf >> velocity;
-    gammaobj.init( velocity/effrangeobj.get() );
+    gammaobj= new Parameter("gamma", velocity/effrangeobj->get() );
   }
   if( !((1==optionnum)||(2==optionnum)) ){
     cerr << "Last read looking for gamma or velocity found neither" << endl;
     exit(EXIT_FAILURE);
   }
-  gamma=gammaobj.get(); //Update the gamma value
-  effrange=effrangeobj.get(); //Update the effective range value
+  gamma=gammaobj->get(); //Update the gamma value
+  effrange=effrangeobj->get(); //Update the effective range value
   if(gamma/2.0 < deltat || effrange/2.0 < deltax){
     cerr << "Wave equation with gamma: " << gamma << " effrange: " << effrange << endl;
     cerr << "Is neither adequately captured by grid spacing chosen" << endl;
@@ -94,8 +93,8 @@ void Weqn::init(Istrm& inputf, double deltax, Qhistory* pqhistory){
 
 void Weqn::dump(ofstream& dumpf){
   dumpf << "- Tauab: " << tauab << " ";
-  effrangeobj.dump(dumpf);
-  gammaobj.dump(dumpf);
+  effrangeobj->dump(dumpf);
+  gammaobj->dump(dumpf);
   dumpf << endl;
   Qpast->dump(dumpf);
 }
@@ -124,16 +123,16 @@ void Weqn::restart(Istrm& restartf, double deltax){
     cerr << "time steps not a time measured in seconds" << endl;
     exit(EXIT_FAILURE);
   }
-  effrangeobj.init(restartf);
+  effrangeobj = new Parameter("Effective range",restartf);
   optionnum=restartf.choose("gamma:1 velocity:2",58);
   if(1==optionnum){
     restartf >> gamma;
-    gammaobj.init(gamma);
+    gammaobj = new Parameter("gamma",gamma);
   }
   if(2==optionnum){
     double velocity;
     restartf >> velocity;
-    gammaobj.init( velocity/effrangeobj.get() );
+    gammaobj = new Parameter("gamma", velocity/effrangeobj->get() );
   }
   if( !((1==optionnum)||(2==optionnum)) ){
     cerr << "Last read looking for gamma or velocity found neither" << endl;
@@ -167,8 +166,8 @@ void Weqn::stepwaveeq(double *PhiRe, double *PhiIm, Qhistory *pqhistory, Field* 
   double* Q= pqhistory->getQbytime(tauab);
   double* Q_1= Qpast->U_1;
   double* Q_2= Qpast->U_2;
-  gamma=gammaobj.get(); //Update the gamma value
-  effrange=effrangeobj.get(); //Update the effective range value
+  gamma=gammaobj->get(); //Update the gamma value
+  effrange=effrangeobj->get(); //Update the effective range value
   p2=deltatdivideddeltaxallsquared*(effrange*effrange*gamma*gamma)  ; // Square of mesh ratio, dimensionless
 //  twominusfourp2=2.0F-4.0F*p2; // factor in wave algorithm
   twominusthreep2=2.0F-3.0F*p2; // factor in wave algorithm

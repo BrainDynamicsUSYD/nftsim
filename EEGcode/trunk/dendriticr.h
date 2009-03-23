@@ -33,8 +33,8 @@ private:
   double beta;  // Holding variable of alpha at this moment
   double expalpha; // Factor in exactstep
   double expbeta; // Factor in exactstep
-  Parameter alphaobj; // Object which initializes and get alpha values
-  Parameter betaobj; // Object which initializes and gets beta values
+  Parameter* alphaobj; // Object which initializes and get alpha values
+  Parameter* betaobj; // Object which initializes and gets beta values
 };
 
 #endif

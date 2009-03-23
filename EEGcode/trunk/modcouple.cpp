@@ -63,28 +63,6 @@ void Modcouple::dump(ofstream& dumpf){
   pconcobj->dump(dumpf);
 }
 
-void Modcouple::restart(Istrm& restartf, int coupleid){
-  restartf.validate("Nuzero",58);
-  restartf >> nuzero;
-  restartf.validate("Nuscal",58);
-  restartf >> nuscal;
-  restartf.validate("Mu",58);
-  restartf >> mu;
-  restartf.validate("Lambda",58);
-  restartf >> lambda;
-  restartf.validate("k",58);
-  restartf >> k;
-  float mean;
-  pconcobj = new Timeseries("Concentration"," of Concentration");
-  mean=pconcobj->init(restartf);
-  for(int i=0; i<nodes; i++){
-    previousconc[i]=mean;
-    h[i]=mean;
-    dhdt[i]=0.0;
-  }
-  initoutput(restartf,coupleid);
-}
-
 void Modcouple::initoutput(Istrm& inputf, int coupleid){
   coupleid++; // (coupleid+1) is to ensure numbering from one not zero in output
   stringstream ss(stringstream::in | stringstream::out);

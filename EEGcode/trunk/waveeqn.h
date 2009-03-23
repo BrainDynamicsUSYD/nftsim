@@ -30,8 +30,8 @@ public:
   void restart(Istrm& restartf);
   void stepwaveeq(double *Phi, Qhistory* qhistory);
 private:
-  Parameter gammaobj;
-  Parameter effrangeobj;
+  Parameter* gammaobj;
+  Parameter* effrangeobj;
   double gamma;
   double effrange;
   int tauab;

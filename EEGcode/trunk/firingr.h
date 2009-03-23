@@ -33,8 +33,8 @@ private:
   Modtheta1* pm1thetaobj;
   bool ismodtheta; // TRUE if theta is modulated
   int modthetatype;
-  Parameter sigmaobj;
-  Parameter qmaxobj;
+  Parameter* sigmaobj;
+  Parameter* qmaxobj;
   double theta;
   double sigma;
   double qmax;
