@@ -46,6 +46,7 @@ void FiringR::init(Istrm& inputf){
   }
   sigmaobj = new Parameter("Sigma",inputf);
   qmaxobj = new Parameter("Qmax",inputf);
+  inputf.ignore(200,32); // Ignore appended endline at end of firing response
 }
 
 //
@@ -74,32 +75,4 @@ void FiringR::dump(ofstream& dumpf){
   sigmaobj->dump(dumpf);
   qmaxobj->dump(dumpf);
   dumpf << endl; //Append endl at end of firing response figures
-}
-
-void FiringR::restart(Istrm& restartf){
-  restartf.validate("Firin",103);
-  restartf.validate("respo",110); 
-  restartf.validate("s",101); // Read succesively upto the end of "Firing response"
-  int optionnum;
-  optionnum=restartf.choose("Theta:1 ModTheta:2 Modtheta1:3",58);
-  if(1==optionnum){
-    double initval;
-    restartf >> initval;
-    pthetaobj = new Parameter("Theta",initval);
-    ismodtheta=false;
-  }
-  if(2==optionnum){
-    pmthetaobj = new Modtheta(restartf,pindex);
-    ismodtheta=true;
-    modthetatype=0;
-  }
-  if(3==optionnum){
-    pm1thetaobj = new Modtheta1(restartf,pindex);
-    ismodtheta=true;
-    modthetatype=1;
-    
-  }
-  sigmaobj = new Parameter("Sigma",restartf);
-  qmaxobj = new Parameter("Qmax",restartf);
-  restartf.ignore(200,32); // Ignore appended endline at end of firing response
 }

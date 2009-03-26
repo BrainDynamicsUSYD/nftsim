@@ -10,16 +10,10 @@
 #include<sstream>
 using std::stringstream;
 
-Timeseries::Timeseries(const char * typeid1, const char * typeid2):id1(typeid1),
+Timeseries::Timeseries(const char * typeid1, const char * typeid2,Istrm& inputf):id1(typeid1),
                         id2(typeid2){
   random=0; // Set pointer to null in case random is not created
   seed=-98716872;
-}
-Timeseries::~Timeseries(){
-  if(random) delete random;
-}
- 
-float Timeseries::init(Istrm& inputf){
   int optionnum;
   stringstream message1(stringstream::in | stringstream::out);
   message1 << id1 << " mode";
@@ -110,7 +104,10 @@ float Timeseries::init(Istrm& inputf){
     default: // No pattern
       break;
     }
-  return mean;
+}
+
+Timeseries::~Timeseries(){
+  if(random) delete random;
 }
 
 void Timeseries::dump(ofstream& dumpf){

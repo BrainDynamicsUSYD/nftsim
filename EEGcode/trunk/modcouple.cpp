@@ -44,8 +44,8 @@ void Modcouple::init(Istrm& inputf, int coupleid){
   inputf.validate("k",58);
   inputf >> k;
   float mean;
-  pconcobj = new Timeseries("Concentration"," of Concentration");
-  mean=pconcobj->init(inputf);
+  pconcobj = new Timeseries("Concentration"," of Concentration",inputf);
+  mean=pconcobj->getmean();
   for(int i=0; i<nodes; i++){
     previousconc[i]=mean;
     h[i]=mean;

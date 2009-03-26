@@ -37,7 +37,7 @@ private:
   const long nodes; // number of nodes in this population
   FiringR* pfr;  // Pointer to Firing Response of the neural population (NULL if this is a stimulus population)
   DendriticRlist* pdr; // Pointer to List of dendritic responses of afferent neural populations (NULL if this is a stimulus population)
-  Timeseries* pstimulus; // Pointer to Stimulus of the neural population (NULL is this is not a stimulus population)
+  Timeseries* pstimulus; // Pointer to Stimulus of the neural population (NULL if this is not a stimulus population)
 };
 
 #endif

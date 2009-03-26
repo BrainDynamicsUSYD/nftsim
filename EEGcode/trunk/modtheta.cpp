@@ -15,7 +15,6 @@ using std::stringstream;
 Modtheta::Modtheta(Istrm& inputf, int popindex):currenttime(0){
   y = new double[2];
   dydt = new double[2];
-  pI = new Timeseries("",""); // I drive no idenfication for back. compatability
   inputf.validate("Ia",58);
   inputf >> Ia;
   inputf.validate("Ib",58);
@@ -36,7 +35,7 @@ Modtheta::Modtheta(Istrm& inputf, int popindex):currenttime(0){
   inputf >> initHtilda;
   y[0] = initHtilda;
   y[1] = initXtilda;
-  pI->init(inputf);
+  pI = new Timeseries("","",inputf); // I drive no idenfication for back. compatability
 // 
   initoutput(inputf,popindex);
 }

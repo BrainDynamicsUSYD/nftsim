@@ -25,7 +25,6 @@ public:
   ~FiringR();
   void init(Istrm& inputf);
   void dump(ofstream& dumpf);
-  void restart(Istrm& restartf);
   void getQ(double *V, double *Q, long totalnodes, double timestep);
 private: 
   Parameter* pthetaobj;

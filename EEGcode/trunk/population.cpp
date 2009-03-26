@@ -23,13 +23,9 @@ Population::Population(long totalnodes, int popindex, ConnectMat *pconnectmat)
     pfr = new FiringR(popindex);
     pdr = new DendriticRlist(totalnodes,popindex,pconnectmat);
   } else {
-    pstimulus = new Timeseries("Stimulus"," of stimulus");
   }
 }
 
-//
-// destructor for population frees V and Q data
-//
 Population::~Population(){
   delete[ ] Q;
   if (V)  delete[ ] V;
@@ -46,7 +42,7 @@ void Population::init(Istrm& inputf, PropagNet *ppropagnet, ConnectMat *pconnect
   for(long i=0; i<nodes; i++)
       Q[i]=Qinitial;
   if (isstimulus) {
-    pstimulus->init(inputf);
+    pstimulus = new Timeseries("Stimulus"," of stimulus",inputf);
   } else {
     pfr->init(inputf);
     pdr->init(inputf,ppropagnet,pconnectmat);
@@ -75,15 +71,14 @@ void Population::restart(Istrm& restartf, PropagNet *ppropagnet, ConnectMat *pco
     restartf >> Q[i];
   restartf.ignore(200,32); // Throwaway appended endl at end of Q array
   if (isstimulus) {
-    pstimulus->init(restartf);
+    pstimulus = new Timeseries("Stimulus"," of stimulus",restartf);
   } else {
-    pfr->restart(restartf);
+    pfr->init(restartf);
     pdr->restart(restartf,ppropagnet,pconnectmat);
   }
 }
-//
+
 // Step forward population one timestep method
-//
 void Population::stepPop(double timestep){
   if (isstimulus) {
     pstimulus->get(t, Q, nodes);

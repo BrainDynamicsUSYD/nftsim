@@ -21,11 +21,11 @@ using std::string;
 
 class Timeseries {
 public: 
-  Timeseries(const char * typeid1, const char * typeid2);
+  Timeseries(const char * typeid1, const char * typeid2, Istrm& inputf);
   ~Timeseries();
-  float init(Istrm& inputf);
   void dump(ofstream& dumpf);
   void get(double t, double *tseries, const long nodes);
+  double getmean(){return mean;};
 private:
   string id1; // name of type of time series used in mode e.g. "Concentration" .. modes
   string id2; // name of type of time series used in start time messsage
