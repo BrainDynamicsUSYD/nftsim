@@ -1,13 +1,15 @@
 /***************************************************************************
-                          couplinglist.cpp  -  description
+                          couplinglist.cpp  -  Holds a list of various
+                                               synaptic coupling objects
                              -------------------
-    copyright            : (C) 2005 by Peter Drysdale
+    copyright            : (C) 2009 by Peter Drysdale
     email                : peter@physics.usyd.edu.au
  ***************************************************************************/
 
 #include"couplinglist.h"
 #include"coupling.h"
 #include"modcouple.h"
+#include"coupleplast.h"
 
 //
 // Constructor for Couplinglist creates an array of coupling objects
@@ -21,7 +23,7 @@ Couplinglist::Couplinglist(Istrm& inputf, ofstream& dumpf
   int optionnum;
   for(int i=0;i<numcoup;i++){
     inputf.ignore(200,58);
-    optionnum=inputf.choose("Simple:1 Modulate:2 ",32);
+    optionnum=inputf.choose("Simple:1 Modulate:2 Plastic:3 ",32);
     if(1==optionnum){
       couparray[i] = new Coupling(nodes,deltat);
       dumpf << (i+1) << ": Simple ";
@@ -30,7 +32,11 @@ Couplinglist::Couplinglist(Istrm& inputf, ofstream& dumpf
       couparray[i] = new Modcouple(nodes,deltat);
       dumpf << (i+1) << ": Modulate ";
     }
-    if(1!=optionnum && 2!=optionnum){
+    if(3==optionnum){
+      couparray[i] = new Coupleplast(nodes,deltat);
+      dumpf << (i+1) << ": Plastic ";
+    }
+    if(1!=optionnum && 2!=optionnum && 3!=optionnum){
       cerr << "Invalid Coupling type" << endl;
       exit(EXIT_FAILURE);
     }
