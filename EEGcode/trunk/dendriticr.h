@@ -22,7 +22,7 @@ class DendriticR {
 public: 
   DendriticR(long nodes);
   ~DendriticR();
-  void init(Istrm& inputf, double& Vinit);
+  void init(Istrm& inputf, double& Vinit,int propindex,int qindex);
   void dump(ofstream& dumpf);
   void restart(Istrm& restartf);
   void stepVab(double *Pab, double * Vab, double *dVabdt, double timestep);

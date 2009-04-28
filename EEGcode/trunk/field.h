@@ -24,6 +24,7 @@ public:
   Field(long gridsize,long longsidelength,long shortsidelength,const char * fname);
   ~Field();
   void init(Istrm& inputf);
+  void init(double Uinit);
   void init(double* Uinit);
   void dump(ofstream& dumpf);
   void restart(Istrm& restartf);

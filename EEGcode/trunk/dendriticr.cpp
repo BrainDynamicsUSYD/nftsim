@@ -1,7 +1,7 @@
 /***************************************************************************
-                          dendriticr.cpp  -  description
+                          dendriticr.cpp  -  Dendritic Response object
                              -------------------
-    copyright            : (C) 2005 by Peter Drysdale
+    copyright            : (C) 2009 by Peter Drysdale
     email                : peter@physics.usyd.edu.au
  ***************************************************************************/
 
@@ -16,9 +16,24 @@ DendriticR::~DendriticR(){
   delete betaobj;
 }
 
-void DendriticR::init(Istrm& inputf, double& Vinit){
+void DendriticR::init(Istrm& inputf, double& Vinit,int propindex, int qindex){
   inputf.validate("V initial",58);
-  inputf >> Vinit;
+// Determine if an initial value is given or "Steady" initial condition
+  std::streampos sp;
+  sp = inputf.tellg();
+  char ch;
+  ch=inputf.get();
+  while(' '==ch)ch=inputf.get();
+  if('S'==ch){
+    inputf.seekg(std::ios::beg);
+    double nu=inputf.find("Nu",58,(propindex+1));
+    double Q=inputf.find("Initial Q",58,(qindex+1));
+    inputf.seekg(sp); // reposition back to original position
+    Vinit=nu*Q;
+  } else {
+    inputf.seekg(sp);
+    inputf >> Vinit;
+  }
   for(long i=0; i<nodes; i++){
     previousPab[i]=Vinit;
   } 

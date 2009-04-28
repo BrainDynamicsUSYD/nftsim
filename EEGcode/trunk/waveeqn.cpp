@@ -51,7 +51,22 @@ WaveEqn::~WaveEqn(){
 }
 
 void WaveEqn::init(Istrm& inputf, Qhistory* pqhistory){
-  phipast->init(inputf);
+  inputf.validate("Initial Phi",58);
+// Determine if an initial value is given or "Steady" initial condition
+  std::streampos sp;
+  sp = inputf.tellg();
+  char ch;
+  ch=inputf.get();
+  while(' '==ch)ch=inputf.get();
+  if('S'==ch){
+    double* Q= pqhistory->getQbytime(0);
+    phipast->init(Q[0]);
+  } else {
+    inputf.seekg(sp);
+    double initphi;
+    inputf >> initphi;
+    phipast->init(initphi);
+  }
   inputf.validate("Deltax",58);
   inputf >> deltax;
   int optionnum;

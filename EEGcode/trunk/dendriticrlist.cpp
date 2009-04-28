@@ -3,7 +3,7 @@
                                                  response for afferent neural
                                                  populations
                              -------------------
-    copyright            : (C) 2005 by Peter Drysdale
+    copyright            : (C) 2009 by Peter Drysdale
     email                : peter@physics.usyd.edu.au
  ***************************************************************************/
 
@@ -76,9 +76,11 @@ void DendriticRlist::init(Istrm& inputf, PropagNet *ppropagnet, ConnectMat *pcon
     cerr << expectaff << " " << numaff << endl;
     exit(EXIT_FAILURE);
   }
-  for(int i=0;i<numaff; i++){
+  int j=0;
+  for(int i=0;i<numaff; i++,j++){
+    while(pconnectmat->getDRindex(j)!=popindex) j++;
     double Vinit;
-    getdendr(i)->init(inputf,Vinit); // Important init returns inital values for V, dVdt
+    getdendr(i)->init(inputf,Vinit,j,pconnectmat->getQindex(j)); // Important init returns inital values for V, dVdt
     double * __restrict__ p=Va[i];
     double * __restrict__ p1=dVdt[i];
     long n=numnodes;

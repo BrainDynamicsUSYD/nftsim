@@ -33,6 +33,13 @@ void Field::init(Istrm& inputf){
   U_2=U_B;
 }
 
+void Field::init(double Uinit){
+  for(long i=0; i<gridsize; i++) U_A[i]=Uinit;
+  for(long i=0; i<gridsize; i++) U_B[i]=Uinit;
+  U_1=U_A;
+  U_2=U_B;
+}
+
 void Field::init(double* Uinit){ // Alternate initializer
   copyarr(Uinit,U_A);
   for(long i=0; i<gridsize; i++){

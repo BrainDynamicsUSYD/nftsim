@@ -1,16 +1,14 @@
 /***************************************************************************
                           istrm.cpp  -  description
                              -------------------
-    copyright            : (C) 2005 by Peter Drysdale
+    copyright            : (C) 2009 by Peter Drysdale
     email                : peter@physics.usyd.edu.au
  ***************************************************************************/
 
 #include "istrm.h"
 #include <string>
-using std::string;
 #include <iostream>
 #include <sstream>
-using std::stringstream;
 #include<cstring>
 
 Istrm::Istrm(const char* filename):ifstream(filename,ios::in){
@@ -42,10 +40,43 @@ void Istrm::validate(const char* check, char delim){
   }
 }
 
+double Istrm::find(const char* check, char delim, int ordinal){
+  double retval;
+  std::streampos sp;
+  char* p; // pointer to start of compare portion of pbuffer
+  
+  if(!check){
+    cerr << "Find function of Istrm has failed no search string" << endl;
+    exit(EXIT_FAILURE);   
+  }
+  sp = this->tellg(); // Save current position in input file
+  this->seekg(std::ios::beg); // Move file pointer to start of input file
+  while(ordinal>0){
+    this->getline(pbuffer, 200, delim);
+    if( this->eof() ){
+      cerr << "Find function of Istrm has failed" << endl;
+      exit(EXIT_FAILURE);
+    }    
+    if(!pbuffer){
+      cerr << "Find function of Istrm has failed" << endl;
+      exit(EXIT_FAILURE);
+    }
+    p=pbuffer+std::strlen(pbuffer)-std::strlen(check);
+    if(std::strcmp(p,check)){
+      ;
+    } else {
+      ordinal--;
+    }
+  }
+  *this >> retval;
+  this->seekg(sp); // Restore current position in input file
+  return retval;
+}
+
 int Istrm::choose(const char* ch, char delim){
-  string choice;
-  string list(ch);
-  stringstream ss(stringstream::in | stringstream::out);
+  std::string choice;
+  std::string list(ch);
+  std::stringstream ss(std::stringstream::in | std::stringstream::out);
   int retval;
 
   if (32==this->peek()) this->ignore(1); //remove space character if there is one

@@ -21,6 +21,7 @@ public:
   Istrm(const char* filename);
   ~Istrm();
   void validate(const char* check, char delim);
+  double find(const char* check, char delim, int ordinal);
   int choose(const char* ch, char delim);
 private:
   char * pbuffer;
