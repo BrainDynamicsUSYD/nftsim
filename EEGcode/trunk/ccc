@@ -3,7 +3,7 @@
 # hints
 ls *.cpp | xargs perl -w -i -p -e "s/__restrict__/\/* __restrict__ *\/ /g"
 # Now compile the code
-g++ -lm -Wall -o eegcode main.cpp connectmat.cpp poplist.cpp population.cpp dendriticrlist.cpp dendriticr.cpp firingr.cpp propagnet.cpp qhistorylist.cpp qhistory.cpp couple.cpp couplinglist.cpp coupling.cpp proplist.cpp waveeqn.cpp random.cpp phiout.cpp istrm.cpp propag.cpp parameter.cpp pmap.cpp eqnset.cpp weqn.cpp prefact.cpp modcouple.cpp field.cpp modtheta.cpp timeseries.cpp modtheta1.cpp pharmonic.cpp coupleplast.cpp
+g++ -lm -Wall -o eegcode main.cpp connectmat.cpp poplist.cpp population.cpp dendriticrlist.cpp dendriticr.cpp firingr.cpp propagnet.cpp qhistorylist.cpp qhistory.cpp couple.cpp couplinglist.cpp coupling.cpp proplist.cpp waveeqn.cpp random.cpp phiout.cpp istrm.cpp propag.cpp parameter.cpp pmap.cpp eqnset.cpp weqn.cpp prefact.cpp modcouple.cpp field.cpp modtheta.cpp timeseries.cpp modtheta1.cpp pharmonic.cpp coupleplast.cpp modsigma.cpp
 # Return hints to their original form after compiling
 ls *.cpp | xargs perl -w -i -p -e "s/\/\* __restrict__ \*\/ /__restrict__/g"
 

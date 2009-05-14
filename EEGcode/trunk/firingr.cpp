@@ -15,7 +15,8 @@ FiringR::~FiringR(){
   if (pmthetaobj) delete pmthetaobj;
   if (pm1thetaobj) delete pm1thetaobj;
   if (pthetaobj) delete pthetaobj;
-  delete sigmaobj;
+  if (pmsigmaobj) delete pmsigmaobj;
+  if (sigmaobj) delete sigmaobj;
   delete qmaxobj;
 }
 
@@ -27,6 +28,8 @@ void FiringR::init(Istrm& inputf){
   pthetaobj=0;
   pmthetaobj=0;
   pm1thetaobj=0;
+  pmsigmaobj=0;
+  sigmaobj=0;
   optionnum=inputf.choose("Theta:1 ModTheta:2 ModTheta1:3",58);
   if(1==optionnum){
     double initval;
@@ -44,7 +47,17 @@ void FiringR::init(Istrm& inputf){
     ismodtheta=true;
     modthetatype=1;
   }
-  sigmaobj = new Parameter("Sigma",inputf);
+  optionnum=inputf.choose("Sigma:1 ModSigma:2",58);
+  if(1==optionnum){
+    double initval;
+    inputf >> initval;
+    sigmaobj = new Parameter("Sigma",initval);
+    ismodsigma=false;
+  }
+  if(2==optionnum){
+    pmsigmaobj = new Modsigma(inputf,pindex);
+    ismodsigma=true;
+  }
   qmaxobj = new Parameter("Qmax",inputf);
   inputf.ignore(200,32); // Ignore appended endline at end of firing response
 }
@@ -53,13 +66,16 @@ void FiringR::init(Istrm& inputf){
 // Method to transform V into Q via sigmoid firing response
 //
 void FiringR::getQ(double *V, double *Q, long totalnodes, double timestep){
-  sigma=sigmaobj->get();
   qmax=qmaxobj->get() ;
   if(ismodtheta) {
     if(0==modthetatype){theta=pmthetaobj->get(timestep);}
     else{theta=pm1thetaobj->get(timestep,V,qmax,sigma);}
   }
   else {theta=pthetaobj->get();}
+  if(ismodsigma) {
+    sigma=pmsigmaobj->get(timestep,V);
+  }
+  else {sigma=sigmaobj->get();}
   for(long i=0; i<totalnodes; i++)
     Q[i] = qmax/(1.0F+exp(-(V[i]-theta)/sigma));
   
@@ -72,7 +88,10 @@ void FiringR::dump(ofstream& dumpf){
     else{pm1thetaobj->dump(dumpf);}
   }
   else {pthetaobj->dump(dumpf);}
-  sigmaobj->dump(dumpf);
+  if(ismodsigma) {
+    pmsigmaobj->dump(dumpf);
+  }
+  else {sigmaobj->dump(dumpf);}
   qmaxobj->dump(dumpf);
   dumpf << endl; //Append endl at end of firing response figures
 }
