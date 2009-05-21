@@ -33,29 +33,9 @@ Weqn::~Weqn(){
 }
 
 void Weqn::init(Istrm& inputf, double deltax, Qhistory* pqhistory){
-  int optionnum;
-  optionnum=inputf.choose("Tauab:1 Tauabt:2",58);
-  float tauabfloat;
-  if(1==optionnum){
-    inputf >> tauabfloat;
-  }
-  if(2==optionnum){
-    double tauabt;
-    inputf >> tauabt;
-    tauabfloat=tauabt/deltat;
-  }
-  if( !((1==optionnum)||(2==optionnum)) ){
-    cerr << "Last read looking for Tauab or Taubt found neither" << endl;
-    exit(EXIT_FAILURE);
-  }
-  tauab=int(tauabfloat);
-  if(tauabfloat<1 && tauabfloat>0){
-    cerr << "Last read Tauab: " << tauabfloat << endl;
-    cerr << "Tauab must be greater than 1 as it is measured in" << endl;
-    cerr << "time steps not a time measured in seconds" << endl;
-    exit(EXIT_FAILURE);
-  }
+  tauab=inputf.readtauab(deltat);
   effrangeobj = new Parameter("Effective range",inputf);
+  int optionnum;
   optionnum=inputf.choose("gamma:1 velocity:2",58);
   if(1==optionnum){
     inputf >> gamma;
@@ -101,29 +81,9 @@ void Weqn::dump(ofstream& dumpf){
 
 void Weqn::restart(Istrm& restartf, double deltax){
   restartf.ignore(200,45); // Throw away everything up to the dash char
-  int optionnum;
-  optionnum=restartf.choose("Tauab:1 Tauabt:2",58);
-  float tauabfloat;
-  if(1==optionnum){
-    restartf >> tauabfloat;
-  }
-  if(2==optionnum){
-    double tauabt;
-    restartf >> tauabt;
-    tauabfloat=tauabt/deltat;
-  }
-  if( !((1==optionnum)||(2==optionnum)) ){
-    cerr << "Last read looking for Tauab or Taubt found neither" << endl;
-    exit(EXIT_FAILURE);
-  }
-  tauab=int(tauabfloat);
-  if(tauabfloat<1 && tauabfloat>0){
-    cerr << "Last read Tauab: " << tauabfloat << endl;
-    cerr << "Tauab must be greater than 1 as it is measured in" << endl;
-    cerr << "time steps not a time measured in seconds" << endl;
-    exit(EXIT_FAILURE);
-  }
+  tauab=restartf.readtauab(deltat);
   effrangeobj = new Parameter("Effective range",restartf);
+  int optionnum;
   optionnum=restartf.choose("gamma:1 velocity:2",58);
   if(1==optionnum){
     restartf >> gamma;

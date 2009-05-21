@@ -10,17 +10,15 @@
 #include "connectmat.h"
 
 Population::Population(long totalnodes, int popindex, ConnectMat *pconnectmat)
-             :t(0),nodes(totalnodes) {
+             :t(0),pindex(popindex),nodes(totalnodes),pfr(0) {
   Q = new double[totalnodes];
   isstimulus=true;
   V = 0;
-  pfr = 0;
   pdr = 0;
   pstimulus = 0;
   if (pconnectmat->getDRlength(popindex)) { //If populations are attached to this dendritic tree it is not a stimulus population
     isstimulus=false;
     V = new double[totalnodes];
-    pfr = new FiringR(popindex);
     pdr = new DendriticRlist(totalnodes,popindex,pconnectmat);
   } else {
   }
@@ -44,7 +42,7 @@ void Population::init(Istrm& inputf, PropagNet *ppropagnet, ConnectMat *pconnect
   if (isstimulus) {
     pstimulus = new Timeseries("Stimulus"," of stimulus",inputf);
   } else {
-    pfr->init(inputf);
+    pfr = new FiringR(pindex,inputf);
     pdr->init(inputf,ppropagnet,pconnectmat);
     inputf.ignore(200,32); //throwaway space line between populations
   }
@@ -73,7 +71,7 @@ void Population::restart(Istrm& restartf, PropagNet *ppropagnet, ConnectMat *pco
   if (isstimulus) {
     pstimulus = new Timeseries("Stimulus"," of stimulus",restartf);
   } else {
-    pfr->init(restartf);
+    pfr = new FiringR(pindex,restartf);
     pdr->restart(restartf,ppropagnet,pconnectmat);
   }
 }

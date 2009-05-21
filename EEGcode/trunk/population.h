@@ -32,6 +32,7 @@ public:
   double * Q;  // Array of firing rate in population
 private:
   double t; // Current time
+  int pindex; // Population index
   bool isstimulus; // TRUE if this population is a stimulus population (i.e. has no attached populations on dendrite tree
   double * V;  // Array of soma potential in population (NULL if this is a stimulus population)
   const long nodes; // number of nodes in this population

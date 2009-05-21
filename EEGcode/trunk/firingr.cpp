@@ -1,35 +1,19 @@
 /***************************************************************************
-                          firingr.cpp  -  description
+                          firingr.cpp  -  Compute firing response sigmoid
                              -------------------
-    copyright            : (C) 2008 by Peter Drysdale
+    copyright            : (C) 2009 by Peter Drysdale
     email                : peter@physics.usyd.edu.au
  ***************************************************************************/
 
 #include "firingr.h"
 #include<math.h>
 
-FiringR::FiringR(int popindex):pindex(popindex){
-}
-
-FiringR::~FiringR(){
-  if (pmthetaobj) delete pmthetaobj;
-  if (pm1thetaobj) delete pm1thetaobj;
-  if (pthetaobj) delete pthetaobj;
-  if (pmsigmaobj) delete pmsigmaobj;
-  if (sigmaobj) delete sigmaobj;
-  delete qmaxobj;
-}
-
-void FiringR::init(Istrm& inputf){
+FiringR::FiringR(int popindex,Istrm& inputf):pthetaobj(0),pmthetaobj(0),pm1thetaobj(0),
+                 pmsigmaobj(0),sigmaobj(0),pindex(popindex){
   inputf.validate("Firin",103);
   inputf.validate("respo",110); 
   inputf.validate("s",101); // Read succesively upto the end of "Firing response"
   int optionnum;
-  pthetaobj=0;
-  pmthetaobj=0;
-  pm1thetaobj=0;
-  pmsigmaobj=0;
-  sigmaobj=0;
   optionnum=inputf.choose("Theta:1 ModTheta:2 ModTheta1:3",58);
   if(1==optionnum){
     double initval;
@@ -62,6 +46,14 @@ void FiringR::init(Istrm& inputf){
   inputf.ignore(200,32); // Ignore appended endline at end of firing response
 }
 
+FiringR::~FiringR(){
+  if (pmthetaobj) delete pmthetaobj;
+  if (pm1thetaobj) delete pm1thetaobj;
+  if (pthetaobj) delete pthetaobj;
+  if (pmsigmaobj) delete pmsigmaobj;
+  if (sigmaobj) delete sigmaobj;
+  delete qmaxobj;
+}
 //
 // Method to transform V into Q via sigmoid firing response
 //

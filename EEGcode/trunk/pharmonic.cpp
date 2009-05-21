@@ -33,28 +33,7 @@ void Pharmonic::init(Istrm& inputf, Qhistory* qhistory){
     previousPhi[i]=phiinit;
     dPhidt[i]=0.;
   }
-  int optionnum;
-  optionnum=inputf.choose("Tauab:1 Tauabt:2",58);
-  float tauabfloat;
-  if(1==optionnum){
-    inputf >> tauabfloat;
-  }
-  if(2==optionnum){
-    double tauabt;
-    inputf >> tauabt;
-    tauabfloat=tauabt/timestep;
-  }
-  if( !((1==optionnum)||(2==optionnum)) ){
-    cerr << "Last read looking for Tauab or Taubt found neither" << endl;
-    exit(EXIT_FAILURE);
-  }
-  tauab=int(tauabfloat);
-  if(tauabfloat<1 && tauabfloat>0){
-    cerr << "Last read Tauab: " << tauabfloat << endl;
-    cerr << "Tauab must be greater than 1 as it is measured in" << endl;
-    cerr << "time steps not a time measured in seconds" << endl;
-    exit(EXIT_FAILURE);
-  }
+  tauab=inputf.readtauab(timestep);
   gammaobj = new Parameter("gamma",inputf);
 }
 
@@ -81,28 +60,7 @@ void Pharmonic::dump(ofstream& dumpf){
 
 void Pharmonic::restart(Istrm& restartf){
   restartf.ignore(200,45);
-  int optionnum;
-  optionnum=restartf.choose("Tauab:1 Tauabt:2",58);
-  float tauabfloat;
-  if(1==optionnum){
-    restartf >> tauabfloat;
-  }
-  if(2==optionnum){
-    double tauabt;
-    restartf >> tauabt;
-    tauabfloat=tauabt/timestep;
-  }
-  if( !((1==optionnum)||(2==optionnum)) ){
-    cerr << "Last read looking for Tauab or Taubt found neither" << endl;
-    exit(EXIT_FAILURE);
-  }
-  tauab=int(tauabfloat);
-  if(tauabfloat<1 && tauabfloat>0){
-    cerr << "Last read Tauab: " << tauabfloat << endl;
-    cerr << "Tauab must be greater than 1 as it is measured in" << endl;
-    cerr << "time steps not a time measured in seconds" << endl;
-    exit(EXIT_FAILURE);
-  }
+  tauab=restartf.readtauab(timestep);
   gammaobj = new Parameter("gamma",restartf);
   double temp;
   restartf.validate("Q_previous",58);

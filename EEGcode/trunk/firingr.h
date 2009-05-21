@@ -1,7 +1,7 @@
 /***************************************************************************
-                          firingr.h  -  description
+                          firingr.h  -  Firing Response sigmoidal
                              -------------------
-    copyright            : (C) 2005 by Peter Drysdale
+    copyright            : (C) 2009 by Peter Drysdale
     email                : peter@physics.usyd.edu.au
  ***************************************************************************/
 
@@ -22,9 +22,8 @@ using std::endl;
 
 class FiringR {
 public: 
-  FiringR(int popindex);
+  FiringR(int popindex,Istrm& inputf);
   ~FiringR();
-  void init(Istrm& inputf);
   void dump(ofstream& dumpf);
   void getQ(double *V, double *Q, long totalnodes, double timestep);
 private: 
@@ -33,7 +32,7 @@ private:
   Modtheta1* pm1thetaobj;
   Modsigma* pmsigmaobj;
   bool ismodtheta; // TRUE if theta is modulated
-  bool ismodsigma; // TRUE if theta is modulated
+  bool ismodsigma; // TRUE if sigma is modulated
   int modthetatype;
   Parameter* sigmaobj;
   Parameter* qmaxobj;

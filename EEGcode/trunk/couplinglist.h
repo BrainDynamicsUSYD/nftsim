@@ -25,13 +25,12 @@ public:
   ~Couplinglist();
   void init(Istrm& inputf); // initialize each coupling object in list
   void dump(ofstream& dumpf); // dump each coupling coefficient for restart
-  void restart(Istrm& restartf); // restart each coupling object in list
   void updateP(double **P, double **Eta, Qhistorylist* pqhistorylist, ConnectMat* pconnectmat); // Transform Eta to P via coupling terms
   void output(); // Output the nu data
 
 private:
   Couple ** couparray; // Array of pointers to coupling objects
-  Couple * getcoup(int index); // method to obtain pointer to "index" coupling object array 
+  Couple * getcoup(int index){return couparray[index];}; // method to obtain pointer to "index" coupling object array 
   const int numcoup; // Number of coupling objects in coupling list
 };
 

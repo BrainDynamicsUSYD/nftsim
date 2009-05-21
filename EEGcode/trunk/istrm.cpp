@@ -1,5 +1,6 @@
 /***************************************************************************
-                          istrm.cpp  -  description
+                          istrm.cpp  -  Extensions to input streams for parsing
+			                the input files
                              -------------------
     copyright            : (C) 2009 by Peter Drysdale
     email                : peter@physics.usyd.edu.au
@@ -87,3 +88,30 @@ int Istrm::choose(const char* ch, char delim){
   ss >> retval; // extract choice number from string stream as int
   return retval;
 }
+
+int Istrm::readtauab(double deltat){
+  int optionnum;
+  optionnum=this->choose("Tauab:1 Tauabt:2",58);
+  int tauab;
+  float tauabfloat;
+  if(1==optionnum){
+    *this >> tauabfloat;
+  }
+  if(2==optionnum){
+    double tauabt;
+    *this >> tauabt;
+    tauabfloat=tauabt/deltat;
+  }
+  if( !((1==optionnum)||(2==optionnum)) ){
+    cerr << "Last read looking for Tauab or Tauabt found neither" << endl;
+    exit(EXIT_FAILURE);
+  }
+  tauab=int(tauabfloat);
+  if(tauabfloat<1 && tauabfloat>0){
+    cerr << "Last read Tauab: " << tauabfloat << endl;
+    cerr << "Tauab must be greater than 1 as it is measured in" << endl;
+    cerr << "time steps not a time measured in seconds" << endl;
+    exit(EXIT_FAILURE);
+  }
+  return tauab;
+ }

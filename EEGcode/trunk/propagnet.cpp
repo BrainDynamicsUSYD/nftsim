@@ -58,7 +58,7 @@ void PropagNet::restart(Istrm& restartf, Poplist *ppoplist){
   restartf.ignore(200,32); // Throwaway blank line
   pqhistorylist->restart(restartf, ppoplist);
   pproplist->restart(restartf);
-  pcouplinglist->restart(restartf);
+  pcouplinglist->init(restartf);
 }
 
 // Propagate the firing response of each population to pulse densities arriving at the dendrite trees of other

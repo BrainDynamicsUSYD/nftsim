@@ -23,6 +23,7 @@ public:
   void validate(const char* check, char delim);
   double find(const char* check, char delim, int ordinal);
   int choose(const char* ch, char delim);
+  int readtauab(double deltat);
 private:
   char * pbuffer;
   Istrm(const Istrm& other); // Block copy constructor
