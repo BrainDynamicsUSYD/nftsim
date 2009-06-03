@@ -37,7 +37,7 @@ Couplinglist::Couplinglist(Istrm& inputf, ofstream& dumpf
       dumpf << (i+1) << ": Plastic ";
     }
     if(1!=optionnum && 2!=optionnum && 3!=optionnum){
-      cerr << "Invalid Coupling type" << endl;
+      std::cerr << "Invalid Coupling type" << endl;
       exit(EXIT_FAILURE);
     }
   }

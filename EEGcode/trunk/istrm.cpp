@@ -26,17 +26,17 @@ void Istrm::validate(const char* check, char delim){
   if(pbuffer || check){
    p=pbuffer+std::strlen(pbuffer)-std::strlen(check);
    if(std::strcmp(p,check)){
-     cerr << "Unable to find next input variable :'";
-     cerr.write(check,std::strlen(check));
-     cerr << "' "<< endl;
-     cerr << "Last read was :'";
-     cerr.write(pbuffer,std::strlen(pbuffer));
-     cerr << "' "<< endl;
-     cerr << "Please check eegcode.conf for correct sequence of parameters" << endl;
+     std::cerr << "Unable to find next input variable :'";
+     std::cerr.write(check,std::strlen(check));
+     std::cerr << "' "<< endl;
+     std::cerr << "Last read was :'";
+     std::cerr.write(pbuffer,std::strlen(pbuffer));
+     std::cerr << "' "<< endl;
+     std::cerr << "Please check eegcode.conf for correct sequence of parameters" << endl;
      exit(EXIT_FAILURE);
    }
   } else {
-    cerr << "Validate function of Istrm has failed" << endl;
+    std::cerr << "Validate function of Istrm has failed" << endl;
     exit(EXIT_FAILURE);
   }
 }
@@ -47,7 +47,7 @@ double Istrm::find(const char* check, char delim, int ordinal){
   char* p; // pointer to start of compare portion of pbuffer
   
   if(!check){
-    cerr << "Find function of Istrm has failed no search string" << endl;
+    std::cerr << "Find function of Istrm has failed no search string" << endl;
     exit(EXIT_FAILURE);   
   }
   sp = this->tellg(); // Save current position in input file
@@ -55,11 +55,11 @@ double Istrm::find(const char* check, char delim, int ordinal){
   while(ordinal>0){
     this->getline(pbuffer, 200, delim);
     if( this->eof() ){
-      cerr << "Find function of Istrm has failed" << endl;
+      std::cerr << "Find function of Istrm has failed" << endl;
       exit(EXIT_FAILURE);
     }    
     if(!pbuffer){
-      cerr << "Find function of Istrm has failed" << endl;
+      std::cerr << "Find function of Istrm has failed" << endl;
       exit(EXIT_FAILURE);
     }
     p=pbuffer+std::strlen(pbuffer)-std::strlen(check);
@@ -103,14 +103,14 @@ int Istrm::readtauab(double deltat){
     tauabfloat=tauabt/deltat;
   }
   if( !((1==optionnum)||(2==optionnum)) ){
-    cerr << "Last read looking for Tauab or Tauabt found neither" << endl;
+    std::cerr << "Last read looking for Tauab or Tauabt found neither" << endl;
     exit(EXIT_FAILURE);
   }
   tauab=int(tauabfloat);
   if(tauabfloat<1 && tauabfloat>0){
-    cerr << "Last read Tauab: " << tauabfloat << endl;
-    cerr << "Tauab must be greater than 1 as it is measured in" << endl;
-    cerr << "time steps not a time measured in seconds" << endl;
+    std::cerr << "Last read Tauab: " << tauabfloat << endl;
+    std::cerr << "Tauab must be greater than 1 as it is measured in" << endl;
+    std::cerr << "time steps not a time measured in seconds" << endl;
     exit(EXIT_FAILURE);
   }
   return tauab;

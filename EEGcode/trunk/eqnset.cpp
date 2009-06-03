@@ -13,7 +13,7 @@
 Eqnset::Eqnset(long nodes, double deltat){
   gridsize=static_cast<long>((sqrt(nodes)+2)*(sqrt(nodes)+2));
   if (sqrt( static_cast<double>(nodes)) != floor(sqrt( static_cast<double>(nodes)))){
-    cerr << "Wave equation solver assumes square grid. Nodes per population must be a perfect square number" << endl;
+    std::cerr << "Wave equation solver assumes square grid. Nodes per population must be a perfect square number" << endl;
     exit(EXIT_FAILURE);
   }
   rowlength=static_cast<long>(sqrt(gridsize));
@@ -28,15 +28,15 @@ Eqnset::Eqnset(long nodes, double deltat){
 Eqnset::Eqnset(long nodes,double deltat,long longside){
   longsidelength=longside;
   if (nodes%longsidelength != 0){
-    cerr << "To define a rectangular grid nodes: " << nodes <<endl;
-    cerr << "divided by Longside: " << longside << endl;
-    cerr << "must have no remainder" << endl;
+    std::cerr << "To define a rectangular grid nodes: " << nodes <<endl;
+    std::cerr << "divided by Longside: " << longside << endl;
+    std::cerr << "must have no remainder" << endl;
     exit(EXIT_FAILURE); 
   }
   shortsidelength=nodes/longsidelength;
   if(longsidelength<2 || shortsidelength<2){
-    cerr << "Error: The shortest dimension in Waveeqnrect" << endl;
-    cerr << "must be 2 or greater" << endl;
+    std::cerr << "Error: The shortest dimension in Waveeqnrect" << endl;
+    std::cerr << "must be 2 or greater" << endl;
     exit(EXIT_FAILURE);
   }
   gridsize=(longsidelength+2)*(shortsidelength+2);

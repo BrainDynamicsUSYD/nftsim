@@ -12,7 +12,7 @@
 #include<fstream>
 using std::ofstream;
 #include<iostream>
-using std::cerr;
+
 using std::endl;
 
 #include"istrm.h"

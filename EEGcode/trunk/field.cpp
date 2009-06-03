@@ -25,12 +25,9 @@ Field::~Field(){
 
 void Field::init(Istrm& inputf){
   inputf.ignore(200,58); // Spike up to colon to find Initial value
-  double U_initial;
-  inputf >> U_initial;
-  for(long i=0; i<gridsize; i++) U_A[i]=U_initial;
-  for(long i=0; i<gridsize; i++) U_B[i]=U_initial;
-  U_1=U_A;
-  U_2=U_B;
+  double Uinit;
+  inputf >> Uinit;
+  init(Uinit);
 }
 
 void Field::init(double Uinit){

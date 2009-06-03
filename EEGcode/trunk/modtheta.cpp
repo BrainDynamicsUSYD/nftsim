@@ -111,7 +111,7 @@ void Modtheta::initoutput(Istrm& inputf, int popindex){
   ss << "eegcode.threshout." << popindex;
   threshoutf.open(ss.str().c_str(),ios::out);
   if( !threshoutf ){
-    cerr << "Unable to open 'eegcode.threshout." << popindex << "' for output \n";
+    std::cerr << "Unable to open 'eegcode.threshout." << popindex << "' for output \n";
     exit(EXIT_FAILURE);
   }
   threshoutf << "Robinson/Wu/Kim bursting model output data" << endl;

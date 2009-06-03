@@ -13,7 +13,7 @@ using std::ifstream;
 using std::ofstream;
 using std::ios;
 #include<iostream>
-using std::cerr;
+
 using std::endl;
 
 class Istrm: public ifstream {

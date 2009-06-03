@@ -69,7 +69,7 @@ void Modcouple::initoutput(Istrm& inputf, int coupleid){
   ss << "eegcode.synaptout." << coupleid;
   synapoutf.open(ss.str().c_str(),ios::out);
   if( !synapoutf ){
-    cerr << "Unable to open 'eegcode.synaptout." << coupleid << "' for output \n";
+    std::cerr << "Unable to open 'eegcode.synaptout." << coupleid << "' for output \n";
     exit(EXIT_FAILURE);
   }
   int optionnum;
@@ -88,7 +88,7 @@ void Modcouple::initoutput(Istrm& inputf, int coupleid){
       inputf.ignore(200,58); // throwaway everything up to colon character
       inputf >> temp1;
       if(temp1>nodes || temp1<1){
-        cerr << "Synaptic node number " << temp1 << " requested for output is invalid" << endl;
+        std::cerr << "Synaptic node number " << temp1 << " requested for output is invalid" << endl;
         exit(EXIT_FAILURE);
       }     
       synnodes[i]=temp1-1; //'-1' as nodeoftrace runs [0:n-1] rather than [1:n]
@@ -103,7 +103,7 @@ void Modcouple::initoutput(Istrm& inputf, int coupleid){
       }
       i+=nodes-1; // increment by number of traces now requested (except the one in outer loop)
       if( i>(synaptraces-1) ){
-        cerr << "Not enough traces specified to output all - please increase" << endl;
+        std::cerr << "Not enough traces specified to output all - please increase" << endl;
 	exit(EXIT_FAILURE);
       }
     }
@@ -113,7 +113,7 @@ void Modcouple::initoutput(Istrm& inputf, int coupleid){
   ss1 << "eegcode.concout." << coupleid;
   concoutf.open(ss1.str().c_str(),ios::out);
   if( !concoutf ){
-    cerr << "Unable to open 'eegcode.concout." << coupleid << "' for output \n";
+    std::cerr << "Unable to open 'eegcode.concout." << coupleid << "' for output \n";
     exit(EXIT_FAILURE);
   }
   inputf.validate("conc.traces",58);
@@ -132,7 +132,7 @@ void Modcouple::initoutput(Istrm& inputf, int coupleid){
       inputf.ignore(200,58); // throwaway everything up to colon character
       inputf >> temp1;
       if(temp1>nodes || temp1<1){
-        cerr << "Concentration node number " << temp1 << " requested for output is invalid" << endl;
+        std::cerr << "Concentration node number " << temp1 << " requested for output is invalid" << endl;
         exit(EXIT_FAILURE);
       }     
       concnodes[i]=temp1-1; //'-1' as nodeoftrace runs [0:n-1] rather than [1:n]
@@ -147,7 +147,7 @@ void Modcouple::initoutput(Istrm& inputf, int coupleid){
       }
       i+=nodes-1; // increment by number of traces now requested (except the one in outer loop)
       if( i>(conctraces-1) ){
-        cerr << "Not enough traces specified to output all - please increase" << endl;
+        std::cerr << "Not enough traces specified to output all - please increase" << endl;
 	exit(EXIT_FAILURE);
       }
     }

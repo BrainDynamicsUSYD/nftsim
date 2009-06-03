@@ -48,13 +48,13 @@ ConnectMat::ConnectMat(int numpops,int numconct, Istrm& inputf):numconnect(numco
 	counter++;
       }	
       else {
-	cerr << counter <<"Too many connections in connection matrix relative to stated number of connections" <<endl;
+	std::cerr << counter <<"Too many connections in connection matrix relative to stated number of connections" <<endl;
         exit(EXIT_FAILURE);
       }
     }
   }
   if(counter!=numconnect){
-    cerr << "Too few connections in connection matrix relative to stated number of connections" <<endl;
+    std::cerr << "Too few connections in connection matrix relative to stated number of connections" <<endl;
     exit(EXIT_FAILURE);
   }
   //
@@ -69,13 +69,13 @@ ConnectMat::ConnectMat(int numpops,int numconct, Istrm& inputf):numconnect(numco
 	counter++;
       }	
       else {
-	cerr << counter <<"Too many connections in connection matrix relative to stated number of connections" <<endl;
+	std::cerr << counter <<"Too many connections in connection matrix relative to stated number of connections" <<endl;
         exit(EXIT_FAILURE);
       }
     }
   }
   if(counter!=numconnect){
-    cerr << "Too few connections in connection matrix relative to stated number of connections" <<endl;
+    std::cerr << "Too few connections in connection matrix relative to stated number of connections" <<endl;
     exit(EXIT_FAILURE);
   }
 //

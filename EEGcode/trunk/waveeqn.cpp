@@ -11,7 +11,7 @@
 WaveEqn::WaveEqn(long nodes, double dt):deltat(dt){
   gridsize=static_cast<long>((sqrt(nodes)+2)*(sqrt(nodes)+2));
   if (sqrt( static_cast<double>(nodes)) != floor(sqrt( static_cast<double>(nodes)))){
-    cerr << "Wave equation solver assumes square grid. Nodes per population must be a perfect square number" << endl;
+    std::cerr << "Wave equation solver assumes square grid. Nodes per population must be a perfect square number" << endl;
     exit(EXIT_FAILURE);
   }
   rowlength=static_cast<long>(sqrt(gridsize));
@@ -25,15 +25,15 @@ WaveEqn::WaveEqn(long nodes, double dt):deltat(dt){
 
 WaveEqn::WaveEqn(long nodes, double dt, long longside):deltat(dt),longsidelength(longside){
   if (nodes%longsidelength != 0){
-    cerr << "To define a rectangular grid nodes: " << nodes <<endl;
-    cerr << "divided by Longside: " << longside << endl;
-    cerr << "must have no remainder" << endl;
+    std::cerr << "To define a rectangular grid nodes: " << nodes <<endl;
+    std::cerr << "divided by Longside: " << longside << endl;
+    std::cerr << "must have no remainder" << endl;
     exit(EXIT_FAILURE); 
   }
   shortsidelength=nodes/longsidelength;
   if(longsidelength<2 || shortsidelength<2){
-    cerr << "Error: The shortest dimension in Waveeqnrect" << endl;
-    cerr << "must be 2 or greater" << endl;
+    std::cerr << "Error: The shortest dimension in Waveeqnrect" << endl;
+    std::cerr << "must be 2 or greater" << endl;
     exit(EXIT_FAILURE);
   }
   gridsize=(longsidelength+2)*(shortsidelength+2);
@@ -83,22 +83,22 @@ void WaveEqn::init(Istrm& inputf, Qhistory* pqhistory){
     gammaobj = new Parameter("gamma", velocity/effrangeobj->get() );
   }
   if( !((1==optionnum)||(2==optionnum)) ){
-    cerr << "Last read looking for gamma or velocity found neither" << endl;
+    std::cerr << "Last read looking for gamma or velocity found neither" << endl;
     exit(EXIT_FAILURE);
   }
   gamma=gammaobj->get(); //Update the gamma value
   effrange=effrangeobj->get(); //Update the effective range value
   if(gamma/2.0 < deltat || effrange/2.0 < deltax){
-    cerr << "Wave equation with gamma: " << gamma << " effrange: " << effrange << endl;
-    cerr << "Is neither adequately captured by grid spacing chosen" << endl;
-    cerr << "nor sufficiently localized so the potential can be approximated by Q" << endl;
+    std::cerr << "Wave equation with gamma: " << gamma << " effrange: " << effrange << endl;
+    std::cerr << "Is neither adequately captured by grid spacing chosen" << endl;
+    std::cerr << "nor sufficiently localized so the potential can be approximated by Q" << endl;
     exit(EXIT_FAILURE);
   }
   if(gamma*effrange*deltat/deltax>1.41){
-    cerr << "Wave equation with gamma: " << gamma << " effrange: " << effrange << endl;
-    cerr << "and deltat: " << deltat << " deltax: " << deltax << endl;
-    cerr << "does not fulfill the Courant condition" << endl;
-    cerr << "Courant number is : " << (gamma*effrange*deltat/deltax) << endl;
+    std::cerr << "Wave equation with gamma: " << gamma << " effrange: " << effrange << endl;
+    std::cerr << "and deltat: " << deltat << " deltax: " << deltax << endl;
+    std::cerr << "does not fulfill the Courant condition" << endl;
+    std::cerr << "Courant number is : " << (gamma*effrange*deltat/deltax) << endl;
     exit(EXIT_FAILURE);
   }
   double* Q= pqhistory->getQbytime(tauab);
@@ -137,14 +137,14 @@ void WaveEqn::restart(Istrm& restartf){
   gamma=gammaobj->get(); //Update the gamma value
   effrange=effrangeobj->get(); //Update the effective range value
   if( !((1==optionnum)||(2==optionnum)) ){
-    cerr << "Last read looking for gamma or velocity found neither" << endl;
+    std::cerr << "Last read looking for gamma or velocity found neither" << endl;
     exit(EXIT_FAILURE);
   }
   if(gamma*effrange*deltat/deltax>1.41){
-    cerr << "Wave equation with gamma: " << gamma << " effrange: " << effrange << endl;
-    cerr << "and deltat: " << deltat << " deltax: " << deltax << endl;
-    cerr << "does not fulfill the Courant condition" << endl;
-    cerr << "Courant number is : " << (gamma*effrange*deltat/deltax) << endl;
+    std::cerr << "Wave equation with gamma: " << gamma << " effrange: " << effrange << endl;
+    std::cerr << "and deltat: " << deltat << " deltax: " << deltax << endl;
+    std::cerr << "does not fulfill the Courant condition" << endl;
+    std::cerr << "Courant number is : " << (gamma*effrange*deltat/deltax) << endl;
     exit(EXIT_FAILURE);
   }
   phipast->restart(restartf);

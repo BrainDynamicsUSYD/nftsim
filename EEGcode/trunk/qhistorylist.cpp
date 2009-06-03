@@ -7,11 +7,8 @@
 
 #include "qhistorylist.h"
 
-//
 // Builds an array of keyrings of Q history. Each Q history
 // is passed a depth for its history
-//
-
 Qhistorylist::Qhistorylist(Istrm& inputf, ofstream& dumpf, int numpops, long nodes):numhistories(numpops){
   depthofhistory= new int[numhistories]; // create depth of history array
   getdepths(inputf,dumpf); // initialize depth of history array
@@ -29,10 +26,7 @@ Qhistorylist::~Qhistorylist(){
   delete [ ] depthofhistory;
 }
 
-//
 // Get pointer to the "index" th Qhistory object
-//
-
 Qhistory * Qhistorylist::getQhist(int index){
   return Qhistarray[index];
 }
@@ -59,9 +53,8 @@ void Qhistorylist::getdepths(Istrm& inputf, ofstream& dumpf){
   dumpf << "Q delay depths ";
   for(int i=0;i<numhistories; i++){
     inputf.ignore(200,58); // throw away everything uptil colon character
-    dumpf << ": ";
     inputf >> temp;
-    dumpf << temp;
+    dumpf << ": " << temp;
     depthofhistory[i]=temp;
   }
   dumpf << endl;

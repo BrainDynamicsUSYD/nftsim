@@ -10,17 +10,13 @@
 #include "connectmat.h"
 
 Population::Population(long totalnodes, int popindex, ConnectMat *pconnectmat)
-             :t(0),pindex(popindex),nodes(totalnodes),pfr(0) {
+             :t(0),pindex(popindex),V(0),nodes(totalnodes),pfr(0),pdr(0),pstimulus(0){
   Q = new double[totalnodes];
   isstimulus=true;
-  V = 0;
-  pdr = 0;
-  pstimulus = 0;
   if (pconnectmat->getDRlength(popindex)) { //If populations are attached to this dendritic tree it is not a stimulus population
     isstimulus=false;
     V = new double[totalnodes];
     pdr = new DendriticRlist(totalnodes,popindex,pconnectmat);
-  } else {
   }
 }
 

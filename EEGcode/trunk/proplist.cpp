@@ -55,7 +55,7 @@ Proplist::Proplist(Istrm& inputf, ofstream& dumpf, int numconnects,
         dumpf << (i+1) << ": Harmonic ";
 	break;
       default:
-        cerr << "Invalid Propagator type" << endl;
+        std::cerr << "Invalid Propagator type" << endl;
         exit(EXIT_FAILURE);
     }
   }

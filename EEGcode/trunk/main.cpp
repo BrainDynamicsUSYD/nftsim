@@ -13,7 +13,6 @@
 using std::ofstream;
 using std::ios;
 #include <iostream>
-using std::cerr;
 using std::endl;
 #include<iomanip>
 using std::setprecision;
@@ -41,7 +40,7 @@ int main(int argc, char* argv[])
   }
   ofstream dumpf(idumparg?argv[idumparg]:"eegcode.dump",ios::out);
   if( !dumpf ){
-    cerr << "Unable to open "<< (idumparg?argv[idumparg]:"eegcode.dump") << " for output \n";
+    std::cerr << "Unable to open "<< (idumparg?argv[idumparg]:"eegcode.dump") << " for output \n";
     exit(EXIT_FAILURE);
   }
   dumpf << setprecision(14);
@@ -55,11 +54,11 @@ int main(int argc, char* argv[])
              && (strcmp(argv[2],"defaults")==0)){
     ofstream defaultf("eegcode.conf",ios::out);
     if( !defaultf ){
-      cerr << "Unable to open 'eegcode.conf' for output of default parameters \n";
+      std::cerr << "Unable to open 'eegcode.conf' for output of default parameters \n";
       exit(EXIT_FAILURE);
     }
     writedefault(defaultf);
-    cerr << "Written 'eegcode.conf' file" << endl;
+    std::cerr << "Written 'eegcode.conf' file" << endl;
     defaultf.close();
   }
 //
@@ -75,7 +74,7 @@ int main(int argc, char* argv[])
   }
   Istrm inputf(inamearg?argv[inamearg]:"eegcode.conf"); //open file for reading input data
   if( !inputf ){
-    cerr << "Unable to open "<< (inamearg?argv[inamearg]:"eegcode.conf") << " for input \n";
+    std::cerr << "Unable to open "<< (inamearg?argv[inamearg]:"eegcode.conf") << " for input \n";
     exit(EXIT_FAILURE);
   }
   readglobalparams(inputf, dumpf, totalnodes, numpops, numconct);
@@ -136,7 +135,7 @@ int main(int argc, char* argv[])
   }
   ofstream outputf(ioutarg?argv[ioutarg]:"eegcode.output",ios::out);
   if( !outputf ){
-    cerr << "Unable to open "<< (ioutarg?argv[ioutarg]:"eegcode.output") << " for output \n";
+    std::cerr << "Unable to open "<< (ioutarg?argv[ioutarg]:"eegcode.output") << " for output \n";
     exit(EXIT_FAILURE);
   }
   if(skippts!=0) outputf << "Skippoints: " << skippts << " ";
@@ -183,7 +182,7 @@ void readglobalparams(Istrm& datainf, ofstream& dumpf, long& totalnodes, int& nu
   datainf >> numconct;
   dumpf << "Number of neural connections: " << numconct << endl;
   if(numconct>(numpops*numpops)){
-    cerr << "Number of connections cannot exceed the square of the number of populations" << endl;
+    std::cerr << "Number of connections cannot exceed the square of the number of populations" << endl;
     exit(EXIT_FAILURE);
   }
   datainf.ignore(200,32); // throwaway reaminder of line after Number of connections

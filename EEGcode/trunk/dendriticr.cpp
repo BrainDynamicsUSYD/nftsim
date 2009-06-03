@@ -76,19 +76,18 @@ void DendriticR::stepVab(double *Pab, double * Vab, double *dVabdt, double times
 //  computed variables are used to speed up the calculation.
 //
   double adjustedPab;
-  double factoralphabeta;
   double deltaPdeltat;
   double C1;
 
-  alpha=alphaobj->get();
-  beta=betaobj->get();
-  expalpha=exp(-alpha*timestep);
-  factoralphabeta=(1.0/alpha)+(1.0/beta);
+  double alpha=alphaobj->get();
+  double beta=betaobj->get();
+  double expalpha=exp(-alpha*timestep);
+  double factoralphabeta=(1.0/alpha)+(1.0/beta);
   if(alpha!=beta){
     double alphaminusbeta;
     double C1expalpha;
     double C2expbeta;
-    expbeta=exp(-beta*timestep);
+    double expbeta=exp(-beta*timestep);
     alphaminusbeta=alpha-beta;
 //
 #pragma omp parallel for private(adjustedPab,factoralphabeta,deltaPdeltat)

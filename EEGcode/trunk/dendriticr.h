@@ -12,7 +12,7 @@
 #include<fstream>
 using std::ofstream;
 #include<iostream>
-using std::cerr;
+
 using std::endl;
 
 #include"istrm.h"
@@ -29,10 +29,6 @@ public:
 private:
   long nodes;
   double* previousPab; // Holds Pab from one time step in the past 
-  double alpha;  // Holding variable of alpha at this moment
-  double beta;  // Holding variable of alpha at this moment
-  double expalpha; // Factor in exactstep
-  double expbeta; // Factor in exactstep
   Parameter* alphaobj; // Object which initializes and get alpha values
   Parameter* betaobj; // Object which initializes and gets beta values
 };

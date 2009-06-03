@@ -8,7 +8,6 @@
 #include "random.h"
 #include <math.h>
 #include <iostream>
-using std::cerr;
 
 Random::Random(long seed):EPS(1.2e-7),RNMX(1.0-EPS),AM(1.0/IM){
   idum=seed;

@@ -50,7 +50,7 @@ void Modsigma::initoutput(Istrm& inputf, int popindex){
   ss << "eegcode.sigmaout." << popindex;
   sigmaoutf.open(ss.str().c_str(),ios::out);
   if( !sigmaoutf ){
-    cerr << "Unable to open 'eegcode.sigmaout." << popindex << "' for output \n";
+    std::cerr << "Unable to open 'eegcode.sigmaout." << popindex << "' for output \n";
     exit(EXIT_FAILURE);
   }
   sigmaoutf << "Robinson varinace dynamics model output data" << endl;

@@ -12,7 +12,6 @@
 #include<fstream>
 using std::ofstream;
 #include<iostream>
-using std::cerr;
 using std::endl;
 #include<string>
 using std::string;

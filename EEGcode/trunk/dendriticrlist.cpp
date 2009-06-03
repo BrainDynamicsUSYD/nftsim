@@ -72,8 +72,8 @@ void DendriticRlist::init(Istrm& inputf, PropagNet *ppropagnet, ConnectMat *pcon
   int expectaff;
   inputf >> expectaff; // Read in number of dendritic responses expected for this population
   if (expectaff!=numaff){
-    cerr << "Number of afferent populations expected from connection matrix and that stated here are inconsistent" << endl;
-    cerr << expectaff << " " << numaff << endl;
+    std::cerr << "Number of afferent populations expected from connection matrix and that stated here are inconsistent" << endl;
+    std::cerr << expectaff << " " << numaff << endl;
     exit(EXIT_FAILURE);
   }
   int j=0;
@@ -110,7 +110,7 @@ void DendriticRlist::restart(Istrm& restartf, PropagNet *ppropagnet, ConnectMat 
   int expectaff;
   restartf >> expectaff; // Read in number of dendritic responses expected for this population
   if (expectaff!=numaff){
-    cerr << "Number of afferent populations expected from connection matrix and that stated here are inconsistent" << endl;
+    std::cerr << "Number of afferent populations expected from connection matrix and that stated here are inconsistent" << endl;
     exit(EXIT_FAILURE);
   }
   for(int i=0;i<numaff; i++)

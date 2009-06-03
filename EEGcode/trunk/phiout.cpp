@@ -21,7 +21,7 @@ Phiout::Phiout(Istrm& inputf, ofstream& outputf, int numconct, long totalnodes){
     inputf.ignore(200,58); // throwaway everything up to colon character
     inputf >> idindex;
     if(idindex>numconct || idindex<1){
-      cerr << "Propagator number " << idindex << " requested for output is invalid" << endl;
+      std::cerr << "Propagator number " << idindex << " requested for output is invalid" << endl;
       exit(EXIT_FAILURE);
     }
     idoftrace[i]=idindex-1; // '-1' as idoftrace runs [0:n-1] rather than [1:n]
@@ -34,7 +34,7 @@ Phiout::Phiout(Istrm& inputf, ofstream& outputf, int numconct, long totalnodes){
       inputf.ignore(200,58); // throwaway everything up to colon character
       inputf >> temp1;
       if(temp1>totalnodes || temp1<1){
-        cerr << "Node number " << temp1 << " requested for output is invalid" << endl;
+        std::cerr << "Node number " << temp1 << " requested for output is invalid" << endl;
         exit(EXIT_FAILURE);
       }     
       nodeoftrace[i]=temp1-1; //'-1' as nodeoftrace runs [0:n-1] rather than [1:n]
@@ -50,12 +50,12 @@ Phiout::Phiout(Istrm& inputf, ofstream& outputf, int numconct, long totalnodes){
       }
       i+=totalnodes-1; // increment by number of traces now requested (except the one in outer loop)
       if( i>(numtraces-1) ){
-        cerr << "Not enough traces specified to output all - please increase" << endl;
+        std::cerr << "Not enough traces specified to output all - please increase" << endl;
 	exit(EXIT_FAILURE);
       }
     }
     if(1!=optionnum && 2!=optionnum){
-      cerr << "Error - possibly too many traces specified or invalid output specification" << endl;
+      std::cerr << "Error - possibly too many traces specified or invalid output specification" << endl;
       exit(EXIT_FAILURE);
     }
     i++;
