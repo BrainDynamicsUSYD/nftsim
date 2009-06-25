@@ -105,7 +105,7 @@ int main(int argc, char* argv[])
   Poplist poplist(totalnodes,numpops, &connectmat);
   PropagNet propagnet(deltat,totalnodes,numpops,numconct,inputf,dumpf);
   inputf.ignore(200,32); //throwaway space line before start of populations
-  if( !(argc==2 && (strcmp(argv[1],"restart")==0)) ){
+  if( !(argc>=2 && (strcmp(argv[1],"restart")==0)) ){
 //
 //      Read in remaining init parameters and initialize the classes
 //
