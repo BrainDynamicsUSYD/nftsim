@@ -7,6 +7,7 @@
 
 #include "waveeqn.h"
 #include<math.h>
+#include<cstdlib>
 
 WaveEqn::WaveEqn(long nodes, double dt):deltat(dt){
   gridsize=static_cast<long>((sqrt(nodes)+2)*(sqrt(nodes)+2));

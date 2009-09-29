@@ -16,6 +16,8 @@ using std::ios;
 using std::endl;
 #include<iomanip>
 using std::setprecision;
+#include<cstdlib>
+#include<cstring>
 
 #include"istrm.h"
 #include"connectmat.h"

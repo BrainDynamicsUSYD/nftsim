@@ -7,6 +7,7 @@
     email                : peter@physics.usyd.edu.au
  ***************************************************************************/
 
+#include<cstdlib>
 #include"dendriticrlist.h"
 #include"connectmat.h"
 #include"propagnet.h"

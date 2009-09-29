@@ -5,8 +5,9 @@
     email                : peter@physics.usyd.edu.au
  ***************************************************************************/
 
-#include <math.h>
+#include<math.h>
 #include<string>
+#include<cstdlib>
 using std::string;
 #include<sstream>
 using std::stringstream;

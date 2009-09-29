@@ -7,6 +7,7 @@
 
 #include "weqn.h"
 #include<math.h>
+#include<cstdlib>
 
 Weqn::Weqn(long gsize, double dt):gridsize(gsize),deltat(dt){
   rowlength=static_cast<long>(sqrt(gridsize));

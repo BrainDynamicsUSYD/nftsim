@@ -8,6 +8,7 @@
 
 #include<iostream>
 #include<math.h>
+#include<cstdlib>
 
 #include"qhistory.h"
 #include"poplist.h"

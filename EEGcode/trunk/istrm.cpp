@@ -11,6 +11,7 @@
 #include <iostream>
 #include <sstream>
 #include<cstring>
+#include<cstdlib>
 
 Istrm::Istrm(const char* filename):ifstream(filename,ios::in){
   pbuffer = new char[200];

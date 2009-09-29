@@ -9,6 +9,7 @@
 #include "eqnset.h"
 #include "prefact.h"
 #include<math.h>
+#include<cstdlib>
 
 Eqnset::Eqnset(long nodes, double deltat){
   gridsize=static_cast<long>((sqrt(nodes)+2)*(sqrt(nodes)+2));

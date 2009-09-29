@@ -6,6 +6,7 @@
  ***************************************************************************/
 
 #include <math.h>
+#include<cstdlib>
 #include<string>
 using std::string;
 #include<sstream>

@@ -5,6 +5,7 @@
     email                : peter@physics.usyd.edu.au
  ***************************************************************************/
 
+#include<cstdlib>
 #include "phiout.h"
 
 Phiout::Phiout(Istrm& inputf, ofstream& outputf, int numconct, long totalnodes){

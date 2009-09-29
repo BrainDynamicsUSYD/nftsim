@@ -6,6 +6,7 @@
     email                : peter@physics.usyd.edu.au
  ***************************************************************************/
 
+#include<cstdlib>
 #include"couplinglist.h"
 #include"coupling.h"
 #include"modcouple.h"
