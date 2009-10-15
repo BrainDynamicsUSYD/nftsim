@@ -45,10 +45,7 @@ double Random::ran(){
   else return retval;
 }
 
-//
-// Returns two gaussian random deviates
-//  following a algorithm suggested by Knuth
-//
+// Returns two gaussian random deviates following an algorithm suggested by Knuth
 void Random::gaussian(double& deviate1, double& deviate2){
   double x, y, norm, factor;
   do {

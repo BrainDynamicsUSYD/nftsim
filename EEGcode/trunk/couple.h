@@ -24,7 +24,7 @@ public:
   virtual ~Couple() = 0; // Must be defined in couple.cpp
   virtual void init(Istrm& inputf, int coupleid) = 0; 
   virtual void dump(ofstream& dumpf) = 0; 
-  virtual void updatePa(double *Pa, double *Etaa, Qhistorylist* pqhistorylist, ConnectMat* pconnectmat) = 0;
+  virtual void updatePa(double *Pa,double *Etaa,Qhistorylist& qhistorylist, ConnectMat& connectmat) = 0;
   virtual void output() = 0; 
 };
 

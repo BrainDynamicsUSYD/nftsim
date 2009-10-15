@@ -21,13 +21,13 @@ class PropagNet; //forward declare PropagNet. Since we only use pointer to it no
 
 class Poplist {
 public: 
-  Poplist(long nodes, int numberofpops, ConnectMat * pconnectmat);
+  Poplist(long nodes, int numberofpops,ConnectMat& connectmat);
   ~Poplist();
-  void init(Istrm& inputf, PropagNet * ppropagnet, ConnectMat * pconnectmat);
+  void init(Istrm& inputf,PropagNet& propagnet,ConnectMat& connectmat);
   void dump(ofstream& dumpf);
-  void restart(Istrm& restartf, PropagNet * ppropagnet, ConnectMat * pconnectmat);
+  void restart(Istrm& restartf,PropagNet& propagnet,ConnectMat& connectmat);
   void stepPops(double timestep);
-  Population * get(int popindex);
+  Population& get(int popindex);
 private:
   Population** poparray; // Array of pointers to population objects
   const int numpops; //number of populations in array of populations

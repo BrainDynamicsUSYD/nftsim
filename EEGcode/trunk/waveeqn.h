@@ -22,13 +22,12 @@ using std::endl;
 
 class WaveEqn: public Propag {
 public: 
-  WaveEqn(long nodes, double deltat); // For square boundary
   WaveEqn(long nodes, double deltat, long longside); // For rectangular boundary
   ~WaveEqn();
-  void init(Istrm& inputf, Qhistory* qhistory);
+  void init(Istrm& inputf,Qhistory& qhistory);
   void dump(ofstream& dumpf);
   void restart(Istrm& restartf);
-  void stepwaveeq(double *Phi, Qhistory* qhistory);
+  void stepwaveeq(double *Phi,Qhistory& qhistory);
 private:
   Parameter* gammaobj;
   Parameter* effrangeobj;

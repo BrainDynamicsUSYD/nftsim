@@ -23,13 +23,12 @@ using std::endl;
 
 class Weqn {
 public: 
-  Weqn(long gridsize, double deltat); // For square boundary
   Weqn(long gridsize,double deltat,long longsidelength,long shortsidelength); // For rectangular boudary
   ~Weqn();
-  void init(Istrm& inputf, double deltax, Qhistory* pqhistory);
+  void init(Istrm& inputf, double deltax,Qhistory& qhistory);
   void dump(ofstream& dumpf);
   void restart(Istrm& restartf, double deltax);
-  void stepwaveeq(double *PhiRe, double *PhiIm, Qhistory* qhistory, Field* fieldReobj, Field* filedImobj, Prefact* prefactobj);
+  void stepwaveeq(double *PhiRe, double *PhiIm,Qhistory& qhistory, Field* fieldReobj, Field* filedImobj, Prefact* prefactobj);
 private:
   Parameter* gammaobj;
   Parameter* effrangeobj;

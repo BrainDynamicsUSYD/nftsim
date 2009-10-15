@@ -8,7 +8,7 @@
 #include<cstdlib>
 #include "phiout.h"
 
-Phiout::Phiout(Istrm& inputf, ofstream& outputf, int numconct, long totalnodes){
+Phiout::Phiout(Istrm& inputf, ofstream& outputf, int numconct, long nodes){
   int optionnum;
   inputf.ignore(200,58); // throwaway everything up to colon character
   inputf >> numtraces;
@@ -34,7 +34,7 @@ Phiout::Phiout(Istrm& inputf, ofstream& outputf, int numconct, long totalnodes){
       outputf << " Single ";
       inputf.ignore(200,58); // throwaway everything up to colon character
       inputf >> temp1;
-      if(temp1>totalnodes || temp1<1){
+      if(temp1>nodes || temp1<1){
         std::cerr << "Node number " << temp1 << " requested for output is invalid" << endl;
         exit(EXIT_FAILURE);
       }     
@@ -45,11 +45,11 @@ Phiout::Phiout(Istrm& inputf, ofstream& outputf, int numconct, long totalnodes){
       outputf << " All nodes" << endl;
       inputf.ignore(200,32); // throw away " nodes (endl)"
       nodeoftrace[i]=0; // Request the first node be outputted
-      for(long j=1;j<totalnodes;j++){ // Request the remaining nodes be outputted
+      for(long j=1;j<nodes;j++){ // Request the remaining nodes be outputted
         idoftrace[i+j]=idindex-1; // '-1' as idoftrace runs [0:n-1] rather than [1:n]
 	nodeoftrace[i+j]=j;
       }
-      i+=totalnodes-1; // increment by number of traces now requested (except the one in outer loop)
+      i+=nodes-1; // increment by number of traces now requested (except the one in outer loop)
       if( i>(numtraces-1) ){
         std::cerr << "Not enough traces specified to output all - please increase" << endl;
 	exit(EXIT_FAILURE);

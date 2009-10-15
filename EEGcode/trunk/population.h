@@ -23,11 +23,11 @@ class PropagNet; //forward declare PropagNet since we are only using a pointer t
 
 class Population {
 public:
-  Population(long totalnodes, int popindex, ConnectMat *pconnectmat);
+  Population(long nodes, int popindex,ConnectMat& connectmat);
   ~Population();
-  void init(Istrm& inputf, PropagNet * ppropagnet, ConnectMat *pconnectmat);
+  void init(Istrm& inputf,PropagNet& propagnet,ConnectMat& connectmat);
   void dump(ofstream& dumpf);
-  void restart(Istrm& restartf, PropagNet * ppropagnet, ConnectMat *pconnectmat);
+  void restart(Istrm& restartf,PropagNet& propagnet,ConnectMat& connectmat);
   void stepPop(double timestep);
   double * Q;  // Array of firing rate in population
 private:

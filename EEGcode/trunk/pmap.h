@@ -22,12 +22,12 @@ using std::endl;
 
 class Pmap: public Propag {
 public: 
-  Pmap(long totalnodes, double deltat);
+  Pmap(long nodes, double deltat);
   ~Pmap();
-  void init(Istrm& inputf, Qhistory* qhistory);
+  void init(Istrm& inputf,Qhistory& qhistory);
   void dump(ofstream& dumpf);
   void restart(Istrm& restartf);
-  void stepwaveeq(double *Phi, Qhistory* qhistory);
+  void stepwaveeq(double *Phi,Qhistory& qhistory);
 private:
   const long nodes;
   int tauab;

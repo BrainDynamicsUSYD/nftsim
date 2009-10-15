@@ -27,14 +27,14 @@ class Proplist {
 public: 
   Proplist(Istrm& inputf, ofstream& dumpf, int numconnects, long nodes, double deltat);
   ~Proplist();
-  void init(Istrm& inputf, Qhistorylist * pqhistorylist, ConnectMat * pconnectmat);
+  void init(Istrm& inputf,Qhistorylist& qhistorylist,ConnectMat& connectmat);
   void dump(ofstream& dumpf);
   void restart(Istrm& restartf);
-  void step(double **Eta, Qhistorylist * pqhistorylist, ConnectMat * pconnectmat); // Transform Q to Eta via stepping forward multiple wave equations
+  void step(double **Eta,Qhistorylist& qhistorylist,ConnectMat& pconnectmat); // Transform Q to Eta via stepping forward multiple wave equations
 
 private:
   Propag ** propagarray; // Array of pointers to propagator objects
-  Propag * getpropag(int index); // method to obtain pointer to "i"th propagator
+  Propag& getpropag(int index); // method to obtain pointer to "i"th propagator
   const int numpropag; //number of propagator objects in the list
 };
 

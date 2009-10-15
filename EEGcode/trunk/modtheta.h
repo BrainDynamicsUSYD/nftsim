@@ -31,7 +31,6 @@ private:
   void output(double* y, double itheta); // output threshold variables as needed
   void rk4(double t, double* y, float timestep); // 4th order Runge Kutta
   void rkderivs(double t, double* y, double* dydt, double I); // Evolution equations
-  long nodes;
 // The following variables relate to the bursting threshold model in 
 // Robinson et al. J. of Theoret. Biololgy (2008) 250:663-672
   double Ia; // Ia current density 

@@ -8,8 +8,8 @@
 #include<math.h>
 #include "propagnet.h"
 
-PropagNet::PropagNet(double deltat, long totalnodes, int numpops, int numconct, Istrm& inputf, ofstream& dumpf)
-                      :numconnects(numconct),nodes(totalnodes){
+PropagNet::PropagNet(double deltat, long n, int numpops, int numconct, Istrm& inputf, ofstream& dumpf)
+                      :numconnects(numconct),nodes(n){
   P = new double *[numconnects];
   for(int i=0;i<numconnects;i++)
     P[i]= new double[nodes]; 
@@ -38,11 +38,11 @@ PropagNet::~PropagNet(){
   if (pphiout) delete pphiout; // Free Phiout object if it was initialized by PropagNet::initoutput()
 }
 
-void PropagNet::init(Istrm& inputf, Poplist *ppoplist, ConnectMat *pconnectmat){
+void PropagNet::init(Istrm& inputf,Poplist& poplist,ConnectMat& connectmat){
   inputf.ignore(200,32); // Throwaway blank line
   inputf.ignore(200,32); // Throwaway title line of propagation data
-  pqhistorylist->init(inputf, ppoplist);
-  pproplist->init(inputf,pqhistorylist,pconnectmat);
+  pqhistorylist->init(inputf,poplist);
+  pproplist->init(inputf,*pqhistorylist,connectmat);
   pcouplinglist->init(inputf);
 }
 
@@ -53,24 +53,23 @@ void PropagNet::dump(ofstream& dumpf){
   pcouplinglist->dump(dumpf);
 }
 
-//
-void PropagNet::restart(Istrm& restartf, Poplist *ppoplist){
+void PropagNet::restart(Istrm& restartf,Poplist& poplist){
   restartf.ignore(200,32); // Throwaway blank line
-  pqhistorylist->restart(restartf, ppoplist);
+  pqhistorylist->restart(restartf,poplist);
   pproplist->restart(restartf);
   pcouplinglist->init(restartf);
 }
 
 // Propagate the firing response of each population to pulse densities arriving at the dendrite trees of other
 //
-void PropagNet::stepQtoP(Poplist * ppoplist, ConnectMat * pconnectmat){
-  pqhistorylist->updateQhistories(ppoplist); // Get new Q histories and add them to the keyrings
-  pproplist->step(Eta, pqhistorylist, pconnectmat); // Transform Q to Eta via stepping forward multiple wave equations
-  pcouplinglist->updateP(P,Eta,pqhistorylist,pconnectmat); // Weight signal strengths for links between neural populations
+void PropagNet::stepQtoP(Poplist& poplist,ConnectMat& connectmat){
+  pqhistorylist->updateQhistories(poplist); // Get new Q histories and add them to the keyrings
+  pproplist->step(Eta,*pqhistorylist,connectmat); // Transform Q to Eta via stepping forward multiple wave equations
+  pcouplinglist->updateP(P,Eta,*pqhistorylist,connectmat); // Weight signal strengths for links between neural populations
 }
 
-void PropagNet::initoutput(Istrm& inputf, ofstream& outputf, int numconct, long totalnodes){
-  pphiout = new Phiout(inputf, outputf, numconct, totalnodes);
+void PropagNet::initoutput(Istrm& inputf, ofstream& outputf, int numconct, long nodes){
+  pphiout = new Phiout(inputf,outputf,numconct,nodes);
 }
 
 void PropagNet::dumpoutput(ofstream& dumpf){
@@ -78,6 +77,6 @@ void PropagNet::dumpoutput(ofstream& dumpf){
 }
 
 void PropagNet::output(ofstream& outputf){
-  pphiout->output(outputf, Eta);
+  pphiout->output(outputf,Eta);
   pcouplinglist->output();
 }

@@ -9,21 +9,6 @@
 #include<math.h>
 #include<cstdlib>
 
-WaveEqn::WaveEqn(long nodes, double dt):deltat(dt){
-  gridsize=static_cast<long>((sqrt(nodes)+2)*(sqrt(nodes)+2));
-  if (sqrt( static_cast<double>(nodes)) != floor(sqrt( static_cast<double>(nodes)))){
-    std::cerr << "Wave equation solver assumes square grid. Nodes per population must be a perfect square number" << endl;
-    exit(EXIT_FAILURE);
-  }
-  rowlength=static_cast<long>(sqrt(gridsize));
-  longsidelength=rowlength-2;
-  shortsidelength=rowlength-2;
-  startfirstrow=longsidelength+3;
-  startlastrow=(longsidelength+2)*shortsidelength+1;
-  phipast = new Field(gridsize,longsidelength,shortsidelength,"Phi");
-  Qpast = new Field(gridsize,longsidelength,shortsidelength,"Q");
-}
-
 WaveEqn::WaveEqn(long nodes, double dt, long longside):deltat(dt),longsidelength(longside){
   if (nodes%longsidelength != 0){
     std::cerr << "To define a rectangular grid nodes: " << nodes <<endl;
@@ -51,7 +36,7 @@ WaveEqn::~WaveEqn(){
   delete effrangeobj;
 }
 
-void WaveEqn::init(Istrm& inputf, Qhistory* pqhistory){
+void WaveEqn::init(Istrm& inputf,Qhistory& qhistory){
   inputf.validate("Initial Phi",58);
 // Determine if an initial value is given or "Steady" initial condition
   std::streampos sp;
@@ -60,7 +45,7 @@ void WaveEqn::init(Istrm& inputf, Qhistory* pqhistory){
   ch=inputf.get();
   while(' '==ch)ch=inputf.get();
   if('S'==ch){
-    double* Q= pqhistory->getQbytime(0);
+    double* Q=qhistory.getQbytime(0);
     phipast->init(Q[0]);
   } else {
     inputf.seekg(sp);
@@ -102,7 +87,7 @@ void WaveEqn::init(Istrm& inputf, Qhistory* pqhistory){
     std::cerr << "Courant number is : " << (gamma*effrange*deltat/deltax) << endl;
     exit(EXIT_FAILURE);
   }
-  double* Q= pqhistory->getQbytime(tauab);
+  double* Q=qhistory.getQbytime(tauab);
   Qpast->init(Q);
   deltat2divided12=(deltat*deltat)/12.0F; //factor in wave equation
   deltatdivideddeltaxallsquared=(deltat*deltat)/(deltax*deltax);
@@ -154,7 +139,7 @@ void WaveEqn::restart(Istrm& restartf){
   deltatdivideddeltaxallsquared=(deltat*deltat)/(deltax*deltax);
 }
 
-void WaveEqn::stepwaveeq(double *Phi, Qhistory *pqhistory){
+void WaveEqn::stepwaveeq(double *Phi,Qhistory& qhistory){
   double sumphi;
   double sumphidiag;
   double sumq;
@@ -162,7 +147,7 @@ void WaveEqn::stepwaveeq(double *Phi, Qhistory *pqhistory){
   double drive;
   double* Phi_1= phipast->U_1;
   double* Phi_2= phipast->U_2;
-  double* Q= pqhistory->getQbytime(tauab);
+  double* Q=qhistory.getQbytime(tauab);
   double* Q_1= Qpast->U_1;
   double* Q_2= Qpast->U_2;
   gamma=gammaobj->get(); //Update the gamma value

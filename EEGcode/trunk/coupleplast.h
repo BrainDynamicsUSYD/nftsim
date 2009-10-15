@@ -29,11 +29,11 @@ public:
   void init(Istrm& inputf, int coupleid); 
   void dump(ofstream& dumpf); // output values for restart
   void output(); // output variables as needed
-  void updatePa(double *Pa, double *Etaa, Qhistorylist* pqhistorylist, ConnectMat* pconnectmat);
+  void updatePa(double *Pa,double *Etaa,Qhistorylist& qhistorylist,ConnectMat& connectmat);
 
 private:
   double t; //current time
-  long nodes;
+  const long nodes;
   double timestep;
 };
 

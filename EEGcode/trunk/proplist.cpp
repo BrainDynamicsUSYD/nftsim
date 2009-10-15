@@ -7,6 +7,7 @@
  ***************************************************************************/
 
 #include<cstdlib>
+#include<math.h>
 #include "proplist.h"
 
 //
@@ -26,7 +27,7 @@ Proplist::Proplist(Istrm& inputf, ofstream& dumpf, int numconnects,
         "Waveeqn:1 Mapping:2 Eqnset:3 Waveeqnrect:4 Eqnsetrect:5 Harmonic:6",32);
     switch(optionnum){
       case 1:
-        propagarray[i] = new WaveEqn(nodes, deltat);
+        propagarray[i] = new WaveEqn(nodes, deltat,(static_cast<long>(sqrt(nodes))) );
         dumpf << (i+1) << ": Waveeqn ";
 	break;
       case 2:
@@ -34,7 +35,7 @@ Proplist::Proplist(Istrm& inputf, ofstream& dumpf, int numconnects,
         dumpf << (i+1) << ": Mapping ";
         break;
       case 3:
-        propagarray[i] = new Eqnset(nodes, deltat);
+        propagarray[i] = new Eqnset(nodes, deltat,(static_cast<long>(sqrt(nodes))) );
         dumpf << (i+1) << ": Eqnset ";
 	break;
       case 4:
@@ -68,41 +69,36 @@ Proplist::Proplist(Istrm& inputf, ofstream& dumpf, int numconnects,
 
 Proplist::~Proplist(){
   for(int i=0;i<numpropag; i++)
-    delete getpropag(i);
+    delete &getpropag(i);
   delete [ ] propagarray;
 }
 
 // get method returns a pointer to the "index"th propagator object in the list
-Propag * Proplist::getpropag(int index){
-  return propagarray[index];
-}
+inline Propag& Proplist::getpropag(int index){ return *propagarray[index]; }
 
-void Proplist::init(Istrm& inputf, Qhistorylist* pqhistorylist, ConnectMat* pconnectmat){
+void Proplist::init(Istrm& inputf,Qhistorylist& qhistorylist,ConnectMat& connectmat){
   for(int i=0; i<numpropag; i++){
-    Qhistory* pqhistory=pqhistorylist->getQhist(pconnectmat->getQindex(i));
-    getpropag(i)->init(inputf,pqhistory);
+    Qhistory& qhistory=qhistorylist.getQhist(connectmat.getQindex(i));
+    getpropag(i).init(inputf,qhistory);
   }
 }
 
 void Proplist::dump(ofstream& dumpf){
   for(int i=0; i<numpropag; i++){
     dumpf << "Propagator "<< (i+1) << " ";
-    getpropag(i)->dump(dumpf);
+    getpropag(i).dump(dumpf);
     }
 }
 
 void Proplist::restart(Istrm& restartf){
   for(int i=0; i<numpropag; i++)
-    getpropag(i)->restart(restartf);
+    getpropag(i).restart(restartf);
 }
 
-// step method steps each propagator object forward in time
-void Proplist::step(double **Eta, Qhistorylist* pqhistorylist, ConnectMat* pconnectmat){
-//
+// steps each propagator object forward in time
+void Proplist::step(double **Eta,Qhistorylist& qhistorylist,ConnectMat& connectmat){
 #pragma omp parallel for
-//
   for(int i=0;i<numpropag;i++){
-    Qhistory* pqhistory=pqhistorylist->getQhist(pconnectmat->getQindex(i));
-    getpropag(i)->stepwaveeq(Eta[i],pqhistory);
+    getpropag(i).stepwaveeq(Eta[i],qhistorylist.getQhist(connectmat.getQindex(i)));
     }
 }

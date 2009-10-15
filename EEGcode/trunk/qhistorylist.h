@@ -22,11 +22,11 @@ class Qhistorylist {
 public:
   Qhistorylist(Istrm& inputf, ofstream& dumpf, int numpops, long nodes);  
   ~Qhistorylist(); 
-  void init(Istrm& inputf, Poplist *ppoplist); // initialize each Q history
+  void init(Istrm& inputf,Poplist& poplist); // initialize each Q history
   void dump(ofstream& dumpf);
-  void restart(Istrm& restartf, Poplist *ppoplist); // restart each Q history
-  Qhistory * getQhist(int index); // return pointer to Q history
-  void updateQhistories(Poplist * ppoplist); // get Q values from populations and move keyring pointers
+  void restart(Istrm& restartf,Poplist& poplist); // restart each Q history
+  Qhistory& getQhist(int index); // reference to Q history "i"
+  void updateQhistories(Poplist& poplist); // get Q values from populations and move keyring pointers
 
 private:
   Qhistory ** Qhistarray; // Array of pointers to Qhistory objects

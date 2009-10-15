@@ -20,7 +20,7 @@ using std::setprecision;
 
 class Phiout {
 public:
-  Phiout(Istrm& inputf, ofstream& outputf, int numconct, long totalnodes);
+  Phiout(Istrm& inputf, ofstream& outputf, int numconct, long nodes);
   ~Phiout();
   void output(ofstream& outputf, double **Eta);
   void dump(ofstream& dumpf);

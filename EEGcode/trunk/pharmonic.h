@@ -22,12 +22,12 @@ using std::endl;
 
 class Pharmonic: public Propag {
 public: 
-  Pharmonic(long totalnodes, double deltat);
+  Pharmonic(long nodes, double deltat);
   ~Pharmonic();
-  void init(Istrm& inputf, Qhistory* qhistory);
+  void init(Istrm& inputf,Qhistory& qhistory);
   void dump(ofstream& dumpf);
   void restart(Istrm& restartf);
-  void stepwaveeq(double *Phi, Qhistory* qhistory);
+  void stepwaveeq(double *Phi,Qhistory& qhistory);
 private:
   const long nodes;
   int tauab;

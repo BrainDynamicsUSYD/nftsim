@@ -28,7 +28,6 @@ public:
 private:
   void initoutput(Istrm& inputf, int popindex); // initialize output routine 
   void output(); // output variance variables as needed
-  long nodes;
   double sigmatheta2; // Parameter sigma_{\theta}^2
   double sigmaVpast; // Parameter sigma_{V} one step in the past
   double avlength; // Parameter characteristic length scale of exponentially

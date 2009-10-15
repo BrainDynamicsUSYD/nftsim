@@ -24,7 +24,7 @@ using std::setprecision;
 #include"propagnet.h"
 #include"poplist.h"
 
-void readglobalparams(Istrm& datainf, ofstream& dumpf, long& totalnodes, int& numpops, int& numconct);
+void readglobalparams(Istrm& datainf, ofstream& dumpf, long& nodes, int& numpops, int& numconct);
 void writedefault(ofstream& defaultf);
 
 int main(int argc, char* argv[])
@@ -49,7 +49,7 @@ int main(int argc, char* argv[])
 //
 // Read in the global simulation parameters
 //
-  long totalnodes=0;
+  long nodes=0;
   int numpops=0;
   int numconct=0;
   if(argc==3 && (strcmp(argv[1],"write")==0)
@@ -79,7 +79,7 @@ int main(int argc, char* argv[])
     std::cerr << "Unable to open "<< (inamearg?argv[inamearg]:"eegcode.conf") << " for input \n";
     exit(EXIT_FAILURE);
   }
-  readglobalparams(inputf, dumpf, totalnodes, numpops, numconct);
+  readglobalparams(inputf, dumpf, nodes, numpops, numconct);
   ConnectMat connectmat(numpops,numconct,inputf);
   connectmat.dump(dumpf);
 //
@@ -104,22 +104,22 @@ int main(int argc, char* argv[])
     dumpf << "Skippoints:"<< skippts << " " << "Deltat:" << deltat << " ";
   }
   inputf.ignore(200,32); //throwaway space line before start of populations
-  Poplist poplist(totalnodes,numpops, &connectmat);
-  PropagNet propagnet(deltat,totalnodes,numpops,numconct,inputf,dumpf);
+  Poplist poplist(nodes,numpops,connectmat);
+  PropagNet propagnet(deltat,nodes,numpops,numconct,inputf,dumpf);
   inputf.ignore(200,32); //throwaway space line before start of populations
   if( !(argc>=2 && (strcmp(argv[1],"restart")==0)) ){
 //
 //      Read in remaining init parameters and initialize the classes
 //
-    poplist.init(inputf, &propagnet, &connectmat);
-    propagnet.init(inputf, &poplist, &connectmat);
+    poplist.init(inputf,propagnet,connectmat);
+    propagnet.init(inputf,poplist,connectmat);
   }   
   else{
 //
 //      Read in remaining restart parameters and initialize the classes
 //
-    poplist.restart(inputf, &propagnet, &connectmat);
-    propagnet.restart(inputf, &poplist);
+    poplist.restart(inputf,propagnet,connectmat);
+    propagnet.restart(inputf,poplist);
   }
 //
 //  Initialize the output routine
@@ -143,13 +143,13 @@ int main(int argc, char* argv[])
   if(skippts!=0) outputf << "Skippoints: " << skippts << " ";
   outputf << "Deltat: " << deltat << endl;
   outputf << "Number of integration steps:" << nsteps << endl;
-  propagnet.initoutput(inputf,outputf,numconct,totalnodes);
+  propagnet.initoutput(inputf,outputf,numconct,nodes);
 //
 //  Main integration Loop
 //
   long skip=skippts;
   for(int k=1;k<nsteps+1;k++){
-    propagnet.stepQtoP(&poplist, &connectmat);
+    propagnet.stepQtoP(poplist,connectmat);
     poplist.stepPops(deltat);
     if(0==skip){
       propagnet.output(outputf);
@@ -168,15 +168,15 @@ int main(int argc, char* argv[])
   return EXIT_SUCCESS;
 }
 
-void readglobalparams(Istrm& datainf, ofstream& dumpf, long& totalnodes, int& numpops, int& numconct){
+void readglobalparams(Istrm& datainf, ofstream& dumpf, long& nodes, int& numpops, int& numconct){
 //
 //   Read in global parameters
 //
   datainf.ignore(200,32); // throwaway first line delimited by ASCII 32
   dumpf << "A dump file for the code 'eegcode'" << endl;
   datainf.validate("Nodes per population",58);
-  datainf >> totalnodes;
-  dumpf << "Nodes per population: " << totalnodes << endl;
+  datainf >> nodes;
+  dumpf << "Nodes per population: " << nodes << endl;
   datainf.validate("Number of neural populations",58);
   datainf >> numpops;
   dumpf << "Number of neural populations: " << numpops << endl;

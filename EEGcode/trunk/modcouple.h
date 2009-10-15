@@ -29,12 +29,12 @@ public:
   void init(Istrm& inputf, int coupleid); 
   void dump(ofstream& dumpf); // dump nu for restart
   void output(); // output nu variable as needed
-  void updatePa(double *Pa, double *Etaa, Qhistorylist* pqhistorylist, ConnectMat* pconnectmat);
+  void updatePa(double *Pa, double *Etaa,Qhistorylist& qhistorylist,ConnectMat& connectmat);
 
 private:
   void initoutput(Istrm& inputf, int coupleid); // initialize output routine for nu
   double t; //current time
-  long nodes;
+  const long nodes;
   double timestep;
   double nuzero; // \nu_0, the zero concentration signal strength
   double nuscal; // \nu_{\infty} / \nu_0 the scale factor to obtain the asymptotic nu value

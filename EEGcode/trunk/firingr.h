@@ -25,7 +25,7 @@ public:
   FiringR(int popindex,Istrm& inputf);
   ~FiringR();
   void dump(ofstream& dumpf);
-  void getQ(double *V, double *Q, long totalnodes, double timestep);
+  void getQ(double *V, double *Q,long nodes,double timestep);
 private: 
   Parameter* pthetaobj;
   Modtheta* pmthetaobj;

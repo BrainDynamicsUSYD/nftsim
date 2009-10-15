@@ -35,5 +35,5 @@ void Coupleplast::output(){
 //
 // Sum the coupling terms transforming Phi_{ab} to P_{ab}
 //
-void Coupleplast::updatePa(double *Pa, double *Etaa,Qhistorylist* pqhistorylist,ConnectMat* pconnectmat){
+void Coupleplast::updatePa(double *Pa, double *Etaa,Qhistorylist& qhistorylist,ConnectMat& connectmat){
 }

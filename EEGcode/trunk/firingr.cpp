@@ -57,7 +57,7 @@ FiringR::~FiringR(){
 //
 // Method to transform V into Q via sigmoid firing response
 //
-void FiringR::getQ(double *V, double *Q, long totalnodes, double timestep){
+void FiringR::getQ(double *V,double *Q,long nodes,double timestep){
   double theta;
   double sigma;
   double qmax;
@@ -71,7 +71,7 @@ void FiringR::getQ(double *V, double *Q, long totalnodes, double timestep){
     sigma=pmsigmaobj->get(timestep,V);
   }
   else {sigma=sigmaobj->get();}
-  for(long i=0; i<totalnodes; i++)
+  for(long i=0; i<nodes; i++)
     Q[i] = qmax/(1.0F+exp(-(V[i]-theta)/sigma));
   
 }

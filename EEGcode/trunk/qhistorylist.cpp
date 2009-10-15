@@ -21,31 +21,31 @@ Qhistorylist::Qhistorylist(Istrm& inputf, ofstream& dumpf, int numpops, long nod
 
 Qhistorylist::~Qhistorylist(){
   for(int i=0;i<numhistories;i++)
-    delete getQhist(i);
+    delete &getQhist(i);
   delete [ ] Qhistarray;
   delete [ ] depthofhistory;
 }
 
 // Get pointer to the "index" th Qhistory object
-Qhistory * Qhistorylist::getQhist(int index){
-  return Qhistarray[index];
+Qhistory& Qhistorylist::getQhist(int index){
+  return *Qhistarray[index];
 }
 
-void Qhistorylist::init(Istrm& inputf, Poplist *ppoplist){
+void Qhistorylist::init(Istrm& inputf,Poplist& poplist){
   for(int i=0;i<numhistories; i++)
-    getQhist(i)->init(inputf, ppoplist);
+    getQhist(i).init(inputf,poplist);
 }
 
 void Qhistorylist::dump(ofstream& dumpf){
   for(int i=0;i<numhistories; i++){
     dumpf << "Q history for Population " << (i+1) << " ";
-    getQhist(i)->dump(dumpf);
+    getQhist(i).dump(dumpf);
   }
 }
 
-void Qhistorylist::restart(Istrm& restartf, Poplist *ppoplist){
+void Qhistorylist::restart(Istrm& restartf,Poplist& poplist){
   for(int i=0;i<numhistories; i++)
-    getQhist(i)->restart(restartf, ppoplist);
+    getQhist(i).restart(restartf,poplist);
 }
 
 void Qhistorylist::getdepths(Istrm& inputf, ofstream& dumpf){
@@ -60,7 +60,7 @@ void Qhistorylist::getdepths(Istrm& inputf, ofstream& dumpf){
   dumpf << endl;
 }
 
-void Qhistorylist::updateQhistories(Poplist * ppoplist){
+void Qhistorylist::updateQhistories(Poplist& poplist){
   for(int i=0;i<numhistories; i++)
-    getQhist(i)->updateQhistory(ppoplist);
+    getQhist(i).updateQhistory(poplist);
 }

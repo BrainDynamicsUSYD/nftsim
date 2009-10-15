@@ -9,15 +9,6 @@
 #include<math.h>
 #include<cstdlib>
 
-Weqn::Weqn(long gsize, double dt):gridsize(gsize),deltat(dt){
-  rowlength=static_cast<long>(sqrt(gridsize));
-  longsidelength=rowlength-2;
-  shortsidelength=rowlength-2;
-  startfirstrow=longsidelength+3;
-  startlastrow=(longsidelength+2)*shortsidelength+1;
-  Qpast = new Field(gridsize,longsidelength,shortsidelength,"Q");
-}
-
 Weqn::Weqn(long gsize,double dt,long longside,long shortside):gridsize(gsize),
 	   deltat(dt){
   longsidelength=longside;
@@ -33,7 +24,7 @@ Weqn::~Weqn(){
   delete effrangeobj;
 }
 
-void Weqn::init(Istrm& inputf, double deltax, Qhistory* pqhistory){
+void Weqn::init(Istrm& inputf, double deltax,Qhistory& qhistory){
   tauab=inputf.readtauab(deltat);
   effrangeobj = new Parameter("Effective range",inputf);
   int optionnum;
@@ -66,7 +57,7 @@ void Weqn::init(Istrm& inputf, double deltax, Qhistory* pqhistory){
     std::cerr << "Courant number is : " << (gamma*effrange*deltat/deltax) << endl;
     exit(EXIT_FAILURE);
   }
-  double* Q= pqhistory->getQbytime(tauab);
+  double* Q=qhistory.getQbytime(tauab);
   Qpast->init(Q);
   deltat2divided12=(deltat*deltat)/12.0F; //factor in wave equation
   deltatdivideddeltaxallsquared=(deltat*deltat)/(deltax*deltax);
@@ -112,7 +103,7 @@ void Weqn::restart(Istrm& restartf, double deltax){
   deltatdivideddeltaxallsquared=(deltat*deltat)/(deltax*deltax);
 }
 
-void Weqn::stepwaveeq(double *PhiRe, double *PhiIm, Qhistory *pqhistory, Field* fieldReobj, Field* fieldImobj, Prefact* prefactobj){
+void Weqn::stepwaveeq(double *PhiRe, double *PhiIm,Qhistory& qhistory, Field* fieldReobj, Field* fieldImobj, Prefact* prefactobj){
   double sumphiRe, sumphiIm;
   double sumphiRediag,sumphiImdiag;
   double sumqRe, sumqIm;
@@ -124,7 +115,7 @@ void Weqn::stepwaveeq(double *PhiRe, double *PhiIm, Qhistory *pqhistory, Field* 
   double* Phi_2Im= fieldImobj->U_2;
   double* factRe= prefactobj->factRe;
   double* factIm= prefactobj->factIm;
-  double* Q= pqhistory->getQbytime(tauab);
+  double* Q=qhistory.getQbytime(tauab);
   double* Q_1= Qpast->U_1;
   double* Q_2= Qpast->U_2;
   gamma=gammaobj->get(); //Update the gamma value

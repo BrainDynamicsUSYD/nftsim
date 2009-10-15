@@ -13,8 +13,8 @@
 #include"qhistory.h"
 #include"poplist.h"
 
-Qhistory::Qhistory(int qdepth, long totalnodes, int indexQ)
-	       :indexofQ(indexQ),depth(qdepth+3),nodes(totalnodes){
+Qhistory::Qhistory(int qdepth,long n, int indexQ)
+	       :indexofQ(indexQ),depth(qdepth+3),nodes(n){
   qhistory = new double*[depth];
   double *q;
   for(int i=0;i<depth;i++){
@@ -35,8 +35,8 @@ Qhistory::~Qhistory(){
 //
 // Finish by copying q throughout the q history at start
 //
-void Qhistory::init(Istrm& inputf, Poplist *ppoplist){
-  copyQfrompop(ppoplist); //Update Q to qdepth
+void Qhistory::init(Istrm& inputf,Poplist& poplist){
+  copyQfrompop(poplist); //Update Q to qdepth
 //
 // Set Q back in time to initial conditions
 //
@@ -60,7 +60,7 @@ void Qhistory::dump(ofstream& dumpf){
   dumpf << endl;
 }
 
-void Qhistory::restart(Istrm& restartf, Poplist *ppoplist){
+void Qhistory::restart(Istrm& restartf,Poplist& poplist){
   for(int i=0;i<depth;i++){
     double *q=qhistory[i];
     double qtemp;
@@ -79,17 +79,17 @@ void Qhistory::restart(Istrm& restartf, Poplist *ppoplist){
 //
 // Update Qhistory by reading in Q from population and updating keyring pointers
 //
-void Qhistory::updateQhistory(Poplist *ppoplist){
+void Qhistory::updateQhistory(Poplist& poplist){
 // First, copy the Q array incoming from Q in each population to Q array in Qhistory
-  copyQfrompop(ppoplist);
+  copyQfrompop(poplist);
   inew++; // Increment position of newest Qhistory
   if(depth==inew)inew=0;
 }
 
-void Qhistory::copyQfrompop(Poplist *ppoplist){
+void Qhistory::copyQfrompop(Poplist& poplist){
 // Copy the Q array incoming from Q in each population to Q array in Qhistory
   double * __restrict__ pnewq=getQbytime(depth-1); // Get pointer to start of the oldest Q array which is going to be overwritten
-  double * __restrict__ pQpop=ppoplist->get(indexofQ)->Q; // Get pointer to incoming Q data originating from Q in each population
+  double * __restrict__ pQpop=poplist.get(indexofQ).Q; // Get pointer to incoming Q data originating from Q in each population
   for(long i=0; i<nodes; i++){
       *pnewq++=*pQpop++;
   }

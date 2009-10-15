@@ -9,7 +9,7 @@
 #include "pharmonic.h"
 #include<math.h>
 
-Pharmonic::Pharmonic(long totalnodes, double dt):nodes(totalnodes),
+Pharmonic::Pharmonic(long nodes, double dt):nodes(nodes),
             timestep(dt){
   previousQ = new double [nodes];
   previousPhi = new double [nodes];
@@ -23,7 +23,7 @@ Pharmonic::~Pharmonic(){
   delete gammaobj;
 }
 
-void Pharmonic::init(Istrm& inputf, Qhistory* qhistory){
+void Pharmonic::init(Istrm& inputf,Qhistory& qhistory){
   double phiinit;
 
   inputf.validate("Initial Phi",58);
@@ -80,7 +80,7 @@ void Pharmonic::restart(Istrm& restartf){
   }
 }
 
-void Pharmonic::stepwaveeq(double * Phi, Qhistory* pqhistory){
+void Pharmonic::stepwaveeq(double * Phi,Qhistory& qhistory){
 //
 //  The program currently assumes that Gamma is constant and Q(t) is linear for the time step
 //  This is since it is very costly to obtain Q(t).
@@ -96,7 +96,7 @@ void Pharmonic::stepwaveeq(double * Phi, Qhistory* pqhistory){
   double C1;
   double C1deltatplusc2;
 
-  double* Q=pqhistory->getQbytime(tauab);
+  double* Q=qhistory.getQbytime(tauab);
   double gamma=gammaobj->get();
   double expgamma=exp(-gamma*timestep);
   factorgamma=(2.0/gamma);

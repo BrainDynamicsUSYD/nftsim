@@ -11,21 +11,6 @@
 #include<math.h>
 #include<cstdlib>
 
-Eqnset::Eqnset(long nodes, double deltat){
-  gridsize=static_cast<long>((sqrt(nodes)+2)*(sqrt(nodes)+2));
-  if (sqrt( static_cast<double>(nodes)) != floor(sqrt( static_cast<double>(nodes)))){
-    std::cerr << "Wave equation solver assumes square grid. Nodes per population must be a perfect square number" << endl;
-    exit(EXIT_FAILURE);
-  }
-  rowlength=static_cast<long>(sqrt(gridsize));
-  longsidelength=rowlength-2;
-  shortsidelength=rowlength-2;
-  startfirstrow=longsidelength+3;
-  uRe = new double[nodes];
-  uIm = new double[nodes];
-  weqnobj = new Weqn(gridsize, deltat);
-}
-
 Eqnset::Eqnset(long nodes,double deltat,long longside){
   longsidelength=longside;
   if (nodes%longsidelength != 0){
@@ -65,7 +50,7 @@ Eqnset::~Eqnset(){
   if (scalfactarr) delete [ ] scalfactarr;
 }
 
-void Eqnset::init(Istrm& inputf, Qhistory* qhistory){
+void Eqnset::init(Istrm& inputf,Qhistory& qhistory){
   inputf.validate("Deltax",58);
   inputf >> deltax;
   weqnobj->init(inputf,deltax,qhistory);
@@ -158,7 +143,7 @@ void Eqnset::restart(Istrm& restartf){
   }
 }
 
-void Eqnset::stepwaveeq(double* Phi, Qhistory* qhistory){
+void Eqnset::stepwaveeq(double* Phi,Qhistory& qhistory){
   for(int i=0; i<numk; i++){
     weqnobj->stepwaveeq(uRe,uIm,qhistory,fieldRe[i],fieldIm[i],scalfactarr[i]);
     fieldRe[i]->update(uRe);

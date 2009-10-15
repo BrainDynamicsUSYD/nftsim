@@ -25,7 +25,7 @@ void Coupling::dump(ofstream& dumpf){
 //
 // Sum the coupling terms
 //
-void Coupling::updatePa(double * __restrict__ Pa,double * __restrict__ Etaa,Qhistorylist* pqhistorylist,ConnectMat* pconnectmat){
+void Coupling::updatePa(double * __restrict__ Pa,double * __restrict__ Etaa,Qhistorylist& qhistorylist,ConnectMat& connectmat){
   double nu=nuobj->get();
   long n=nodes;
   for(int i=0; i<n; i++)

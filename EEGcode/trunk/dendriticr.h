@@ -27,7 +27,7 @@ public:
   void restart(Istrm& restartf);
   void stepVab(double *Pab, double * Vab, double *dVabdt, double timestep);
 private:
-  long nodes;
+  const long nodes;
   double* previousPab; // Holds Pab from one time step in the past 
   Parameter* alphaobj; // Object which initializes and get alpha values
   Parameter* betaobj; // Object which initializes and gets beta values
