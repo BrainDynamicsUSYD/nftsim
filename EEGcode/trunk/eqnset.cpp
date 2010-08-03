@@ -29,7 +29,7 @@ Eqnset::Eqnset(long nodes,double deltat,long longside){
   startfirstrow=longsidelength+3;
   uRe = new double[nodes];
   uIm = new double[nodes];
-  weqnobj = new Weqn(gridsize,deltat,longsidelength,shortsidelength);
+  weqnobj = new Weqn(nodes,gridsize,deltat,longsidelength,shortsidelength);
 }
 
 Eqnset::~Eqnset(){
@@ -110,10 +110,10 @@ void Eqnset::dump(ofstream& dumpf){
   }
 }
 
-void Eqnset::restart(Istrm& restartf){
+void Eqnset::restart(Istrm& restartf,Qhistory& qhistory){
   restartf.validate("Deltax",58);
   restartf >> deltax;
-  weqnobj->restart(restartf,deltax);
+  weqnobj->restart(restartf,deltax,qhistory);
   restartf.validate("geometric centre",58);
   restartf >> centrex;
   restartf.validate("",58);

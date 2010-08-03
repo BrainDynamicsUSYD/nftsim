@@ -53,10 +53,10 @@ void PropagNet::dump(ofstream& dumpf){
   pcouplinglist->dump(dumpf);
 }
 
-void PropagNet::restart(Istrm& restartf,Poplist& poplist){
+void PropagNet::restart(Istrm& restartf,Poplist& poplist,ConnectMat& connectmat){
   restartf.ignore(200,32); // Throwaway blank line
   pqhistorylist->restart(restartf,poplist);
-  pproplist->restart(restartf);
+  pproplist->restart(restartf,*pqhistorylist,connectmat);
   pcouplinglist->init(restartf);
 }
 

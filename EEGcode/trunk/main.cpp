@@ -90,19 +90,14 @@ int main(int argc, char* argv[])
   inputf >> nsteps;
   dumpf << "Number of integration steps:" << nsteps << " ";
   double deltat;
-  long skippts;
-  int optionnum;
-  optionnum=inputf.choose("Deltat:1 Skippoints:2 ",58);
-  if(1==optionnum){
-    inputf >> deltat;
-    skippts=0;
-    dumpf << "Deltat:" << deltat << " ";
-  } else {
+  long skippts=0;
+  if(inputf.optional("Skippoints",58)){
     inputf >> skippts;
-    inputf.validate("Deltat",58);
-    inputf >> deltat;
-    dumpf << "Skippoints:"<< skippts << " " << "Deltat:" << deltat << " ";
+    dumpf << "Skippoints:" << skippts << " ";
   }
+  inputf.validate("Deltat",58); 
+  inputf >> deltat;
+  dumpf << "Deltat:" << deltat << " ";
   inputf.ignore(200,32); //throwaway space line before start of populations
   Poplist poplist(nodes,numpops,connectmat);
   PropagNet propagnet(deltat,nodes,numpops,numconct,inputf,dumpf);
@@ -119,7 +114,7 @@ int main(int argc, char* argv[])
 //      Read in remaining restart parameters and initialize the classes
 //
     poplist.restart(inputf,propagnet,connectmat);
-    propagnet.restart(inputf,poplist);
+    propagnet.restart(inputf,poplist,connectmat);
   }
 //
 //  Initialize the output routine

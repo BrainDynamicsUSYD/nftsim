@@ -94,3 +94,16 @@ void Qhistory::copyQfrompop(Poplist& poplist){
       *pnewq++=*pQpop++;
   }
 }
+  
+double * Qhistory::getQbytime(Tau& tauobj){
+  if(tauobj.isarraytau){
+    long* tarray=tauobj.tauarr;
+    double* qarr=tauobj.qarray;
+    for(long j=0;j<nodes;j++,tarray++,qarr++){
+      *qarr=qhistory[*tarray<inew?depth+*tarray-inew:*tarray-inew][j];
+    }
+    return tauobj.qarray;
+  } else {
+    return qhistory[tauobj.tauab<inew?depth+tauobj.tauab-inew:tauobj.tauab-inew];
+  }
+}; // Get a pointer to the Q array with parameters of object tau

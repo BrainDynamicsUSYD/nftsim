@@ -16,8 +16,8 @@ using std::endl;
 
 #include"istrm.h"
 #include"population.h"
-class ConnectMat; //forward declare ConnectMat. Since we only use pointer to it no need for header
-class PropagNet; //forward declare PropagNet. Since we only use pointer to it no need for header
+class ConnectMat; //forward declare ConnectMat
+class PropagNet; //forward declare PropagNet
 
 class Poplist {
 public: 

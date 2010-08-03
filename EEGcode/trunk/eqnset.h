@@ -27,7 +27,7 @@ public:
   ~Eqnset();
   void init(Istrm& inputf,Qhistory& qhistory); 
   void dump(ofstream& dumpf); 
-  void restart(Istrm& restartf); 
+  void restart(Istrm& restartf,Qhistory& qhistory); 
   void stepwaveeq(double* Phi,Qhistory& qhistory);
 private:
   long gridsize;

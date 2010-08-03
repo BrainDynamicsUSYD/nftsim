@@ -29,7 +29,7 @@ public:
    ~PropagNet();
    void init(Istrm& inputf,Poplist& poplist,ConnectMat& connectmat);
    void dump(ofstream& dumpf);
-   void restart(Istrm& restartf,Poplist& poplist);
+   void restart(Istrm& restartf,Poplist& poplist,ConnectMat& connectmat);
    void stepQtoP(Poplist& poplist,ConnectMat& connectmat); // Propagate the firing response of each population to pulse densities arriving at the dendrite trees of other populations
    void dumpoutput(ofstream& dumpf);
    void initoutput(Istrm& inputf, ofstream& outputf, int numconct, long nodes);

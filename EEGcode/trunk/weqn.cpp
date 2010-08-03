@@ -8,9 +8,10 @@
 #include "weqn.h"
 #include<math.h>
 #include<cstdlib>
+#include"qhistory.h"
 
-Weqn::Weqn(long gsize,double dt,long longside,long shortside):gridsize(gsize),
-	   deltat(dt){
+Weqn::Weqn(long nodes,long gsize,double dt,long longside,long shortside):
+             nodes(nodes),gridsize(gsize),deltat(dt){
   longsidelength=longside;
   shortsidelength=shortside;
   startfirstrow=longsidelength+3;
@@ -19,13 +20,14 @@ Weqn::Weqn(long gsize,double dt,long longside,long shortside):gridsize(gsize),
 }
 
 Weqn::~Weqn(){
+  if(tauobj) delete tauobj;
   delete Qpast;
   delete gammaobj;
   delete effrangeobj;
 }
 
 void Weqn::init(Istrm& inputf, double deltax,Qhistory& qhistory){
-  tauab=inputf.readtauab(deltat);
+  tauobj = new Tau(nodes,deltat,inputf,qhistory);
   effrangeobj = new Parameter("Effective range",inputf);
   int optionnum;
   optionnum=inputf.choose("gamma:1 velocity:2",58);
@@ -57,23 +59,23 @@ void Weqn::init(Istrm& inputf, double deltax,Qhistory& qhistory){
     std::cerr << "Courant number is : " << (gamma*effrange*deltat/deltax) << endl;
     exit(EXIT_FAILURE);
   }
-  double* Q=qhistory.getQbytime(tauab);
+  double* Q=qhistory.getQbytime(*tauobj);
   Qpast->init(Q);
   deltat2divided12=(deltat*deltat)/12.0F; //factor in wave equation
   deltatdivideddeltaxallsquared=(deltat*deltat)/(deltax*deltax);
 }
 
 void Weqn::dump(ofstream& dumpf){
-  dumpf << "- Tauab: " << tauab << " ";
+  tauobj->dump(dumpf);
   effrangeobj->dump(dumpf);
   gammaobj->dump(dumpf);
   dumpf << endl;
   Qpast->dump(dumpf);
 }
 
-void Weqn::restart(Istrm& restartf, double deltax){
+void Weqn::restart(Istrm& restartf, double deltax,Qhistory& qhistory){
   restartf.ignore(200,45); // Throw away everything up to the dash char
-  tauab=restartf.readtauab(deltat);
+  tauobj = new Tau(nodes,deltat,restartf,qhistory);
   effrangeobj = new Parameter("Effective range",restartf);
   int optionnum;
   optionnum=restartf.choose("gamma:1 velocity:2",58);
@@ -115,7 +117,7 @@ void Weqn::stepwaveeq(double *PhiRe, double *PhiIm,Qhistory& qhistory, Field* fi
   double* Phi_2Im= fieldImobj->U_2;
   double* factRe= prefactobj->factRe;
   double* factIm= prefactobj->factIm;
-  double* Q=qhistory.getQbytime(tauab);
+  double* Q=qhistory.getQbytime(*tauobj);
   double* Q_1= Qpast->U_1;
   double* Q_2= Qpast->U_2;
   gamma=gammaobj->get(); //Update the gamma value

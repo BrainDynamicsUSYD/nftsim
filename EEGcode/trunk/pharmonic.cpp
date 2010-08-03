@@ -8,6 +8,7 @@
 
 #include "pharmonic.h"
 #include<math.h>
+#include"qhistory.h"
 
 Pharmonic::Pharmonic(long nodes, double dt):nodes(nodes),
             timestep(dt){
@@ -20,6 +21,7 @@ Pharmonic::~Pharmonic(){
   delete[ ] previousQ;
   delete[ ] previousPhi;
   delete[ ] dPhidt;
+  if(tauobj) delete tauobj;
   delete gammaobj;
 }
 
@@ -33,12 +35,12 @@ void Pharmonic::init(Istrm& inputf,Qhistory& qhistory){
     previousPhi[i]=phiinit;
     dPhidt[i]=0.;
   }
-  tauab=inputf.readtauab(timestep);
+  tauobj = new Tau(nodes,timestep,inputf,qhistory);
   gammaobj = new Parameter("gamma",inputf);
 }
 
 void Pharmonic::dump(ofstream& dumpf){
-  dumpf << "- Tauab: " << tauab << " ";
+  tauobj->dump(dumpf);
   gammaobj->dump(dumpf);
   dumpf << endl;
   dumpf << "Q_previous:";
@@ -58,9 +60,9 @@ void Pharmonic::dump(ofstream& dumpf){
   dumpf << endl; // Add endline to propagator input
 }
 
-void Pharmonic::restart(Istrm& restartf){
+void Pharmonic::restart(Istrm& restartf,Qhistory& qhistory){
   restartf.ignore(200,45);
-  tauab=restartf.readtauab(timestep);
+  tauobj = new Tau(nodes,timestep,restartf,qhistory);
   gammaobj = new Parameter("gamma",restartf);
   double temp;
   restartf.validate("Q_previous",58);
@@ -96,7 +98,7 @@ void Pharmonic::stepwaveeq(double * Phi,Qhistory& qhistory){
   double C1;
   double C1deltatplusc2;
 
-  double* Q=qhistory.getQbytime(tauab);
+  double* Q=qhistory.getQbytime(*tauobj);
   double gamma=gammaobj->get();
   double expgamma=exp(-gamma*timestep);
   factorgamma=(2.0/gamma);

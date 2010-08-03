@@ -90,9 +90,11 @@ void Proplist::dump(ofstream& dumpf){
     }
 }
 
-void Proplist::restart(Istrm& restartf){
-  for(int i=0; i<numpropag; i++)
-    getpropag(i).restart(restartf);
+void Proplist::restart(Istrm& restartf,Qhistorylist& qhistorylist,ConnectMat& connectmat){
+  for(int i=0; i<numpropag; i++){
+    Qhistory& qhistory=qhistorylist.getQhist(connectmat.getQindex(i));
+    getpropag(i).restart(restartf,qhistory);
+  }
 }
 
 // steps each propagator object forward in time

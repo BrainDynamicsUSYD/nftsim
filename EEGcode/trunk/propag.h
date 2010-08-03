@@ -14,8 +14,8 @@ using std::ofstream;
 
 using std::endl;
 
-#include"istrm.h"
-#include"qhistory.h"
+class Istrm; //Forward declare Istrm
+class Qhistory; //Forward declare qhistory
 
 class Propag { // Abstract Base class for waveeqn object
 public: 
@@ -23,7 +23,7 @@ public:
   virtual ~Propag() = 0; // Must be defined in propag.cpp
   virtual void init(Istrm& inputf,Qhistory& qhistory) = 0; 
   virtual void dump(ofstream& dumpf) = 0; 
-  virtual void restart(Istrm& restartf) = 0; 
+  virtual void restart(Istrm& restartf,Qhistory& qhistory) = 0; 
   virtual void stepwaveeq(double *Phi,Qhistory& qhistory) = 0; 
 };
 

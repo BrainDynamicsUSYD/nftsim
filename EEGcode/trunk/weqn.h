@@ -20,22 +20,24 @@ using std::endl;
 #include"propag.h"
 #include"field.h"
 #include"prefact.h"
+#include"tau.h"
 
 class Weqn {
 public: 
-  Weqn(long gridsize,double deltat,long longsidelength,long shortsidelength); // For rectangular boudary
+  Weqn(long nodes,long gridsize,double deltat,long longsidelength,long shortsidelength); // For rectangular boudary
   ~Weqn();
   void init(Istrm& inputf, double deltax,Qhistory& qhistory);
   void dump(ofstream& dumpf);
-  void restart(Istrm& restartf, double deltax);
+  void restart(Istrm& restartf, double deltax,Qhistory& qhistory);
   void stepwaveeq(double *PhiRe, double *PhiIm,Qhistory& qhistory, Field* fieldReobj, Field* filedImobj, Prefact* prefactobj);
 private:
   Parameter* gammaobj;
   Parameter* effrangeobj;
   double gamma;
   double effrange;
-  int tauab;
+  Tau* tauobj;
   double p2; // Square of mesh ratio, dimensionless equal to (deltat effrange gamma/deltax)^2
+  const long nodes;
   const long gridsize; // size of grids for integration of wave equation
   const double deltat; // Grid spacing in time
   double deltax; // Grid spacing in space

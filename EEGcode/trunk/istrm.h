@@ -20,10 +20,10 @@ class Istrm: public ifstream {
 public: 
   Istrm(const char* filename);
   ~Istrm();
+  int optional(const char* check, char delim);
   void validate(const char* check, char delim);
   double find(const char* check, char delim, int ordinal);
   int choose(const char* ch, char delim);
-  int readtauab(double deltat);
 private:
   char * pbuffer;
   Istrm(const Istrm& other); // Block copy constructor

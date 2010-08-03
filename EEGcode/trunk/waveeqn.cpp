@@ -8,8 +8,10 @@
 #include "waveeqn.h"
 #include<math.h>
 #include<cstdlib>
+#include"qhistory.h"
 
-WaveEqn::WaveEqn(long nodes, double dt, long longside):deltat(dt),longsidelength(longside){
+WaveEqn::WaveEqn(long nodes, double dt, long longside):
+                nodes(nodes),deltat(dt),longsidelength(longside){
   if (nodes%longsidelength != 0){
     std::cerr << "To define a rectangular grid nodes: " << nodes <<endl;
     std::cerr << "divided by Longside: " << longside << endl;
@@ -32,6 +34,7 @@ WaveEqn::WaveEqn(long nodes, double dt, long longside):deltat(dt),longsidelength
 WaveEqn::~WaveEqn(){
   delete phipast;
   delete Qpast;
+  if(tauobj) delete tauobj;
   delete gammaobj;
   delete effrangeobj;
 }
@@ -55,7 +58,7 @@ void WaveEqn::init(Istrm& inputf,Qhistory& qhistory){
   }
   inputf.validate("Deltax",58);
   inputf >> deltax;
-  tauab=inputf.readtauab(deltat);
+  tauobj = new Tau(nodes,deltat,inputf,qhistory);
   effrangeobj = new Parameter("Effective range",inputf);
   int optionnum;
   optionnum=inputf.choose("gamma:1 velocity:2",58);
@@ -87,14 +90,14 @@ void WaveEqn::init(Istrm& inputf,Qhistory& qhistory){
     std::cerr << "Courant number is : " << (gamma*effrange*deltat/deltax) << endl;
     exit(EXIT_FAILURE);
   }
-  double* Q=qhistory.getQbytime(tauab);
+  double* Q=qhistory.getQbytime(*tauobj);
   Qpast->init(Q);
   deltat2divided12=(deltat*deltat)/12.0F; //factor in wave equation
   deltatdivideddeltaxallsquared=(deltat*deltat)/(deltax*deltax);
 }
 
 void WaveEqn::dump(ofstream& dumpf){
-  dumpf << "- Tauab: " << tauab << " ";
+  tauobj->dump(dumpf);
   dumpf << "Deltax: " << deltax << " ";
   effrangeobj->dump(dumpf);
   gammaobj->dump(dumpf);
@@ -103,9 +106,9 @@ void WaveEqn::dump(ofstream& dumpf){
   Qpast->dump(dumpf);
 }
 
-void WaveEqn::restart(Istrm& restartf){
+void WaveEqn::restart(Istrm& restartf,Qhistory& qhistory){
   restartf.ignore(200,45); // Throw away everything up to the dash char
-  tauab=restartf.readtauab(deltat);
+  tauobj = new Tau(nodes,deltat,restartf,qhistory);
   restartf.validate("Deltax",58);
   restartf >> deltax;
   effrangeobj = new Parameter("Effective range",restartf);
@@ -147,7 +150,7 @@ void WaveEqn::stepwaveeq(double *Phi,Qhistory& qhistory){
   double drive;
   double* Phi_1= phipast->U_1;
   double* Phi_2= phipast->U_2;
-  double* Q=qhistory.getQbytime(tauab);
+  double* Q=qhistory.getQbytime(*tauobj);
   double* Q_1= Qpast->U_1;
   double* Q_2= Qpast->U_2;
   gamma=gammaobj->get(); //Update the gamma value

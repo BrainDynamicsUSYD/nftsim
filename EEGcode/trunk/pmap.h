@@ -19,6 +19,7 @@ using std::endl;
 #include"parameter.h"
 #include"qhistory.h"
 #include"propag.h"
+#include"tau.h"
 
 class Pmap: public Propag {
 public: 
@@ -26,11 +27,11 @@ public:
   ~Pmap();
   void init(Istrm& inputf,Qhistory& qhistory);
   void dump(ofstream& dumpf);
-  void restart(Istrm& restartf);
+  void restart(Istrm& restartf,Qhistory& qhistory);
   void stepwaveeq(double *Phi,Qhistory& qhistory);
 private:
   const long nodes;
-  int tauab;
+  Tau* tauobj;
   const double deltat; // Grid spacing in time
 };
 

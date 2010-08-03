@@ -19,6 +19,7 @@ using std::endl;
 #include"parameter.h"
 #include"qhistory.h"
 #include"propag.h"
+#include"tau.h"
 
 class Pharmonic: public Propag {
 public: 
@@ -26,11 +27,11 @@ public:
   ~Pharmonic();
   void init(Istrm& inputf,Qhistory& qhistory);
   void dump(ofstream& dumpf);
-  void restart(Istrm& restartf);
+  void restart(Istrm& restartf,Qhistory& qhistory);
   void stepwaveeq(double *Phi,Qhistory& qhistory);
 private:
   const long nodes;
-  int tauab;
+  Tau* tauobj;
   const double timestep; // Grid spacing in time
   double* previousQ; // Store one step in past firing rate field
   double* previousPhi; // Store one step in past phi field

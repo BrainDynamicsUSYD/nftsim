@@ -19,6 +19,7 @@ using std::endl;
 #include"qhistory.h"
 #include"propag.h"
 #include"field.h"
+#include"tau.h"
 
 class WaveEqn: public Propag {
 public: 
@@ -26,15 +27,16 @@ public:
   ~WaveEqn();
   void init(Istrm& inputf,Qhistory& qhistory);
   void dump(ofstream& dumpf);
-  void restart(Istrm& restartf);
+  void restart(Istrm& restartf,Qhistory& qhistory);
   void stepwaveeq(double *Phi,Qhistory& qhistory);
 private:
   Parameter* gammaobj;
   Parameter* effrangeobj;
   double gamma;
   double effrange;
-  int tauab;
+  Tau* tauobj;
   double p2; // Square of mesh ratio, dimensionless equal to (deltat effrange gamma/deltax)^2
+  const long nodes;
   const double deltat; // Grid spacing in time
   double deltax; // Grid spacing in space
   double deltatdivideddeltaxallsquared; //Factor in p2 definition

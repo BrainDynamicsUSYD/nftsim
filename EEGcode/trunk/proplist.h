@@ -29,7 +29,7 @@ public:
   ~Proplist();
   void init(Istrm& inputf,Qhistorylist& qhistorylist,ConnectMat& connectmat);
   void dump(ofstream& dumpf);
-  void restart(Istrm& restartf);
+  void restart(Istrm& restartf,Qhistorylist& qhistorylist,ConnectMat& connectmat);
   void step(double **Eta,Qhistorylist& qhistorylist,ConnectMat& pconnectmat); // Transform Q to Eta via stepping forward multiple wave equations
 
 private:

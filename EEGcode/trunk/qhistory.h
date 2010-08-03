@@ -15,6 +15,7 @@ using std::ofstream;
 using std::endl;
 
 #include"istrm.h"
+#include"tau.h"
 class Poplist; //forward declare poplist. Header file is included in .cpp file
 
 class Qhistory {
@@ -25,8 +26,8 @@ public:
   void dump(ofstream& dumpf); // dump history data for restart
   void restart(Istrm& restartf,Poplist& poplist);
   void updateQhistory(Poplist& poplist); // Update Qhistory by reading in Q from populations and moving pointers
-  double * getQbytime(int i){return qhistory[i<inew?depth+i-inew:i-inew];}; // Get a pointer to the Q array with time index "index"
-                             // In this case index="0" Q for current time, index="1" Q one time step in the past etc.
+  double * getQbytime(Tau& tauobj); // Get a pointer to the Q array with time parameters of tau
+  double * getQbytime(int i){return qhistory[i<inew?depth+i-inew:i-inew];}; // Get a pointer to the Q array with time index "i"
 private:
   double **qhistory; // Array of pointers to double arrays of qhistories
   void copyQfrompop(Poplist& poplist); // Copies Q array from the version stored in the population

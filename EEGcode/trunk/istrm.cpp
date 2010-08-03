@@ -20,13 +20,27 @@ Istrm::Istrm(const char* filename):ifstream(filename,ios::in),pbuffer(0){
 Istrm::~Istrm(){
   delete [ ] pbuffer;
 }
+
+int Istrm::optional(const char* check,char delim){
+  std::streampos sp;
+  sp = this->tellg(); // Save current position in input file
+  this->getline(pbuffer, 200, delim);
+  char* p;
+  p=pbuffer+std::strlen(pbuffer)-std::strlen(check);
+  if(std::strlen(pbuffer)<std::strlen(check) || (std::strcmp(p,check)) ){
+    this->seekg(sp); // Restore current position in input file
+    return 0;
+  } else {
+    return 1;
+  }
+}
  
-void Istrm::validate(const char* check, char delim){
+void Istrm::validate(const char* check,char delim){
   this->getline(pbuffer, 200, delim);
   char* p;
   if(pbuffer || check){
    p=pbuffer+std::strlen(pbuffer)-std::strlen(check);
-   if(std::strcmp(p,check)){
+   if(std::strlen(pbuffer)<std::strlen(check) || std::strcmp(p,check)){
      std::cerr << "Unable to find next input variable :'";
      std::cerr.write(check,std::strlen(check));
      std::cerr << "' "<< endl;
@@ -64,7 +78,7 @@ double Istrm::find(const char* check, char delim, int ordinal){
       exit(EXIT_FAILURE);
     }
     p=pbuffer+std::strlen(pbuffer)-std::strlen(check);
-    if(std::strcmp(p,check)){
+    if(std::strlen(pbuffer)<std::strlen(check) || std::strcmp(p,check)){
       ;
     } else {
       ordinal--;
@@ -89,30 +103,3 @@ int Istrm::choose(const char* ch, char delim){
   ss >> retval; // extract choice number from string stream as int
   return retval;
 }
-
-int Istrm::readtauab(double deltat){
-  int optionnum;
-  optionnum=this->choose("Tauab:1 Tauabt:2",58);
-  int tauab;
-  float tauabfloat;
-  if(1==optionnum){
-    *this >> tauabfloat;
-  }
-  if(2==optionnum){
-    double tauabt;
-    *this >> tauabt;
-    tauabfloat=tauabt/deltat;
-  }
-  if( !((1==optionnum)||(2==optionnum)) ){
-    std::cerr << "Last read looking for Tauab or Tauabt found neither" << endl;
-    exit(EXIT_FAILURE);
-  }
-  tauab=int(tauabfloat);
-  if(tauabfloat<1 && tauabfloat>0){
-    std::cerr << "Last read Tauab: " << tauabfloat << endl;
-    std::cerr << "Tauab must be greater than 1 as it is measured in" << endl;
-    std::cerr << "time steps not a time measured in seconds" << endl;
-    exit(EXIT_FAILURE);
-  }
-  return tauab;
- }
