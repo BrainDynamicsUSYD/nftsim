@@ -29,6 +29,7 @@ public:
   void stepPops(double timestep);
   Population& get(int popindex);
 private:
+  Poplist(Poplist& ); // no copy constructor
   Population** poparray; // Array of pointers to population objects
   const int numpops; //number of populations in array of populations
 };

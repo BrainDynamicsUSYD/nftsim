@@ -31,6 +31,7 @@ public:
   void stepPop(double timestep);
   double * Q;  // Array of firing rate in population
 private:
+  Population(Population& ); // no copy constructor
   double t; // Current time
   int pindex; // Population index
   bool isstimulus; // TRUE if this population is a stimulus population (i.e. has no attached populations on dendrite tree

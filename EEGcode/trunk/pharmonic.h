@@ -30,6 +30,7 @@ public:
   void restart(Istrm& restartf,Qhistory& qhistory);
   void stepwaveeq(double *Phi,Qhistory& qhistory);
 private:
+  Pharmonic(Pharmonic& ); // no copy constructor
   const long nodes;
   Tau* tauobj;
   const double timestep; // Grid spacing in time

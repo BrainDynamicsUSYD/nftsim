@@ -27,6 +27,7 @@ public:
   void get(double t, double *tseries, const long nodes);
   double getmean(){return mean;};
 private:
+  Timeseries(Timeseries& ) ; //no copy contructor
   string id1; // name of type of time series used in mode e.g. "Concentration" .. modes
   string id2; // name of type of time series used in start time messsage
   int mode; // Number representing mode of timeseries

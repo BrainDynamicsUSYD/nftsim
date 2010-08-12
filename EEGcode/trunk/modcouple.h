@@ -32,6 +32,7 @@ public:
   void updatePa(double *Pa, double *Etaa,Qhistorylist& qhistorylist,ConnectMat& connectmat);
 
 private:
+  Modcouple(Modcouple& ); // no copy constructor
   void initoutput(Istrm& inputf, int coupleid); // initialize output routine for nu
   double t; //current time
   const long nodes;

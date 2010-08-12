@@ -26,6 +26,7 @@ public:
   double get(){return param;};
   void dump(ofstream& dumpf);
 private:
+  Parameter(Parameter& ); // no copy constructor
   double param;
   string ident;
 };

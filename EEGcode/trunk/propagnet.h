@@ -39,6 +39,7 @@ public:
    int numconnects; //Number of Connections between neural populations
    
 private:
+   PropagNet(PropagNet& ); // no copy constructor
    long gridsize;
    const long nodes;
    Qhistorylist *pqhistorylist;

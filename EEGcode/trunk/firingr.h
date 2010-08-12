@@ -27,6 +27,7 @@ public:
   void dump(ofstream& dumpf);
   void getQ(double *V, double *Q,long nodes,double timestep);
 private: 
+  FiringR(FiringR& ); // no copy constructor
   Parameter* pthetaobj;
   Modtheta* pmthetaobj;
   Modtheta1* pm1thetaobj;

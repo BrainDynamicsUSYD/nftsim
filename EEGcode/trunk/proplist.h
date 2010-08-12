@@ -33,6 +33,7 @@ public:
   void step(double **Eta,Qhistorylist& qhistorylist,ConnectMat& pconnectmat); // Transform Q to Eta via stepping forward multiple wave equations
 
 private:
+  Proplist(Proplist& ); // no copy constructor
   Propag ** propagarray; // Array of pointers to propagator objects
   Propag& getpropag(int index); // method to obtain pointer to "i"th propagator
   const int numpropag; //number of propagator objects in the list

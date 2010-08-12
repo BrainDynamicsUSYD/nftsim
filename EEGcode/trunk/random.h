@@ -15,6 +15,7 @@ public:
   double ran();
   void gaussian(double& deviate1, double& deviate2);
 private:
+  Random(Random& ); // no copy constructor
   long idum;
   enum {IA=16807}; // Use "enum hack" to obtain more portable static const int
   enum {IM=2147483647}; // Use "enum hack" to obtain more portable static const int

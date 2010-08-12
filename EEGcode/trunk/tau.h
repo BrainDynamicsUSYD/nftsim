@@ -26,6 +26,7 @@ public:
                   // q return values. Not needed when a single value tau exists
   long* tauarr; //stores an array of tau values
 private:
+  Tau(Tau& ); // no copy constructor
   const long nodes;
   const double deltat; // Grid spacing in time
 };

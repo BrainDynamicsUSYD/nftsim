@@ -31,6 +31,7 @@ public:
   double *U_1; // Pointer to Eta one step in the past for field variable
   double *U_2; // Pointer to Eta two steps in the past for field variable  
 private:
+  Field(Field& ); // no copy constructor
   string ident; // Name of field type
   void copyarr(double* Ufrom, double* Uto);
   double *U_A; // One of two keys in keyring storing field one and two steps in past

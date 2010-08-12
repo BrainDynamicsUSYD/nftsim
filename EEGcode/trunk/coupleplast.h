@@ -32,6 +32,7 @@ public:
   void updatePa(double *Pa,double *Etaa,Qhistorylist& qhistorylist,ConnectMat& connectmat);
 
 private:
+  Coupleplast(Coupleplast& ); // no copy constructor
   double t; //current time
   const long nodes;
   double timestep;

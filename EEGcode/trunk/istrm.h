@@ -25,6 +25,7 @@ public:
   double find(const char* check, char delim, int ordinal);
   int choose(const char* ch, char delim);
 private:
+  Istrm(Istrm& ); // no copy constructor
   char * pbuffer;
   Istrm(const Istrm& other); // Block copy constructor
   Istrm& operator=(const Istrm& other); // Block assignment operator

@@ -29,6 +29,7 @@ public:
   double * getQbytime(Tau& tauobj); // Get a pointer to the Q array with time parameters of tau
   double * getQbytime(int i){return qhistory[i<inew?depth+i-inew:i-inew];}; // Get a pointer to the Q array with time index "i"
 private:
+  Qhistory(Qhistory &); // no copy contructor
   double **qhistory; // Array of pointers to double arrays of qhistories
   void copyQfrompop(Poplist& poplist); // Copies Q array from the version stored in the population
   int * timeindex; // Array of indexes with current time array positions

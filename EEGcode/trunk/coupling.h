@@ -30,6 +30,7 @@ public:
   void output(); // dummy output routine - no output is generated
 
 private:
+  Coupling(Coupling& ); // no copy constructor
   const long nodes;
   Parameter* nuobj;
 };

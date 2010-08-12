@@ -29,6 +29,7 @@ public:
   void updateQhistories(Poplist& poplist); // get Q values from populations and move keyring pointers
 
 private:
+  Qhistorylist(Qhistorylist& ); // no copy constructor
   Qhistory ** Qhistarray; // Array of pointers to Qhistory objects
   void getdepths(Istrm& inputf, ofstream& dumpf); // Read in array of depth of each Q history keyring
   int * depthofhistory; // Array numpops long of the depth of each Q history keyring

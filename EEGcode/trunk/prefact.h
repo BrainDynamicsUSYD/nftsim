@@ -25,6 +25,7 @@ public:
   double* factRe;
   double* factIm;
 private:
+  Prefact(Prefact& ); //no copy constructor
   void wrapbndry(double* array);
   long gridsize;
   long longsidelength;

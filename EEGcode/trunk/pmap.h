@@ -30,6 +30,7 @@ public:
   void restart(Istrm& restartf,Qhistory& qhistory);
   void stepwaveeq(double *Phi,Qhistory& qhistory);
 private:
+  Pmap(Pmap& ); // no copy constructor
   const long nodes;
   Tau* tauobj;
   const double deltat; // Grid spacing in time

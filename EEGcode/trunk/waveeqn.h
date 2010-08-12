@@ -30,6 +30,7 @@ public:
   void restart(Istrm& restartf,Qhistory& qhistory);
   void stepwaveeq(double *Phi,Qhistory& qhistory);
 private:
+  WaveEqn(WaveEqn& ); // no copy contructor
   Parameter* gammaobj;
   Parameter* effrangeobj;
   double gamma;

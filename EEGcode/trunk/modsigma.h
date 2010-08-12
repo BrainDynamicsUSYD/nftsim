@@ -26,6 +26,7 @@ public:
   double get(double timestep, double * Vab); // return theta value for modulated threshold
 
 private:
+  Modsigma(Modsigma& ); // no copy constructor
   void initoutput(Istrm& inputf, int popindex); // initialize output routine 
   void output(); // output variance variables as needed
   double sigmatheta2; // Parameter sigma_{\theta}^2

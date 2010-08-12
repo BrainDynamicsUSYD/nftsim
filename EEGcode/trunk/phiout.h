@@ -25,6 +25,7 @@ public:
   void output(ofstream& outputf, double **Eta);
   void dump(ofstream& dumpf);
 private:
+  Phiout(Phiout& ); // no copy constructor
   long numtraces; // Number of traces to be outputted
   int * idoftrace; // Array containing wave equation id numbers of requested traces
   long * nodeoftrace; // Array containing node numbers of requested traces

@@ -27,6 +27,7 @@ public:
   double get(double timestep); // return theta value for modulated threshold
 
 private:
+  Modtheta(Modtheta& ); //no copy constructor
   void initoutput(Istrm& inputf, int popindex); // initialize output routine 
   void output(double* y, double itheta); // output threshold variables as needed
   void rk4(double t, double* y, float timestep); // 4th order Runge Kutta

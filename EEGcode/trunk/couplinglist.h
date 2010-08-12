@@ -29,6 +29,7 @@ public:
   void output(); // Output the nu data
 
 private:
+  Couplinglist(Couplinglist& ); // no copy constructor
   Couple ** couparray; // Array of pointers to coupling objects
   Couple& getcoup(int index){return *couparray[index];}; // reference to "index" coupling object array 
   const int numcoup; // Number of coupling objects in coupling list

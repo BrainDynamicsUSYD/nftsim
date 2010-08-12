@@ -26,6 +26,7 @@ public:
   int getDRlength(int index){return drlength[index];}; // Return the number of dendritic responses attached to particular population
 
 private:
+  ConnectMat(ConnectMat& ); // no copy constructor
   int *qphiconnect; // Array mapping connection number back to Qb arrays
   int *drphiconnect; // Array mapping connection number back to dendritic responses populations
   int *drlength; // Array each element is the number of dendritic responses attached to population number 'index'

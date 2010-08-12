@@ -30,6 +30,7 @@ public:
   void restart(Istrm& restartf,Qhistory& qhistory); 
   void stepwaveeq(double* Phi,Qhistory& qhistory);
 private:
+  Eqnset(Eqnset& ); // no copy constructor
   long gridsize;
   long longsidelength;
   long shortsidelength;
