@@ -38,7 +38,6 @@ void Modsigma::dump(ofstream& dumpf){
 
 double Modsigma::get(double timestep, double* Vab){
   double sigma;
-  double sigmaV;
   sigmaVpast=exp(-timestep/avlength)*sigmaVpast+Vab[1];
   sigma= sqrt(sigmatheta2+sigmaVpast*sigmaVpast);
   output();
@@ -58,5 +57,5 @@ void Modsigma::initoutput(Istrm& inputf, int popindex){
 }
 
 void Modsigma::output(){
-  sigmaoutf << "SigmaV: " << SigmaVpast << " ";
+  sigmaoutf << "SigmaV: " << sigmaVpast << " ";
 }
