@@ -39,8 +39,8 @@ void Modsigma::dump(ofstream& dumpf){
 double Modsigma::get(double timestep, double* Vab){
   double sigma;
   double sigmaV;
-  sigmaV=exp(-timestep/avlength)*sigmaVpast+Vab[1];
-  sigma= sqrt(sigmatheta2+sigmaV*sigmaV);
+  sigmaVpast=exp(-timestep/avlength)*sigmaVpast+Vab[1];
+  sigma= sqrt(sigmatheta2+sigmaVpast*sigmaVpast);
   output();
   return (sigma);
 }
@@ -54,8 +54,9 @@ void Modsigma::initoutput(Istrm& inputf, int popindex){
     std::cerr << "Unable to open 'eegcode.sigmaout." << popindex << "' for output \n";
     exit(EXIT_FAILURE);
   }
-  sigmaoutf << "Robinson varinace dynamics model output data" << endl;
+  sigmaoutf << "Robinson variance dynamics model output data" << endl;
 }
 
 void Modsigma::output(){
+  sigmaoutf << "SigmaV: " << SigmaVpast << " ";
 }
