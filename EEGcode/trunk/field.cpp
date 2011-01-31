@@ -8,6 +8,7 @@
 
 #include "field.h"
 #include<math.h>
+using std::endl;
 
 Field::Field(long gsize,long longside,long shortside,const char * fname):
                ident(fname),gridsize(gsize),longsidelength(longside),
@@ -16,7 +17,6 @@ Field::Field(long gsize,long longside,long shortside,const char * fname):
   U_B = new double[gridsize];
   startfirstrow=longsidelength+3;
 }
-
 
 Field::~Field(){
   delete[ ] U_A;
@@ -46,7 +46,7 @@ void Field::init(double* Uinit){ // Alternate initializer
   U_2=U_B;
 }
 
-void Field::dump(ofstream& dumpf){
+void Field::dump(std::ofstream& dumpf){
   dumpf << ident << "_1: " ;
   for(long i=0; i<gridsize; i++)
     dumpf << U_1[i] << " ";

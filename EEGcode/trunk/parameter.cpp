@@ -19,6 +19,6 @@ Parameter::Parameter(const char * pname, double initval):ident(pname){
 Parameter::~Parameter(){
 }
  
-void Parameter::dump(ofstream& dumpf){
+void Parameter::dump(std::ofstream& dumpf){
   dumpf << ident << ":" << param << " ";
 }

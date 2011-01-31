@@ -8,6 +8,7 @@
 #include"pmap.h"
 #include<math.h>
 #include"qhistory.h"
+using std::endl;
 
 Pmap::Pmap(long nodes, double dt):nodes(nodes),deltat(dt){
 }
@@ -21,7 +22,7 @@ void Pmap::init(Istrm& inputf,Qhistory& qhistory){
   tauobj= new Tau(nodes,deltat,inputf,qhistory);
 }
 
-void Pmap::dump(ofstream& dumpf){
+void Pmap::dump(std::ofstream& dumpf){
   tauobj->dump(dumpf);
 }
 

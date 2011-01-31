@@ -7,6 +7,7 @@
 
 #include<math.h>
 #include "propagnet.h"
+using std::endl;
 
 PropagNet::PropagNet(double deltat, long n, int numpops, int numconct, Istrm& inputf, ofstream& dumpf)
                       :numconnects(numconct),nodes(n){

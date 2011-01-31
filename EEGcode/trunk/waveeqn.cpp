@@ -10,6 +10,8 @@
 #include<cstdlib>
 #include"qhistory.h"
 
+using std::endl;
+
 WaveEqn::WaveEqn(long nodes, double dt, long longside):
                 nodes(nodes),deltat(dt),longsidelength(longside){
   if (nodes%longsidelength != 0){

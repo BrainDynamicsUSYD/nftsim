@@ -5,13 +5,15 @@
     email                : peter@physics.usyd.edu.au
  ***************************************************************************/
 
-#include "tau.h"
-using std::endl;
 #include<cstdlib>
+#include "tau.h"
+#include "qhistory.h"
+using std::endl;
 
 Tau::Tau(long nodes,double dt,Istrm& inputf,Qhistory& qhistory):
             nodes(nodes),deltat(dt){
   int optionnum;
+  int taumax=0; // maximum timesteps amongst the tau values
   optionnum=inputf.choose("Tauab:1 Tauabt:2 TauabArray:3 TauabtArray:4",58);
   float tauabfloat;
   isarraytau=false; //default to false
@@ -19,6 +21,7 @@ Tau::Tau(long nodes,double dt,Istrm& inputf,Qhistory& qhistory):
     inputf >> tauabfloat;
     if(2==optionnum){tauabfloat=tauabfloat/deltat;} // scale tau:sec to steps
     tauab=int(tauabfloat);
+    taumax=tauab;
   }
   if(3==optionnum||4==optionnum){
     isarraytau=true;
@@ -33,6 +36,9 @@ Tau::Tau(long nodes,double dt,Istrm& inputf,Qhistory& qhistory):
       inputf >> tauabfloat;
       if(2==optionnum){tauabfloat=tauabfloat/deltat;}//scale tau:sec to steps
       tauarr[i]=int(tauabfloat);
+      if(tauarr[i]>taumax){
+        taumax=tauarr[i];
+      }
     }
   }
   if( (1>optionnum)||(4<optionnum) ){
@@ -46,6 +52,7 @@ Tau::Tau(long nodes,double dt,Istrm& inputf,Qhistory& qhistory):
     std::cerr << "time steps not a time measured in seconds" << endl;
     exit(EXIT_FAILURE);
   }
+  qhistory.grow(taumax);
 }
 
 Tau::~Tau(){
@@ -55,7 +62,7 @@ Tau::~Tau(){
   }
 }
 
-void Tau::dump(ofstream& dumpf){
+void Tau::dump(std::ofstream& dumpf){
   if(isarraytau){
     dumpf << "- TauabArray";
     for(long i=0;i<nodes;i++){

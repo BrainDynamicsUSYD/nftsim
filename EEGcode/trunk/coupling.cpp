@@ -6,6 +6,7 @@
  ***************************************************************************/
 
 #include "coupling.h"
+using std::endl;
 
 Coupling::Coupling(long numnodes, double deltat)
   :nodes(numnodes){

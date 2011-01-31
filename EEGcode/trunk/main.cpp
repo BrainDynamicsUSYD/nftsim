@@ -201,7 +201,6 @@ void writedefault(ofstream& defaultf){
   defaultf << "4			     :4  :0  :7  :0  :11" << endl;
   defaultf << "5			     :0  :0  :0  :0  :0 " << endl;
   defaultf << "Number of integration steps: 100000 Deltat: 0.0001 " << endl;
-  defaultf << "Q delay depths: 420 : 0 : 0 : 420 :0" << endl;
   defaultf << "Propagator types 1: Waveeqn 2: Waveeqn 3: Waveeqn 4: Waveeqn 5: Mapping $" << endl;
   defaultf << "6: Mapping 7: Mapping 8: Mapping 9: Mapping 10: Mapping 11: Mapping $" << endl;
   defaultf << "" << endl;

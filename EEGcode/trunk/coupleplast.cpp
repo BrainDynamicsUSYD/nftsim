@@ -11,7 +11,10 @@
 using std::string;
 #include<sstream>
 using std::stringstream;
+#include<iomanip>
+using std::setprecision;
 #include "coupleplast.h"
+using std::endl;
 
 Coupleplast::Coupleplast(long numnodes, double deltat)
   :t(0),nodes(numnodes),timestep(deltat){

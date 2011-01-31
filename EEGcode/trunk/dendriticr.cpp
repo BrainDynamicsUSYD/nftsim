@@ -6,6 +6,7 @@
  ***************************************************************************/
 
 #include "dendriticr.h"
+using std::endl;
 
 DendriticR::DendriticR(long nodes):nodes(nodes){
   previousPab = new double [nodes];

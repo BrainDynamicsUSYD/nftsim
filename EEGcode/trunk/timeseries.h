@@ -9,13 +9,8 @@
 #define TIMESERIES_H
 
 #include<fstream>
-using std::ofstream;
 #include<iostream>
-
-using std::endl;
 #include<string>
-using std::string;
-
 #include"istrm.h"
 #include"random.h"
 
@@ -23,13 +18,13 @@ class Timeseries {
 public: 
   Timeseries(const char * typeid1, const char * typeid2, Istrm& inputf);
   ~Timeseries();
-  void dump(ofstream& dumpf);
+  void dump(std::ofstream& dumpf);
   void get(double t, double *tseries, const long nodes);
   double getmean(){return mean;};
 private:
   Timeseries(Timeseries& ) ; //no copy contructor
-  string id1; // name of type of time series used in mode e.g. "Concentration" .. modes
-  string id2; // name of type of time series used in start time messsage
+  std::string id1; // name of type of time series used in mode e.g. "Concentration" .. modes
+  std::string id2; // name of type of time series used in start time messsage
   int mode; // Number representing mode of timeseries
   double ts; // Time before timeseries onset
   double tpeak; // Time to peak

@@ -10,6 +10,8 @@
 #include<math.h>
 #include"qhistory.h"
 
+using std::endl;
+
 Pharmonic::Pharmonic(long nodes, double dt):nodes(nodes),
             timestep(dt){
   previousQ = new double [nodes];

@@ -7,6 +7,7 @@
 
 #include<cstdlib>
 #include"connectmat.h"
+using std::endl;
 
 ConnectMat::ConnectMat(int numpops,int numconct, Istrm& inputf):numconnect(numconct),nump(numpops){
   rawcntmat = new int[nump*nump];
@@ -107,7 +108,7 @@ ConnectMat::~ConnectMat(){
   delete [ ] drlength;
 }
 
-void ConnectMat::dump(ofstream& dumpf){
+void ConnectMat::dump(std::ofstream& dumpf){
   dumpf << "Connection Matrix " << endl;
   for (int i=0; i<(nump*nump); i++){
     dumpf << ": " << rawcntmat[i] << " ";

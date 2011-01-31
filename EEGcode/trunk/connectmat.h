@@ -9,10 +9,7 @@
 #define CONNECTMAT_H
 
 #include<fstream>
-using std::ofstream;
 #include<iostream>
-
-using std::endl;
 
 #include"istrm.h"
 
@@ -20,7 +17,7 @@ class ConnectMat {
 public: 
   ConnectMat(int numpops, int numconct, Istrm& inputf); // Read in raw connection matrix and setup qphiconnect
   ~ConnectMat();
-  void dump(ofstream& dumpf); // Write out raw connection matrix
+  void dump(std::ofstream& dumpf); // Write out raw connection matrix
   int getQindex(int index){return qphiconnect[index];}; // Return population index number of Q for given wave equation index
   int getDRindex(int index){return drphiconnect[index];}; // Return population index number for DR for given wave equation index
   int getDRlength(int index){return drlength[index];}; // Return the number of dendritic responses attached to particular population

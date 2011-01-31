@@ -11,9 +11,6 @@
 #include<fstream>
 using std::ofstream;
 #include<iostream>
-
-using std::endl;
-
 #include"istrm.h"
 #include"qhistorylist.h"
 #include"connectmat.h"

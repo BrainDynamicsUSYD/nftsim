@@ -11,6 +11,7 @@
 #include"coupling.h"
 #include"modcouple.h"
 #include"coupleplast.h"
+using std::endl;
 
 //
 // Constructor for Couplinglist creates an array of coupling objects

@@ -9,21 +9,15 @@
 #define PHIOUT_H
 
 #include<fstream>
-using std::ofstream;
 #include<iostream>
-
-using std::endl;
-#include<iomanip>
-using std::setprecision;
-
 #include"istrm.h"
 
 class Phiout {
 public:
-  Phiout(Istrm& inputf, ofstream& outputf, int numconct, long nodes);
+  Phiout(Istrm& inputf, std::ofstream& outputf, int numconct, long nodes);
   ~Phiout();
-  void output(ofstream& outputf, double **Eta);
-  void dump(ofstream& dumpf);
+  void output(std::ofstream& outputf, double **Eta);
+  void dump(std::ofstream& dumpf);
 private:
   Phiout(Phiout& ); // no copy constructor
   long numtraces; // Number of traces to be outputted

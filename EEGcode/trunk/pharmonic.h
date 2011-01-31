@@ -13,8 +13,6 @@
 using std::ofstream;
 #include<iostream>
 
-using std::endl;
-
 #include"istrm.h"
 #include"parameter.h"
 #include"qhistory.h"

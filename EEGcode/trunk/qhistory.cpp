@@ -2,54 +2,63 @@
                           qhistory.cpp  -  keyring storing q into past
                              to account for propagation delays along axons
                              -------------------
-    copyright            : (C) 2008 by Peter Drysdale
+    copyright            : (C) 2010 by Peter Drysdale
     email                : peter@physics.usyd.edu.au
  ***************************************************************************/
 
 #include<iostream>
 #include<math.h>
 #include<cstdlib>
-
 #include"qhistory.h"
 #include"poplist.h"
+using std::endl;
 
-Qhistory::Qhistory(int qdepth,long n, int indexQ)
-	       :indexofQ(indexQ),depth(qdepth+3),nodes(n){
-  qhistory = new double*[depth];
-  double *q;
-  for(int i=0;i<depth;i++){
-    qhistory[i] = new double[nodes];
+Qhistory::Qhistory(long n, int indexQ):indexofQ(indexQ),nodes(n){
+  for(int i=0;i<3;i++){ // we need a minimum of three time steps back
+    qhistory.push_back(new double[nodes]);
     // Initialize q arrays to zero
-    q = qhistory[i];
-    for(long j=0;j<nodes;j++)
+    double *q = qhistory[i];
+    for(long j=0;j<nodes;j++){
       *q++=0.0F;
+    }
   }
   inew=0;
 }
 Qhistory::~Qhistory(){
-  for(int i=0;i<depth;i++)
-    delete [ ] qhistory[i];
-  delete [ ] qhistory;
+  while( !qhistory.empty() ){
+    delete [ ] qhistory.back();
+    qhistory.pop_back();
+  }
 }
 
-//
-// Finish by copying q throughout the q history at start
-//
+void Qhistory::grow(int taumax){
+  uint olddepth=qhistory.size();
+  while( taumax>( static_cast<int>(qhistory.size())-3) ){
+    qhistory.push_back(new double[nodes]);
+  }
+// initialize the new part of the qhistory array
+  for(uint i=olddepth;i<(qhistory.size()-1);i++){
+    double * __restrict__ qnew = qhistory[i];
+    double * __restrict__ q = qhistory[olddepth-1];
+    for(long j=0;j<nodes;j++)
+      *qnew++=*q++;
+  }
+}
+
 void Qhistory::init(Istrm& inputf,Poplist& poplist){
   copyQfrompop(poplist); //Update Q to qdepth
-//
 // Set Q back in time to initial conditions
-//
-  for(int i=0;i<depth-1;i++){
-    double * __restrict__ qnew = qhistory[i];
-    double * __restrict__ q = qhistory[depth-1];
+  for(std::vector<double *>::iterator it=qhistory.begin();it!=qhistory.end();++it){
+    double * __restrict__ qnew = *it;
+    double * __restrict__ q = qhistory[qhistory.size()-1];
     for(long j=0;j<nodes;j++)
       *qnew++=*q++;
   }
 }
 
 void Qhistory::dump(ofstream& dumpf){
-  for(int i=0;i<depth;i++){
+  dumpf << "Qhistory depth: " << qhistory.size() << " ";
+  for(uint i=0;i<qhistory.size();i++){
     double *q=qhistory[i];
     dumpf << "Qhistory index " << i << " :";
     for(long j=0;j<nodes;j++)
@@ -61,8 +70,12 @@ void Qhistory::dump(ofstream& dumpf){
 }
 
 void Qhistory::restart(Istrm& restartf,Poplist& poplist){
-  for(int i=0;i<depth;i++){
-    double *q=qhistory[i];
+  restartf.validate("Qhistory depth",58);
+  int depth;
+  restartf >> depth;
+  grow(depth-3);  // ensure qhistory has correct depth (-3) is different convention between taumax and size
+  for(std::vector<double *>::iterator it=qhistory.begin();it!=qhistory.end();++it){
+    double *q=*it;
     double qtemp;
     restartf.ignore(200,58); // throw away Qhistorydepth xx :
     for(long j=0;j<nodes;j++){
@@ -82,13 +95,13 @@ void Qhistory::restart(Istrm& restartf,Poplist& poplist){
 void Qhistory::updateQhistory(Poplist& poplist){
 // First, copy the Q array incoming from Q in each population to Q array in Qhistory
   copyQfrompop(poplist);
-  inew++; // Increment position of newest Qhistory
-  if(depth==inew)inew=0;
+  ++inew; // Increment position of newest Qhistory
+  if( static_cast<int>(qhistory.size()) == inew)inew=0;
 }
 
 void Qhistory::copyQfrompop(Poplist& poplist){
 // Copy the Q array incoming from Q in each population to Q array in Qhistory
-  double * __restrict__ pnewq=getQbytime(depth-1); // Get pointer to start of the oldest Q array which is going to be overwritten
+  double * __restrict__ pnewq=getQbytime(qhistory.size()-1); // Get pointer to start of the oldest Q array which is going to be overwritten
   double * __restrict__ pQpop=poplist.get(indexofQ).Q; // Get pointer to incoming Q data originating from Q in each population
   for(long i=0; i<nodes; i++){
       *pnewq++=*pQpop++;
@@ -100,10 +113,10 @@ double * Qhistory::getQbytime(Tau& tauobj){
     long* tarray=tauobj.tauarr;
     double* qarr=tauobj.qarray;
     for(long j=0;j<nodes;j++,tarray++,qarr++){
-      *qarr=qhistory[*tarray<inew?depth+*tarray-inew:*tarray-inew][j];
+      *qarr=qhistory[*tarray<inew?qhistory.size()+*tarray-inew:*tarray-inew][j];
     }
     return tauobj.qarray;
   } else {
-    return qhistory[tauobj.tauab<inew?depth+tauobj.tauab-inew:tauobj.tauab-inew];
+    return qhistory[tauobj.tauab<inew?qhistory.size()+tauobj.tauab-inew:tauobj.tauab-inew];
   }
 }; // Get a pointer to the Q array with parameters of object tau

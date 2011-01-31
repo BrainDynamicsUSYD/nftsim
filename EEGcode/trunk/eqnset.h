@@ -12,9 +12,6 @@
 #include<fstream>
 using std::ofstream;
 #include<iostream>
-
-using std::endl;
-
 #include"istrm.h"
 #include"field.h"
 #include"weqn.h"

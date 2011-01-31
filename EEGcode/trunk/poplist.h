@@ -9,11 +9,7 @@
 #define POPLIST_H
 
 #include<fstream>
-using std::ofstream;
 #include<iostream>
-
-using std::endl;
-
 #include"istrm.h"
 #include"population.h"
 class ConnectMat; //forward declare ConnectMat
@@ -24,7 +20,7 @@ public:
   Poplist(long nodes, int numberofpops,ConnectMat& connectmat);
   ~Poplist();
   void init(Istrm& inputf,PropagNet& propagnet,ConnectMat& connectmat);
-  void dump(ofstream& dumpf);
+  void dump(std::ofstream& dumpf);
   void restart(Istrm& restartf,PropagNet& propagnet,ConnectMat& connectmat);
   void stepPops(double timestep);
   Population& get(int popindex);

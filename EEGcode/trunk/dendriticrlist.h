@@ -11,9 +11,6 @@
 #include<fstream>
 using std::ofstream;
 #include<iostream>
-
-using std::endl;
-
 #include"istrm.h"
 #include"dendriticr.h"
 class ConnectMat; // Forward reference here as only use pointer. Header file included in .cpp file

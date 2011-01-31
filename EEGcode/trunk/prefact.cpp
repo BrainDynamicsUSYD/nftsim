@@ -8,6 +8,7 @@
 
 #include "prefact.h"
 #include <math.h>
+using std::endl;
 
 Prefact::Prefact(long gsize,long longside,long shortside):
     gridsize(gsize),longsidelength(longside),shortsidelength(shortside){

@@ -12,8 +12,10 @@
 #include <sstream>
 #include<cstring>
 #include<cstdlib>
+using std::endl;
 
-Istrm::Istrm(const char* filename):ifstream(filename,ios::in),pbuffer(0){
+Istrm::Istrm(const char* filename):std::ifstream(filename,std::ios::in),
+              pbuffer(0){
   pbuffer = new char[200];
 }
 

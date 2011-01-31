@@ -7,6 +7,7 @@
 
 #include "firingr.h"
 #include<math.h>
+using std::endl;
 
 FiringR::FiringR(int popindex,Istrm& inputf):pthetaobj(0),pmthetaobj(0),pm1thetaobj(0),
                  pmsigmaobj(0),sigmaobj(0),pindex(popindex){
@@ -62,15 +63,15 @@ void FiringR::getQ(double *V,double *Q,long nodes,double timestep){
   double sigma;
   double qmax;
   qmax=qmaxobj->get() ;
+  if(ismodsigma) {
+    sigma=pmsigmaobj->get(timestep,V);
+  }
+  else {sigma=sigmaobj->get();}
   if(ismodtheta) {
     if(0==modthetatype){theta=pmthetaobj->get(timestep);}
     else{theta=pm1thetaobj->get(timestep,V,qmax,sigma);}
   }
   else {theta=pthetaobj->get();}
-  if(ismodsigma) {
-    sigma=pmsigmaobj->get(timestep,V);
-  }
-  else {sigma=sigmaobj->get();}
   for(long i=0; i<nodes; i++)
     Q[i] = qmax/(1.0F+exp(-(V[i]-theta)/sigma));
   

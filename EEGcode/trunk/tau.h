@@ -9,9 +9,7 @@
 #define TAU_H
 
 #include<fstream>
-using std::ofstream;
 #include<iostream>
-
 #include"istrm.h"
 class Qhistory; //forward declare Qhistory
 
@@ -19,7 +17,7 @@ class Tau {
 public: 
   Tau(long nodes,double deltat,Istrm& inputf,Qhistory& qhistory);
   ~Tau();
-  void dump(ofstream& dumpf);
+  void dump(std::ofstream& dumpf);
   bool isarraytau; // TRUE if time delays are in the form of an array
   int tauab; // stores a single value tau
   double* qarray; // array to pass to qhistory when isarraytau true to hold

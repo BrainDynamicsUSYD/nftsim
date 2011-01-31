@@ -11,11 +11,6 @@
 #include<fstream>
 using std::ofstream;
 #include<iostream>
-
-using std::endl;
-#include<iomanip>
-using std::setprecision;
-
 #include"istrm.h"
 
 class Modsigma {

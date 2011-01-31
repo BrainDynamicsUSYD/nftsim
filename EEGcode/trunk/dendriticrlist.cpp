@@ -11,6 +11,7 @@
 #include"dendriticrlist.h"
 #include"connectmat.h"
 #include"propagnet.h"
+using std::endl;
 
 //
 // Constructor creates an array of dendritic responses for

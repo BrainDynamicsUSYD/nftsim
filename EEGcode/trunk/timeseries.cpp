@@ -9,6 +9,7 @@
 #include <math.h>
 #include<sstream>
 using std::stringstream;
+using std::endl;
 
 Timeseries::Timeseries(const char * typeid1, const char * typeid2,Istrm& inputf):id1(typeid1),
                         id2(typeid2){
@@ -110,7 +111,7 @@ Timeseries::~Timeseries(){
   if(random) delete random;
 }
 
-void Timeseries::dump(ofstream& dumpf){
+void Timeseries::dump(std::ofstream& dumpf){
   dumpf << id1 << " mode:" << mode << " ";
   dumpf << "Time to start" << id2 << ":" << ts << " ";
   switch (mode) {

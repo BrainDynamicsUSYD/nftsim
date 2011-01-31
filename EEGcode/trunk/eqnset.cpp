@@ -10,6 +10,7 @@
 #include "prefact.h"
 #include<math.h>
 #include<cstdlib>
+using std::endl;
 
 Eqnset::Eqnset(long nodes,double deltat,long longside){
   longsidelength=longside;

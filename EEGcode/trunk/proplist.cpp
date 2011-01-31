@@ -9,14 +9,16 @@
 #include<cstdlib>
 #include<math.h>
 #include "proplist.h"
+using std::endl;
 
 //
 // Constructor creates an array of pointers to propagator objects
 //
 
-Proplist::Proplist(Istrm& inputf, ofstream& dumpf, int numconnects,
+Proplist::Proplist(Istrm& inputf, std::ofstream& dumpf, int numconnects,
             long nodes, double deltat):numpropag(numconnects){
   propagarray = new Propag *[numpropag];
+  inputf.optional("Q delay depths",58); // Throw away deprecated q delay depths information
   inputf.validate("Propagator type",115); // search for "propagator types NB:- the s is ASCII 115
   dumpf << "Propagator types ";
   int optionnum;
@@ -83,7 +85,7 @@ void Proplist::init(Istrm& inputf,Qhistorylist& qhistorylist,ConnectMat& connect
   }
 }
 
-void Proplist::dump(ofstream& dumpf){
+void Proplist::dump(std::ofstream& dumpf){
   for(int i=0; i<numpropag; i++){
     dumpf << "Propagator "<< (i+1) << " ";
     getpropag(i).dump(dumpf);

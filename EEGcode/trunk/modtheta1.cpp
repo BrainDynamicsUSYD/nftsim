@@ -5,13 +5,16 @@
     email                : peter@physics.usyd.edu.au
  ***************************************************************************/
 
+#include "modtheta1.h"
 #include<math.h>
 #include<cstdlib>
 #include<string>
 using std::string;
 #include<sstream>
 using std::stringstream;
-#include "modtheta1.h"
+using std::endl;
+#include<iomanip>
+using std::setprecision;
 
 Modtheta1::Modtheta1(Istrm& inputf, int popindex):currenttime(0){
   y = new double[2];
@@ -106,7 +109,7 @@ void Modtheta1::initoutput(Istrm& inputf, int popindex){
   popindex++; // (popindex+1) is to ensure numbering from one not zero in output
   stringstream ss(stringstream::in | stringstream::out);
   ss << "eegcode.threshout." << popindex;
-  threshoutf.open(ss.str().c_str(),ios::out);
+  threshoutf.open(ss.str().c_str(),std::ios::out);
   if( !threshoutf ){
     std::cerr << "Unable to open 'eegcode.threshout." << popindex << "' for output \n";
     exit(EXIT_FAILURE);

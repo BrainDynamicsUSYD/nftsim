@@ -6,13 +6,16 @@
     email                : peter@physics.usyd.edu.au
  ***************************************************************************/
 
+#include "modsigma.h"
 #include<math.h>
 #include<string>
 #include<cstdlib>
 using std::string;
 #include<sstream>
 using std::stringstream;
-#include "modsigma.h"
+#include<iomanip>
+using std::setprecision;
+using std::endl;
 
 Modsigma::Modsigma(Istrm& inputf, int popindex){
   double temp;
@@ -48,7 +51,7 @@ void Modsigma::initoutput(Istrm& inputf, int popindex){
   popindex++; // (popindex+1) is to ensure numbering from one not zero in output
   stringstream ss(stringstream::in | stringstream::out);
   ss << "eegcode.sigmaout." << popindex;
-  sigmaoutf.open(ss.str().c_str(),ios::out);
+  sigmaoutf.open(ss.str().c_str(),std::ios::out);
   if( !sigmaoutf ){
     std::cerr << "Unable to open 'eegcode.sigmaout." << popindex << "' for output \n";
     exit(EXIT_FAILURE);

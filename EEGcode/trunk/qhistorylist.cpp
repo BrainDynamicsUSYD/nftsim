@@ -1,29 +1,27 @@
 /***************************************************************************
                           qhistorylist.cpp  -  description
                              -------------------
-    copyright            : (C) 2005 by Peter Drysdale
+    copyright            : (C) 2010 by Peter Drysdale
     email                : peter@physics.usyd.edu.au
  ***************************************************************************/
 
 #include "qhistorylist.h"
+using std::endl;
 
 // Builds an array of keyrings of Q history. Each Q history
 // is passed a depth for its history
-Qhistorylist::Qhistorylist(Istrm& inputf, ofstream& dumpf, int numpops, long nodes):numhistories(numpops){
-  depthofhistory= new int[numhistories]; // create depth of history array
-  getdepths(inputf,dumpf); // initialize depth of history array
-   
+Qhistorylist::Qhistorylist(Istrm& inputf, std::ofstream& dumpf, int numpops, long nodes):numhistories(numpops){
   Qhistarray = new Qhistory *[numhistories];
   for(int i=0;i<numpops;i++){
-    Qhistarray[i] = new Qhistory(depthofhistory[i], nodes, i);
+    Qhistarray[i] = new Qhistory(nodes, i);
   }
+  dumpf << endl; // add an endl since we no longer output q delay depths
 }
 
 Qhistorylist::~Qhistorylist(){
   for(int i=0;i<numhistories;i++)
     delete &getQhist(i);
   delete [ ] Qhistarray;
-  delete [ ] depthofhistory;
 }
 
 // Get pointer to the "index" th Qhistory object
@@ -36,28 +34,17 @@ void Qhistorylist::init(Istrm& inputf,Poplist& poplist){
     getQhist(i).init(inputf,poplist);
 }
 
-void Qhistorylist::dump(ofstream& dumpf){
+void Qhistorylist::dump(std::ofstream& dumpf){
   for(int i=0;i<numhistories; i++){
     dumpf << "Q history for Population " << (i+1) << " ";
     getQhist(i).dump(dumpf);
   }
+  dumpf << endl;
 }
 
 void Qhistorylist::restart(Istrm& restartf,Poplist& poplist){
   for(int i=0;i<numhistories; i++)
     getQhist(i).restart(restartf,poplist);
-}
-
-void Qhistorylist::getdepths(Istrm& inputf, ofstream& dumpf){
-  int temp;
-  dumpf << "Q delay depths ";
-  for(int i=0;i<numhistories; i++){
-    inputf.ignore(200,58); // throw away everything uptil colon character
-    inputf >> temp;
-    dumpf << ": " << temp;
-    depthofhistory[i]=temp;
-  }
-  dumpf << endl;
 }
 
 void Qhistorylist::updateQhistories(Poplist& poplist){

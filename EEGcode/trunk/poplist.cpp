@@ -7,6 +7,7 @@
  ***************************************************************************/
 
 #include "poplist.h"
+using std::endl;
 
 // Constructor for Poplist creates an array of (neural) populations
 Poplist::Poplist(long nodes, int numberofpops, ConnectMat& connectmat): numpops(numberofpops){
@@ -31,7 +32,7 @@ void Poplist::init(Istrm& inputf,PropagNet& propagnet,ConnectMat& connectmat){
     get(i).init(inputf,propagnet,connectmat);
 }
 
-void Poplist::dump(ofstream& dumpf){
+void Poplist::dump(std::ofstream& dumpf){
   for(int i=0; i<numpops; i++)
     get(i).dump(dumpf);
 }

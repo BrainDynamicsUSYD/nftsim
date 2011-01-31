@@ -9,6 +9,7 @@
 #include<math.h>
 #include<cstdlib>
 #include"qhistory.h"
+using std::endl;
 
 Weqn::Weqn(long nodes,long gsize,double dt,long longside,long shortside):
              nodes(nodes),gridsize(gsize),deltat(dt){

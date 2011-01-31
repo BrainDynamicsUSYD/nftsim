@@ -6,9 +6,14 @@
  ***************************************************************************/
 
 #include<cstdlib>
+#include<iomanip>
+
 #include "phiout.h"
 
-Phiout::Phiout(Istrm& inputf, ofstream& outputf, int numconct, long nodes){
+using std::setprecision;
+using std::endl;
+
+Phiout::Phiout(Istrm& inputf, std::ofstream& outputf, int numconct, long nodes){
   int optionnum;
   inputf.ignore(200,58); // throwaway everything up to colon character
   inputf >> numtraces;
@@ -67,7 +72,7 @@ Phiout::~Phiout(){
   delete [ ] nodeoftrace;
 }
 
-void Phiout::dump(ofstream& dumpf){
+void Phiout::dump(std::ofstream& dumpf){
   dumpf << endl;
   dumpf << "Output Data - Number of traces: " << numtraces << endl;
   for(long i=0; i<numtraces;i++){
@@ -76,7 +81,7 @@ void Phiout::dump(ofstream& dumpf){
   }
 }
 
-void Phiout::output(ofstream& outputf, double **Eta){
+void Phiout::output(std::ofstream& outputf, double **Eta){
   double * start; // a temporary pointer to the start of a Eta array
   for(long i=0; i<numtraces;i++){
     start = Eta[idoftrace[i]];

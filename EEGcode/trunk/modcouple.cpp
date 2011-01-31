@@ -5,13 +5,16 @@
     email                : peter@physics.usyd.edu.au
  ***************************************************************************/
 
+#include "modcouple.h"
 #include<math.h>
 #include<string>
 #include<cstdlib>
 using std::string;
 #include<sstream>
 using std::stringstream;
-#include "modcouple.h"
+#include<iomanip>
+using std::setprecision;
+using std::endl;
 
 Modcouple::Modcouple(long numnodes, double deltat)
   :t(0),nodes(numnodes),timestep(deltat){
@@ -68,7 +71,7 @@ void Modcouple::initoutput(Istrm& inputf, int coupleid){
   coupleid++; // (coupleid+1) is to ensure numbering from one not zero in output
   stringstream ss(stringstream::in | stringstream::out);
   ss << "eegcode.synaptout." << coupleid;
-  synapoutf.open(ss.str().c_str(),ios::out);
+  synapoutf.open(ss.str().c_str(),std::ios::out);
   if( !synapoutf ){
     std::cerr << "Unable to open 'eegcode.synaptout." << coupleid << "' for output \n";
     exit(EXIT_FAILURE);
@@ -112,7 +115,7 @@ void Modcouple::initoutput(Istrm& inputf, int coupleid){
   }
   stringstream ss1(stringstream::in | stringstream::out);
   ss1 << "eegcode.concout." << coupleid;
-  concoutf.open(ss1.str().c_str(),ios::out);
+  concoutf.open(ss1.str().c_str(),std::ios::out);
   if( !concoutf ){
     std::cerr << "Unable to open 'eegcode.concout." << coupleid << "' for output \n";
     exit(EXIT_FAILURE);
