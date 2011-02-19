@@ -28,7 +28,7 @@ private:
   double sigmaVpast; // Parameter sigma_{V} one step in the past
   double avlength; // Parameter characteristic length scale of exponentially
                    // weighted averaging
-  ofstream sigmaoutf; // Output stream "eegcode.sigmaout"
+  ofstream sigmaoutf; // Output stream "neurofield.sigmaout"
 };
 
 #endif

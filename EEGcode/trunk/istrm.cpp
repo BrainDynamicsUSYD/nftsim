@@ -49,7 +49,7 @@ void Istrm::validate(const char* check,char delim){
      std::cerr << "Last read was :'";
      std::cerr.write(pbuffer,std::strlen(pbuffer));
      std::cerr << "' "<< endl;
-     std::cerr << "Please check eegcode.conf for correct sequence of parameters" << endl;
+     std::cerr << "Please check neurofield.conf for correct sequence of parameters" << endl;
      exit(EXIT_FAILURE);
    }
   } else {

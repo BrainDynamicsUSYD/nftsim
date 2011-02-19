@@ -41,7 +41,7 @@ private:
   double* dydt; // Storing the time derivatives of above values
   long threshtraces; // number of concentration traces to output
   long * threshnodes; // Array containing node numbers of outputted threshold traces
-  ofstream threshoutf; // Stream 'eegcode.threshout'
+  ofstream threshoutf; // Stream 'neurofield.threshout'
   double currenttime; // Counter holding current time
 };
 

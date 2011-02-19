@@ -50,10 +50,10 @@ double Modsigma::get(double timestep, double* Vab){
 void Modsigma::initoutput(Istrm& inputf, int popindex){
   popindex++; // (popindex+1) is to ensure numbering from one not zero in output
   stringstream ss(stringstream::in | stringstream::out);
-  ss << "eegcode.sigmaout." << popindex;
+  ss << "neurofield.sigmaout." << popindex;
   sigmaoutf.open(ss.str().c_str(),std::ios::out);
   if( !sigmaoutf ){
-    std::cerr << "Unable to open 'eegcode.sigmaout." << popindex << "' for output \n";
+    std::cerr << "Unable to open 'neurofield.sigmaout." << popindex << "' for output \n";
     exit(EXIT_FAILURE);
   }
   sigmaoutf << "Robinson variance dynamics model output data" << endl;

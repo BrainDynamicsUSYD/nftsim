@@ -30,7 +30,7 @@ void writedefault(ofstream& defaultf);
 int main(int argc, char* argv[])
 {
 //
-// Open file for dumping data for restart -default is eegcode.dump
+// Open file for dumping data for restart -default is neurofield.dump
 //
   int idumparg=0; // Index No. of dump file name in argv
   if(argc>2){
@@ -40,9 +40,9 @@ int main(int argc, char* argv[])
       }
     }
   }
-  ofstream dumpf(idumparg?argv[idumparg]:"eegcode.dump",ios::out);
+  ofstream dumpf(idumparg?argv[idumparg]:"neurofield.dump",ios::out);
   if( !dumpf ){
-    std::cerr << "Unable to open "<< (idumparg?argv[idumparg]:"eegcode.dump") << " for output \n";
+    std::cerr << "Unable to open "<< (idumparg?argv[idumparg]:"neurofield.dump") << " for output \n";
     exit(EXIT_FAILURE);
   }
   dumpf << setprecision(14);
@@ -54,17 +54,17 @@ int main(int argc, char* argv[])
   int numconct=0;
   if(argc==3 && (strcmp(argv[1],"write")==0)
              && (strcmp(argv[2],"defaults")==0)){
-    ofstream defaultf("eegcode.conf",ios::out);
+    ofstream defaultf("neurofield.conf",ios::out);
     if( !defaultf ){
-      std::cerr << "Unable to open 'eegcode.conf' for output of default parameters \n";
+      std::cerr << "Unable to open 'neurofield.conf' for output of default parameters \n";
       exit(EXIT_FAILURE);
     }
     writedefault(defaultf);
-    std::cerr << "Written 'eegcode.conf' file" << endl;
+    std::cerr << "Written 'neurofield.conf' file" << endl;
     defaultf.close();
   }
 //
-// Open conf file - default is eegcode.conf
+// Open conf file - default is neuofield.conf
 //
   int inamearg=0;
   if(argc>2){
@@ -74,9 +74,9 @@ int main(int argc, char* argv[])
       }
     }
   }
-  Istrm inputf(inamearg?argv[inamearg]:"eegcode.conf"); //open file for reading input data
+  Istrm inputf(inamearg?argv[inamearg]:"neurofield.conf"); //open file for reading input data
   if( !inputf ){
-    std::cerr << "Unable to open "<< (inamearg?argv[inamearg]:"eegcode.conf") << " for input \n";
+    std::cerr << "Unable to open "<< (inamearg?argv[inamearg]:"neurofield.conf") << " for input \n";
     exit(EXIT_FAILURE);
   }
   readglobalparams(inputf, dumpf, nodes, numpops, numconct);
@@ -130,9 +130,9 @@ int main(int argc, char* argv[])
       }
     }
   }
-  ofstream outputf(ioutarg?argv[ioutarg]:"eegcode.output",ios::out);
+  ofstream outputf(ioutarg?argv[ioutarg]:"neurofield.output",ios::out);
   if( !outputf ){
-    std::cerr << "Unable to open "<< (ioutarg?argv[ioutarg]:"eegcode.output") << " for output \n";
+    std::cerr << "Unable to open "<< (ioutarg?argv[ioutarg]:"neurofield.output") << " for output \n";
     exit(EXIT_FAILURE);
   }
   if(skippts!=0) outputf << "Skippoints: " << skippts << " ";
@@ -168,7 +168,7 @@ void readglobalparams(Istrm& datainf, ofstream& dumpf, long& nodes, int& numpops
 //   Read in global parameters
 //
   datainf.ignore(200,32); // throwaway first line delimited by ASCII 32
-  dumpf << "A dump file for the code 'eegcode'" << endl;
+  dumpf << "A dump file for the code 'neurofield'" << endl;
   datainf.validate("Nodes per population",58);
   datainf >> nodes;
   dumpf << "Nodes per population: " << nodes << endl;
@@ -187,9 +187,9 @@ void readglobalparams(Istrm& datainf, ofstream& dumpf, long& nodes, int& numpops
 
 void writedefault(ofstream& defaultf){
 //
-// Write a default series of parameters to eegcode.conf
+// Write a default series of parameters to neurofield.conf
 //
-  defaultf << "A Configuration file for the code 'eegcode'" << endl;
+  defaultf << "A Configuration file for the code 'neurofield'" << endl;
   defaultf << "Nodes per population: 2500" << endl;
   defaultf << "Number of neural populations: 5" << endl;
   defaultf << "Number of neural connections: 11" << endl;

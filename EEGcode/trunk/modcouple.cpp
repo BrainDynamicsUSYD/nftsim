@@ -70,10 +70,10 @@ void Modcouple::dump(ofstream& dumpf){
 void Modcouple::initoutput(Istrm& inputf, int coupleid){
   coupleid++; // (coupleid+1) is to ensure numbering from one not zero in output
   stringstream ss(stringstream::in | stringstream::out);
-  ss << "eegcode.synaptout." << coupleid;
+  ss << "neurofield.synaptout." << coupleid;
   synapoutf.open(ss.str().c_str(),std::ios::out);
   if( !synapoutf ){
-    std::cerr << "Unable to open 'eegcode.synaptout." << coupleid << "' for output \n";
+    std::cerr << "Unable to open 'neurofield.synaptout." << coupleid << "' for output \n";
     exit(EXIT_FAILURE);
   }
   int optionnum;
@@ -114,10 +114,10 @@ void Modcouple::initoutput(Istrm& inputf, int coupleid){
     i++;
   }
   stringstream ss1(stringstream::in | stringstream::out);
-  ss1 << "eegcode.concout." << coupleid;
+  ss1 << "neurrofield.concout." << coupleid;
   concoutf.open(ss1.str().c_str(),std::ios::out);
   if( !concoutf ){
-    std::cerr << "Unable to open 'eegcode.concout." << coupleid << "' for output \n";
+    std::cerr << "Unable to open 'neurofield.concout." << coupleid << "' for output \n";
     exit(EXIT_FAILURE);
   }
   inputf.validate("conc.traces",58);

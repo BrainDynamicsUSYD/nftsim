@@ -49,8 +49,8 @@ private:
   long conctraces; // number of concentration traces to output
   long * synnodes; // Array containing node numbers of outputted synaptic traces
   long * concnodes; // Array containing node numbers of outputted concentration traces
-  ofstream synapoutf; // Stream 'eegcode.synapout'
-  ofstream concoutf; // Stream 'eegcode.concout'
+  ofstream synapoutf; // Stream 'neurofield.synapout'
+  ofstream concoutf; // Stream 'neurofield.concout'
 };
 
 #endif

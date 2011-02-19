@@ -112,10 +112,10 @@ void Modtheta::rkderivs(double steptime, double* y, double* dydt, double I){
 void Modtheta::initoutput(Istrm& inputf, int popindex){
   popindex++; // (popindex+1) is to ensure numbering from one not zero in output
   stringstream ss(stringstream::in | stringstream::out);
-  ss << "eegcode.threshout." << popindex;
+  ss << "neurofield.threshout." << popindex;
   threshoutf.open(ss.str().c_str(),std::ios::out);
   if( !threshoutf ){
-    std::cerr << "Unable to open 'eegcode.threshout." << popindex << "' for output \n";
+    std::cerr << "Unable to open 'neurofield.threshout." << popindex << "' for output \n";
     exit(EXIT_FAILURE);
   }
   threshoutf << "Robinson/Wu/Kim bursting model output data" << endl;
