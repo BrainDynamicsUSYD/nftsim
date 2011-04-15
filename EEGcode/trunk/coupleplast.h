@@ -50,7 +50,7 @@ private:
   double Taum;
 
 public:
-  void X( double* return_val ) const; // returns array of X(w)
+  void X( complex<double>* return_val ) const; // returns array of X(w)
 
 private:
 #define W_CUTOFF	int(5000)

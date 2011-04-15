@@ -79,10 +79,17 @@ void Coupleplast::updatePa(double *Pa, double *Etaa,Qhistorylist& qhistorylist,C
   //for( int i=0; i<=(x1-x0)/dx; i++ )
     //result += f( x0+i*dx );
   //return result*dx;
+  complex<double> detA[int(W_CUTOFF/W_STEP)];
+  for( int i=0; i<int(W_CUTOFF/W_STEP); i++ ) {
+    double w = i*W_STEP;
+    //detA[i] =
+  }
   for(int i=0; i<n; i++)
     Pa[i]=nu*Etaa[i];
 }
 
-void X( double* return_val ) const
+void Coupleplast::X( complex<double>* return_val ) const
 {
+  for( int i=0; i<int(W_CUTOFF/W_STEP); i++ )
+    return_val[i] = rho*nu *L[i]*Gamma[i];
 }
