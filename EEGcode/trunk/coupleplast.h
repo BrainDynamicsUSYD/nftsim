@@ -29,7 +29,7 @@ public:
   void init(Istrm& inputf, int coupleid); 
   void dump(ofstream& dumpf); // output values for restart
   void output(); // output variables as needed
-  void updatePa(double *Pa,double *Etaa,Qhistorylist& qhistorylist,ConnectMat& connectmat);
+  void updatePa(double *Pa,double *Etaa,Qhistorylist& qhistorylist,ConnectMat& connectmat,Couplinglist& couplinglist);
 
 private:
   Coupleplast(Coupleplast& ); // no copy constructor
@@ -50,7 +50,7 @@ private:
   double Taum;
 
 public:
-  void X( complex<double>* return_val ) const; // returns array of X(w)
+  virtual complex<double> X( int i ) const; // returns X[i]
 
 private:
 #define W_CUTOFF	int(5000)

@@ -24,7 +24,7 @@ public:
   void init(Istrm& inputf, int coupleid); 
   void dump(ofstream& dumpf); // dump nu for restart
   void output(); // output nu variable as needed
-  void updatePa(double *Pa, double *Etaa,Qhistorylist& qhistorylist,ConnectMat& connectmat);
+  void updatePa(double *Pa, double *Etaa,Qhistorylist& qhistorylist,ConnectMat& connectmat,Couplinglist& couplinglist);
 
 private:
   Modcouple(Modcouple& ); // no copy constructor

@@ -24,11 +24,16 @@ public:
   void dump(ofstream& dumpf); // dump each coupling coefficient for restart
   void updateP(double **P, double **Eta,Qhistorylist& qhistorylist,ConnectMat& connectmat); // Transform Eta to P via coupling terms
   void output(); // Output the nu data
+  Couple* getcoup(int index){
+    if( index < numcoup )
+      return couparray[index]; // reference to "index" coupling object array 
+    else
+      return getcoup(index-1); // return the largest valid indexed object
+  }
 
 private:
   Couplinglist(Couplinglist& ); // no copy constructor
   Couple ** couparray; // Array of pointers to coupling objects
-  Couple& getcoup(int index){return *couparray[index];}; // reference to "index" coupling object array 
   const int numcoup; // Number of coupling objects in coupling list
 };
 

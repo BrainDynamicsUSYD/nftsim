@@ -73,23 +73,30 @@ void Coupleplast::output(){
 //
 // Sum the coupling terms transforming Phi_{ab} to P_{ab}
 //
-void Coupleplast::updatePa(double *Pa, double *Etaa,Qhistorylist& qhistorylist,ConnectMat& connectmat){
-  long n=nodes;
+void Coupleplast::updatePa(double *Pa, double *Etaa,Qhistorylist& qhistorylist,ConnectMat& connectmat,Couplinglist& couplinglist){
+  complex<double> detA[int(W_CUTOFF/W_STEP)];
+  for( int i=0; i<int(W_CUTOFF/W_STEP); i++ ) {
+    detA[i] = 1;
+	Couple* couple = NULL;
+	for( int j=0; couple == couplinglist.getcoup(j); j++ ) {
+      couple = couplinglist.getcoup(j);
+      detA[i] -= couple->X(i);
+    }
+  }
+
   //double result = 0;
   //for( int i=0; i<=(x1-x0)/dx; i++ )
     //result += f( x0+i*dx );
   //return result*dx;
-  complex<double> detA[int(W_CUTOFF/W_STEP)];
-  for( int i=0; i<int(W_CUTOFF/W_STEP); i++ ) {
-    double w = i*W_STEP;
-    //detA[i] =
-  }
+
+  long n=nodes;
   for(int i=0; i<n; i++)
     Pa[i]=nu*Etaa[i];
 }
 
-void Coupleplast::X( complex<double>* return_val ) const
+complex<double> Coupleplast::X( int i ) const
 {
-  for( int i=0; i<int(W_CUTOFF/W_STEP); i++ )
-    return_val[i] = rho*nu *L[i]*Gamma[i];
+  return rho*nu *L[i]*Gamma[i];
+  //for( int i=0; i<int(W_CUTOFF/W_STEP); i++ )
+    //return_val[i] -= rho*nu *L[i]*Gamma[i];
 }
