@@ -25,13 +25,7 @@ Poplist::~Poplist(){
 }
 
 // get method returns a pointer to the "index"th Population in the population list
-inline Population& Poplist::get(int index)
-{
-	if( index<numpops )
-		return *poparray[index];
-	else
-		return get(index-1);
-}
+inline Population& Poplist::get(int index){ return *poparray[index]; }
 
 void Poplist::init(Istrm& inputf,PropagNet& propagnet,ConnectMat& connectmat){
   for(int i=0; i<numpops; i++)

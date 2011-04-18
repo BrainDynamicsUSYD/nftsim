@@ -31,7 +31,7 @@ private:
   Population(Population& ); // no copy constructor
   double t; // Current time
   int pindex; // Population index
-  const bool isstimulus; // TRUE if this population is a stimulus population (i.e. has no attached populations on dendrite tree
+  bool isstimulus; // TRUE if this population is a stimulus population (i.e. has no attached populations on dendrite tree
   double * V;  // Array of soma potential in population (NULL if this is a stimulus population)
   const long nodes; // number of nodes in this population
   FiringR* pfr;  // Pointer to Firing Response of the neural population (NULL if this is a stimulus population)
