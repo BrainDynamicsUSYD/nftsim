@@ -48,6 +48,7 @@ private:
   double Am;
   double Taup;
   double Taum;
+  double B;
 
 public:
   virtual complex<double> X( int i ) const; // returns X[i]

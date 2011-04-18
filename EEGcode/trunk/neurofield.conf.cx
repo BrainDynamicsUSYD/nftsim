@@ -8,9 +8,9 @@ Population connection matrix  1   2   3   4
 2			     :0  :0  :0  :0
 3			     :1  :0  :3  :5
 4			     :0  :2  :4  :6
-Number of integration steps: 100000 Deltat: 0.0001 
+Number of integration steps: 500 Deltat: 0.0001 
 Q delay depths: 0 : 0 : 0 : 0
-Propagator types 1: Mapping 2: Mapping 3: Waveeqn 4: Waveeqn 5: Mapping $
+Propagator types 1: Mapping 2: Mapping 3: Waveeqn 4: Waveeqn 5: Waveeqn $
 6: Waveeqn $
 
 Coupling types 1: Simple 2: Simple 3: Plastic 4: Plastic 5: Plastic 6: Plastic $
@@ -44,17 +44,13 @@ Propagator 1  - Tauab: 0
 Propagator 2  - Tauab: 0
 Propagator 3  - Initial Phi: 8.87145 Deltax: 0.0035 Tauab: 0 Effective range: 0.08 gamma: 100.0
 Propagator 4  - Initial Phi: 8.87145 Deltax: 0.0035 Tauab: 0 Effective range: 0.08 gamma: 100.0
-Propagator 5  - Tauab: 0
+Propagator 5  - Initial Phi: 8.87145 Deltax: 0.0035 Tauab: 0 Effective range: 0.08 gamma: 100.0
 Propagator 6  - Initial Phi: 8.87145 Deltax: 0.0035 Tauab: 0 Effective range: 0.08 gamma: 100.0
 Coupling data 1  - Nu: 0.00015
 Coupling data 2  - Nu: 0.00015
-Coupling data 3  - Initial nu: 0.0012 rho: 4200 alpha: 83 beta: 769 gamma: 116 Ap: 1 Am: -0.4 Taup: 0.02 Taum: 0.04
-Coupling data 4  - Initial nu: 0.0012 rho: 4200 alpha: 83 beta: 769 gamma: 116 Ap: 1 Am: -0.4 Taup: 0.02 Taum: 0.04
-Coupling data 5  - Initial nu:-0.0018 rho: 4200 alpha: 83 beta: 769 gamma: 1500 Ap: 1 Am: -0.4 Taup: 0.02 Taum: 0.04
-Coupling data 6  - Initial nu:-0.0018 rho: 4200 alpha: 83 beta: 769 gamma: 1500 Ap: 1 Am: -0.4 Taup: 0.02 Taum: 0.04
+Coupling data 3  - Initial nu: 0.0012 rho: 4200 alpha: 83 beta: 769 gamma: 116 Ap: 1 Am: -0.4 Taup: 0.02 Taum: 0.04 B: 1
+Coupling data 4  - Initial nu: 0.0012 rho: 4200 alpha: 83 beta: 769 gamma: 116 Ap: 1 Am: -0.4 Taup: 0.02 Taum: 0.04 B: 1
+Coupling data 5  - Initial nu:-0.0018 rho: 4200 alpha: 83 beta: 769 gamma: 1500 Ap: 1 Am: -0.4 Taup: 0.02 Taum: 0.04 B: 1
+Coupling data 6  - Initial nu:-0.0018 rho: 4200 alpha: 83 beta: 769 gamma: 1500 Ap: 1 Am: -0.4 Taup: 0.02 Taum: 0.04 B: 1
 
-Output Data - Number of traces : 4 
-Propagator Number :3 Single/All: Single node number :1
-4ropagator Number :4 Single/All: Single node number :1
-Propagator Number :5 Single/All: Single node number :1
-Propagator Number :6 Single/All: Single node number :1
+Output Data - Number of traces : 0

@@ -103,5 +103,11 @@ int Istrm::choose(const char* ch, char delim){
   indx=list.find(choice)+choice.length()+1; // Find index to start of choice number
   ss << list.substr(indx); // Pass choice number to stringstream to convert to int
   ss >> retval; // extract choice number from string stream as int
+  if( !retval ) { // if retval == 0, then the input is wrong
+     std::cerr << "Choose function of Istrm has failed" << endl;
+     std::cerr << "Last read was :'";
+     std::cerr.write(pbuffer,std::strlen(pbuffer));
+     std::cerr << "' "<< endl;
+  }
   return retval;
 }
