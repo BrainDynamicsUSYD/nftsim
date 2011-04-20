@@ -1,5 +1,5 @@
 /***************************************************************************
-                          couplepast.h  -  
+                          couplepast.h  - STDP rule developed by Park Fung, Adam Haber and Peter Robinson
                              -------------------
     copyright            : (C) 2009
     email                : peter@physics.usyd.edu.au
@@ -49,11 +49,14 @@ private:
   double Taup;
   double Taum;
   double B;
+  bool Q_max; // maximal firing, may be different from the sigmoid function
 
 public:
   virtual complex<double> X( int i ) const; // returns X[i]
 
 private:
+  int coupleid;
+  int sign; // sign of nu for this population
 #define W_CUTOFF	int(5000)
 #define W_STEP		int(1)
   complex<double> L[int(W_CUTOFF/W_STEP)];

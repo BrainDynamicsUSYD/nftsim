@@ -36,6 +36,9 @@ void Coupleplast::init(Istrm& inputf, int coupleid){
   inputf.validate("Taup",58); inputf >> Taup;
   inputf.validate("Taum",58); inputf >> Taum;
   inputf.validate("B",58); inputf >> B;
+  inputf.validate("Q_max",58); inputf >> Q_max;
+
+  sign = nu/fabs(nu);
 
   for( int i=0; i<int(W_CUTOFF/W_STEP); i++ ) {
     double w = i*W_STEP;
@@ -66,28 +69,32 @@ void Coupleplast::dump(ofstream& dumpf){
   dumpf << "Taup: " << Taup << " ";
   dumpf << "Taum: " << Taum << " ";
   dumpf << "B: " << B << " ";
+  dumpf << "Q_max: " << Q_max << " ";
 }
 
 void Coupleplast::output(){
   synapoutf<<setprecision(14)<<nu<<endl;
 }
 
-//
-// Sum the coupling terms transforming Phi_{ab} to P_{ab}
-//
 void Coupleplast::updatePa(double *Pa, double *Etaa,Qhistorylist& qhistorylist,ConnectMat& connectmat,Couplinglist& couplinglist){
+  // Find dsdt as the Riemann sum of filter/detA
   double dsdt = 0;
   for( int i=0; i<int(W_CUTOFF/W_STEP); i++ ) {
     complex<double> detA = 1;
-	Couple* couple = NULL;
+    Couple* couple = NULL;
     for( int j=0; couple != couplinglist.getcoup(j); j++ ) {
       couple = couplinglist.getcoup(j);
-      detA -= couple->X(i);
+      detA -= couple->X(i); // detA(w) = 1 - Sum_a X_a for a=e,i
     }
-    dsdt += 1/pow( abs(detA), 2 );
+    dsdt += filter[i]/pow( abs(detA), 2 );
   }
-  nu += B*dsdt*W_STEP/2/3.14;
+  dsdt *= B*W_STEP/2/3.14;
+  if( fabs(dsdt)>fabs(nu) && dsdt/fabs(dsdt)!=sign )
+    nu = 0; // the coupling constants do not cross nu=0
+  else
+    nu += dsdt;
 
+  // Sum the coupling terms transforming Phi_{ab} to P_{ab}
   long n=nodes;
   for(int i=0; i<n; i++)
     Pa[i]=nu*Etaa[i];
