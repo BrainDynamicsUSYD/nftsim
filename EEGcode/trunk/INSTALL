@@ -1,0 +1,7 @@
+neurofield setup instructions
+
+Run 'make'. A neurofield executable will be produced at ./Release/neurofield. A symlink to this binary will be created in the current directory
+
+Use 'make run' to compile and execute neurofield, using the conf file specified in Makefile. This will only execute if the cpp files or if the conf file are changed
+
+'make clean' removes the entire 'Release' folder, so make sure you do not put any user data in there! 
