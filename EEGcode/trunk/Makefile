@@ -9,6 +9,10 @@ CONF = neurofield.conf.cx
 #COMP = CC
 #CP = perl -w -p -e 's/__restrict__/\/* __restrict__ *\/ /g' < $< > $@
 
+# compile command in yossarian
+COMP = g++ -g -lm -Wall
+CP = cp $< $@
+
 # compile command using gcc
 COMP = g++ -g -msse2 -ftree-vectorize -ftree-vectorizer-verbose=5 -lm -Wall
 CP = cp $< $@
