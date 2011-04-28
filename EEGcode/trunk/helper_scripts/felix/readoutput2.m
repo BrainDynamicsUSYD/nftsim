@@ -2,7 +2,7 @@ function [t y]=readoutput2(fname)
 % read eegcode.output
 
 if ~exist('fname','var')
-    fname='../../Release/neurofield.output';
+    fname='../../neurofield.output';
 end
 
 fid=fopen(fname);

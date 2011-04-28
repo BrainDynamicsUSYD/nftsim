@@ -13,10 +13,10 @@ figure; xlabel('Time (s)'); ylabel('G')
 hold on
 for loop = 1:length(couplings)
     color = [loop/length(couplings),0,1-loop/length(couplings)];
-	y = textread( ['../../Release/neurofield.synaptout.', num2str(couplings(loop))] );
+	y = textread( ['../../neurofield.synaptout.', num2str(couplings(loop))] );
 	plot(t,y,'Color',color)
 end
 
 system ./G_total.pl
-y = textread( '../../Release/neurofield.synaptout.total' );
+y = textread( '../../neurofield.synaptout.total' );
 figure; plot(t,y); xlabel('Time (s)'); ylabel('G_e + G_i')

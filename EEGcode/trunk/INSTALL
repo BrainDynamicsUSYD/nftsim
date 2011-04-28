@@ -1,7 +1,12 @@
-neurofield setup instructions
+NeuroField setup instructions (using Makefile)
 
-Run 'make'. A neurofield executable will be produced at ./Release/neurofield. A symlink to this binary will be created in the current directory
+Edit Makefile:
+	1. Specify the configuration file in CONF (defaults to neurofield.conf)
+	2. Identify the platform to run NeuroField, and comment/uncomment the appropriate COMP and CP directions
 
-Use 'make run' to compile and execute neurofield, using the conf file specified in Makefile. This will only execute if the cpp files or if the conf file are changed
+Run 'make run' to compile and execute NeuroField to generate output files. In the case where output files are already present and no computation is needed, you will receive the message
+	make: Nothing to be done for `run'.
+
+To compile NeuroField without running, run 'make' to produce ./Release/NeuroField. A symlink to this binary will be created in the current directory.
 
 'make clean' removes the entire 'Release' folder, so make sure you do not put any user data in there! 
