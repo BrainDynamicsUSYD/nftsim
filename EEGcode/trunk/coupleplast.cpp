@@ -36,6 +36,7 @@ void Coupleplast::init(Istrm& inputf, int coupleid){
   inputf.validate("Taup",58); inputf >> Taup;
   inputf.validate("Taum",58); inputf >> Taum;
   inputf.validate("B",58); inputf >> B;
+  inputf.validate("N",58); inputf >> N;
   inputf.validate("Q_max",58); inputf >> Q_max;
 
   sign = nu/fabs(nu);
@@ -56,6 +57,7 @@ void Coupleplast::init(Istrm& inputf, int coupleid){
     std::cerr<<"Unable to open 'neurofield.synaptout."<<coupleid<<"' for output.\n";
     exit(EXIT_FAILURE);
   }
+  this->coupleid = --coupleid;
 }
 
 void Coupleplast::dump(ofstream& dumpf){
@@ -69,16 +71,18 @@ void Coupleplast::dump(ofstream& dumpf){
   dumpf << "Taup: " << Taup << " ";
   dumpf << "Taum: " << Taum << " ";
   dumpf << "B: " << B << " ";
+  dumpf << "N: " << N << " ";
   dumpf << "Q_max: " << Q_max << " ";
 }
 
 void Coupleplast::output(){
-  synapoutf<<setprecision(14)<<nu<<endl;
+  // output G rather than nu, so that it is simplier to inspect G_e+G_i
+  synapoutf<<setprecision(14)<<rho*nu<<endl;
 }
 
 void Coupleplast::updatePa(double *Pa, double *Etaa,Qhistorylist& qhistorylist,ConnectMat& connectmat,Couplinglist& couplinglist){
-  // Find dsdt as the Riemann sum of filter/detA
-  double dsdt = 0;
+  // Find dnudt as the Riemann sum of filter/detA
+  double dnudt = 0;
   for( int i=0; i<int(W_CUTOFF/W_STEP); i++ ) {
     complex<double> detA = 1;
     Couple* couple = NULL;
@@ -86,13 +90,14 @@ void Coupleplast::updatePa(double *Pa, double *Etaa,Qhistorylist& qhistorylist,C
       couple = couplinglist.getcoup(j);
       detA -= couple->X(i); // detA(w) = 1 - Sum_a X_a for a=e,i
     }
-    dsdt += filter[i]/pow( abs(detA), 2 );
+    dnudt += filter[i]/pow( abs(detA), 2 );
   }
-  dsdt *= B*W_STEP/2/3.14;
-  if( fabs(dsdt)>fabs(nu) && dsdt/fabs(dsdt)!=sign )
+  double Q = *(qhistorylist.getQhist(connectmat.getQindex(coupleid)).getQbytime(0));
+  dnudt *= N*B*W_STEP/2/3.14 *(1-Q/Q_max);
+  if( fabs(dnudt)>fabs(nu) && dnudt/fabs(dnudt)!=sign )
     nu = 0; // the coupling constants do not cross nu=0
   else
-    nu += dsdt;
+    nu += dnudt;
 
   // Sum the coupling terms transforming Phi_{ab} to P_{ab}
   long n=nodes;

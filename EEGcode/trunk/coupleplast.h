@@ -49,7 +49,8 @@ private:
   double Taup;
   double Taum;
   double B;
-  bool Q_max; // maximal firing, may be different from the sigmoid function
+  double N;
+  double Q_max; // maximal firing, may be different from the sigmoid function
 
 public:
   virtual complex<double> X( int i ) const; // returns X[i]
