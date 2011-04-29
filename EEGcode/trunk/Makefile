@@ -33,23 +33,23 @@ neurofield.output: Release/NeuroField $(CONF)
 	./NeuroField -i $(CONF)
 
 Release/NeuroField: $(addprefix Release/,$(HEADER)) $(addprefix Release/,$(OBJ))
-	$(COMP) $(addprefix Release/,$(OBJ)) -o $@
+	@$(COMP) $(addprefix Release/,$(OBJ)) -o $@
 	@echo
 	@echo Run \'make run\' to execute.
 	@-ln -s Release/NeuroField NeuroField
 
 $(addprefix Release/,$(OBJ)): Release/%.o: Release/%.cpp Release/%.h
-	$(COMP) -c $< -o $@
+	@$(COMP) -c $< -o $@
 
 $(addprefix Release/,$(CPP)): Release/%.cpp: %.cpp
-	$(CP)
+	@$(CP)
 
 $(addprefix Release/,$(HEADER)): Release/%.h: %.h
 	@mkdir -p Release
-	cp $< $@
+	@cp $< $@
 
 Release/main.h:
-	touch Release/main.h
+	@touch Release/main.h
 
 .PHONY: clean run
 

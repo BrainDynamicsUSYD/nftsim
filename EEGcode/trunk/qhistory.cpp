@@ -15,6 +15,14 @@ using std::endl;
 
 Qhistory::Qhistory(long n, int indexQ):indexofQ(indexQ),nodes(n){
   for(int i=0;i<3;i++){ // we need a minimum of three time steps back
+    vhistory.push_back(new double[nodes]);
+    // Initialize v arrays to zero
+    double *v = vhistory[i];
+    for(long j=0;j<nodes;j++){
+      *v++=0.0F;
+    }
+  }
+  for(int i=0;i<3;i++){ // we need a minimum of three time steps back
     qhistory.push_back(new double[nodes]);
     // Initialize q arrays to zero
     double *q = qhistory[i];
@@ -25,6 +33,10 @@ Qhistory::Qhistory(long n, int indexQ):indexofQ(indexQ),nodes(n){
   inew=0;
 }
 Qhistory::~Qhistory(){
+  while( !vhistory.empty() ){
+    delete [ ] vhistory.back();
+    vhistory.pop_back();
+  }
   while( !qhistory.empty() ){
     delete [ ] qhistory.back();
     qhistory.pop_back();
@@ -32,9 +44,19 @@ Qhistory::~Qhistory(){
 }
 
 void Qhistory::grow(int taumax){
-  uint olddepth=qhistory.size();
+  uint olddepth=vhistory.size();
+  while( taumax>( static_cast<int>(vhistory.size())-3) ){
+    vhistory.push_back(new double[nodes]);
+  }
   while( taumax>( static_cast<int>(qhistory.size())-3) ){
     qhistory.push_back(new double[nodes]);
+  }
+// initialize the new part of the qhistory array
+  for(uint i=olddepth;i<(vhistory.size()-1);i++){
+    double * __restrict__ vnew = vhistory[i];
+    double * __restrict__ v = vhistory[olddepth-1];
+    for(long j=0;j<nodes;j++)
+      *vnew++=*v++;
   }
 // initialize the new part of the qhistory array
   for(uint i=olddepth;i<(qhistory.size()-1);i++){
@@ -48,6 +70,12 @@ void Qhistory::grow(int taumax){
 void Qhistory::init(Istrm& inputf,Poplist& poplist){
   copyQfrompop(poplist); //Update Q to qdepth
 // Set Q back in time to initial conditions
+  for(std::vector<double *>::iterator it=vhistory.begin();it!=vhistory.end();++it){
+    double * __restrict__ vnew = *it;
+    double * __restrict__ v = vhistory[vhistory.size()-1];
+    for(long j=0;j<nodes;j++)
+      *vnew++=*v++;
+  }
   for(std::vector<double *>::iterator it=qhistory.begin();it!=qhistory.end();++it){
     double * __restrict__ qnew = *it;
     double * __restrict__ q = qhistory[qhistory.size()-1];
@@ -101,7 +129,13 @@ void Qhistory::updateQhistory(Poplist& poplist){
 
 void Qhistory::copyQfrompop(Poplist& poplist){
 // Copy the Q array incoming from Q in each population to Q array in Qhistory
+  double * __restrict__ pnewv=getVbytime(vhistory.size()-1); // Get pointer to start of the oldest Q array which is going to be overwritten
   double * __restrict__ pnewq=getQbytime(qhistory.size()-1); // Get pointer to start of the oldest Q array which is going to be overwritten
+  double * __restrict__ pVpop=poplist.get(indexofQ).V; // Get pointer to incoming Q data originating from Q in each population
+  if(pVpop)
+    for(long i=0; i<nodes; i++){
+        *pnewv++=*pVpop++;
+    }
   double * __restrict__ pQpop=poplist.get(indexofQ).Q; // Get pointer to incoming Q data originating from Q in each population
   for(long i=0; i<nodes; i++){
       *pnewq++=*pQpop++;

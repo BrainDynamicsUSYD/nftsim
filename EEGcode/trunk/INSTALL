@@ -4,6 +4,8 @@ Edit Makefile:
 	1. Specify the configuration file in CONF (defaults to neurofield.conf)
 	2. Identify the platform to run NeuroField, and comment/uncomment the appropriate COMP and CP directions
 
+Edit the configuration file (as specified in Makefile)
+
 Run 'make run' to compile and execute NeuroField to generate output files. In the case where output files are already present and no computation is needed, you will receive the message
 	make: Nothing to be done for `run'.
 

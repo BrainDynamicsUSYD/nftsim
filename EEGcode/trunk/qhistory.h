@@ -27,8 +27,10 @@ public:
   void updateQhistory(Poplist& poplist); // Update Qhistory by reading in Q from populations and moving pointers
   double * getQbytime(Tau& tauobj); // Get a pointer to the Q array with time parameters of tau
   double * getQbytime(int i){return qhistory[i<inew?qhistory.size()+i-inew:i-inew];}; // Get a pointer to the Q array with time index "i"
+  double * getVbytime(int i){return vhistory[i<inew?vhistory.size()+i-inew:i-inew];}; // Get a pointer to the Q array with time index "i"
 private:
   Qhistory(Qhistory &); // no copy contructor
+  std::vector<double*> vhistory; // Vector of pointers to double arrays of vhistories
   std::vector<double*> qhistory; // Vector of pointers to double arrays of qhistories
   void copyQfrompop(Poplist& poplist); // Copies Q array from the version stored in the population
   int * timeindex; // Array of indexes with current time array positions

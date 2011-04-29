@@ -27,12 +27,12 @@ public:
   void restart(Istrm& restartf,PropagNet& propagnet,ConnectMat& connectmat);
   void stepPop(double timestep);
   double * Q;  // Array of firing rate in population
+  double * V;  // Array of soma potential in population (NULL if this is a stimulus population)
 private:
   Population(Population& ); // no copy constructor
   double t; // Current time
   int pindex; // Population index
   bool isstimulus; // TRUE if this population is a stimulus population (i.e. has no attached populations on dendrite tree
-  double * V;  // Array of soma potential in population (NULL if this is a stimulus population)
   const long nodes; // number of nodes in this population
   FiringR* pfr;  // Pointer to Firing Response of the neural population (NULL if this is a stimulus population)
   DendriticRlist* pdr; // Pointer to List of dendritic responses of afferent neural populations (NULL if this is a stimulus population)

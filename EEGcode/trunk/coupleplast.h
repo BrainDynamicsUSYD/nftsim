@@ -19,7 +19,6 @@ using std::ofstream;
 #include"qhistorylist.h"
 #include"connectmat.h"
 #include"parameter.h"
-#include<complex>
 using std::complex;
 
 class Coupleplast: public Couple {

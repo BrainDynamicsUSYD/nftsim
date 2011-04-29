@@ -8,12 +8,12 @@ Population connection matrix  1   2   3   4
 2			     :0  :0  :0  :0
 3			     :1  :0  :3  :5
 4			     :0  :2  :4  :6
-Number of integration steps: 10000 Deltat: 0.00001 
+Number of integration steps: 100000 Deltat: 0.00001 
 Q delay depths: 0 : 0 : 0 : 0
 Propagator types 1: Mapping 2: Mapping 3: Waveeqn 4: Waveeqn 5: Waveeqn $
 6: Waveeqn $
 
-Coupling types 1: Simple 2: Simple 3: Plastic 4: Simple 5: Plastic 6: Simple $
+Coupling types 1: Simple 2: Simple 3: Calcium 4: Simple 5: Calcium 6: Simple $
 
 Population 1 - Stimulus neurons
  Initial Q: 0.0

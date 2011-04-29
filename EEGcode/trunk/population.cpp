@@ -11,7 +11,7 @@
 using std::endl;
 
 Population::Population(long n, int popindex,ConnectMat& connectmat)
-             :t(0),pindex(popindex),V(0),nodes(n),pfr(0),pdr(0),pstimulus(0){
+             :V(0),t(0),pindex(popindex),nodes(n),pfr(0),pdr(0),pstimulus(0){
   Q = new double[nodes];
   isstimulus=true;
   if (connectmat.getDRlength(popindex)) { //If populations are attached to this dendritic tree it is not a stimulus population

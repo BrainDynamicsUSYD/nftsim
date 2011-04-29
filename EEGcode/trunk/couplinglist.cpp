@@ -11,6 +11,7 @@
 #include"coupling.h"
 #include"modcouple.h"
 #include"coupleplast.h"
+#include"cadp.h"
 using std::endl;
 
 //
@@ -25,7 +26,7 @@ Couplinglist::Couplinglist(Istrm& inputf, ofstream& dumpf
   int optionnum;
   for(int i=0;i<numcoup;i++){
     inputf.ignore(200,58);
-    optionnum=inputf.choose("Simple:1 Modulate:2 Plastic:3 ",32);
+    optionnum=inputf.choose("Simple:1 Modulate:2 Plastic:3 Calcium:4",32);
     if(1==optionnum){
       couparray[i] = new Coupling(nodes,deltat);
       dumpf << (i+1) << ": Simple ";
@@ -38,7 +39,11 @@ Couplinglist::Couplinglist(Istrm& inputf, ofstream& dumpf
       couparray[i] = new Coupleplast(nodes,deltat);
       dumpf << (i+1) << ": Plastic ";
     }
-    if(1!=optionnum && 2!=optionnum && 3!=optionnum){
+    if(4==optionnum){
+      couparray[i] = new CaDP(nodes,deltat);
+      dumpf << (i+1) << ": Calcium ";
+    }
+    if( optionnum<1 || optionnum>4 ){
       std::cerr << "Invalid Coupling type" << endl;
       exit(EXIT_FAILURE);
     }
