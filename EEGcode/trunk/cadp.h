@@ -30,12 +30,22 @@ public:
 
 private:
 
-  int coupleid;
-  double* V; // postsynaptic potential
+  double deltat;
+  int coupleid; // == dendriticr index, used for getQindex to get V
+  int sign;
+
+  double* V; // postsynaptic potential, with 2D spatial dependence
+  double* nu;
+  double* Ca;
+
+  double rho; // linearized sigmoid
+  double N; // number of synpases per neuron
+  double nmda; // coupling constant for NMDAR, used in d(Ca)/dt
 
   CaDP(CaDP& ); // no copy constructor
   const long nodes;
   ofstream synapoutf;
+  ofstream caoutf;
 };
 
 #endif

@@ -6,9 +6,8 @@ Edit Makefile:
 
 Edit the configuration file (as specified in Makefile)
 
-Run 'make run' to compile and execute NeuroField to generate output files. In the case where output files are already present and no computation is needed, you will receive the message
-	make: Nothing to be done for `run'.
+Run 'make run' to compile and execute NeuroField to generate output files. In the case where output files are already present and no .cpp/.h/config files are changed, no computation will be needed, and 'make run' does nothing. To run NeuroField regardless of this, run './NeuroField' or './NeuroField -i configfile'.
 
-To compile NeuroField without running, run 'make' to produce ./Release/NeuroField. A symlink to this binary will be created in the current directory.
+To compile NeuroField without running, run 'make'.
 
 'make clean' removes the entire 'Release' folder, so make sure you do not put any user data in there! 

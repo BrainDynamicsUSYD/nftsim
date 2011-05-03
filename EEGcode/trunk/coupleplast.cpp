@@ -18,7 +18,7 @@ using std::endl;
 using std::complex;
 
 Coupleplast::Coupleplast(long numnodes, double deltat)
-  :nodes(numnodes), i0(0.,1.), c1(1.,0.){
+  :nodes(numnodes), i0(0.,1.), c1(1.,0.), deltat(deltat){
 }
 
 Coupleplast::~Coupleplast(){
@@ -61,7 +61,7 @@ void Coupleplast::init(Istrm& inputf, int coupleid){
 }
 
 void Coupleplast::dump(ofstream& dumpf){
-  dumpf << "nu: " << nu << " ";
+  dumpf << "Initial nu: " << nu << " ";
   dumpf << "rho: " << rho << " ";
   dumpf << "alpha: " << alpha << " ";
   dumpf << "beta: " << beta << " ";
@@ -97,7 +97,7 @@ void Coupleplast::updatePa(double *Pa, double *Etaa,Qhistorylist& qhistorylist,C
   if( fabs(dnudt)>fabs(nu) && dnudt/fabs(dnudt)!=sign )
     nu = 0; // the coupling constants do not cross nu=0
   else
-    nu += dnudt;
+    nu += deltat*dnudt;
 
   // Sum the coupling terms transforming Phi_{ab} to P_{ab}
   long n=nodes;

@@ -55,6 +55,7 @@ public:
   virtual complex<double> X( int i ) const; // returns X[i]
 
 private:
+  double deltat;
   int coupleid;
   int sign; // sign of nu for this population
 #define W_CUTOFF	int(5000)
