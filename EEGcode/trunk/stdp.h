@@ -1,12 +1,12 @@
 /***************************************************************************
-                          couplepast.h  - STDP rule developed by Park Fung, Adam Haber and Peter Robinson
+                          stdp.h  - STDP rule developed by Park Fung, Adam Haber and Peter Robinson
                              -------------------
     copyright            : (C) 2009
     email                : peter@physics.usyd.edu.au
  ***************************************************************************/
 
-#ifndef COUPLEPLAST_H
-#define COUPLEPLAST_H
+#ifndef STDP_H
+#define STDP_H
 
 #include<cstdlib>
 #include<fstream>
@@ -21,17 +21,17 @@ using std::ofstream;
 #include"parameter.h"
 using std::complex;
 
-class Coupleplast: public Couple {
+class STDP: public Couple {
 public: 
-  Coupleplast(long nodes, double deltat);
-  ~Coupleplast();
+  STDP(long nodes, double deltat);
+  ~STDP();
   void init(Istrm& inputf, int coupleid); 
   void dump(ofstream& dumpf); // output values for restart
   void output(); // output variables as needed
   void updatePa(double *Pa,double *Etaa,Qhistorylist& qhistorylist,ConnectMat& connectmat,Couplinglist& couplinglist);
 
 private:
-  Coupleplast(Coupleplast& ); // no copy constructor
+  STDP(STDP& ); // no copy constructor
   const long nodes;
   ofstream synapoutf;
 

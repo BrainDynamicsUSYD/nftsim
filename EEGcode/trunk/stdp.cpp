@@ -1,5 +1,5 @@
 /***************************************************************************
-                          coupleplast.cpp  -  Implements a neuronal plasticity
+                          stdp.cpp  -  Implements a neuronal plasticity
                                               model of Robinson (2009)
                              -------------------
    copyright            : (C) 2009 
@@ -13,19 +13,19 @@ using std::string;
 using std::stringstream;
 #include<iomanip>
 using std::setprecision;
-#include "coupleplast.h"
+#include "stdp.h"
 using std::endl;
 using std::complex;
 
-Coupleplast::Coupleplast(long numnodes, double deltat)
+STDP::STDP(long numnodes, double deltat)
   :nodes(numnodes), i0(0.,1.), c1(1.,0.), deltat(deltat){
 }
 
-Coupleplast::~Coupleplast(){
+STDP::~STDP(){
   if(synapoutf.is_open()) synapoutf.close();
 }
 
-void Coupleplast::init(Istrm& inputf, int coupleid){
+void STDP::init(Istrm& inputf, int coupleid){
   inputf.validate("Initial nu",58); inputf >> nu;
   inputf.validate("rho",58); inputf >> rho;
   inputf.validate("alpha",58); inputf >> alpha;
@@ -60,7 +60,7 @@ void Coupleplast::init(Istrm& inputf, int coupleid){
   this->coupleid = --coupleid;
 }
 
-void Coupleplast::dump(ofstream& dumpf){
+void STDP::dump(ofstream& dumpf){
   dumpf << "Initial nu: " << nu << " ";
   dumpf << "rho: " << rho << " ";
   dumpf << "alpha: " << alpha << " ";
@@ -75,12 +75,12 @@ void Coupleplast::dump(ofstream& dumpf){
   dumpf << "Q_max: " << Q_max << " ";
 }
 
-void Coupleplast::output(){
+void STDP::output(){
   // output G rather than nu, so that it is simplier to inspect G_e+G_i
   synapoutf<<setprecision(14)<<rho*nu<<endl;
 }
 
-void Coupleplast::updatePa(double *Pa, double *Etaa,Qhistorylist& qhistorylist,ConnectMat& connectmat,Couplinglist& couplinglist){
+void STDP::updatePa(double *Pa, double *Etaa,Qhistorylist& qhistorylist,ConnectMat& connectmat,Couplinglist& couplinglist){
   // Find dnudt as the Riemann sum of filter/detA
   double dnudt = 0;
   for( int i=0; i<int(W_CUTOFF/W_STEP); i++ ) {
@@ -105,7 +105,7 @@ void Coupleplast::updatePa(double *Pa, double *Etaa,Qhistorylist& qhistorylist,C
     Pa[i]=nu*Etaa[i];
 }
 
-complex<double> Coupleplast::X( int i ) const
+complex<double> STDP::X( int i ) const
 {
   return rho*nu *L[i]*Gamma[i];
 }

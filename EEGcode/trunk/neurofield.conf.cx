@@ -13,7 +13,7 @@ Q delay depths: 0 : 0 : 0 : 0
 Propagator types 1: Mapping 2: Mapping 3: Waveeqn 4: Waveeqn 5: Waveeqn $
 6: Waveeqn $
 
-Coupling types 1: Simple 2: Simple 3: Calcium 4: Simple 5: Calcium 6: Simple $
+Coupling types 1: Simple 2: Simple 3: STDP 4: Simple 5: STDP 6: Simple $
 
 Population 1 - Stimulus neurons
  Initial Q: 0.0

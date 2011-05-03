@@ -10,7 +10,7 @@
 #include"couplinglist.h"
 #include"coupling.h"
 #include"modcouple.h"
-#include"coupleplast.h"
+#include"stdp.h"
 #include"cadp.h"
 using std::endl;
 
@@ -26,7 +26,7 @@ Couplinglist::Couplinglist(Istrm& inputf, ofstream& dumpf
   int optionnum;
   for(int i=0;i<numcoup;i++){
     inputf.ignore(200,58);
-    optionnum=inputf.choose("Simple:1 Modulate:2 Plastic:3 Calcium:4",32);
+    optionnum=inputf.choose("Simple:1 Modulate:2 STDP:3 Calcium:4",32);
     if(1==optionnum){
       couparray[i] = new Coupling(nodes,deltat);
       dumpf << (i+1) << ": Simple ";
@@ -36,8 +36,8 @@ Couplinglist::Couplinglist(Istrm& inputf, ofstream& dumpf
       dumpf << (i+1) << ": Modulate ";
     }
     if(3==optionnum){
-      couparray[i] = new Coupleplast(nodes,deltat);
-      dumpf << (i+1) << ": Plastic ";
+      couparray[i] = new STDP(nodes,deltat);
+      dumpf << (i+1) << ": STDP ";
     }
     if(4==optionnum){
       couparray[i] = new CaDP(nodes,deltat);
