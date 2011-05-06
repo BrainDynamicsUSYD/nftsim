@@ -1,13 +1,15 @@
-NeuroField setup instructions (using Makefile)
+NeuroField setup instructions
 
-Edit Makefile:
-	1. Specify the configuration file in CONF (defaults to neurofield.conf)
-	2. Identify the platform to run NeuroField, and comment/uncomment the appropriate COMP and CP directions
+1. Edit Makefile:
+	Identify the platform to run NeuroField, and comment/uncomment the appropriate COMP and CP directions.
 
-Edit the configuration file (as specified in Makefile)
+2. To execute with only one set of parameters, edit your configuration file in Configs, then run './NeuroField Configs/config_file'. For example,
+   ./NeuroField Configs/conf.emirs
 
-Run 'make run' to compile and execute NeuroField to generate output files. In the case where output files are already present and no .cpp/.h/config files are changed, no computation will be needed, and 'make run' does nothing. To run NeuroField regardless of this, run './NeuroField' or './NeuroField -i configfile'.
+3. To execute with varying parameters, edit your configuration file in Configs, then run './NeuroField Configs/config_file object_to_vary parameter_to_vary list of values' For example,
+   ./NeuroField Configs/conf.emirs 'Propagator 1' gamma 10 20 30 40
+   The output will be stored in Output/Parameter=Value directories.
 
-To compile NeuroField without running, run 'make'.
+4. To compile NeuroField without running, run 'make'.
 
-'make clean' removes the entire 'Release' folder, so make sure you do not put any user data in there! 
+5. 'make clean' removes the entire 'Release' folder, so make sure you do not put any user data in there! 

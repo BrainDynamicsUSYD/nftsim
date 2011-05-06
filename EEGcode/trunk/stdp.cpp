@@ -92,12 +92,12 @@ void STDP::updatePa(double *Pa, double *Etaa,Qhistorylist& qhistorylist,ConnectM
     }
     dnudt += filter[i]/pow( abs(detA), 2 );
   }
-  double Q = *(qhistorylist.getQhist(connectmat.getQindex(coupleid)).getQbytime(0)); // get the instantaneous firing rate of this population
-  dnudt *= N*B*W_STEP/2/3.14 *(1-Q/Q_max);
+  double Q = qhistorylist.getQhist(connectmat.getQindex(coupleid)).getQbytime(0)[0]; // get the instantaneous firing rate of this population
+  dnudt *= N*B*W_STEP/2/3.14 *(1-Q/Q_max) *deltat;
   if( fabs(dnudt)>fabs(nu) && dnudt/fabs(dnudt)!=sign )
     nu = 0; // the coupling constants do not cross nu=0
   else
-    nu += deltat*dnudt;
+    nu += dnudt;
 
   // Sum the coupling terms transforming Phi_{ab} to P_{ab}
   long n=nodes;

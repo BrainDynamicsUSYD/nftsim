@@ -13,3 +13,5 @@ while(<FILE1>)
 	$sum = $G_1 + $G_2;
 	print OUT "$sum\n";
 }
+
+close FILE1, FILE2, OUT
