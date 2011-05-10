@@ -48,12 +48,15 @@ $(addprefix Release/,$(HEADER)): Release/%.h: %.h
 Release/main.h:
 	touch Release/main.h
 
+Documentation/doc.pdf: Documentation/doc.tex
+	cd Documentation && pdflatex $(shell basename $<)
+
 .PHONY: clean run
 
 # deletes all object files and exes
 clean:
-	echo Delete Release/
-	-rm -rI Release
+	echo Delete Release/ Documentation/doc
+	-rm -rI Release Documentation/doc.{aux,log,pdf}
 
 .SILENT:
 

@@ -19,3 +19,5 @@ NeuroField setup instructions
 4. To compile NeuroField without running, run 'make'.
 
 5. 'make clean' removes the entire 'Release' folder, so make sure you do not put any user data in there! 
+
+6. Documentation can be found in ./Documentation/ folder. To generate doc.pdf, run 'make Documentation/doc.pdf'. 'make clean' deletes the files created by latex.
