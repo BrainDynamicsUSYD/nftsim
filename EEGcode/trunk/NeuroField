@@ -80,6 +80,7 @@ for( my $i=0; $i<$runs; $i++ ) {
 	}
 	$msg =~ s/; $/\.\n/; print $msg;
 	$dir =~ s/ /_/g; `mkdir -p $dir`;
+	`cp Release/NeuroField $dir`;
 	chdir $dir;
 	open IN,  "<../../$in" or die $!;
 	open OUT, ">neurofield.conf" or die $!;
@@ -98,6 +99,7 @@ for( my $i=0; $i<$runs; $i++ ) {
 		}
 		print OUT $write;
 	}
+	system "./NeuroField";
 	close IN; close OUT;
 	chdir "../..";
 }
