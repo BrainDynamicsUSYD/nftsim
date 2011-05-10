@@ -1,34 +1,103 @@
 #!/usr/bin/perl -w
-$in = $ARGV[0];
+use strict;
+if(!$ARGV[0]) {
+	print "NeuroField script requires at least one argument to specify configuration file.\n";
+	exit(1);
+}
+my $in = $ARGV[0];
 
 # if only the configuration file is given, then run once with that config file
 if( scalar(@ARGV)<2 ) {
-	system "cp $in neurofield.output";
+	system "cp $in neurofield.conf";
 	exec "make run";
 }
 
-# if N(>=2) additional arguments are given, then modify $field on $line N-1 times with given values
+# Parse argument list: all numerical arguments are parameter values; the last alphanumeric argument is the field name, all other alphanumeric arguments are lines subject to be modified,
 
-$line = $ARGV[1];
-$field = $ARGV[2];
+my @value   = []; # list of parameter values
+my @field   = ""; # parameter to be varied
+my @line    = []; # lines/object subjected to being varied (eg. 'Propagator 1')
+my $runs    = 0;  # number of runs == width (not height) of 2D array value
+my $tmpruns = 0;  # temporarily store number of runs while parsing arguments
+my $fields  = 1;  # number of fields to vary == height of 2D array value
+my $temp;         # pointer to an array
 
-`make`;
-
-for(my $i=3; $i<scalar(@ARGV); $i++)
+foreach my $arg ( reverse(@ARGV) )
 {
-	print "Running with $line: $field = $ARGV[$i]:\n";
-	$dir = "Output/$field=$ARGV[$i]";
-	`mkdir -p $dir`;
-	chdir $dir;
-	open IN,  "<../../$in"  or die $!;
-	open OUT, ">neurofield.conf" or die $!;
-	while(<IN>) {
-		$write = $_;
-		$write =~ s/$field:\s+(-[\d\.e]+)/$field: $ARGV[$i]/ if(/^\s*$line/);
-		print OUT "$write";
+	next if( $arg eq $in ); # skip over configuration file
+
+	# argument is numerical, appending with 's' preserves original sign
+	if( $arg =~ /^[-\d\.e]+s?$/ ) {
+		if( $field[-1] ne "" ) {
+			# there are previous fields, now reset counter
+			push( @value, [] );
+			push( @field, "" );
+			push( @line, [] );
+			if( $runs == 0 ) { $runs = $tmpruns; }
+			else { die "The number of variation in parameters must be the constant [$runs?].\n" if( $tmpruns!=$runs ); }
+			$tmpruns = 0;
+			$fields++;
+		}
+		$temp = $value[-1];
+		push( @$temp, $arg );
+		$tmpruns++;
+	} else { # argument is alphanumerical
+		if( $field[-1] eq "" ) { # if this is the last alphanumeric argument, parse as field
+			$field[-1] = $arg;
+		} else { # field is already specified
+			$temp = $line[-1];
+			push( @$temp, $arg );
+		}
 	}
-	close IN;
-	close OUT;
-	`../../Release/NeuroField`;
-	chdir "../.."
+}
+if( $runs == 0 ) { $runs = $tmpruns; }
+else { die "The number of variation in parameters must be the constant [$runs?].\n" if( $tmpruns!=$runs ); }
+
+#print "Value\n";
+#foreach( @value){
+#foreach(@$_)
+#{print "$_ ";}print "\n";};
+#print "\nField\n";
+#foreach( @field){print "$_ ";};
+#print "\nLine\n";
+#foreach( @line){foreach(@$_){print "$_ ";}print "\n";};
+
+print "Compiling NeuroField: ";
+`make`;
+print "Done.\n";
+
+for( my $i=0; $i<$runs; $i++ ) {
+	my $dir = "Output/";
+	my $msg = "Running ";
+	for( my $j=0; $j<$fields; $j++ ) {
+		$temp = $line[$j];
+		for( my $k=0; $k<@$temp; $k++ ) {
+			$dir .= "$line[$j][$k],";
+			$msg .= "$line[$j][$k], ";
+		}
+		$dir .= "$field[$j]=$value[$j][$i],";
+		$msg .= "with $field[$j] = $value[$j][$i]; ";
+	}
+	$msg =~ s/; $/\.\n/; print $msg;
+	$dir =~ s/ /_/g; `mkdir -p $dir`;
+	chdir $dir;
+	open IN,  "<../../$in" or die $!;
+	open OUT, ">neurofield.conf" or die $!;
+	while( my $write=<IN> ) {
+		for( my $j=0; $j<$fields; $j++ ) {
+			foreach($line[$j]){ foreach my $line (@$_) {
+			if( $write =~ /^\s*$line/ ) {
+				my $sign = ""; # stores the sign of the original value
+				my $tmpv = $value[$j][$i]; # strip value of postfix 's'
+				if( $tmpv =~ /s$/ ) { # preserves sign if appended by 's'
+					$tmpv = $1 if( $tmpv =~ /([-\d\.e]+)/ );
+					$sign = $1 if( $write =~ /$field[$j]:\s*(-?)/ );
+				}
+				$write =~ s/$field[$j]:\s*([-\d\.e]+)/$field[$j]: $sign$tmpv/ ;
+			}}}
+		}
+		print OUT $write;
+	}
+	close IN; close OUT;
+	chdir "../..";
 }

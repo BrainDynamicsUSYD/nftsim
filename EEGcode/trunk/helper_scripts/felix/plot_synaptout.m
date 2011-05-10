@@ -2,7 +2,9 @@
 % reads output from neurofield.output and neurofield.synaptout.*
 % and plots the firing rate and nu's
 
-[t y] = readoutput2;
+dir = 'Output/NMDA=3000s/';
+
+[t y] = readoutput2(['../../',dir,'neurofield.output']);
 figure
 plot(t,y)
 xlabel('Time (s)'); ylabel('Firing rate')
@@ -13,7 +15,7 @@ figure; xlabel('Time (s)'); ylabel('G')
 hold on
 for loop = 1:length(couplings)
     color = [loop/length(couplings),0,1-loop/length(couplings)];
-	y = textread( ['../../neurofield.synaptout.', num2str(couplings(loop))] );
+	y = textread( ['../../',dir,'neurofield.synaptout.', num2str(couplings(loop))] );
 	plot(t,y,'Color',color)
 end
 
@@ -25,10 +27,11 @@ end
 % 	plot(t,y,'Color',color)
 % end
 
-system './G_total.pl 3 5'
-y = textread( '../../neurofield.synaptout.total' );
+system(['./G_total.pl ../../',dir, ' ', ...
+    num2str(couplings(1)),' ',num2str(couplings(2))]);
+y = textread( ['../../',dir,'neurofield.synaptout.total'] );
 figure; plot(t,y); xlabel('Time (s)'); ylabel('G_e + G_i')
 
 for k = 1:2
-    spectrum('../../neurofield.output',k);
+    spectrum( ['../../',dir,'neurofield.output'] ,k);
 end

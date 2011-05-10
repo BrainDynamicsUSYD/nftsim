@@ -5,9 +5,15 @@ NeuroField setup instructions
 
 2. To execute with only one set of parameters, edit your configuration file in Configs, then run './NeuroField Configs/config_file'. For example,
    ./NeuroField Configs/conf.emirs
+   The output will be stored in the current directory.
 
-3. To execute with varying parameters, edit your configuration file in Configs, then run './NeuroField Configs/config_file object_to_vary parameter_to_vary list of values' For example,
-   ./NeuroField Configs/conf.emirs 'Propagator 1' gamma 10 20 30 40
+3. To execute with varying parameters, edit your configuration file in Configs, then run './NeuroField Configs/config_file object1_to_vary ... objectN_to_vary parameter_to_vary list_of_values object2_to_vary ... objectM_to_vary parameter_to_vary list_of_values ...' For example,
+   ./NeuroField Configs/conf.emirs 'Propagator 1' 'Propagator 2' gamma 10 20 30 40
+   ./NeuroField Configs/conf.emirs 'Propagator 1' 'Propagator 2' gamma 10 20 30 40 'Coupling data 1' Nu 1 2 3 4
+   In both cases, NeuroField is ran 4 times, with gamma (and Nu) varying in parameters for the specified objects.
+   To preserve the sign of the original value, append 's' to the value, eg.
+      ./NeuroField Configs/conf.emirs 'Coupling data 6' Nu 1s
+      would give Nu=-1 because it is initially -0.00095 in the config file.
    The output will be stored in Output/Parameter=Value directories.
 
 4. To compile NeuroField without running, run 'make'.

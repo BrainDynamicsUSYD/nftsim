@@ -1,11 +1,11 @@
 #!/usr/bin/perl
-$file1 = `ls ../../neurofield.synaptout.$ARGV[0]`;
-$file2 = `ls ../../neurofield.synaptout.$ARGV[1]`;
-print "$file1$file2";
+$dir = $ARGV[0];
+$file1 = `ls $dir/neurofield.synaptout.$ARGV[1]`;
+$file2 = `ls $dir/neurofield.synaptout.$ARGV[2]`;
 
 open FILE1, $file1 or die $!;
 open FILE2, $file2 or die $!;
-open OUT, '>../../neurofield.synaptout.total' or die $!;
+open OUT, ">$dir/neurofield.synaptout.total" or die $!;
 
 while(<FILE1>)
 {
@@ -14,4 +14,4 @@ while(<FILE1>)
 	print OUT "$sum\n";
 }
 
-close FILE1, FILE2, OUT
+close FILE1, FILE2, OUT;
