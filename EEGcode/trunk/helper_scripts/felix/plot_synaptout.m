@@ -2,7 +2,7 @@
 % reads output from neurofield.output and neurofield.synaptout.*
 % and plots the firing rate and nu's
 
-dir = 'Output/NMDA=3000s/';
+dir = 'Output/Coupling_data_5,Coupling_data_3,Q_max=20/';
 
 [t y] = readoutput2(['../../',dir,'neurofield.output']);
 figure

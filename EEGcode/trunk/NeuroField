@@ -79,7 +79,7 @@ for( my $i=0; $i<$runs; $i++ ) {
 		$msg .= "with $field[$j] = $value[$j][$i]; ";
 	}
 	$msg =~ s/; $/\.\n/; print $msg;
-	$dir =~ s/ /_/g; `mkdir -p $dir`;
+	$dir =~ s/ /_/g; $dir =~ s/,$//; `mkdir -p $dir`;
 	`cp Release/NeuroField $dir`;
 	chdir $dir;
 	open IN,  "<../../$in" or die $!;
@@ -99,7 +99,7 @@ for( my $i=0; $i<$runs; $i++ ) {
 		}
 		print OUT $write;
 	}
-	system "./NeuroField";
+	system "./NeuroField &";
 	close IN; close OUT;
 	chdir "../..";
 }
