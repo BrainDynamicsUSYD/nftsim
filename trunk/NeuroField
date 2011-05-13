@@ -99,7 +99,7 @@ for( my $i=0; $i<$runs; $i++ ) {
 		}
 		print OUT $write;
 	}
-	system "./NeuroField &";
+	system "time ./NeuroField &";
 	close IN; close OUT;
 	chdir "../..";
 }

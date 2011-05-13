@@ -97,13 +97,14 @@ void CaDP::updatePa(double *Pa, double *Etaa,Qhistorylist& qhistorylist,ConnectM
 
   V = qhistorylist.getQhist(connectmat.getQindex(coupleid)).getVbytime(0);
   for( int i=0; i<nodes; i++ ) {
-    double dCadt = nmda* Etaa[i]/N *(V[i]-V_r) /(1+ exp(-0.062*Mg/3.57 *V[i]) )
+    double binding = 1*sig( Etaa[i], 1 );
+    double dCadt = nmda*binding*(V[i]-V_r) /(1+ exp(-0.062*Mg/3.57 *V[i]) )
       -Ca[i]/tCa;
     Ca[i] += deltat*dCadt;
     double dnudt = eta(Ca[i])*(omega(Ca[i])-nu[i]);
     if( fabs(dnudt)>fabs(nu[i]) && dnudt/fabs(dnudt)!=sign )
       nu[i] = 0;
-	else
+    else
       nu[i] += deltat*dnudt;
     // Sum the coupling terms transforming Phi_{ab} to P_{ab}
     Pa[i]=nu[i]*Etaa[i];
