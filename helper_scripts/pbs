@@ -1,0 +1,14 @@
+#!/bin/bash
+
+#PBS -N JOBNAME
+#PBS -o neurofield.yossarian
+#PBS -j oe
+#PBS -q batch
+#PBS -l nodes=1:ppn=1
+#PBS -l walltime=WALLTIME
+#PBS -m ea
+#PBS -M EMAIL
+#PBS -V
+
+./NeuroField Configs/conf.emirs
+exit
