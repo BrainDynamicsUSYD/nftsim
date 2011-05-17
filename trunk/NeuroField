@@ -1,5 +1,47 @@
 #!/usr/bin/perl -w
 use strict;
+
+# Check if is running on yossarian.
+# If it is, then prompt user whether to terminate or submit to PBS.
+# In the latter case, prompt for PBS parameters
+# to generate PBS script from helper_scripts/pbs.
+# If a PBS script is present (regardless of when it's generated), submit it.
+my $hostname = `hostname`;
+if( $hostname =~ /^yossarian/ ) {
+	if( !(-e "pbs") ) {
+		print "Attempting to run NeuroField in Yossarian requires submitting a job to the PBS system. Continue? (y/n): ";
+		my $answer = <STDIN>; if( $answer =~ /^y$/ ) {
+			print "Please enter job name: ";
+			my $jobname = <STDIN>; 
+			print "Please enter estimated time of job (format HH/MM/SS):";
+			my $walltime = <STDIN>;
+			print "Please enter email address for notification: ";
+			my $email = <STDIN>;
+			open PBS, ">pbs" or die $!;
+			print PBS "#!/bin/bash\n";
+			print PBS "#PBS -N $jobname";
+			print PBS "#PBS -o neurofield.yossarian\n";
+			print PBS "#PBS -j oe\n";
+			print PBS "#PBS -q batch\n";
+			print PBS "#PBS -l nodes=1:ppn=1\n";
+			print PBS "#PBS -l walltime=$walltime";
+			print PBS "#PBS -m ea\n";
+			print PBS "#PBS -M $email";
+			print PBS "#PBS -V\n";
+			print PBS "$0";
+			foreach(@ARGV) {
+				print PBS " $_";
+			}
+			print PBS "\nexit";
+			close PBS;
+		} else {
+			print "NeuroField not ran.\n";
+			exit;
+		}
+	}
+	exec "qsub pbs" or die $!;
+}
+
 if(!$ARGV[0]) {
 	print "NeuroField script requires at least one argument to specify configuration file.\n";
 	exit(1);
@@ -9,7 +51,10 @@ my $in = $ARGV[0];
 # if only the configuration file is given, then run once with that config file
 if( scalar(@ARGV)<2 ) {
 	system "cp $in neurofield.conf";
-	exec "make run";
+	print "Compiling NeuroField:\n";
+	`make`;
+	print "Running $in:\n";
+	exec "time make run &";
 }
 
 # Parse argument list: all numerical arguments are parameter values; the last alphanumeric argument is the field name, all other alphanumeric arguments are lines subject to be modified,
@@ -62,7 +107,7 @@ else { die "The number of variation in parameters must be the constant [$runs?].
 #print "\nLine\n";
 #foreach( @line){foreach(@$_){print "$_ ";}print "\n";};
 
-print "Compiling NeuroField: ";
+print "Compiling NeuroField:\n";
 `make`;
 print "Done.\n";
 

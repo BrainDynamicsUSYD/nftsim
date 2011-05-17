@@ -21,3 +21,5 @@ NeuroField setup instructions
 5. 'make clean' removes the entire 'Release' folder, so make sure you do not put any user data in there! 
 
 6. Documentation can be found in ./Documentation/ folder. To generate doc.pdf, run 'make Documentation/doc.pdf'. 'make clean' deletes the files created by latex.
+
+7. Tips for vi users: a convenient way to do parameter exploration is to edit the configuration file from ./trunk, then in command mode, do ':!./NeuroField % [additional parameter]'.
