@@ -92,13 +92,14 @@ void CaDP::output(){
 }
 
 void CaDP::updatePa(double *Pa, double *Etaa,Qhistorylist& qhistorylist,ConnectMat& connectmat,Couplinglist& couplinglist){
-
+// parameter values that are current ad hoc:
+// V_r, 1/3 in binding
   double V_r = 0.02; double Mg = 1e-3; double tCa = 0.025;
 
   V = qhistorylist.getQhist(connectmat.getQindex(coupleid)).getVbytime(0);
   for( int i=0; i<nodes; i++ ) {
-    double binding = 1*sig( Etaa[i], 1 );
-    double dCadt = nmda*binding*(V[i]-V_r) /(1+ exp(-0.062*Mg/3.57 *V[i]) )
+    double binding = sig( Etaa[i]*1e-5 - 1e-4, 1/3 ); // note 1/3 needs revision
+    double dCadt = nmda*binding*(V[i]-V_r) /(1+ exp(-0.062*V[i])*Mg/3.57 )
       -Ca[i]/tCa;
     Ca[i] += deltat*dCadt;
     double dnudt = eta(Ca[i])*(omega(Ca[i])-nu[i]);
