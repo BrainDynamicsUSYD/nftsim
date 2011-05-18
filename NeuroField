@@ -66,7 +66,7 @@ if( scalar(@ARGV)<2 ) {
 		#foreach(@ARGV) { print PBS " \'$_\'"; }
 		exec "qsub pbs" or die $!;
 	} else {
-		system "time make run &";
+		exec "time make run &";
 	}
 }
 
