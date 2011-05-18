@@ -54,6 +54,7 @@ void CaDP::init(Istrm& inputf, int coupleid){
   inputf.validate("N",58); inputf >> N;
   inputf.validate("rho",58); inputf >> rho;
   inputf.validate("NMDA",58); inputf >> nmda;
+  inputf.validate("V_r",58); inputf >> V_r;
   for( int i=0; i<nodes; i++ ) {
     nu[i] = init_nu;
     Ca[i] = init_Ca;
@@ -94,15 +95,15 @@ void CaDP::output(){
 void CaDP::updatePa(double *Pa, double *Etaa,Qhistorylist& qhistorylist,ConnectMat& connectmat,Couplinglist& couplinglist){
 // parameter values that are current ad hoc:
 // V_r, 1/3 in binding
-  double V_r = 0.02; double Mg = 1e-3; double tCa = 0.025;
+  double Mg = 1e-3; double tCa = 0.025;
 
   V = qhistorylist.getQhist(connectmat.getQindex(coupleid)).getVbytime(0);
   for( int i=0; i<nodes; i++ ) {
-    double binding = sig( Etaa[i]*1e-5 - 1e-4, 1/3 ); // note 1/3 needs revision
+    double binding = sig( Etaa[i]*1e-7 - 1e-5, 1 ); // note 1/3 needs revision
     double dCadt = nmda*binding*(V[i]-V_r) /(1+ exp(-0.062*V[i])*Mg/3.57 )
       -Ca[i]/tCa;
     Ca[i] += deltat*dCadt;
-    double dnudt = eta(Ca[i])*(omega(Ca[i])-nu[i]);
+    double dnudt = 1e0*N*eta(Ca[i])*(omega(Ca[i])-nu[i]);
     if( fabs(dnudt)>fabs(nu[i]) && dnudt/fabs(dnudt)!=sign )
       nu[i] = 0;
     else

@@ -41,6 +41,7 @@ private:
   double rho; // linearized sigmoid
   double N; // number of synpases per neuron
   double nmda; // coupling constant for NMDAR, used in d(Ca)/dt
+  double V_r; // reverse potential for NMDAR
 
   CaDP(CaDP& ); // no copy constructor
   const long nodes;
