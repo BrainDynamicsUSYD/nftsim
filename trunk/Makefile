@@ -10,12 +10,12 @@ CONF = neurofield.conf
 #CP = perl -w -p -e 's/__restrict__/\/* __restrict__ *\/ /g' < $< > $@
 
 # compile command in yossarian
-#COMP = g++ -g -lm -Wall
-#CP = cp $< $@
+COMP = g++ -g -lm -Wall
+CP = cp $< $@
 
 # compile command using gcc
-COMP = g++ -g -msse2 -ftree-vectorize -ftree-vectorizer-verbose=5 -lm -Wall
-CP = cp $< $@
+#COMP = g++ -g -msse2 -ftree-vectorize -ftree-vectorizer-verbose=5 -lm -Wall
+#CP = cp $< $@
 
 # compile command on intel
 #COMP = /usr/physics/intel/cce/bin/icc -p -g -Drestrict=__restrict__ -vec-report1 -O2 -lm
