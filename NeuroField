@@ -7,20 +7,24 @@ use strict;
 # to generate PBS script from helper_scripts/pbs.
 # If a PBS script is present (regardless of when it's generated), submit it.
 my $hostname = `hostname`;
+my $yossarian = 0;
+my $jobname = "";
+my $walltime = "";
+my $email = "";
 if( $hostname =~ /^yossarian/ ) {
 	if( !(-e "pbs") ) {
 		print "Attempting to run NeuroField in Yossarian requires submitting a job to the PBS system. Continue? (y/n): ";
 		my $answer = <STDIN>; if( $answer =~ /^y$/ ) {
 			print "Please enter job name: ";
-			my $jobname = <STDIN>; 
-			print "Please enter estimated time of job (format HH/MM/SS):";
-			my $walltime = <STDIN>;
+			$jobname = <STDIN>; 
+			print "Please enter estimated time of job (format HH:MM:SS): ";
+			$walltime = <STDIN>;
 			print "Please enter email address for notification: ";
-			my $email = <STDIN>;
+			$email = <STDIN>;
 			open PBS, ">pbs" or die $!;
 			print PBS "#!/bin/bash\n";
 			print PBS "#PBS -N $jobname";
-			print PBS "#PBS -o neurofield.yossarian\n";
+			print PBS "#PBS -o neurofield.pbs\n";
 			print PBS "#PBS -j oe\n";
 			print PBS "#PBS -q batch\n";
 			print PBS "#PBS -l nodes=1:ppn=1\n";
@@ -28,18 +32,14 @@ if( $hostname =~ /^yossarian/ ) {
 			print PBS "#PBS -m ea\n";
 			print PBS "#PBS -M $email";
 			print PBS "#PBS -V\n";
-			print PBS "$0";
-			foreach(@ARGV) {
-				print PBS " $_";
-			}
-			print PBS "\nexit";
-			close PBS;
+			print PBS "\n";
+			close PBS
 		} else {
 			print "NeuroField not ran.\n";
 			exit;
 		}
 	}
-	exec "qsub pbs" or die $!;
+	$yossarian = 1;
 }
 
 if(!$ARGV[0]) {
@@ -53,8 +53,21 @@ if( scalar(@ARGV)<2 ) {
 	system "cp $in neurofield.conf";
 	print "Compiling NeuroField:\n";
 	`make`;
-	print "Running $in:\n";
-	exec "time make run &";
+	print "Done.\nRunning $in:\n";
+	if($yossarian) {
+		open PBS, "+<pbs" or die $!;
+		my $addr; # delete last line of PBS script
+		while( <PBS> ) { $addr = tell(PBS) unless eof(PBS) }
+		truncate(PBS, $addr);
+		close PBS; open PBS, ">>pbs" or die $!;
+		my $pwd = `pwd`; chomp $pwd;
+		print PBS "cd ".$pwd." && time make run";
+		close PBS;
+		#foreach(@ARGV) { print PBS " \'$_\'"; }
+		exec "qsub pbs" or die $!;
+	} else {
+		system "time make run &";
+	}
 }
 
 # Parse argument list: all numerical arguments are parameter values; the last alphanumeric argument is the field name, all other alphanumeric arguments are lines subject to be modified,
@@ -144,7 +157,19 @@ for( my $i=0; $i<$runs; $i++ ) {
 		}
 		print OUT $write;
 	}
-	system "time ./NeuroField &";
+	if($yossarian) {
+		open PBS, "<../../pbs" or die $!;
+		open NEWPBS, ">pbs" or die $!;
+		while(<PBS>) { print NEWPBS; }
+		close PBS;
+		my $pwd = `pwd`; chomp $pwd;
+		print NEWPBS "cd ".$pwd." && time ./NeuroField";
+		close NEWPBS;
+		system "bash -c 'qsub pbs' &";
+	} else {
+		system "time make run &";
+	}
+	#system "time ./NeuroField &";
 	close IN; close OUT;
 	chdir "../..";
 }
