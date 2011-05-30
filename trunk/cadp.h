@@ -42,11 +42,15 @@ private:
   double N; // number of synpases per neuron
   double nmda; // coupling constant for NMDAR, used in d(Ca)/dt
   double V_r; // reverse potential for NMDAR
+  double tCa; // decay time scale for calcium concentration
+  double B; // time scale for dnu/dt
+  double scale; // scale of synaptic strength
 
   CaDP(CaDP& ); // no copy constructor
   const long nodes;
   ofstream synapoutf;
   ofstream caoutf;
+  ofstream voutf;
 };
 
 #endif

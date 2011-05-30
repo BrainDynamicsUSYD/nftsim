@@ -63,7 +63,6 @@ if( scalar(@ARGV)<2 ) {
 		my $pwd = `pwd`; chomp $pwd;
 		print PBS "cd ".$pwd." && time make run";
 		close PBS;
-		#foreach(@ARGV) { print PBS " \'$_\'"; }
 		exec "qsub pbs" or die $!;
 	} else {
 		exec "time make run &";
@@ -160,7 +159,7 @@ for( my $i=0; $i<$runs; $i++ ) {
 	if($yossarian) {
 		open PBS, "<../../pbs" or die $!;
 		open NEWPBS, ">pbs" or die $!;
-		while(<PBS>) { print NEWPBS; }
+		while(<PBS>) { print NEWPBS if( /^\#/ ); }
 		close PBS;
 		my $pwd = `pwd`; chomp $pwd;
 		print NEWPBS "cd ".$pwd." && time ./NeuroField";

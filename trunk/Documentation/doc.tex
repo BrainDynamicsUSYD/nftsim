@@ -19,101 +19,48 @@
 \headheight=0.0cm
 \headsep=0.0cm
 
+\newcommand{\code}[1]{\texttt{#1}}
+
 \footskip=1.3cm
-
-\lstset{
-basicstyle=\small\small\ttfamily,   % the size of the fonts that are used for the code
-frame=single,	        % adds a frame around the code
-breaklines=true,		% sets automatic line breaking
-breakatwhitespace=tru,	% sets if automatic breaks should only happen at whitespace
-}
-
-\newcommand{\type}[1]{ {\small\small\tt #1} }
 
 \begin{document} 
 
 {\center \Huge{Reference documentation for NeuroField}}
 
-\section{Quick guide to NeuroField}
+\section{Quick guide to using NeuroField}
 
-To use the NeuroField launcher script:
+Using the launcher script NeuroField:
 \begin{enumerate}
+\item Edit the Makefile. Identify the platform, and comment/uncomment the appropriate COMP and CP directions in Makefile.
+\item To execute with only one set of parameters, edit your configuration file in Configs, then run \code{./NeuroField Configs/config file}. For example,
+   \code{./NeuroField Configs/conf.emirs}
+   The output will be stored in the current directory.
 
-\item Edit Makefile: Identify the platform to run NeuroField, and comment/uncomment the appropriate \type{COMP} and \type{CP} directions.
+\item To execute with varying parameters, edit your configuration file in Configs, then run './NeuroField Configs/config file object1 to vary ... objectN to vary parameter to vary list of values object2 to vary ... objectM to vary parameter to vary list of values ...' For example,
+   ./NeuroField Configs/conf.emirs 'Propagator 1' 'Propagator 2' gamma 10 20 30 40
+   ./NeuroField Configs/conf.emirs 'Propagator 1' 'Propagator 2' gamma 10 20 30 40 'Coupling data 1' Nu 1 2 3 4
+   In both cases, NeuroField is ran 4 times, with gamma (and Nu) varying in parameters for the specified objects.
+   To preserve the sign of the original value, append 's' to the value, eg.
+      ./NeuroField Configs/conf.emirs 'Coupling data 6' Nu 1s
+      would give Nu=-1 because it is initially -0.00095 in the config file.
+   The output will be stored in Output/Parameter=Value directories.
 
-\item Run \type{./NeuroField} with the appropriate argument(s) to use the launcher script. The launcher script automatically builds the NeuroField executable in \type{./Release/} and executes it.
+\item To compile NeuroField without running, run 'make'.
 
-\item In case the script is executed on Yossarian, the user would be prompted for a job name, expected computational time and email. The computation would then be submitted into the PBS system.
+\item 'make clean' removes the entire 'Release' folder, so make sure you do not put any user data in there! 
 
-\item To ease parameter exploration, the launcher script is capable of doing parameter sweeps, depending on the parameter it receives:
+\item Documentation can be found in ./Documentation/ folder. To generate doc.pdf, run 'make Documentation/doc.pdf'. 'make clean' deletes the files created by latex.
 
-\begin{enumerate}
-
-\item To execute with only one set of parameters, edit your configuration file in Configs, then run
-\begin{lstlisting}
-./NeuroField Configs/config_file
-\end{lstlisting}
-For example,
-\begin{lstlisting}
-./NeuroField Configs/conf.emirs
-\end{lstlisting}
-The output will be stored in the current directory.
-
-Tips for vi users: a convenient way to do parameter exploration is to edit the configuration file from \type{./trunk/}, then in command mode, do
-\begin{lstlisting}
-:!./NeuroField % [additional parameters]
-\end{lstlisting}
-to launch NeuroField.
-
-\item To sweep over parameters, edit your configuration file in Configs, then determine (1) the parameter(s) you want to vary (2) the values for the parameter(s) (3)~the objects (e.g. propagator 1) subject to variation. In the simplest case,
-\begin{lstlisting}
-./NeuroField Configs/conf.emirs 'Propagator 1' gamma 10 20 30 40
-\end{lstlisting}
-Running this command will launch 4 NeuroField programs, so that in the 4 programs, `Propagator 1' will have a gamma value of 10, 20, 30 and 40. Each set of data is stored in a separate directory inside \type{Output/}.
-
-\item A parameter may be effective for more than one object. Simply list all objects before the parameter name:
-\begin{lstlisting}
-./NeuroField Configs/conf.emirs 'Propagator 1' 'Propagator 2' gamma 10 20 30 40
-\end{lstlisting}
-In this case, gamma will vary for both `Propagator 1' and `Propagator 2'.
-
-\item To preserve the sign of the original value, append `s' to the value, e.g.
-\begin{lstlisting}
-./NeuroField Configs/conf.emirs 'Coupling data 6' Nu 1s
-\end{lstlisting}
-would give Nu $=-1$ because it is initially $-0.00095$ in the config file.
-
-\item It is also possible to vary more than one parameter. For example, if you want to launch NeuroField 4 times, with parameters varying according to the following table:
-
-\begin{tabular}{l l l}
-Object(s)&Parameter&Value\\
-`Propagator 1', `Propagator 2'&gamma&10, 20, 30, 40\\
-`Coupling data 1'&Nu&1, 2, 3, 4
-\end{tabular}
-
-simply list the above table entries into the argument list:
-\begin{lstlisting}
-./NeuroField Configs/conf.emirs 'Propagator 1' 'Propagator 2' gamma 10 20 30 40 'Coupling data 1' Nu 1 2 3 4
-\end{lstlisting}
-The launcher script support arbitrary numbers of objects, parameters and runs. The only restriction is that the number of sweeps must be constant across different parameters, i.e. you can't have gamma = 10, 20, 30, 40 while Nu = 1, 2, 3.
-
-\end{enumerate}
-
-\item To compile NeuroField without running, run \type{make}. NeuroField and object files are produced in \type{./Release/}.
-
-\item \type{make clean} removes the entire \type{./Release/} folder, so make sure you do not put any user data in there! 
-
-\item Documentation can be found in \type{./Documentation/} folder. To generate doc.pdf, run \type{make Documentation/doc.pdf}. \type{make clean} deletes the files created by latex.
-
+\item Tips for vi users: a convenient way to do parameter exploration is to edit the configuration file from ./trunk, then in command mode, do ':!./NeuroField % [additional parameter]'.
 \end{enumerate}
 
 \section{Overview of code function}
 
-The code implements the EEG model equations.
+The code implements the eeg model equations.
 
 \begin{itemize}
 
-\item When not using the launcher script, the NeuroField executable runs in one of three modes: (1) Initial run,
+\item The code currently runs in one of three modes: (1) Initial run,
 (2) restart calculation and (3) default parameters mode.
 
 (1) In inital run mode

@@ -29,5 +29,5 @@ y=reshape([sscanf(temp,'%f');y],ntraces,nsteps)';
 fclose(fid);
 
 [powerspectra,f] = pwelch(y(:,k),.05/deltat,[],.05/deltat,1/deltat);
-figure; loglog(f,powerspectra);
-xlabel('f (Hz)'); ylabel(['Power Spectrum for trace ',num2str(k)]);
+loglog(f,powerspectra);
+xlabel('f (Hz)'); ylabel('Power Spectrum');

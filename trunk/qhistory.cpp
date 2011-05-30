@@ -129,9 +129,9 @@ void Qhistory::updateQhistory(Poplist& poplist){
 
 void Qhistory::copyQfrompop(Poplist& poplist){
 // Copy the Q array incoming from Q in each population to Q array in Qhistory
-  double * __restrict__ pnewv=getVbytime(vhistory.size()-1); // Get pointer to start of the oldest Q array which is going to be overwritten
+  double * __restrict__ pnewv=getVbytime(vhistory.size()-1); // Get pointer to start of the oldest V array which is going to be overwritten
   double * __restrict__ pnewq=getQbytime(qhistory.size()-1); // Get pointer to start of the oldest Q array which is going to be overwritten
-  double * __restrict__ pVpop=poplist.get(indexofQ).V; // Get pointer to incoming Q data originating from Q in each population
+  double * __restrict__ pVpop=poplist.get(indexofQ).V; // Get pointer to incoming V data originating from V in each population
   if(pVpop) // if pVpop==NULL, then this is a stimulus population, and has no V
     for(long i=0; i<nodes; i++){
         *pnewv++=*pVpop++;
