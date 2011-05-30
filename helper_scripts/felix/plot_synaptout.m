@@ -4,34 +4,51 @@
 
 dir = './';
 
+figure;
+
 [t y] = readoutput2(['../../',dir,'neurofield.output']);
-figure
+subplot(3,2,1); box on;
 plot(t,y)
 xlabel('Time (s)'); ylabel('Firing rate')
 
 couplings = [3,5]; % all coupleplast indices are listed here
 
-figure; xlabel('Time (s)'); ylabel('G')
-hold on
+subplot(3,2,2); box on; xlabel('Time (s)'); ylabel('V (V)'); hold on
+for loop = 1:length(couplings)
+    color = [loop/length(couplings),0,1-loop/length(couplings)];
+	y = textread( ['../../',dir,'neurofield.vout.', num2str(couplings(loop))] );
+	plot(t,y,'Color',color)
+end
+
+subplot(3,2,3); box on; xlabel('Time (s)'); ylabel('[Ca] (M)'); hold on
+for loop = 1:length(couplings)
+    color = [loop/length(couplings),0,1-loop/length(couplings)];
+	y = textread( ['../../',dir,'neurofield.caout.', num2str(couplings(loop))] );
+	plot(t,y,'Color',color)
+end
+
+subplot(3,2,4); box on; xlabel('Time (s)'); ylabel('G'); hold on
 for loop = 1:length(couplings)
     color = [loop/length(couplings),0,1-loop/length(couplings)];
 	y = textread( ['../../',dir,'neurofield.synaptout.', num2str(couplings(loop))] );
 	plot(t,y,'Color',color)
 end
 
-figure; xlabel('Time (s)'); ylabel('[Ca] (M)')
-hold on
+y = 0;%-0.0018*4200;
 for loop = 1:length(couplings)
-    color = [loop/length(couplings),0,1-loop/length(couplings)];
-	y = textread( ['../../neurofield.caout.', num2str(couplings(loop))] );
-	plot(t,y,'Color',color)
+	tempy = textread( ['../../',dir,'neurofield.synaptout.', num2str(couplings(loop))] );
+    y = y + tempy;
 end
+plot(t,y,'k','LineWidth',2);
 
-system(['./G_total.pl ../../',dir, ' ', ...
-    num2str(couplings(1)),' ',num2str(couplings(2))]);
-y = textread( ['../../',dir,'neurofield.synaptout.total'] );
-figure; plot(t,y); xlabel('Time (s)'); ylabel('G_e + G_i')
-
+subplot(3,2,5);
 for k = 1:2
-    spectrum( ['../../',dir,'neurofield.output'] ,k);
+    spectrum( ['../../',dir,'neurofield.output'] ,k); hold on
 end
+h = get(gca,'Children');
+for loop = 1:length(h)
+    set( h(loop), 'Color', [loop/k,0,1-loop/k] );
+end
+
+subplot(3,2,6); set(gca,'xtick',[]); set(gca,'ytick',[]);
+text(0.1,0.1,{date, ['Output from ',dir]},'VerticalAlignment','bottom','FontSize',8 );
