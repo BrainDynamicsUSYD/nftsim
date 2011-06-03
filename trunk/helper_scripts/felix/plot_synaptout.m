@@ -52,3 +52,7 @@ end
 
 subplot(3,2,6); set(gca,'xtick',[]); set(gca,'ytick',[]);
 text(0.1,0.1,{date, ['Output from ',dir]},'VerticalAlignment','bottom','FontSize',8 );
+
+return; % to print output with config file, evaluate the following lines
+saveas(gcf,'.pic.pdf');
+system(['plot_synaptout.sh ../../',dir,'neurofield.conf .pic.pdf'])
