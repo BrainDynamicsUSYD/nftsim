@@ -123,10 +123,10 @@ void CaDP::updatePa(double *Pa, double *Etaa,Qhistorylist& qhistorylist,ConnectM
     else
       Ca[i] += deltat*dCadt;
     double dnudt = B*eta(Ca[i])*(N*scale*omega(Ca[i])-nu[i]);
-    if( fabs(dnudt)>fabs(nu[i]) && dnudt/fabs(dnudt)!=sign )
+    if( fabs(dnudt*deltat)>fabs(nu[i]) && dnudt/fabs(dnudt)!=sign )
       nu[i] = 0;
     else
-      nu[i] += sign*deltat*dnudt;
+      nu[i] += deltat*dnudt;
     // Sum the coupling terms transforming Phi_{ab} to P_{ab}
     Pa[i]=nu[i]*Etaa[i];
   }

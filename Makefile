@@ -48,10 +48,12 @@ $(addprefix Release/,$(HEADER)): Release/%.h: %.h
 Release/main.h:
 	touch Release/main.h
 
+doc: Documentation/doc.pdf
+
 Documentation/doc.pdf: Documentation/doc.tex
 	cd Documentation && pdflatex $(shell basename $<)
 
-.PHONY: clean run
+.PHONY: clean run doc
 
 # deletes all object files and exes
 clean:
