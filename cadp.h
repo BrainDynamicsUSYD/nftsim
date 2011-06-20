@@ -29,6 +29,9 @@ public:
   void updatePa(double *Pa,double *Etaa,Qhistorylist& qhistorylist,ConnectMat& connectmat,Couplinglist& couplinglist);
 
 private:
+  double sig( double x, double beta ) const;
+  double omega(double Ca) const;
+  double eta(double Ca) const;
 
   double deltat;
   int coupleid; // == dendriticr index, used for getQindex to get V

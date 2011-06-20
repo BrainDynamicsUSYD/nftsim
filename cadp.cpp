@@ -15,20 +15,20 @@ using std::setprecision;
 #include "cadp.h"
 using std::endl;
 
-double sig( double x, double beta )
+double CaDP::sig( double x, double beta ) const
 {
   double expo = exp(beta*x);
   return expo/(1+expo);
 }
 
-double omega(double Ca)
+double CaDP::omega(double Ca) const
 {
   double alpha0 = 0.33333; double alpha1 = 0.22e-6; double alpha2 = 0.39e-6;
   double beta1 = 80e6; double beta2 = 40e6;
   return ( alpha0 -alpha0*sig(Ca-alpha1,beta1) +sig(Ca-alpha2,beta2) );
 }
 
-double eta(double Ca)
+double CaDP::eta(double Ca) const
 {
   double p1 = 1; double p2 = 0.28e-6; double p3 = 3; double p4 = 1e-11;
   double power = pow(Ca+p4,p3);
