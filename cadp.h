@@ -35,7 +35,6 @@ private:
 
   double deltat;
   int coupleid; // == dendriticr index, used for getQindex to get V
-  int sign;
 
   double* V; // postsynaptic potential, with 2D spatial dependence
   double* nu;

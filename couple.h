@@ -27,6 +27,7 @@ public:
   // return X(w) = G L(w) Gamma(w) == 0 unless *this is a Coupleplast
   virtual complex<double> X( int i ) const { return complex<double>(0,0); };
   virtual void output() = 0; 
+  int sign; // == +-1, indicating excitatory or inhibitory coupling
 };
 
 #endif

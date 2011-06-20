@@ -18,6 +18,7 @@ class Couple; // forward reference Couple as only using pointer here. Header is 
 
 class Couplinglist {
 public: 
+  double* glu; // glutamate concentration in synaptic cleft
   Couplinglist(Istrm& inputf, ofstream& dump, int numconnects, long nodes, double deltat);
   ~Couplinglist();
   void init(Istrm& inputf); // initialize each coupling object in list
@@ -35,6 +36,7 @@ private:
   Couplinglist(Couplinglist& ); // no copy constructor
   Couple ** couparray; // Array of pointers to coupling objects
   const int numcoup; // Number of coupling objects in coupling list
+  long numnodes;
 };
 
 #endif
