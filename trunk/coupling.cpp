@@ -18,6 +18,10 @@ Coupling::~Coupling(){
 
 void Coupling::init(Istrm& inputf, int coupleid){
   nuobj = new Parameter("Nu",inputf);
+  if( nuobj->get() > 0 )
+    sign = 1;
+  else
+    sign = -1;
 }
 
 void Coupling::dump(ofstream& dumpf){

@@ -115,7 +115,7 @@ void CaDP::updatePa(double *Pa, double *Etaa,Qhistorylist& qhistorylist,ConnectM
   //std::cout<<"CoupleID "<<coupleid<<" Q Index "<<connectmat.getQindex(coupleid)<<" QHistory object "<<&qhistorylist.getQhist(connectmat.getQindex(coupleid))<<" V "<<V[0]<<" "<<V[1]<<endl;
   for( int i=0; i<nodes; i++ ) {
     double v = V[i] +50e-3; // calibrated voltage
-    double binding = sig( Etaa[i]*1e-7 - 1e-5, 1/3 ); // note 1/3 needs revision
+    double binding = sig( couplinglist.glu[i] - 1e-5, 1/3 ); // note 1/3 needs revision
     double dCadt = nmda*binding*(v-V_r) /(1+ exp(-0.062e3*v)*Mg/3.57 )
       -Ca[i]/tCa;
     if( dCadt<0 && fabs(dCadt)*deltat>Ca[i] )

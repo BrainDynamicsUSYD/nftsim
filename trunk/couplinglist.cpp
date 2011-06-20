@@ -48,6 +48,8 @@ Couplinglist::Couplinglist(Istrm& inputf, ofstream& dumpf
       exit(EXIT_FAILURE);
     }
   }
+  numnodes = nodes;
+  glu = new double[numnodes];
 }
 
 // Destructor deletes each coupling object and then array which holds them
@@ -55,6 +57,7 @@ Couplinglist::~Couplinglist(){
   for(int i=0;i<numcoup; i++)
     delete getcoup(i);
   delete [ ] couparray;
+  if(glu) delete[] glu;
 }
 
 void Couplinglist::init(Istrm& inputf){
@@ -72,13 +75,20 @@ void Couplinglist::dump(ofstream& dumpf){
 
 // updateP method updates P via each coupling object 
 void Couplinglist::updateP(double **P,double **Eta,Qhistorylist& qhistorylist,ConnectMat& connectmat){
+  for( int j=0; j<numnodes; j++ )
+	  glu[j] = 0;
+  for(int i=0;i<numcoup;i++){
+    if( getcoup(i)->sign )
+      for( int j=0; j<numnodes; j++ )
+        glu[j] += 1e-7*Eta[i][j];
+  }
   for(int i=0;i<numcoup;i++){
     getcoup(i)->updatePa(P[i],Eta[i],qhistorylist,connectmat,*this);
-    }
+  }
 }
 
 void Couplinglist::output(){
   for(int i=0;i<numcoup;i++){
     getcoup(i)->output();
-    }
+  }
 }
