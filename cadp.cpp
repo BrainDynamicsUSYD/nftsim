@@ -6,6 +6,8 @@
  ***************************************************************************/
 
 #include <math.h>
+#include<cstdlib>
+#include<ctime>
 #include<string>
 using std::string;
 #include<sstream>
@@ -60,9 +62,10 @@ void CaDP::init(Istrm& inputf, int coupleid){
   inputf.validate("tCa",58); inputf >> tCa;
   inputf.validate("B",58); inputf >> B;
   inputf.validate("scale",58); inputf >> scale;
+  srand ( time(NULL) );
   for( int i=0; i<nodes; i++ ) {
-    nu[i] = init_nu;
-    Ca[i] = init_Ca;
+    nu[i] = init_nu +( double(rand())/double(RAND_MAX)*init_nu/10 );
+    Ca[i] = init_Ca +( double(rand())/double(RAND_MAX)*init_Ca/10 );
   }
   sign = int(nu[0]/fabs(nu[0]));
 
@@ -101,22 +104,20 @@ void CaDP::dump(ofstream& dumpf){
 }
 
 void CaDP::output(){
-  synapoutf<<setprecision(14)<<rho*nu[0]<<endl;
-  caoutf<<setprecision(14)<<Ca[0]<<endl;
-  voutf<<setprecision(14)<<V[0]<<endl;
+  for( int i=0; i<nodes; i++ ) {
+    synapoutf<<setprecision(14)<<rho*nu[i]<<endl;
+    caoutf<<setprecision(14)<<Ca[i]<<endl;
+    voutf<<setprecision(14)<<V[i]<<endl;
+  }
 }
 
 void CaDP::updatePa(double *Pa, double *Etaa,Qhistorylist& qhistorylist,ConnectMat& connectmat,Couplinglist& couplinglist){
-// parameter values that are currently ad hoc:
-// V_r, 1/3 in binding
-  double Mg = 1e+0;
-
   V = qhistorylist.getQhist(connectmat.getQindex(coupleid)).getVbytime(0);
   //std::cout<<"CoupleID "<<coupleid<<" Q Index "<<connectmat.getQindex(coupleid)<<" QHistory object "<<&qhistorylist.getQhist(connectmat.getQindex(coupleid))<<" V "<<V[0]<<" "<<V[1]<<endl;
   for( int i=0; i<nodes; i++ ) {
     double v = V[i] +50e-3; // calibrated voltage
-    double binding = sig( couplinglist.glu[i] - 1e-5, 1/3 ); // note 1/3 needs revision
-    double dCadt = nmda*binding*(v-V_r) /(1+ exp(-0.062e3*v)*Mg/3.57 )
+    double binding = sig( couplinglist.glu[i] - 1e-5, sqrt(N) );
+    double dCadt = nmda*binding*(v-V_r) /(1+ exp(-0.062e3*v)*1.00/3.57 )
       -Ca[i]/tCa;
     if( dCadt<0 && fabs(dCadt)*deltat>Ca[i] )
       Ca[i] = 0;
