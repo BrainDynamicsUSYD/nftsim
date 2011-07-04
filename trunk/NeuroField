@@ -166,7 +166,7 @@ for( my $i=0; $i<$runs; $i++ ) {
 		close NEWPBS;
 		system "bash -c 'qsub pbs' &";
 	} else {
-		system "time make run &";
+		system "time ./NeuroField &";
 	}
 	#system "time ./NeuroField &";
 	close IN; close OUT;
