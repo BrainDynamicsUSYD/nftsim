@@ -109,7 +109,6 @@ void CaDP::output(){
     caoutf<<setprecision(14)<<Ca[i]<<endl;
     voutf<<setprecision(14)<<V[i]<<endl;
   }
-  voutf<<setprecision(14)<<V[0]<<endl;
 }
 
 void CaDP::updatePa(double *Pa, double *Etaa,Qhistorylist& qhistorylist,ConnectMat& connectmat,Couplinglist& couplinglist){

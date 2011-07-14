@@ -11,6 +11,7 @@
 #include<fstream>
 #include<iostream>
 #include<string>
+#include<vector>
 #include"istrm.h"
 #include"random.h"
 
@@ -23,6 +24,8 @@ public:
   double getmean(){return mean;};
 private:
   Timeseries(Timeseries& ) ; //no copy contructor
+  std::vector<Timeseries*> stimulus; // array of stimuli when mode==0
+  std::vector<double> stimtime; // array of time to start stimulus when mode==0
   std::string id1; // name of type of time series used in mode e.g. "Concentration" .. modes
   std::string id2; // name of type of time series used in start time messsage
   int mode; // Number representing mode of timeseries
