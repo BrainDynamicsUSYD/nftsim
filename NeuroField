@@ -11,7 +11,7 @@ my $yossarian = 0;
 my $jobname = "";
 my $walltime = "";
 my $email = "";
-if( $hostname =~ /^yossarian/ ) {
+if( $hostname =~ /^headnode.physics.usyd.edu.au/ ) {
 	if( !(-e "pbs") ) {
 		print "Attempting to run NeuroField in Yossarian requires submitting a job to the PBS system. Continue? (y/n): ";
 		my $answer = <STDIN>; if( $answer =~ /^y$/ ) {
