@@ -109,6 +109,7 @@ void CaDP::output(){
     caoutf<<setprecision(14)<<Ca[i]<<endl;
     voutf<<setprecision(14)<<V[i]<<endl;
   }
+  voutf<<setprecision(14)<<V[0]<<endl;
 }
 
 void CaDP::updatePa(double *Pa, double *Etaa,Qhistorylist& qhistorylist,ConnectMat& connectmat,Couplinglist& couplinglist){
@@ -127,7 +128,7 @@ void CaDP::updatePa(double *Pa, double *Etaa,Qhistorylist& qhistorylist,ConnectM
     if( fabs(dnudt*deltat)>fabs(nu[i]) && dnudt/fabs(dnudt)!=sign )
       nu[i] = 0;
     else
-      nu[i] += deltat*dnudt;
+      nu[i] += sign*deltat*dnudt;
     // Sum the coupling terms transforming Phi_{ab} to P_{ab}
     Pa[i]=nu[i]*Etaa[i];
   }

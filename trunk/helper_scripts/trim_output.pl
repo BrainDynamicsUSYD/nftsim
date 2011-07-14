@@ -11,6 +11,7 @@ foreach(@file) {
 	next if( /.proper$/ );
 	next if( /^neurofield.conf$/ );
 	next if( /^neurofield.dump$/ );
+	next if( /^neurofield.pbs$/ );
 	`mv $_ "$_.proper"` unless( -e "$_.proper" );
 	my $orig_length = `wc -l "$_.proper"`;
 	my $space = $orig_length/$length;
