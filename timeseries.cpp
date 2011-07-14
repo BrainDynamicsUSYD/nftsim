@@ -8,11 +8,11 @@
 #include "timeseries.h"
 #include <math.h>
 #include<sstream>
+#include<cstdlib>
 using std::stringstream;
 using std::endl;
 
-Timeseries::Timeseries(const char * typeid1, const char * typeid2,Istrm& inputf):id1(typeid1),
-                        id2(typeid2){
+Timeseries::Timeseries(const char * typeid1, const char * typeid2,Istrm& inputf):id1(typeid1), id2(typeid2){
   random=0; // Set pointer to null in case random is not created
   seed=-98716872;
   int optionnum;
@@ -24,7 +24,18 @@ Timeseries::Timeseries(const char * typeid1, const char * typeid2,Istrm& inputf)
   message2 << "Time to start" << id2;
   inputf.validate(message2.str().c_str(),58);
   inputf >> ts;
+  std::string input;
   switch (mode) {
+    case 0: //  Composite stimulus
+      // take in stimulus transition times and specifications of each stimulus
+      message1.str(""); message1<<ts;
+      ts = 0;
+      for( std::string input = message1.str(); input!= "$"; inputf>>input )
+        stimtime.push_back( atof(input.c_str()) );
+      stimulus.resize( stimtime.size(), 0 );
+      for( unsigned int i=0; i<stimulus.size(); i++ )
+        stimulus[i] = new Timeseries( "Stimulus"," of stimulus",inputf );
+      break;
     case 1: //  Pulse pattern 
       inputf.validate("Amplitude",58);
       inputf >> amp;
@@ -109,12 +120,21 @@ Timeseries::Timeseries(const char * typeid1, const char * typeid2,Istrm& inputf)
 
 Timeseries::~Timeseries(){
   if(random) delete random;
+  for( unsigned int i=0; i<stimulus.size(); i++ )
+    if(stimulus[i]) delete stimulus[i];
 }
 
 void Timeseries::dump(std::ofstream& dumpf){
   dumpf << id1 << " mode:" << mode << " ";
   dumpf << "Time to start" << id2 << ":" << ts << " ";
   switch (mode) {
+    case 0: // Composite pattern
+      for( unsigned int i=0; i<stimtime.size(); i++ )
+        dumpf<<" "<<stimtime[i];
+      dumpf<<" $"<<endl;
+      for( unsigned int i=0; i<stimulus.size(); i++ )
+        stimulus[i]->dump(dumpf);
+      break;
     case 1: //  Pulse pattern 
       dumpf << "Amplitude:" << amp << " ";
       dumpf << "Pulse Duration:" << pdur << " ";
@@ -162,6 +182,13 @@ void Timeseries::dump(std::ofstream& dumpf){
 void Timeseries::get(double t, double *tseries, const long nodes){
   if(t>=ts){
     switch (mode) {
+      case 0: // Composite pattern
+        for( int i=stimtime.size()-1; i>=0; i-- )
+          if( t>stimtime[i] ) {
+              stimulus[i]->get( t-stimtime[i], tseries, nodes );
+              break;
+          }
+        break;
       case 1:{ // Pulse pattern 
         if(fmod((t-ts),tperiod) < pdur){
 	  for(long i=0; i<nodes; i++){

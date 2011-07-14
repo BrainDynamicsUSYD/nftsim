@@ -26,7 +26,7 @@ fclose(fid);
 
 % the above code assumes all outputed connections are plastic
 % if that is not true, set the plastic connection indices manually here:
-% couplings = [3];
+couplings = [2];
 
 figure;
 
