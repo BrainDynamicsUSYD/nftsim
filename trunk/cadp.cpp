@@ -104,7 +104,7 @@ void CaDP::dump(ofstream& dumpf){
 }
 
 void CaDP::output(){
-  for( int i=0; i<nodes; i++ ) {
+  for( int i=0; i<1 /*nodes*/; i++ ) {
     synapoutf<<setprecision(14)<<rho*nu[i]<<endl;
     caoutf<<setprecision(14)<<Ca[i]<<endl;
     voutf<<setprecision(14)<<V[i]<<endl;
@@ -127,7 +127,7 @@ void CaDP::updatePa(double *Pa, double *Etaa,Qhistorylist& qhistorylist,ConnectM
     if( fabs(dnudt*deltat)>fabs(nu[i]) && dnudt/fabs(dnudt)!=sign )
       nu[i] = 0;
     else
-      nu[i] += sign*deltat*dnudt;
+      nu[i] += deltat*dnudt;
     // Sum the coupling terms transforming Phi_{ab} to P_{ab}
     Pa[i]=nu[i]*Etaa[i];
   }

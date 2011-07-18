@@ -2,7 +2,7 @@ function spectrum(fname,k)
 % get powerspectra from fname
 
 if ~exist('fname','var')
-    fname = '../../neurofield.output';
+    fname = '../../neurofield.output.proper';
 end
 if ~exist('k','var')
     k = 1;
@@ -21,13 +21,21 @@ else
 end
 ntraces=sscanf(fgetl(fid),'Output Data - Number of traces: %d');
 temp=fgetl(fid);
-while length(temp)>20,
-    temp=fgetl(fid);
-end
-y=fscanf(fid,'%f');
-y=reshape([sscanf(temp,'%f');y],ntraces,nsteps)';
-fclose(fid);
+% while length(temp)>20,
+%     temp=fgetl(fid); % gets rid of the lines 'Propagator Number: ...'
+% end
+% y=fscanf(fid,'%f');
+% y=reshape([sscanf(temp,'%f');y],ntraces,nsteps)';
+% fclose(fid);
 
-[powerspectra,f] = pwelch(y(:,k),.05/deltat,[],.05/deltat,1/deltat);
-loglog(f,powerspectra);
+% read the last 30 seconds of firing activity to generate spectrum
+
+system(['tail -n',num2str(30/deltat),' ',fname, ...
+    ' | grep -v "^$" > .spectrum.output']);
+y = importdata('.spectrum.output');
+x = y(k:ntraces:end);
+!rm .spectrum.output
+
+[powerspectra,f] = pwelch(x-mean(x),5/deltat,1/deltat,1/deltat,1/deltat);
+loglog(f,powerspectra');
 xlabel('f (Hz)'); ylabel('Power Spectrum');

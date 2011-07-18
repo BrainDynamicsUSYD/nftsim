@@ -113,6 +113,15 @@ Timeseries::Timeseries(const char * typeid1, const char * typeid2,Istrm& inputf)
       inputf.validate("Time at peak",58);
       inputf >> tpeak;
       break;
+	case 10: // Pulse stimulus on node 0 only
+      inputf.validate("Amplitude",58);
+      inputf >> amp;
+      inputf.validate("Pulse Duration",58);
+      inputf >> pdur;
+      inputf.validate("Pulse repetition period",58);
+      inputf >> tperiod;
+      mean=0.0;
+      break;
     default: // No pattern
       break;
     }
@@ -300,6 +309,14 @@ void Timeseries::get(double t, double *tseries, const long nodes){
           tseries[i]=amp * (1 / (sqrt(6.2831853)*pdur)) * 
 	  (exp(-0.5*pow((t-tpeak), 2) / (pdur*pdur))); //3.1415926F 
         }
+        break;
+      }
+      case 10:{ // Pulse pattern 
+        if(fmod((t-ts),tperiod) < pdur){
+          tseries[0]=amp;
+		} else {
+          tseries[0]=0.0F;
+		}
         break;
       }
       default:{ // Default is No pattern
