@@ -1,8 +1,8 @@
-function kspectrum(fname,k,numberofk)
+function kspectrum(fname,k,kmax)
 % get spatial powerspectrum for the kth node from fname
 
 if ~exist('fname','var')
-    fname = '../../neurofield.output';
+    fname = '../../neurofield.output.proper';
 end
 if ~exist('k','var')
     k = 1;
@@ -30,7 +30,6 @@ y=fscanf(fid,'%f');
 y=reshape([sscanf(temp,'%f');y],ntraces,nsteps)';
 fclose(fid);
 
-tracecount = k:numberofk:ntraces;
-[powerspectra,f] = pwelch(y(:,tracecount),.05/deltat,[],.05/deltat,1/deltat);
+[powerspectra,f] = pwelch( sum(y(:,k:kmax:ntraces),2),2,[],[],.5);
 loglog(f,powerspectra);
 xlabel('k (m^{-1})'); ylabel('Spatial Power Spectrum');
