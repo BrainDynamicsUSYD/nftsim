@@ -19,15 +19,14 @@ using std::endl;
 
 double CaDP::sig( double x, double beta ) const
 {
-  double expo = exp(beta*x);
-  return expo/(1+expo);
+  return 1/(1+exp(-beta*x));
 }
 
 double CaDP::omega(double Ca) const
 {
-  double alpha0 = 0.33333; double alpha1 = 0.22e-6; double alpha2 = 0.39e-6;
+  double alpha1 = 0.22e-6; double alpha2 = 0.39e-6;
   double beta1 = 80e6; double beta2 = 40e6;
-  return ( alpha0 -alpha0*sig(Ca-alpha1,beta1) +sig(Ca-alpha2,beta2) );
+  return ( ltp/3 -ltd*sig(Ca-alpha1,beta1) +ltp*sig(Ca-alpha2,beta2) );
 }
 
 double CaDP::eta(double Ca) const
@@ -41,14 +40,17 @@ CaDP::CaDP(long numnodes, double deltat)
   :deltat(deltat), nodes(numnodes){
   nu = new double[nodes];
   Ca = new double[nodes];
+  binding = new double[nodes];
 }
 
 CaDP::~CaDP(){
   if(synapoutf.is_open()) synapoutf.close();
   if(voutf.is_open()) voutf.close();
   if(caoutf.is_open()) caoutf.close();
+  if(bindoutf.is_open()) bindoutf.close();
   if(nu) delete[] nu;
   if(Ca) delete[] Ca;
+  if(binding) delete[] binding;
 }
 
 void CaDP::init(Istrm& inputf, int coupleid){
@@ -61,11 +63,12 @@ void CaDP::init(Istrm& inputf, int coupleid){
   inputf.validate("V_r",58); inputf >> V_r;
   inputf.validate("tCa",58); inputf >> tCa;
   inputf.validate("B",58); inputf >> B;
-  inputf.validate("scale",58); inputf >> scale;
+  inputf.validate("LTD",58); inputf >> ltd;
+  inputf.validate("LTP",58); inputf >> ltp;
   srand ( time(NULL) );
   for( int i=0; i<nodes; i++ ) {
-    nu[i] = init_nu +( double(rand())/double(RAND_MAX)*init_nu/10 );
-    Ca[i] = init_Ca +( double(rand())/double(RAND_MAX)*init_Ca/10 );
+    nu[i] = init_nu;// +( double(rand())/double(RAND_MAX))*init_nu/10 );
+    Ca[i] = init_Ca;// +( double(rand())/double(RAND_MAX))*init_Ca/10 );
   }
   sign = int(nu[0]/fabs(nu[0]));
 
@@ -89,6 +92,12 @@ void CaDP::init(Istrm& inputf, int coupleid){
     std::cerr<<"Unable to open 'neurofield.vout."<<coupleid<<"' for output.\n";
     exit(EXIT_FAILURE);
   }
+  ss.str(""); ss<<"neurofield.bindout."<<coupleid;
+  bindoutf.open(ss.str().c_str(),std::ios::out);
+  if(!bindoutf){
+    std::cerr<<"Unable to open 'neurofield.bindout.."<<coupleid<<"' for output.\n";
+    exit(EXIT_FAILURE);
+  }
   this->coupleid = --coupleid;
 }
 
@@ -98,9 +107,10 @@ void CaDP::dump(ofstream& dumpf){
   dumpf<<"N: "<<N<<" ";
   dumpf<<"rho: "<<rho<<" ";
   dumpf<<"NMDA: "<<nmda<<" ";
-  dumpf<<"tCa: "<<nmda<<" ";
-  dumpf<<"B: "<<nmda<<" ";
-  dumpf<<"scale: "<<nmda<<" ";
+  dumpf<<"tCa: "<<tCa<<" ";
+  dumpf<<"B: "<<B<<" ";
+  dumpf<<"LTD: "<<ltd<<" ";
+  dumpf<<"LTP: "<<ltp<<" ";
 }
 
 void CaDP::output(){
@@ -108,26 +118,26 @@ void CaDP::output(){
     synapoutf<<setprecision(14)<<rho*nu[i]<<endl;
     caoutf<<setprecision(14)<<Ca[i]<<endl;
     voutf<<setprecision(14)<<V[i]<<endl;
+    bindoutf<<setprecision(14)<<binding[i]<<endl;
   }
 }
 
 void CaDP::updatePa(double *Pa, double *Etaa,Qhistorylist& qhistorylist,ConnectMat& connectmat,Couplinglist& couplinglist){
   V = qhistorylist.getQhist(connectmat.getQindex(coupleid)).getVbytime(0);
-  //std::cout<<"CoupleID "<<coupleid<<" Q Index "<<connectmat.getQindex(coupleid)<<" QHistory object "<<&qhistorylist.getQhist(connectmat.getQindex(coupleid))<<" V "<<V[0]<<" "<<V[1]<<endl;
   for( int i=0; i<nodes; i++ ) {
-    double v = V[i] +50e-3; // calibrated voltage
-    double binding = sig( couplinglist.glu[i] - 1e-5, sqrt(N) );
-    double dCadt = nmda*binding*(v-V_r) /(1+ exp(-0.062e3*v)*1.00/3.57 )
-      -Ca[i]/tCa;
-    if( dCadt<0 && fabs(dCadt)*deltat>Ca[i] )
+    double v = V[i] +65e-3; // calibrated voltage
+    binding[i] = sig( couplinglist.glu[i] - 7e-6, 5e5 );
+    double dCa = deltat*nmda*binding[i]*(v-V_r) /(1+ exp(-0.062e3*v)*1.00/3.57 )
+      -Ca[i]/tCa*deltat;
+    if( Ca[i]+dCa < 0 )
       Ca[i] = 0;
     else
-      Ca[i] += deltat*dCadt;
-    double dnudt = B*eta(Ca[i])*(N*scale*omega(Ca[i])-nu[i]);
-    if( fabs(dnudt*deltat)>fabs(nu[i]) && dnudt/fabs(dnudt)!=sign )
+      Ca[i] += dCa;
+    double dnu = deltat*B*eta(Ca[i])*(omega(Ca[i])-nu[i]);
+    if( sign*(nu[i]+dnu) < 0 )
       nu[i] = 0;
     else
-      nu[i] += deltat*dnudt;
+      nu[i] += dnu;
     // Sum the coupling terms transforming Phi_{ab} to P_{ab}
     Pa[i]=nu[i]*Etaa[i];
   }

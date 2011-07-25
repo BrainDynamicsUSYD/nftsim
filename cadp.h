@@ -39,6 +39,7 @@ private:
   double* V; // postsynaptic potential, with 2D spatial dependence
   double* nu;
   double* Ca;
+  double* binding; // glutamate binding
 
   double rho; // linearized sigmoid
   double N; // number of synpases per neuron
@@ -46,13 +47,15 @@ private:
   double V_r; // reverse potential for NMDAR
   double tCa; // decay time scale for calcium concentration
   double B; // time scale for dnu/dt
-  double scale; // scale of synaptic strength
+  double ltd; // magnitude of LTD
+  double ltp; // magnitude of LTP
 
   CaDP(CaDP& ); // no copy constructor
   const long nodes;
   ofstream synapoutf;
   ofstream caoutf;
   ofstream voutf;
+  ofstream bindoutf;
 };
 
 #endif

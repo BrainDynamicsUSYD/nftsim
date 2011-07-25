@@ -37,6 +37,7 @@ private:
   Couple ** couparray; // Array of pointers to coupling objects
   const int numcoup; // Number of coupling objects in coupling list
   long numnodes;
+  double deltat;
 };
 
 #endif
