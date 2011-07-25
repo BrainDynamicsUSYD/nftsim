@@ -30,7 +30,7 @@ couplings = [2];
 
 figure;
 
-subplot(3,2,1); hold on; box on; xlabel('Time (s)'); ylabel('Firing rate (s^{-1})')
+subplot(2,2,1); hold on; box on; xlabel('Time (s)'); ylabel('Firing rate (s^{-1})')
 [t y] = readoutput2(['../../',dir,'neurofield.output']);
 
 for loop = 1:length(couplings)
@@ -43,21 +43,25 @@ for loop = 1:length(h)
     set( h(loop), 'Color', [loop/length(h),0,1-loop/length(h)] );
 end
 
-subplot(3,2,2); box on; xlabel('Time (s)'); ylabel('V (mV)'); hold on
+subplot(2,2,2); box on; xlabel('Time (s)'); ylabel('V (mV)'); hold on
 for loop = 1:length(couplings)
     color = [loop/length(couplings),0,1-loop/length(couplings)];
 	y = textread( ['../../',dir,'neurofield.vout.', num2str(couplings(loop))] );
 	plot(t,y.*1e3,'Color',color)
+	y = textread( ['../../',dir,'neurofield.bindout.', num2str(couplings(loop))] );
+	plot(t,y.*10,'--','Color',color)
 end
 
-subplot(3,2,3); box on; xlabel('Time (s)'); ylabel('[Ca] (\muM)'); hold on
+subplot(2,2,3); box on; xlabel('Time (s)'); ylabel('[Ca] (\muM)'); hold on
+line([t(1) t(end)],[0.22 0.22],'LineStyle','--','Color','black');
+line([t(1) t(end)],[0.39 0.39],'LineStyle','--','Color','black');
 for loop = 1:length(couplings)
     color = [loop/length(couplings),0,1-loop/length(couplings)];
 	y = textread( ['../../',dir,'neurofield.caout.', num2str(couplings(loop))] );
 	plot(t,y.*1e6,'Color',color)
 end
 
-subplot(3,2,4); box on; xlabel('Time (s)'); ylabel('|G|'); hold on
+subplot(2,2,4); box on; xlabel('Time (s)'); ylabel('|G|'); hold on
 for loop = 1:length(couplings)
     color = [loop/length(couplings),0,1-loop/length(couplings)];
 	y = textread( ['../../',dir,'neurofield.synaptout.', num2str(couplings(loop))] );
@@ -71,23 +75,23 @@ for loop = 1:length(couplings)
 end
 plot(t,1.*abs(y),'k','LineWidth',2);
 
-subplot(3,2,5);
-for k = 1:length(couplings)
-    spectrum( ['../../',dir,'neurofield.output.proper'] ,k); hold on
-end
-h = get(gca,'Children');
-for loop = 1:length(h)
-    set( h(loop), 'Color', [loop/k,0,1-loop/k] );
-end
-
-subplot(3,2,6);
-for k = 1:length(couplings)
-    kspectrum( ['../../',dir,'neurofield.output'], k, 2); hold on
-end
-h = get(gca,'Children');
-for loop = 1:length(h)
-    set( h(loop), 'Color', [loop/k,0,1-loop/k] );
-end
+% subplot(3,2,5);
+% for k = 1:length(couplings)
+%     spectrum( ['../../',dir,'neurofield.output.proper'] ,k); hold on
+% end
+% h = get(gca,'Children');
+% for loop = 1:length(h)
+%     set( h(loop), 'Color', [loop/k,0,1-loop/k] );
+% end
+% 
+% subplot(3,2,6);
+% for k = 1:length(couplings)
+%     kspectrum( ['../../',dir,'neurofield.output'], k, 2); hold on
+% end
+% h = get(gca,'Children');
+% for loop = 1:length(h)
+%     set( h(loop), 'Color', [loop/k,0,1-loop/k] );
+% end
 
 return; % to print output with config file, evaluate the following lines
 saveas(gcf,'.pic.pdf');

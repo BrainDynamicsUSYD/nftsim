@@ -122,6 +122,12 @@ Timeseries::Timeseries(const char * typeid1, const char * typeid2,Istrm& inputf)
       inputf >> tperiod;
       mean=0.0;
       break;
+	case 11: // exponentially decaying stimulus
+	  inputf.validate("Amplitude",58);
+	  inputf >> amp;
+      inputf.validate("Timescale",58);
+      inputf >> tperiod;
+	  break;
     default: // No pattern
       break;
     }
@@ -183,6 +189,15 @@ void Timeseries::dump(std::ofstream& dumpf){
       dumpf << "Pulse Duration:" << pdur << " ";
       dumpf << "Time at peak:" << tpeak << " ";
       break;
+	case 10: // Pulse stimulus on node 0 only
+	  dumpf << "Amplitude:" << amp << " ";
+	  dumpf << "Pulse Duration" << pdur << " ";
+	  dumpf << "Pulse repetition period" << tperiod << " ";
+      break;
+	case 11: // exponentially decaying stimulus
+	  dumpf << "Amplitude:" << amp << " ";
+	  dumpf << "Timescale" << tperiod << " ";
+	  break;
     default: // No pattern
       break;
     }
@@ -312,13 +327,17 @@ void Timeseries::get(double t, double *tseries, const long nodes){
         break;
       }
       case 10:{ // Pulse pattern 
-        if(fmod((t-ts),tperiod) < pdur){
+        for(long i=0; i<nodes; i++)
+          tseries[i]=0.0F;
+        if(fmod((t-ts),tperiod) < pdur)
           tseries[0]=amp;
-		} else {
-          tseries[0]=0.0F;
-		}
         break;
       }
+      case 11:{ // exponentially decaying stimulus
+        for(long i=0; i<nodes; i++)
+          tseries[i] = amp*exp(-(t-ts)/tperiod);
+      }
+        break;
       default:{ // Default is No pattern
         for(long i=0; i<nodes; i++)
           tseries[i]=0.0F;
