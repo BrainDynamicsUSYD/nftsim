@@ -53,8 +53,8 @@ for loop = 1:length(couplings)
 end
 
 subplot(2,2,3); box on; xlabel('Time (s)'); ylabel('[Ca] (\muM)'); hold on
-line([t(1) t(end)],[0.22 0.22],'LineStyle','--','Color','black');
-line([t(1) t(end)],[0.39 0.39],'LineStyle','--','Color','black');
+line([t(1) t(end)],[0.25 0.25],'LineStyle','--','Color','black');
+line([t(1) t(end)],[0.46 0.46],'LineStyle','--','Color','black');
 for loop = 1:length(couplings)
     color = [loop/length(couplings),0,1-loop/length(couplings)];
 	y = textread( ['../../',dir,'neurofield.caout.', num2str(couplings(loop))] );

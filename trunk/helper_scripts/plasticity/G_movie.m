@@ -25,7 +25,7 @@ fclose(fid);
 
 % the above code assumes all outputed connections are plastic
 % if that is not true, set the plastic connection indices manually here:
-% couplings = [3,5];
+couplings = 2;
 
 for coupling = 1:length(couplings)
     fid = fopen( ['../../',dir,'neurofield.synaptout.',num2str(couplings(coupling))] );
@@ -36,16 +36,17 @@ for coupling = 1:length(couplings)
     set(gca,'xtick',[]); set(gca,'ytick',[]);
     xlabel('x'); ylabel('y'); ht = title(['G(',num2str(couplings(coupling)),')']);
     view(2);
-    G = zeros(nodelength,nodelength);
     for t = 1:nsteps
-        for node = 1:nodelength^2
-            G(node) = sscanf(fgetl(fid),'%f');
+        G = fscanf(fid,'%f',nodelength^2);
+        if mod(t,1000)
+            continue
         end
-        Gmean = mean(mean(G));
+        G = reshape(G,nodelength,nodelength);
+        Gmean = mean(mean(G)); fluc = max(max(abs(G-Gmean)));
         set( hm, 'ZData', G-Gmean )
         set(ht,'String',['G(',num2str(couplings(coupling)),') = ',num2str(Gmean),...
-            ', fluctuation = ',num2str(max(max(abs(G-Gmean)))),', t = ', num2str(t*deltat), ' s']);
-        set(gca,'Clim',[-4e-0 +4e-0]);
+            ', fluctuation = ',num2str(fluc),', t = ', num2str(t*deltat), ' s']);
+        caxis([ -fluc fluc ]);
         drawnow
         F = getframe(h);
         avi = addframe(avi,F);

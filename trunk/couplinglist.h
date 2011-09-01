@@ -38,6 +38,8 @@ private:
   const int numcoup; // Number of coupling objects in coupling list
   long numnodes;
   double deltat;
+  double Lambda; // proportionality constant between excitatory eta and glu
+  double* dglu;
 };
 
 #endif
