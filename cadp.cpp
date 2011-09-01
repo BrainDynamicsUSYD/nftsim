@@ -24,16 +24,14 @@ double CaDP::sig( double x, double beta ) const
 
 double CaDP::omega(double Ca) const
 {
-  double alpha1 = 0.22e-6; double alpha2 = 0.39e-6;
-  double beta1 = 80e6; double beta2 = 40e6;
-  return ( ltp/3 -ltd*sig(Ca-alpha1,beta1) +ltp*sig(Ca-alpha2,beta2) );
+  return nu_0 +(nu_ltd-nu_0)*sig(Ca-.1e-6,80e6) +(nu_ltp-nu_ltd-nu_0)*sig(Ca-.46e-6,80e6);
 }
 
 double CaDP::eta(double Ca) const
 {
-  double p1 = 1; double p2 = 0.28e-6; double p3 = 3; double p4 = 1e-11;
-  double power = pow(Ca+p4,p3);
-  return p1*power/( power + pow(p2,p3) );
+  //return 1/( .1e3/(1e-3+pow(Ca*1e6,3))+1e3 );
+  //return -nu_ltd*sig(Ca-.25e-6,80e6) +nu_ltp*sig(Ca-.46e-6,80e6);
+  return 1e-3*sig( Ca-3e-7, 8e6 );
 }
 
 CaDP::CaDP(long numnodes, double deltat)
@@ -54,21 +52,17 @@ CaDP::~CaDP(){
 }
 
 void CaDP::init(Istrm& inputf, int coupleid){
-  double init_nu; double init_Ca;
-  inputf.validate("Initial nu",58); inputf >> init_nu;
-  inputf.validate("Initial Ca",58); inputf >> init_Ca;
+  inputf.validate("Nu",58); inputf >> nu_0;
+  inputf.validate("LTD",58); inputf >> nu_ltd;
+  inputf.validate("LTP",58); inputf >> nu_ltp;
+  inputf.validate("B",58); inputf >> B;
   inputf.validate("N",58); inputf >> N;
   inputf.validate("rho",58); inputf >> rho;
-  inputf.validate("NMDA",58); inputf >> nmda;
-  inputf.validate("V_r",58); inputf >> V_r;
-  inputf.validate("tCa",58); inputf >> tCa;
-  inputf.validate("B",58); inputf >> B;
-  inputf.validate("LTD",58); inputf >> ltd;
-  inputf.validate("LTP",58); inputf >> ltp;
   srand ( time(NULL) );
   for( int i=0; i<nodes; i++ ) {
-    nu[i] = init_nu;// +( double(rand())/double(RAND_MAX))*init_nu/10 );
-    Ca[i] = init_Ca;// +( double(rand())/double(RAND_MAX))*init_Ca/10 );
+    nu[i] = nu_0;
+    Ca[i] = 0;
+    binding[i] = 0;
   }
   sign = int(nu[0]/fabs(nu[0]));
 
@@ -95,26 +89,23 @@ void CaDP::init(Istrm& inputf, int coupleid){
   ss.str(""); ss<<"neurofield.bindout."<<coupleid;
   bindoutf.open(ss.str().c_str(),std::ios::out);
   if(!bindoutf){
-    std::cerr<<"Unable to open 'neurofield.bindout.."<<coupleid<<"' for output.\n";
+    std::cerr<<"Unable to open 'neurofield.bindout."<<coupleid<<"' for output.\n";
     exit(EXIT_FAILURE);
   }
   this->coupleid = --coupleid;
 }
 
 void CaDP::dump(ofstream& dumpf){
-  dumpf<<"Initial nu: "<<nu[0]<<" ";
-  dumpf<<"Initial Ca: "<<Ca[0]<<" ";
+  dumpf<<"Nu: "<<nu_0<<" ";
+  dumpf<<"LTD: "<<nu_ltd<<" ";
+  dumpf<<"LTP: "<<nu_ltp<<" ";
+  dumpf<<"B: "<<B<<" ";
   dumpf<<"N: "<<N<<" ";
   dumpf<<"rho: "<<rho<<" ";
-  dumpf<<"NMDA: "<<nmda<<" ";
-  dumpf<<"tCa: "<<tCa<<" ";
-  dumpf<<"B: "<<B<<" ";
-  dumpf<<"LTD: "<<ltd<<" ";
-  dumpf<<"LTP: "<<ltp<<" ";
 }
 
 void CaDP::output(){
-  for( int i=0; i<1 /*nodes*/; i++ ) {
+  for( int i=0; i</*nodes*/1; i++ ) {
     synapoutf<<setprecision(14)<<rho*nu[i]<<endl;
     caoutf<<setprecision(14)<<Ca[i]<<endl;
     voutf<<setprecision(14)<<V[i]<<endl;
@@ -125,15 +116,14 @@ void CaDP::output(){
 void CaDP::updatePa(double *Pa, double *Etaa,Qhistorylist& qhistorylist,ConnectMat& connectmat,Couplinglist& couplinglist){
   V = qhistorylist.getQhist(connectmat.getQindex(coupleid)).getVbytime(0);
   for( int i=0; i<nodes; i++ ) {
-    double v = V[i] +65e-3; // calibrated voltage
-    binding[i] = sig( couplinglist.glu[i] - 7e-6, 5e5 );
-    double dCa = deltat*nmda*binding[i]*(v-V_r) /(1+ exp(-0.062e3*v)*1.00/3.57 )
-      -Ca[i]/tCa*deltat;
+    binding[i] = 1;//sig( couplinglist.glu[i] -200e-6, B );
+    double dCa = deltat*(2e-3*binding[i])*(195e-3-V[i])*sig( V[i]-45.5e-3-log(1e-0)/62,62 )
+      -Ca[i]/50e-3*deltat;
     if( Ca[i]+dCa < 0 )
       Ca[i] = 0;
     else
       Ca[i] += dCa;
-    double dnu = deltat*B*eta(Ca[i])*(omega(Ca[i])-nu[i]);
+    double dnu = deltat*eta(Ca[i])*(omega(Ca[i])-nu[i]);
     if( sign*(nu[i]+dnu) < 0 )
       nu[i] = 0;
     else

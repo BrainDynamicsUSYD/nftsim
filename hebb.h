@@ -1,12 +1,12 @@
 /***************************************************************************
-                          cadp.h  - plasticity rule according to Shouval et al
+                          hebb.h  - simple Hebbian plasticity rule
                              -------------------
     copyright            : (C) 2009
     email                : peter@physics.usyd.edu.au
  ***************************************************************************/
 
-#ifndef CADP_H
-#define CADP_H
+#ifndef HEBB_H
+#define HEBB_H
 
 #include<cstdlib>
 #include<fstream>
@@ -19,42 +19,30 @@ using std::ofstream;
 #include"connectmat.h"
 #include"parameter.h"
 
-class CaDP: public Couple {
+class Hebb: public Couple {
 public: 
-  CaDP(long nodes, double deltat);
-  ~CaDP();
+  Hebb(long nodes, double deltat);
+  ~Hebb();
   void init(Istrm& inputf, int coupleid); 
   void dump(ofstream& dumpf); // output values for restart
   void output(); // output variables as needed
   void updatePa(double *Pa,double *Etaa,Qhistorylist& qhistorylist,ConnectMat& connectmat,Couplinglist& couplinglist);
 
 private:
-  double sig( double x, double beta ) const;
-  double omega(double Ca) const;
-  double eta(double Ca) const;
 
   double deltat;
   int coupleid; // == dendriticr index, used for getQindex to get V
 
-  double* V; // postsynaptic potential, with 2D spatial dependence
   double* nu;
-  double* Ca;
-  double* binding; // glutamate binding
+  int sign;
 
   double rho; // linearized sigmoid
   double N; // number of synpases per neuron
-  double B; // 1/stanard deviation of glutamate binding
+  double B; // proportionality constant
 
-  double nu_0; // omega at steady state
-  double nu_ltd; // omega at depression
-  double nu_ltp; // omega at potentiation
-
-  CaDP(CaDP& ); // no copy constructor
+  Hebb(Hebb& ); // no copy constructor
   const long nodes;
   ofstream synapoutf;
-  ofstream caoutf;
-  ofstream voutf;
-  ofstream bindoutf;
 };
 
 #endif
