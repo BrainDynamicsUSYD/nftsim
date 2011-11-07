@@ -22,16 +22,14 @@ double CaDP::sig( double x, double beta ) const
   return 1/(1+exp(-beta*x));
 }
 
-double CaDP::omega(double Ca) const
+double CaDP::potentiate(double Ca) const
 {
-  return nu_0 +(nu_ltd-nu_0)*sig(Ca-.1e-6,80e6) +(nu_ltp-nu_ltd-nu_0)*sig(Ca-.46e-6,80e6);
+  return nu_th +nu_ltp*sig(Ca-.46e-6,2e7);
 }
 
-double CaDP::eta(double Ca) const
+double CaDP::depress(double Ca) const
 {
-  //return 1/( .1e3/(1e-3+pow(Ca*1e6,3))+1e3 );
-  //return -nu_ltd*sig(Ca-.25e-6,80e6) +nu_ltp*sig(Ca-.46e-6,80e6);
-  return 1e-3*sig( Ca-3e-7, 8e6 );
+  return nu_th +nu_ltd*sig(Ca-.25e-6,2e7) -nu_ltd*sig(Ca-.46e-6,2e7);
 }
 
 CaDP::CaDP(long numnodes, double deltat)
@@ -52,7 +50,9 @@ CaDP::~CaDP(){
 }
 
 void CaDP::init(Istrm& inputf, int coupleid){
-  inputf.validate("Nu",58); inputf >> nu_0;
+  inputf.validate("Nu",58); inputf >> nu[0];
+  inputf.validate("Nu_max",58); inputf >> nu_max;
+  inputf.validate("Threshold",58); inputf >> nu_th;
   inputf.validate("LTD",58); inputf >> nu_ltd;
   inputf.validate("LTP",58); inputf >> nu_ltp;
   inputf.validate("B",58); inputf >> B;
@@ -60,7 +60,7 @@ void CaDP::init(Istrm& inputf, int coupleid){
   inputf.validate("rho",58); inputf >> rho;
   srand ( time(NULL) );
   for( int i=0; i<nodes; i++ ) {
-    nu[i] = nu_0;
+    nu[i] = nu[0];
     Ca[i] = 0;
     binding[i] = 0;
   }
@@ -96,7 +96,9 @@ void CaDP::init(Istrm& inputf, int coupleid){
 }
 
 void CaDP::dump(ofstream& dumpf){
-  dumpf<<"Nu: "<<nu_0<<" ";
+  dumpf<<"Nu: "<<nu[0]<<" ";
+  dumpf<<"Nu_max: "<<nu_max<<" ";
+  dumpf<<"Threshold"<<nu_th<<" ";
   dumpf<<"LTD: "<<nu_ltd<<" ";
   dumpf<<"LTP: "<<nu_ltp<<" ";
   dumpf<<"B: "<<B<<" ";
@@ -116,17 +118,17 @@ void CaDP::output(){
 void CaDP::updatePa(double *Pa, double *Etaa,Qhistorylist& qhistorylist,ConnectMat& connectmat,Couplinglist& couplinglist){
   V = qhistorylist.getQhist(connectmat.getQindex(coupleid)).getVbytime(0);
   for( int i=0; i<nodes; i++ ) {
-    binding[i] = 1;//sig( couplinglist.glu[i] -200e-6, B );
-    double dCa = deltat*(2e-3*binding[i])*(195e-3-V[i])*sig( V[i]-45.5e-3-log(1e-0)/62,62 )
+    binding[i] = sig( couplinglist.glu[i] -200e-6, B );
+    double dCa = deltat*(1e-3*binding[i])*(195e-3-V[i])*sig( V[i]-45.5e-3,62 )
       -Ca[i]/50e-3*deltat;
     if( Ca[i]+dCa < 0 )
       Ca[i] = 0;
     else
       Ca[i] += dCa;
-    double dnu = deltat*eta(Ca[i])*(omega(Ca[i])-nu[i]);
-    if( sign*(nu[i]+dnu) < 0 )
-      nu[i] = 0;
-    else
+	double dnu = deltat*( potentiate(Ca[i])*(nu_max-nu[i]) -depress(Ca[i])*nu[i] );
+    //if( sign*(nu[i]+dnu) < 0 )
+      //nu[i] = 0;
+    //else
       nu[i] += dnu;
     // Sum the coupling terms transforming Phi_{ab} to P_{ab}
     Pa[i]=nu[i]*Etaa[i];

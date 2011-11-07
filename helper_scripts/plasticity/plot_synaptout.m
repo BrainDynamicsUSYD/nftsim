@@ -52,7 +52,7 @@ for loop = 1:length(couplings)
 	plot(t,y.*10,'--','Color',color)
 end
 
-subplot(2,2,3); box on; xlabel('Time (s)'); ylabel('[Ca] (\muM)'); hold on
+subplot(2,2,3); box on; xlabel('Time (s)'); ylabel('Ca (\muM)'); hold on
 line([t(1) t(end)],[0.25 0.25],'LineStyle','--','Color','black');
 line([t(1) t(end)],[0.46 0.46],'LineStyle','--','Color','black');
 for loop = 1:length(couplings)
@@ -70,11 +70,11 @@ end
 
 y = 0;%-0.0018*4200;
 for loop = 1:length(couplings)
-	tempy = textread( ['../../',dir,'neurofield.synaptout.', num2str(couplings(loop))] );
+	tempy = textread( ['../j../',dir,'neurofield.synaptout.', num2str(couplings(loop))] );
     y = y + tempy;
 end
 plot(t,1.*abs(y),'k','LineWidth',2);
-
+G
 % subplot(3,2,5);
 % for k = 1:length(couplings)
 %     spectrum( ['../../',dir,'neurofield.output.proper'] ,k); hold on

@@ -30,8 +30,8 @@ public:
 
 private:
   double sig( double x, double beta ) const;
-  double omega(double Ca) const;
-  double eta(double Ca) const;
+  double potentiate(double Ca) const;
+  double depress(double Ca) const;
 
   double deltat;
   int coupleid; // == dendriticr index, used for getQindex to get V
@@ -45,9 +45,10 @@ private:
   double N; // number of synpases per neuron
   double B; // 1/stanard deviation of glutamate binding
 
-  double nu_0; // omega at steady state
-  double nu_ltd; // omega at depression
-  double nu_ltp; // omega at potentiation
+  double nu_max; // maximum synaptic strength
+  double nu_th; // threshold time-scale of plasticity
+  double nu_ltd; // time-scale of depression
+  double nu_ltp; // time-scale of potentiation
 
   CaDP(CaDP& ); // no copy constructor
   const long nodes;

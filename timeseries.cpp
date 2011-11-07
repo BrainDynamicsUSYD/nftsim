@@ -43,7 +43,8 @@ Timeseries::Timeseries(const char * typeid1, const char * typeid2,Istrm& inputf)
       inputf >> pdur;
       inputf.validate("Pulse repetition period",58);
       inputf >> tperiod;
-      mean=0.0;
+      inputf.validate("Background",58);
+      inputf >> mean;
       break;
     case 2: //  White noise pattern
       optionnum=inputf.choose("Amplitude:1 Ranseed:2",58);
@@ -113,7 +114,7 @@ Timeseries::Timeseries(const char * typeid1, const char * typeid2,Istrm& inputf)
       inputf.validate("Time at peak",58);
       inputf >> tpeak;
       break;
-	case 10: // Pulse stimulus on node 0 only
+    case 10: // Pulse stimulus on node 0 only
       inputf.validate("Amplitude",58);
       inputf >> amp;
       inputf.validate("Pulse Duration",58);
@@ -122,9 +123,9 @@ Timeseries::Timeseries(const char * typeid1, const char * typeid2,Istrm& inputf)
       inputf >> tperiod;
       mean=0.0;
       break;
-	case 11: // exponentially decaying stimulus
-	  inputf.validate("Amplitude",58);
-	  inputf >> amp;
+    case 11: // exponentially decaying stimulus
+      inputf.validate("Amplitude",58);
+      inputf >> amp;
       inputf.validate("Timescale",58);
       inputf >> tperiod;
 	  break;
@@ -189,15 +190,15 @@ void Timeseries::dump(std::ofstream& dumpf){
       dumpf << "Pulse Duration:" << pdur << " ";
       dumpf << "Time at peak:" << tpeak << " ";
       break;
-	case 10: // Pulse stimulus on node 0 only
-	  dumpf << "Amplitude:" << amp << " ";
-	  dumpf << "Pulse Duration" << pdur << " ";
-	  dumpf << "Pulse repetition period" << tperiod << " ";
+    case 10: // Pulse stimulus on node 0 only
+      dumpf << "Amplitude:" << amp << " ";
+      dumpf << "Pulse Duration" << pdur << " ";
+      dumpf << "Pulse repetition period" << tperiod << " ";
       break;
-	case 11: // exponentially decaying stimulus
-	  dumpf << "Amplitude:" << amp << " ";
-	  dumpf << "Timescale" << tperiod << " ";
-	  break;
+    case 11: // exponentially decaying stimulus
+      dumpf << "Amplitude:" << amp << " ";
+      dumpf << "Timescale" << tperiod << " ";
+      break;
     default: // No pattern
       break;
     }
@@ -215,58 +216,58 @@ void Timeseries::get(double t, double *tseries, const long nodes){
         break;
       case 1:{ // Pulse pattern 
         if(fmod((t-ts),tperiod) < pdur){
-	  for(long i=0; i<nodes; i++){
+      for(long i=0; i<nodes; i++){
             tseries[i]=amp;
           }
-	} else {
+    } else {
           for(long i=0; i<nodes; i++)
-            tseries[i]=0.0F;
-	}
+            tseries[i]=mean;
+    }
         break;
       }
       case 2:{ // White noise pattern
-	//
-	// For efficiency reasons random.gaussian random deviates are usually calculated in pairs.
-	// This is the reason for slightly more complex updating routine here
-	//
+    //
+    // For efficiency reasons random.gaussian random deviates are usually calculated in pairs.
+    // This is the reason for slightly more complex updating routine here
+    //
         double deviate1, deviate2;
-	double *p;
-	p=tseries;
+    double *p;
+    p=tseries;
         for(long i=0; i<nodes-1; i+=2){ // if nodes is even then update every point in tseries[]
-		              // if nodes is odd then update all but the last point in tseries[]
-	  random->gaussian(deviate1,deviate2);	
+    	              // if nodes is odd then update all but the last point in tseries[]
+      random->gaussian(deviate1,deviate2);	
           *p++=amp*deviate1 + mean;
           *p++=amp*deviate2 + mean;
         }
-	if(nodes%2){ // if nodes is odd update last point which was otherwise not updated above
-	  random->gaussian(deviate1,deviate2);
+    if(nodes%2){ // if nodes is odd update last point which was otherwise not updated above
+      random->gaussian(deviate1,deviate2);
 	  *p=amp*deviate1 + mean;
-	}
+    }
         break;
       }
       case 3:{ // Sinusoidal pattern - spatial coherent
-	for(long i=0; i<nodes; i++){
-	  tseries[i]=amp*sin(6.2831853F*freq*t);
-	}
-	break;
+    for(long i=0; i<nodes; i++){
+      tseries[i]=amp*sin(6.2831853F*freq*t);
+    }
+    break;
       }
       case 4:{ // Coherent white noise pattern
         double deviate1, deviate2;
-	random->gaussian(deviate1,deviate2);
-	for(long i=0; i<nodes; i++){
+    random->gaussian(deviate1,deviate2);
+    for(long i=0; i<nodes; i++){
           tseries[i]=amp*deviate1 + mean;
         }
         break;
       }
       case 5:{ // Spatially white noise temporally a pulse pattern
        if(fmod((t-ts),tperiod) < pdur){
-	  //
-	  // For efficiency reasons random.gaussian random deviates are usually calculated in pairs.
-	  // This is the reason for slightly more complex updating routine here
-	  //
+      //
+      // For efficiency reasons random.gaussian random deviates are usually calculated in pairs.
+      // This is the reason for slightly more complex updating routine here
+      //
             double deviate1, deviate2;
-	    double *p;
-	    p=tseries;
+        double *p;
+        p=tseries;
             for(long i=0; i<nodes-1; i+=2){ // if nodes is even then update every point in tseries[]
                                   // if nodes is odd then update all but the last point in tseries[]
 	      random->gaussian(deviate1,deviate2);	
@@ -274,27 +275,27 @@ void Timeseries::get(double t, double *tseries, const long nodes){
               *p++=amp*deviate2;
             }
             if(nodes%2){ // if nodes is odd update last point which was otherwise not updated above
-	      random->gaussian(deviate1,deviate2);
+          random->gaussian(deviate1,deviate2);
               *p=amp*deviate1;
             }
         } else {
           for(long i=0; i<nodes; i++)
             tseries[i]=0.0F;
-	}
+    }
         break;
       }
       case 6: { // Spatially Gaussian pulse, temporally Gaussian pulse
-	float x = 0;
-	float y = 0;
-	int ij = 0;
-	int size = 0;
-	float arg = 0;	
-	float temporal = 0;
-	temporal = (1 / (sqrt(6.2831853)*pdur)) * 
-		(exp(-0.5*pow((t-tpeak), 2) / (pdur*pdur))); //3.1415926F
-	size = (int) sqrt(nodes);
+    float x = 0;
+    float y = 0;
+    int ij = 0;
+    int size = 0;
+    float arg = 0;	
+    float temporal = 0;
+    temporal = (1 / (sqrt(6.2831853)*pdur)) * 
+    	(exp(-0.5*pow((t-tpeak), 2) / (pdur*pdur))); //3.1415926F
+    size = (int) sqrt(nodes);
     // Do spatial Gausian here....
-	for(long i=0; i<size; i++){
+    for(long i=0; i<size; i++){
           for(long j=0; j<size; j++){
             x = i*deltax;
             y = j*deltax;
@@ -308,21 +309,21 @@ void Timeseries::get(double t, double *tseries, const long nodes){
       case 7: { // Constant
         for(long i=0; i<nodes; i++)
           tseries[i]=mean;
-	break;
+    break;
       }
       case 8:{ // JC's Ramp Concentration pattern
-	if(0 == (fmod((t-ts),stepwidth)-stepwidth) ){
+    if(0 == (fmod((t-ts),stepwidth)-stepwidth) ){
          printf("%f\n", t);
-	 for(long i=0; i<nodes; i++){
-	    tseries[i] = tseries[i] + stepheight;
-	 }
-	}
-	break;
+     for(long i=0; i<nodes; i++){
+        tseries[i] = tseries[i] + stepheight;
+     }
+    }
+    break;
       }
       case 9: { // JC's Gaussian pulse pattern
         for(long i=0; i<nodes; i++){
           tseries[i]=amp * (1 / (sqrt(6.2831853)*pdur)) * 
-	  (exp(-0.5*pow((t-tpeak), 2) / (pdur*pdur))); //3.1415926F 
+      (exp(-0.5*pow((t-tpeak), 2) / (pdur*pdur))); //3.1415926F 
         }
         break;
       }
