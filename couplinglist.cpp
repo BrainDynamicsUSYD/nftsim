@@ -74,8 +74,9 @@ Couplinglist::~Couplinglist(){
 }
 
 void Couplinglist::init(Istrm& inputf){
-  for(int i=0; i<numcoup; i++)
+  for(int i=0; i<numcoup; i++) {
     getcoup(i)->init(inputf,i);
+  }
 }
 
 void Couplinglist::dump(ofstream& dumpf){
@@ -89,13 +90,15 @@ void Couplinglist::dump(ofstream& dumpf){
 
 // updateP method updates P via each coupling object 
 void Couplinglist::updateP(double **P,double **Eta,Qhistorylist& qhistorylist,ConnectMat& connectmat){
-  dglu[0]=0;//double ddglu = 0; double ts = 200e-3; double td = 200e-3;
+	static double time = 0;
+  for( int j=0; j<numnodes; j++ )
+    dglu[j]=0;//double ddglu = 0; double ts = 200e-3; double td = 200e-3;
   for( int i=0; i<numcoup; i++ )
     if( getcoup(i)->sign )
       for( int j=0; j<numnodes; j++ )
-        dglu[j] += 50./200.*Lambda*Eta[i][j]*deltat;
+        dglu[j] += Lambda*Eta[i][j]*deltat;
   for( int j=0; j<numnodes; j++ ) {
-    dglu[j] -= ( glu[j] )/50e-3*deltat;
+    dglu[j] -= ( glu[j] )/40e-3*deltat;
     //double p1 = ddglu;
 	//double k1 = dglu[j];
 	//double p2 = p1 -p1/2/ts -k1/2/td;
@@ -112,6 +115,7 @@ void Couplinglist::updateP(double **P,double **Eta,Qhistorylist& qhistorylist,Co
   for(int i=0;i<numcoup;i++){
     getcoup(i)->updatePa(P[i],Eta[i],qhistorylist,connectmat,*this);
   }
+  time++;
 }
 
 void Couplinglist::output(){
