@@ -2,7 +2,7 @@
 % reads output from neurofield.output and neurofield.synaptout.*
 % and plots the firing rate and nu's
 
-dir = './';
+dir = './Output/Stimulus_mode:_10,ISI=.04/';
 
 fid=fopen(['../../',dir,'neurofield.output']);
 temp=fgetl(fid);
@@ -70,11 +70,11 @@ end
 
 y = 0;%-0.0018*4200;
 for loop = 1:length(couplings)
-	tempy = textread( ['../j../',dir,'neurofield.synaptout.', num2str(couplings(loop))] );
+	tempy = textread( ['../../',dir,'neurofield.synaptout.', num2str(couplings(loop))] );
     y = y + tempy;
 end
 plot(t,1.*abs(y),'k','LineWidth',2);
-G
+
 % subplot(3,2,5);
 % for k = 1:length(couplings)
 %     spectrum( ['../../',dir,'neurofield.output.proper'] ,k); hold on
@@ -94,5 +94,6 @@ G
 % end
 
 return; % to print output with config file, evaluate the following lines
+%%
 saveas(gcf,'.pic.pdf');
 system(['plot_synaptout.sh ../../',dir,'neurofield.conf .pic.pdf'])
