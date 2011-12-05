@@ -339,10 +339,15 @@ void Timeseries::get(double t, double *tseries, const long nodes){
         tseries[i] = mean;
       // median nerve stimulation N20
       if( t>=ts && t-ts<xspread ) 
-        tseries[0] -= xcent*sin( (t-ts)*3.141592654/xspread );
+        for( long i=0; i<1; i++ )
+          tseries[i] -= xcent*sin( (t-ts)*3.141592654/xspread );
       // median nerve stimulation P25
       else if( t-ts>=xspread && t-ts<xspread+yspread ) 
-        tseries[0] += ycent*sin( (t-ts-xspread)*3.141592654/yspread );
+        for( long i=0; i<1; i++ )
+          tseries[i] += ycent*sin( (t-ts-xspread)*3.141592654/yspread );
+      else if( t-ts>=xspread+yspread+xspread && t-ts<3*xspread+yspread ) 
+        for( long i=0; i<1; i++ )
+          tseries[i] -= xcent*sin( (t-ts-2*xspread)*3.141592654/xspread );
       // transcranial magnetic stimulation
       if( t-ts>=xspread/2+tpeak && t-ts<xspread/2+tpeak+pdur){
         for( long i=0; i<nodes; i++ )

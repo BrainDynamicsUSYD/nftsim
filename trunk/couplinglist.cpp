@@ -12,7 +12,6 @@
 #include"modcouple.h"
 #include"stdp.h"
 #include"cadp.h"
-#include"hebb.h"
 using std::endl;
 
 //
@@ -44,17 +43,15 @@ Couplinglist::Couplinglist(Istrm& inputf, ofstream& dumpf
       couparray[i] = new CaDP(nodes,deltat);
       dumpf << (i+1) << ": Calcium ";
     }
-	if(5==optionnum){
-      couparray[i] = new Hebb(nodes,deltat);
-      dumpf << (i+1) << ": Hebbian ";
-    }
     if( optionnum<1 || optionnum>5 ){
       std::cerr << "Invalid Coupling type" << endl;
       exit(EXIT_FAILURE);
     }
   }
   inputf.validate("Lambda",58); inputf >> Lambda;
+  inputf.validate("tGlu",58); inputf >> tGlu;
   dumpf << "Lambda: " << Lambda << endl;
+  dumpf << "tGlu: " << tGlu << endl;
   numnodes = nodes;
   this->deltat = deltat;
   glu = new double[numnodes];
@@ -86,36 +83,36 @@ void Couplinglist::dump(ofstream& dumpf){
     dumpf << endl; //Append endl to coupling data
   }
   dumpf << "Lambda: " << Lambda << endl;
+  dumpf << "tGlu: " << tGlu << endl;
 }
 
 // updateP method updates P via each coupling object 
 void Couplinglist::updateP(double **P,double **Eta,Qhistorylist& qhistorylist,ConnectMat& connectmat){
-	static double time = 0;
   for( int j=0; j<numnodes; j++ )
-    dglu[j]=0;//double ddglu = 0; double ts = 200e-3; double td = 200e-3;
+    dglu[j] = 0;//double ddglu = 0; double ts = 200e-3; double td = 200e-3;
   for( int i=0; i<numcoup; i++ )
     if( getcoup(i)->sign )
       for( int j=0; j<numnodes; j++ )
         dglu[j] += Lambda*Eta[i][j]*deltat;
   for( int j=0; j<numnodes; j++ ) {
-    dglu[j] -= ( glu[j] )/40e-3*deltat;
-    //double p1 = ddglu;
-	//double k1 = dglu[j];
-	//double p2 = p1 -p1/2/ts -k1/2/td;
-	//double k2 = dglu[j] +1/2*(dglu[j]+p1);
-	//double p3 = p1 -p2/2/ts -k2/2/td;
-	//double k3 = dglu[j] +1/2*(dglu[j]+p2);
-	//double p4 = p1 -p3/ts -k3/td;
-	//double k4 = dglu[j] +dglu[j]+p3;
-    //dglu[j] += 1/6*(p1+2*p2+2*p3+p4);
-    //glu[j] += 1/6*(k1+2*k2+2*k3+k4);
+    dglu[j] -= glu[j]/tGlu*deltat;
     glu[j] += dglu[j];
     if( glu[j]<0 ) glu[j] = 0;
+    /*double p1 = ddglu;
+      double k1 = dglu[j];
+      double p2 = p1 -p1/2/ts -k1/2/td;
+      double k2 = dglu[j] +1/2*(dglu[j]+p1);
+      double p3 = p1 -p2/2/ts -k2/2/td;
+      double k3 = dglu[j] +1/2*(dglu[j]+p2);
+      double p4 = p1 -p3/ts -k3/td;
+      double k4 = dglu[j] +dglu[j]+p3;
+      dglu[j] += 1/6*(p1+2*p2+2*p3+p4);
+      glu[j] += 1/6*(k1+2*k2+2*k3+k4);
+    */
   }
   for(int i=0;i<numcoup;i++){
     getcoup(i)->updatePa(P[i],Eta[i],qhistorylist,connectmat,*this);
   }
-  time++;
 }
 
 void Couplinglist::output(){

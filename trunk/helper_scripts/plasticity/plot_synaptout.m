@@ -2,7 +2,11 @@
 % reads output from neurofield.output and neurofield.synaptout.*
 % and plots the firing rate and nu's
 
-dir = './Output/Stimulus_mode:_10,ISI=.04/';
+function plot_synaptout(dir)
+
+if ~exist('dir','var')
+    dir = './';
+end
 
 fid=fopen(['../../',dir,'neurofield.output']);
 temp=fgetl(fid);

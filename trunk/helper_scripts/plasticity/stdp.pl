@@ -1,15 +1,18 @@
 #!/usr/bin/perl
-# reads output from current directory
+# reads output from directory
 # and prints the percentage change in synaptic strength wrt. ISI
 
-@ls=`ls`;
+$dir = $ARGV[0];
+$steady = $ARGV[1];
+
+@ls=`ls $dir`;
 foreach (@ls)
 {
 	chomp($_);
-	next if(! -d $_);
+	next if(! -d "$dir$_");
 	$isi = $1 if( /=(.*)/ );
-	$start = `head -n1 "$_/neurofield.synaptout.2"`;
-	$end = `tail -n1 "$_/neurofield.synaptout.2"`;
+	$start = `head -n$steady "$dir$_/neurofield.synaptout.2" | tail -n1`;
+	$end = `tail -n1 "$dir$_/neurofield.synaptout.2"`;
 	$plast = ($end - $start)/$start*100;
 	print "$isi\t$plast\n";
 }

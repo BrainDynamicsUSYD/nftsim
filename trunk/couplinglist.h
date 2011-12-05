@@ -39,6 +39,7 @@ private:
   long numnodes;
   double deltat;
   double Lambda; // proportionality constant between excitatory eta and glu
+  double tGlu; // decay rate of glutamate
   double* dglu;
 };
 
