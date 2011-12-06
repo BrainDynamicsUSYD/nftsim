@@ -301,6 +301,8 @@ value for the firing rate $Q$ is required.
 are the parameters of the population sigmoid firing response. Note the
 sigma value accepted by the code is in some Robinson papers it is known as $\tilde{\sigma}$.
 It is already scaled  by $\pi / \sqrt{3}$.
+\item The syntax {\tt \small Firing Response Sigmoid: Theta: 0.013 Sigma: 0.0038 Qmax: 250.0} also works
+\item Alternatively, you can specify a linear firing response using {\tt \small Firing Response Linear: Gradient: 1 Intercept: 1} substituting appropriate values for the gradient and intercept. 
 \item {\tt \small Number of Dendritic responses: 3} The code uses this line
 purely for crosschecking purposes. It is equal to the number of
 populations whose connections terminate on the dendrites of the current
