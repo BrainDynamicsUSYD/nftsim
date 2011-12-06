@@ -11,6 +11,8 @@
 #include<fstream>
 using std::ofstream;
 #include<iostream>
+//using std::vector;
+#include<vector>
 #include"istrm.h"
 #include"parameter.h"
 #include"modtheta.h"
@@ -25,15 +27,8 @@ public:
   void getQ(double *V, double *Q,long nodes,double timestep);
 private: 
   FiringR(FiringR& ); // no copy constructor
-  Parameter* pthetaobj;
-  Modtheta* pmthetaobj;
-  Modtheta1* pm1thetaobj;
-  Modsigma* pmsigmaobj;
-  bool ismodtheta; // TRUE if theta is modulated
-  bool ismodsigma; // TRUE if sigma is modulated
-  int modthetatype;
-  Parameter* sigmaobj;
-  Parameter* qmaxobj;
+  vector<Parameter> params;
+  int type;
   int pindex;
 };
 

@@ -21,8 +21,8 @@ public:
   ~Parameter();
   double get(){return param;};
   void dump(std::ofstream& dumpf);
+  //Parameter(Parameter& ); // no copy constructor
 private:
-  Parameter(Parameter& ); // no copy constructor
   double param;
   std::string ident;
 };

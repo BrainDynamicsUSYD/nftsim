@@ -9,85 +9,71 @@
 #include<math.h>
 using std::endl;
 
-FiringR::FiringR(int popindex,Istrm& inputf):pthetaobj(0),pmthetaobj(0),pm1thetaobj(0),
-                 pmsigmaobj(0),sigmaobj(0),pindex(popindex){
+FiringR::FiringR(int popindex,Istrm& inputf):pindex(popindex){
+  double initval = 0;
   inputf.validate("Firin",103);
   inputf.validate("respo",110); 
   inputf.validate("s",101); // Read succesively upto the end of "Firing response"
-  int optionnum;
-  optionnum=inputf.choose("Theta:1 ModTheta:2 ModTheta1:3",58);
-  if(1==optionnum){
-    double initval;
-    inputf >> initval;
-    pthetaobj = new Parameter("Theta",initval);
-    ismodtheta=false;
+  type=inputf.choose("Sigmoid:1 Theta:2 Linear:3",':');
+  switch(type) {
+    case 1:
+      inputf.validate("Theta",':'); // read up to "Theta:"
+    case 2:
+      inputf >> initval;
+      params.push_back(Parameter("Theta",initval));
+      inputf.validate("Sigma",':');
+      inputf >> initval;
+      params.push_back(Parameter("Sigma",initval));
+      inputf.validate("Qmax",':');
+      inputf >> initval;
+      params.push_back(Parameter("Qmax",initval));
+      break;
+    case 3:
+      inputf.validate("Gradient",':');
+      inputf >> initval;
+      params.push_back(Parameter("Gradient",initval));
+      inputf.validate("Intercept",':');
+      inputf >> initval;
+      params.push_back(Parameter("Intercept",initval));
+      break;
+    default:
+      std::cerr<<"Unrecognized firing response."<<endl;
+      exit(EXIT_FAILURE);
   }
-  if(2==optionnum){
-    pmthetaobj = new Modtheta(inputf,pindex);
-    ismodtheta=true;
-    modthetatype=0;
-  }
-  if(3==optionnum){
-    pm1thetaobj = new Modtheta1(inputf,pindex);
-    ismodtheta=true;
-    modthetatype=1;
-  }
-  optionnum=inputf.choose("Sigma:1 ModSigma:2",58);
-  if(1==optionnum){
-    double initval;
-    inputf >> initval;
-    sigmaobj = new Parameter("Sigma",initval);
-    ismodsigma=false;
-  }
-  if(2==optionnum){
-    pmsigmaobj = new Modsigma(inputf,pindex);
-    ismodsigma=true;
-  }
-  qmaxobj = new Parameter("Qmax",inputf);
-  inputf.ignore(200,32); // Ignore appended endline at end of firing response
+  inputf.ignore(200,' '); // Ignore appended endline at end of firing response
 }
 
 FiringR::~FiringR(){
-  if (pmthetaobj) delete pmthetaobj;
-  if (pm1thetaobj) delete pm1thetaobj;
-  if (pthetaobj) delete pthetaobj;
-  if (pmsigmaobj) delete pmsigmaobj;
-  if (sigmaobj) delete sigmaobj;
-  delete qmaxobj;
 }
 //
 // Method to transform V into Q via sigmoid firing response
 //
 void FiringR::getQ(double *V,double *Q,long nodes,double timestep){
-  double theta;
-  double sigma;
-  double qmax;
-  qmax=qmaxobj->get() ;
-  if(ismodsigma) {
-    sigma=pmsigmaobj->get(timestep,V);
+  switch(type) {
+    case 1:
+    case 2:
+      for(long i=0; i<nodes; i++)
+        Q[i] = params[2].get()/(1.0F+exp(-(V[i]-params[0].get())/params[1].get()));
+      break;
+    case 3:
+      for(long i=0; i<nodes; i++)
+        Q[i] = V[i]*params[0].get() +params[1].get();
+      break;
   }
-  else {sigma=sigmaobj->get();}
-  if(ismodtheta) {
-    if(0==modthetatype){theta=pmthetaobj->get(timestep);}
-    else{theta=pm1thetaobj->get(timestep,V,qmax,sigma);}
-  }
-  else {theta=pthetaobj->get();}
-  for(long i=0; i<nodes; i++)
-    Q[i] = qmax/(1.0F+exp(-(V[i]-theta)/sigma));
   
 }
 
 void FiringR::dump(ofstream& dumpf){
   dumpf << "Firing response "; // Insert Firing Response title
-  if(ismodtheta) {
-    if(0==modthetatype){pmthetaobj->dump(dumpf);}
-    else{pm1thetaobj->dump(dumpf);}
+  switch(type) {
+    case 1:
+    case 2:
+      dumpf << "Sigmoid: "; break;
+    case 3:
+      dumpf << "Linear: "; break;
   }
-  else {pthetaobj->dump(dumpf);}
-  if(ismodsigma) {
-    pmsigmaobj->dump(dumpf);
-  }
-  else {sigmaobj->dump(dumpf);}
-  qmaxobj->dump(dumpf);
+  for(int i=0; i<params.size(); i++ )
+    params[i].dump(dumpf);
   dumpf << endl; //Append endl at end of firing response figures
 }
+
