@@ -1,3 +1,7 @@
+This function has the original working modtheta and modtheta1, which is now removed from the trunk.
+
+===============
+
 Quick guide to NeuroField
 
 1. Edit Makefile:
