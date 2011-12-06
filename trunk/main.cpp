@@ -206,6 +206,7 @@ void writedefault(ofstream& defaultf){
   defaultf << "" << endl;
   defaultf << "Coupling types 1: Simple 2: Simple 3: Simple 4: Simple 5: Simple 6: Simple $" << endl;
   defaultf << "7: Simple 8: Simple 9: Simple 10: Simple 11: Simple $" << endl;
+  defaultf << "Lambda: 0 tGlu: 0" << endl;
   defaultf << "" << endl;
   defaultf << "Population 1 - Excitory neurons" << endl;
   defaultf << " Initial Q: 8.87145" << endl;

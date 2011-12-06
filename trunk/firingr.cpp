@@ -7,6 +7,7 @@
 
 #include "firingr.h"
 #include<math.h>
+#include<cstdlib>
 using std::endl;
 
 FiringR::FiringR(int popindex,Istrm& inputf):pindex(popindex){
@@ -72,7 +73,7 @@ void FiringR::dump(ofstream& dumpf){
     case 3:
       dumpf << "Linear: "; break;
   }
-  for(int i=0; i<params.size(); i++ )
+  for(unsigned int i=0; i<params.size(); i++ )
     params[i].dump(dumpf);
   dumpf << endl; //Append endl at end of firing response figures
 }
