@@ -93,7 +93,7 @@ void WaveEqn::init(Istrm& inputf,Qhistory& qhistory){
     exit(EXIT_FAILURE);
   }
   double* Q=qhistory.getQbytime(*tauobj);
-  Qpast->init(Q);
+  Qpast->init(Q);//+rand());
   deltat2divided12=(deltat*deltat)/12.0F; //factor in wave equation
   deltatdivideddeltaxallsquared=(deltat*deltat)/(deltax*deltax);
 }

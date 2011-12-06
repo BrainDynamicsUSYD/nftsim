@@ -15,9 +15,6 @@ using std::ofstream;
 #include<vector>
 #include"istrm.h"
 #include"parameter.h"
-#include"modtheta.h"
-#include"modtheta1.h"
-#include"modsigma.h"
 
 class FiringR {
 public: 
@@ -27,7 +24,7 @@ public:
   void getQ(double *V, double *Q,long nodes,double timestep);
 private: 
   FiringR(FiringR& ); // no copy constructor
-  vector<Parameter> params;
+  std::vector<Parameter> params;
   int type;
   int pindex;
 };
