@@ -1,0 +1,551 @@
+\documentclass[12pt,a4paper]{article} 
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{wrapfig}
+\lstloadlanguages{IDL}
+\pagestyle{plain}
+\parindent=0.0cm
+
+\textheight=25cm
+\textwidth=16.3cm
+
+\oddsidemargin=0.0cm
+\evensidemargin=0.0cm
+
+\marginparwidth=0.0cm
+\marginparsep=0.0cm
+
+\topmargin=0.0cm
+\headheight=0.0cm
+\headsep=0.0cm
+
+\footskip=1.3cm
+
+\lstset{
+basicstyle=\small\small\ttfamily,   % the size of the fonts that are used for the code
+frame=single,	        % adds a frame around the code
+breaklines=true,		% sets automatic line breaking
+breakatwhitespace=tru,	% sets if automatic breaks should only happen at whitespace
+}
+
+\newcommand{\type}[1]{ {\small\small\tt #1} }
+
+\begin{document} 
+
+{\center \Huge{Reference documentation for NeuroField}}
+
+\section{Quick guide to NeuroField}
+
+To use the NeuroField launcher script:
+\begin{enumerate}
+
+\item Edit Makefile: Identify the platform to run NeuroField, and comment/uncomment the appropriate \type{COMP} and \type{CP} directions.
+
+\item Run \type{./NeuroField} with the appropriate argument(s) to use the launcher script. The launcher script automatically builds the NeuroField executable in \type{./Release/} and executes it.
+
+\item In case the script is executed on Yossarian, the launcher script tries to find a file called \type{pbs}. If no such file is found, the user would be prompted for a job name, expected computational time and email to generate \type{pbs}. This file is then submitted to the PBS system.
+
+\item To ease parameter exploration, the launcher script is capable of doing parameter sweeps, depending on the parameter it receives:
+
+\begin{enumerate}
+
+\item To execute with only one set of parameters, edit your configuration file in Configs, then run
+\begin{lstlisting}
+./NeuroField Configs/config_file
+\end{lstlisting}
+For example,
+\begin{lstlisting}
+./NeuroField Configs/conf.emirs
+\end{lstlisting}
+The output will be stored in the current directory.
+
+Tips for vi users: a convenient way to do parameter exploration is to edit the configuration file from \type{./trunk/}, then in command mode, do
+\begin{lstlisting}
+:!./NeuroField % [additional parameters]
+\end{lstlisting}
+to launch NeuroField.
+
+\item To sweep over parameters, edit your configuration file in Configs, then determine (1) the parameter(s) you want to vary (2) the values for the parameter(s) (3)~the objects (e.g. propagator 1) subject to variation. In the simplest case,
+\begin{lstlisting}
+./NeuroField Configs/conf.emirs 'Propagator 1' gamma 10 20 30 40
+\end{lstlisting}
+Running this command will launch 4 NeuroField programs, so that in the 4 programs, `Propagator 1' will have a gamma value of 10, 20, 30 and 40. Each set of data is stored in a separate directory inside \type{Output/}.
+
+\item A parameter may be effective for more than one object. Simply list all objects before the parameter name:
+\begin{lstlisting}
+./NeuroField Configs/conf.emirs 'Propagator 1' 'Propagator 2' gamma 10 20 30 40
+\end{lstlisting}
+In this case, gamma will vary for both `Propagator 1' and `Propagator 2'.
+
+\item To preserve the sign of the original value, append `s' to the value, e.g.
+\begin{lstlisting}
+./NeuroField Configs/conf.emirs 'Coupling data 6' Nu 1s
+\end{lstlisting}
+would give Nu $=-1$ because it is initially $-0.00095$ in the config file.
+
+\item It is also possible to vary more than one parameter. For example, if you want to launch NeuroField 3 times, with parameters varying according to the following table:
+
+\begin{tabular}{l l r r r}
+Object(s)&Parameter&1\textsuperscript{st} run&2\textsuperscript{nd} run&3\textsuperscript{rd} run\\
+`Propagator 1', `Propagator 2'&gamma&10&20&30\\
+`Coupling data 1'&Nu&1&2&3
+\end{tabular}
+
+simply list the above table entries into the argument list:
+\begin{lstlisting}
+./NeuroField Configs/conf.emirs 'Propagator 1' 'Propagator 2' gamma 10 20 30 'Coupling data 1' Nu 1 2 3
+\end{lstlisting}
+The launcher script support arbitrary numbers of objects, parameters and runs. In terms of syntactic restriction, each row in the table can have an arbitary number of objects, but only one parameter; every row must have the same number of runs.
+
+\end{enumerate}
+
+\item To compile NeuroField without running, run \type{make}. NeuroField and object files are produced in \type{./Release/}.
+
+\item \type{make clean} removes \type{./Release/}, so make sure you do not put any user data in there! 
+
+\item Documentation can be found in \type{./Documentation/} folder. To generate \type{doc.pdf}, run \type{make doc}. \type{make clean} deletes the files created by latex.
+
+\end{enumerate}
+
+\section{Overview of code function}
+
+The code implements the EEG model equations.
+
+\begin{itemize}
+
+\item When not using the launcher script, the NeuroField executable runs in one of three modes: (1) Initial run,
+(2) restart calculation and (3) default parameters mode.
+
+(1) In inital run mode
+code takes input from an neurofield.conf file
+initializes the simulation and then takes specified number of integration steps
+writing out a neurofield.output file and a neurofield.dump file for restarting.
+The input filename can be changed on the command line by using the switch
+``-i newinputfilename". Similarly the name of the output filename which defaults
+to neurofield.output can be changed via the switch ``-o newoutputfilename". The
+dump file which defaults to neurofiled.dump can be changed via ``-d newdumpfilename".
+
+(2) The code dumps sufficient data about parameter values to restart. In
+restart mode the simulation will continue where it left off. Restart mode is
+accessed by running the code with command ``neurofield restart" rather than
+the usual ``neurofield" command on the command line. In order to run the code in restart
+mode it is necassary to take the ``neurofield.dump" file which was produced from
+the run which will be restarted to be renamed as the
+new ``neurofield.conf" file. The new ``neurofield.conf"
+file should also be changed to reflect the new number of timesteps etc.
+Note:- A restarting ``neurofield.conf" file has different content to an initial run
+``neurofield.conf" and can only be used in restart mode.
+
+(3) The default parameters
+mode is accessed by running the code with the command ``NeuroField write defaults"
+on the command line. The code then writes it own default ``neurofield.conf" file
+and uses it for a initial run. The default ``neurofield.conf" file can be 
+inspected after the code finishes.
+
+\item One integration step of the model implements the following stages:
+1) Firing Response/Stimulus Response. 2) Wave Equation Integration Step
+which includes Q delay processing 3) Coupling Response 4) Dendritic Response
+5) Afferent Summation.
+
+\item Dendritic Response - is by direct explicit step or Fourth order Runge Kutta.
+Dendritic Response solves the following equation:
+
+\begin{equation}
+\left\{ \frac{1}{\alpha_{ab}({\bf r},t)\beta_{ab}({\bf r}, t)} \frac{d^2}{dt^2} +
+  \left[ \frac{1}{\alpha_{ab}({\bf r}, t)}+ \frac{1}{\beta_{ab}({\bf r}, t)} 
+  \right]
+  \frac{d}{dt} + 1
+\right\}
+V_{ab}({\bf r}, t) = P_{ab}({\bf r}, t).
+\end{equation}
+
+\item Wave Equation integration is by explicit finite difference (9 point) algorithm
+   on a regular square grid. Other parts of code are uneffected by spatial
+   geometry so this can be switched to irregular gridding easily. The wave equation
+   currently solved is 
+
+\begin{equation}
+\left[\frac{1}{\gamma_{ab}^2}\frac{\partial^2}{\partial t^2}+\frac{2}{\gamma_{ab}}\frac{\partial}
+{\partial t}+1-r_{ab}^2\nabla^2 \right] \phi_{ab}({\bf r},t)
+=Q_b({\bf r},t-\tau_{ab}).
+\end{equation}
+The patchy propagator has been implemented but has not tested.
+
+\item Two types of coupling response have been implemented.
+The first is a relatively simple and most commonly used form which is
+
+\begin{equation}
+P_{ab}({\bf r}, t) = \nu_{ab} \phi_{ab}({\bf r}, t).
+\label{eq:simplecoupling}
+\end{equation}
+The second form is a coupling which implements a time evolving coupling $\nu(t)$
+according to the Rennie/Clearwater evolution equation. The form is described later
+in this document.
+
+\item Parameters $\alpha_{ab}$, $\beta_{ab}$, $\theta_{a}$, $\sigma_{a}$, Q$_{a \: \rm{max}}$,
+  $\nu_{ab}$, Effective range $r_{ab}$, $\gamma_{ab}$
+  are all set at initialization currently. They have been explicitly
+  designed to allow replacement with functional forms allowing evolution
+  in time and space as needed.
+  
+\item Arbitrary numbers of populations are allowed.
+
+\item In order to save memory a connection matrix between the populations is
+   specified at run-time. This ensures that where two populations are not
+   connected the corresponding wave equation and dendritic response are
+   not created in memory.
+
+\item Arbitrary number of stimulus populations are allowed. Stimulus populations
+  are populations of neurons which correspond to different stimulus 
+  modes. They have no feedback into them from the other populations.
+  Three simple stimulus patterns are currently implemented.
+  1) Constant in space and time 2) Gaussian noise of constant amplitude
+  in space and time 3) Sinusoidal variation in time of stimulus with constant
+  amplitude and stimulus is spatially uniform.
+  These correspond to the first three stimulus types in Chris Rennie's code.
+  Other stimulus patterns are to be written shortly.
+  
+\end{itemize}
+ 
+\section{Input files}
+
+The input file is a human readable file of the parameters of the simulation.
+An input file is generated by the default running procedure of the code. This can be
+useful for understanding the layout of the input file. The default file
+creates a input file for the standard corticothalmic model. Before
+reading the input file description it is worthwhile to 
+peruse the default file.
+
+The input file is in a number of sections, first the global simulation information,
+next the information for each population is given, then the propagation data,
+then the coupling data and finally the output data.
+
+\subsection{Global information}
+Each bullet point corresponds to a line of the input file.
+\begin{itemize}
+\item The first line of the input file is skipped to allow the user to have a title
+line
+\item {\tt \small \small Nodes per population: 2500} This line contains the number of grid points
+in the spatial dimension per population of neurons. The code has been
+explicitly designed to have equal number of neurons per population.
+\item {\tt \small Number of neural populations: 5} This is the number of neural
+populations and includes the number of stimulus modes. It is denoted
+$n$ in this document.
+\item {\tt \small Number of neural connections: 11} This is the number of neural
+populations which are connected together. By definition this number lies in the
+range $n$ and $n^2$ where $n$ is the number of neural populations.
+\item A blank line is inserted in the file at this point
+\item {\tt \small Populations connections matrix 1 2 3 4 ....} The code ignores this
+line but it is useful to provide a way of lining up the data in the
+connections matrix.
+\item Now follows $n$ lines of connection matrix data. On each line the code
+looks for colon character followed by a number. There should be $n$ colons
+followed by a number on each line. The row number corresponds to the
+population ID number of the TO population. The column number corresponds 
+to the population ID number of the FROM population of the connection. Zeros
+correspond to unconnected populations whilst nonzero number correspond
+to connected populations. For easy of use it is suggested that each connection
+be numbered in ascending order when reading down columns
+as in the default input file. This allows
+human crosschecking with later sections of the input file.
+\item {\tt \small Number of integration steps: 100000 Skippoints: 49 Deltat: 0.0001}
+The parameters are: 
+(1) the number of integration steps the code should step forward
+during the
+run, (2) An optional parameter of how many integration steps should
+be skipped before an time step should be outputted, and
+(3) the time increment for each time step.
+
+\item {\tt \small Q delay depths: 420 :0 :0 :420 :0} This line is no longer required 
+and is ignored.
+
+\item {\tt \small Propagator types 1: Waveeqn 2: Waveeqn 3: Waveeqn 4: Waveeqn 5: Mapping \$
+6: Mapping 7: Mapping 8: Waveeqn 9: Waveeqn 10: Mapping 11: Mapping \$} These lines contain
+$n$ colons preceeded by an index number and followed by a specification of the propagator
+type. The propagation data should appear in the same order as in the connection matrix when the 
+connection matrix is read top to bottom and then left to right. Three types of propagator
+are available: 1) ``Waveeqn" - is a propagator
+implementing the usual wave equation as described in the previous section.
+2) ``Mapping" is a propagator which maps $Q_b(t-\tau)$ directly to $\phi_{ab}(t)$. This
+propagator is equivalent to cases where spatial spreading is negligible i.e. for a wave equation
+where numerically $r_{ab}$ is small and $\gamma_{ab}$ is large. 
+3) ``Eqnset" - is the untested Robinson patchy propagator.
+4) ``Harmonic" - is a harmonic oscillator propagator i.e. identical with ``Waveeqn" operator 
+but with no spatial dependence.
+\item {\tt \small Coupling types 1: Modulate 2: Simple 3: Simple 4: Simple 5: Simple 6: Simple \$ 
+7: Simple 8: Simple 9: Simple 10: Simple 11: Simple \$} These lines contain
+$n$ colons preceeded by an index number and followed by a specification of the synaptic coupling
+type. Two types of coupling are available: 1) ``Simple" - is a coupling which does not evolve
+with time and is given in Eq. \ref{eq:simplecoupling}. 2) ``Modcouple" - is a Clearwater/Rennie
+coupling described in detail later in this document.
+
+\item A blank line finishes this section of the input file
+\end{itemize}
+
+\subsection{Population data}
+This section contains $n$ repeated population information sections.
+Each population is presented in the same order as the connections matrix.
+There are two types of neural populations: 1) ordinary populations
+and 2) stimulus populations. The two types of populations have different 
+input information sections
+\subsubsection{Ordinary populations}
+Each population information section is as follows. Each bullet point
+corresponds to a line of the population information section.
+\begin{itemize}
+\item The first line is ignored by the code but should be used for
+a text description of the population's name eg. 
+{\tt \small Population 1 - Excitory neurons}.
+\item {\tt \small Initial Q: 8.87145} When the simulation starts an initial
+value for the firing rate $Q$ is required.
+\item {\tt \small Firing Response Theta: 0.013 Sigma: 0.0038 Qmax: 250.0} These
+are the parameters of the population sigmoid firing response. Note the
+sigma value accepted by the code is in some Robinson papers it is known as $\tilde{\sigma}$.
+It is already scaled  by $\pi / \sqrt{3}$.
+\item {\tt \small Number of Dendritic responses: 3} The code uses this line
+purely for crosschecking purposes. It is equal to the number of
+populations whose connections terminate on the dendrites of the current
+population i.e. the number of non-zero elements in the column 
+of the connection matrix of this population. We shall denote this number 
+$m$
+\item Now follow $m$ lines of dendritic response data. Each Dendritic
+response data line begins with an optional preamble which is ignored 
+by the code. It is strongly suggested that for human readability this
+should be of the form {\tt \small Dendritic Response from population 3}. A complete
+dendritic response input line is given by
+
+{\tt \small Dendritic Response from population 3 V initial: 0.0106457 alpha: 75.0 beta: 285.0}.
+
+The following three parameters are the initial value of the subvoltage $V_{ab}$
+and the parameters $\alpha_{ab}$ and $\beta_{ab}$ of the dendritic response differential
+equation. It should be noted the code has a separate dendritic response
+differential equation for each different population synapsing on the
+dendritic tree. The subvoltage $V_{ab}$ is the voltage in the dendrite due to
+incoming connections from population $b$. In some earlier papers all
+pulse densities were summed before a single differential equation described
+the total voltage in the dendritic tree. This code allows different 
+dendritic responses for pulse densities arriving from different populations. If
+each dendritic response in a population has the same alpha and beta values
+the earlier case is effectively reproduced. If the initial $V_{ab}$ is given by
+the initial values of $\nu_{ab}$ and $\phi_{ab}$ via $V_{ab}= \nu_{ab} \phi_{ab}$
+as is the case in a steady state condition then for example 
+the dendritic response may be given as
+
+{\tt \small Dendritic Response from population 3 V initial: Steady alpha: 75.0 beta: 285.0}.
+
+The ``Steady" short hand feature cannot be used if any of the coupling described
+later in this document are of the ModCouple type.
+
+\item A blank line finishes each population information section.
+\end{itemize}
+
+\subsubsection{Stimulus populations}
+The code identifies stimulus populations as populations which have no 
+connections from other populations on their dendritic tree i.e.,
+The column for that population contains no nonzero elements.
+Each stimulus population information section is as follows. Each bullet point
+corresponds to a line of the population information section.
+\begin{itemize}
+\item The first line is ignored by the code but should be used for
+a text description of the population's name eg. 
+{\tt \small Population 5 - Stimulus neurons}.
+\item {\tt \small Initial Q: 8.87145} When the simulation starts an initial
+value for the firing rate $Q$ is required.
+\item The final line depends on the type of stimulus the stimulus population
+provides. Examples of the current stimulus patterns are provided below.
+
+Pulse stimulus pattern
+
+{\tt \small Stimulus mode: 1 Time to start of stimulus: 0.002 Amplitude: 20
+Pulse Duration: 0.02 Pulse repetition period: 0.005}
+
+White noise stimulus pattern (spatially uncorrelated) where Ranseed
+is an optional parameter for the random number generator's initial seed defaulting to -98716872.
+
+{\tt \small Stimulus mode: 2 Time to start of stimulus: 0.002 Ranseed:-98716872 Amplitude: 20}
+
+Sinusoidal stimulus pattern -Sinusoidally modulated firing rate
+
+{\tt \small Stimulus mode: 3 Time to start of stimulus: 0.002 Amplitude: 20
+Modulation Frequency: 10}
+
+Coherent white noise stimulus pattern (spatially coherent) where Ranseed
+is an optional parameter for the random number generator's initial seed defaulting to -98716872.
+
+{\tt \small Stimulus mode: 4 Time to start of stimulus: 0.002 Ranseed:=-98716872 Amplitude: 20}
+\end{itemize}
+
+\subsection{Propagation data}
+Each bullet point corresponds to a line of the propagation data section.
+\begin{itemize}
+\item The first line is ignored and is merely a title line {\tt \small Propagation data}.
+\item Now follow $n$ lines of propagation data. There is a line of propagation
+data for each connection in the connection matrix. The propagation data
+should appear in the same order as in the connection matrix when the 
+connection matrix is read top to bottom and then left to right. There are three types
+of propagators each with their own input parameters
+\end{itemize}
+
+\subsubsection{WaveEqn}
+This propagator is the wave equation propagator and has input given by
+
+{\tt \small Propagator 2 - Initial Phi: 8.87145 Tauab: 0 Effective Range: 0.08
+gamma: 100.0}.
+
+The Initial Phi is the initial value for $\phi_{ab}$ in the
+wave equation. Tauab is $\tau_{ab}/ \Delta t$ the delay term in the wave equation
+i.e. number of time steps in the delay term. Alternative ways of specifying
+the delay term are described below.
+Effective range is $r_{ab}$
+in the wave equation. The final parameter can be gamma or velocity in the wave equation.
+If the initial $phi_{ab}$ is equal to the initial $Q_{ab}$ as occurs in the steady state condition
+the propagator input can for example be given as
+
+{\tt \small Propagator 2 - Initial Phi: Steady Tauab: 0 Effective Range: 0.08
+velocity: 10.0}.
+
+
+\subsubsection{Mapping}
+{\tt \small Propagator 5  - Tauab: 0 }
+
+This propagator is the mapping propagator where spatial spreading is negligible.
+Its form is given by
+\begin{equation}
+\phi_{ab}({\bf r}, t) = Q_b ({\bf r}, t - \tau_{ab}).
+\end{equation}
+
+The input form has only one parameter Tauab (the delay term).
+i.e. number of time steps in the delay term. Alternative ways of specifying
+the delay term are described below.
+
+\subsubsection{Eqnset}
+
+This is the Robinson patchy propagator. It has not been currently tested.
+
+\subsubsection{Harmonic}
+This is a propagator implementing a harmonic oscillator of the form
+\begin{equation}
+\left[\frac{1}{\gamma_{ab}^2}\frac{d^2}{d t^2}+\frac{2}{\gamma_{ab}}\frac{d}
+{d t}+1 \right] \phi_{ab}({\bf r},t)
+=Q_b({\bf r},t-\tau_{ab}).
+\end{equation}
+The input form is given by 
+
+{\tt \small Propagator 2 - Initial Phi: 8.87145 Tauab: 420 gamma: 10.0},
+
+where Tauab is $\tau_{ab}/ \Delta t$ the delay term in the wave equation
+i.e. number of time steps in the delay term. Alternative ways of describing
+the time delay are specified below. An example of an alternative form is
+
+{\tt \small Propagator 2 - Initial Phi: 8.87145 Tauabt: 0.42 gamma: 10.0},
+
+\subsubsection{Optional Tau forms}
+
+In addition to specifying $\tau$ as a number of discrete steps via the
+relation -- Tauab $= \tau_{ab}/ \Delta t$.
+
+Taauabt is the delay term in seconds rather than time steps.
+In this case the program automatically rounds to an integer number
+of time steps. Care should be taken to understand this implicit rounding.
+The simulation code is a finite differencing system and this approximation
+is a consequence of this fact.
+
+TauabArray allows specification of the delay term at each grid point
+of the simulation allowing a spatially varying delay term. In this form
+the delays are specified in time steps. An example of this for a simulation
+with only 4 nodes per population is
+
+{\tt \small TauabArray: 420 :430 :425 :410}
+
+TauabtArray is the analog of TauabArray but with delay terms specified in
+seconds rather than time steps. Note the same care with regard to
+rounding should be taken as for Tauabt.
+
+\subsection{Coupling data}
+The coupling data is $n$ lines of coupling data corresponding
+to each connection in the connection matrix. The coupling data should appear
+in the same order as in the connection matrix when the connection matrix is 
+read top to bottom and then left to right. There are two types of coupling
+each with their own input form.
+A blank line finishes the coupling data section.
+
+\subsubsection{Simple}
+For simple synaptic coupling each Coupling data line contains a single parameter Nu e.g.
+
+{\tt \small Coupling data 1 - Nu: 0.0012}.
+
+The parameter Nu ($\nu_{ab}$)
+is the synaptic coupling
+parameter. It corresponds to the product of the mean synaptic strength $s_{ab}$
+and $N_{ab}$ the mean number of connections from cells of type $b$ to
+cells of type $a$.
+
+\subsubsection{Modcouple}
+
+The modulated synaptic coupling implements the Clearwater/Rennie modulation
+equation. The modulation is given by:
+
+\begin{equation}
+\nu (t) = \nu_0 \left[ ( 1 - \nu_{scal} ) e^{h(t)/k} + \nu_{scal} \right]
+\end{equation}
+where $h(t)$ is the time low passed filtered form of the neuromodulators concentration
+$C(t)$ as given by
+\begin{equation}
+\left\{ \frac{1}{\mu \lambda} \frac{d^2}{dt^2} +
+  \left[ \frac{1}{\nu}+ \frac{1}{\lambda} 
+  \right]
+  \frac{d}{dt} + 1
+\right\}
+h(t) = C(t).
+\end{equation}
+The neuromodulator's concentration is in turn given by a user chosen
+stimulus form analogous to stimulus populations.
+
+The remainder of the input form is specification of the output for $\nu$.
+This takes an analogous form to the usual output data lines. The $\nu$
+data is output to a file with filename ``neurofield.synaptout.xx" where xx is an index number
+of the coupling.
+\\
+\\
+An example Modcouple input form is given by
+\\
+\\
+{\tt \small Coupling data 1  - Nuzero: 0.0002 Nuscal: 0.02 Mu: .1 Lambda: 1 k: .000001 \\
+ Concentration mode: 1  Time to start of Concentration: .01 Amplitude: .0001\\
+ Pulse Duration: .2 Pulse repetition period: 40 \\
+ Number of traces: 100  Single/All: All nodes}
+
+
+\subsection{Output data}
+Currently the code output a time series of any particular node in any population.
+The first line of this section contains an optional preamble and a parameter
+of how many times series to be outputted e.g.
+
+{\tt \small Output data - Number of traces : 4}.
+
+Following the first line
+each trace is specified on a separate line in the form:
+
+{\tt \small Wave Equation Number :1 Single/All Single node number :1}.
+
+A short cut to output all the traces in a population is given the the
+input form
+
+{\tt \small Wave Equation Number : 11 Single/All nodes: All nodes}
+
+
+\section{Known bugs or flaws} 
+
+\begin{itemize}
+    
+\item Code only runs for initial time set to zero. This only effects the
+stimulus routines.
+
+\item Inadequate range of stimulus patterns currently implemented.
+
+\item Documentation needs to be worked on.
+
+\item Code needs more commenting.
+
+\end{itemize}
+
+\end{document}
