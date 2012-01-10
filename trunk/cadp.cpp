@@ -119,7 +119,7 @@ void CaDP::updatePa(double *Pa, double *Etaa,Qhistorylist& qhistorylist,ConnectM
   V = qhistorylist.getQhist(connectmat.getQindex(coupleid)).getVbytime(0);
   for( int i=0; i<nodes; i++ ) {
     binding[i] = sig( couplinglist.glu[i] -200e-6, B );
-    double dCa = deltat*(1e-3*binding[i])*(195e-3-V[i])*sig( V[i]-45.5e-3,62 )
+    double dCa = deltat*(2e-3*binding[i])*(195e-3-V[i])*sig( V[i]-45.5e-3,62 )
       -Ca[i]/50e-3*deltat;
     if( Ca[i]+dCa < 0 )
       Ca[i] = 0;
