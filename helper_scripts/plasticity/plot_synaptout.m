@@ -69,7 +69,7 @@ subplot(2,2,4); box on; xlabel('Time (s)'); ylabel('|G|'); hold on
 for loop = 1:length(couplings)
     color = [loop/length(couplings),0,1-loop/length(couplings)];
 	y = textread( ['../../',dir,'neurofield.synaptout.', num2str(couplings(loop))] );
-	plot(t,abs(y),'Color',color)
+	plot(t,abs(y)./4200./10000,'Color',color)
 end
 
 y = 0;%-0.0018*4200;

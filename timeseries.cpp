@@ -116,7 +116,10 @@ Timeseries::Timeseries(const char * typeid1, const char * typeid2,Istrm& inputf)
       inputf >> tpeak;
       break;
     case 10: // paired associative stimulation (PAS)
-      inputf.validate("Mean",58);
+      // constant or Gaussian background
+      random = new Random(seed);
+      inputf.validate("Background",58);
+      inputf >> amp;
       inputf >> mean;
       // median nerve stimulus (MNS), with the N20 and P25 peaks
       inputf.validate("N20",58);
@@ -127,8 +130,8 @@ Timeseries::Timeseries(const char * typeid1, const char * typeid2,Istrm& inputf)
       inputf >> yspread; // half period of P25
 	  // transcranial magnetic stimulation (TMS)
       inputf.validate("TMS",58);
-      inputf >> amp; // amplitude of TMS pulse
-      inputf >> pdur; // duration of TMS pulse
+      inputf >> stepheight; // amplitude of TMS pulse
+      inputf >> stepwidth; // duration of TMS pulse
       inputf.validate("ISI",58);
       inputf >> tpeak; // time interval between N20 and TMS, +ve=>MNS before TMS
 	  break;
@@ -334,31 +337,41 @@ void Timeseries::get(double t, double *tseries, const long nodes){
       break;
     }
     case 10:{ // paired associative stimulation (PAS)
-      // background stimulation
-      for(long i=0; i<nodes; i++)
-        tseries[i] = mean;
+      // background stimulation, copied from case 2
+      double deviate1, deviate2; double *p=tseries;
+      for(long i=0; i<nodes-1; i+=2){
+        random->gaussian(deviate1,deviate2);	
+        *p++=amp*deviate1 + mean;
+        *p++=amp*deviate2 + mean;
+      }
+      if(nodes%2){
+        random->gaussian(deviate1,deviate2);
+        *p=amp*deviate1 + mean;
+      }
+      /*for(long i=0; i<nodes; i++)
+        tseries[i] = mean;*/
       // median nerve stimulation N20
-      if( t>=ts && t-ts<xspread ) 
-        for( long i=0; i<1; i++ )
+      if( t>ts && t-ts<xspread ) 
+        for( long i=0; i<nodes; i++ )
           tseries[i] -= xcent*sin( (t-ts)*3.141592654/xspread );
       // median nerve stimulation P25
       else if( t-ts>=xspread && t-ts<xspread+yspread ) 
-        for( long i=0; i<1; i++ )
-          tseries[i] += ycent*sin( (t-ts-xspread)*3.141592654/yspread );
-      else if( t-ts>=xspread+yspread+xspread && t-ts<3*xspread+yspread ) 
-        for( long i=0; i<1; i++ )
-          tseries[i] -= xcent*sin( (t-ts-2*xspread)*3.141592654/xspread );
-      // transcranial magnetic stimulation
-      if( t-ts>=xspread/2+tpeak && t-ts<xspread/2+tpeak+pdur){
         for( long i=0; i<nodes; i++ )
-          tseries[i] += amp;
+          tseries[i] += ycent*sin( (t-ts-xspread)*3.141592654/yspread );
+      /*else if( t-ts>=xspread+yspread+xspread && t-ts<3*xspread+yspread ) 
+        for( long i=0; i<nodes; i++ )
+          tseries[i] -= xcent*sin( (t-ts-2*xspread)*3.141592654/xspread );*/
+      // transcranial magnetic stimulation
+      if( t-ts>=xspread/2+tpeak && t-ts<xspread/2+tpeak+stepwidth){
+        for( long i=0; i<nodes; i++ )
+          tseries[i] += stepheight;
 	  }
       break;
     }
     mean: // Default is No pattern
     default:{
       for(long i=0; i<nodes; i++)
-        tseries[i]=0.0F;
+        tseries[i]=mean;
       break;
     }
   }
