@@ -24,12 +24,12 @@ double CaDP::sig( double x, double beta ) const
 
 double CaDP::potentiate(double Ca) const
 {
-  return nu_th +nu_ltp*sig(Ca-.46e-6,2e7);
+  return nu_th +nu_ltp*sig(Ca-.66e-6,2e7);
 }
 
 double CaDP::depress(double Ca) const
 {
-  return nu_th +nu_ltd*sig(Ca-.25e-6,2e7) -nu_ltd*sig(Ca-.46e-6,2e7);
+  return nu_th +nu_ltd*sig(Ca-.45e-6,2e7) -nu_ltd*sig(Ca-.66e-6,2e7);
 }
 
 CaDP::CaDP(long numnodes, double deltat)
@@ -107,7 +107,7 @@ void CaDP::dump(ofstream& dumpf){
 }
 
 void CaDP::output(){
-  for( int i=0; i</*nodes*/1; i++ ) {
+  for( int i=1249; i</*nodes*/1250; i++ ) {
     synapoutf<<setprecision(14)<<rho*nu[i]<<endl;
     caoutf<<setprecision(14)<<Ca[i]<<endl;
     voutf<<setprecision(14)<<V[i]<<endl;

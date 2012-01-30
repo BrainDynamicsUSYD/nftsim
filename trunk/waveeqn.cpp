@@ -142,6 +142,7 @@ void WaveEqn::restart(Istrm& restartf,Qhistory& qhistory){
   Qpast->restart(restartf);
   deltat2divided12=(deltat*deltat)/12.0F; //factor in wave equation
   deltatdivideddeltaxallsquared=(deltat*deltat)/(deltax*deltax);
+  p2=deltatdivideddeltaxallsquared*(effrange*effrange*gamma*gamma); // Square of mesh ratio, dimensionless
 }
 
 void WaveEqn::stepwaveeq(double *Phi,Qhistory& qhistory){
@@ -155,9 +156,9 @@ void WaveEqn::stepwaveeq(double *Phi,Qhistory& qhistory){
   double* Q=qhistory.getQbytime(*tauobj);
   double* Q_1= Qpast->U_1;
   double* Q_2= Qpast->U_2;
-  gamma=gammaobj->get(); //Update the gamma value
-  effrange=effrangeobj->get(); //Update the effective range value
-  p2=deltatdivideddeltaxallsquared*(effrange*effrange*gamma*gamma)  ; // Square of mesh ratio, dimensionless
+  // gamma=gammaobj->get(); //Update the gamma value
+  // effrange=effrangeobj->get(); //Update the effective range value
+  // p2=deltatdivideddeltaxallsquared*(effrange*effrange*gamma*gamma); // Square of mesh ratio, dimensionless
 //  twominusfourp2=2.0F-4.0F*p2; // factor in wave algorithm
   twominusthreep2=2.0F-3.0F*p2; // factor in wave algorithm
 //  tenminusfourp2=10.0F-4*p2; //factor in wave algorithm
@@ -192,9 +193,10 @@ void WaveEqn::stepwaveeq(double *Phi,Qhistory& qhistory){
       itopleft++,itopright++,ibottomleft++,ibottomright++; // as above
       iphi++; // increment phi position index
     }
-    icentre+=2,itop+=2,ibottom+=2,ileft+=2,iright+=2; // reposition indexes to start of next row, they were already incremented
-        					      // one space within inner loop
-    itopleft+=2,itopright+=2,ibottomleft+=2,ibottomright+=2; // as above
+    // reposition indexes to start of next row,
+    // they were already incremented one space within inner loop
+    icentre+=2,itop+=2,ibottom+=2,ileft+=2,iright+=2;
+    itopleft+=2,itopright+=2,ibottomleft+=2,ibottomright+=2;
   }
   phipast->update(Phi); // Store current phi value in past value arrays for next step
   Qpast->update(Q); // Store current Q value in past value array for next step of PDE
