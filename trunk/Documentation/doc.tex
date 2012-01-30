@@ -490,6 +490,8 @@ An \type{OpenMP} version of the code exists for running on multicore machines. I
 
 \subsection{Class diagram}
 
+\begin{figure}[h!]\begin{center}\includegraphics[scale=.8]{class.pdf}\caption{Schematic of the main class structure of \type{NeuroField}. Here, \type{V}, \type{Q}, and \type{Eta} are 2D arrays of doubles, representing the fields $V_a$, $Q_a$, and $\phi_{ab}$.}\label{fig:class}\end{center}\end{figure}
+
 \subsection{Main integration loop}
 
 The main integration loop is coded in \type{main.cpp}. It is schematically illustrated as follows.
@@ -535,7 +537,7 @@ The source code contains a main code \type{main.cpp} and various components defi
 	\item validate: check the next text to be read for the intended keyword of input identifier,
 	\item optional: check whether an optional parameter keyword is next to be read,
 	\item find: search for the i'th instance of a particular keyword,
-	\item choose: return a number of corresponding to whcih character string from a list is being read.
+	\item choose: return a number of corresponding to which character string from a list is being read.
 	\end{enumerate}
 \item[Random] Generates random numbers for use by time series generating function.
 \item[Parameter] A helper calss to store individual parameters and their keyword names.
