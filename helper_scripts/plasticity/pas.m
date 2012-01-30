@@ -1,8 +1,11 @@
 % pas.m: plots the voltage response and stdp curve induced by paired
 % associative stimulation (PAS)
 
-function pas(isi, directory)
+function pas( isi, tstim, directory )
 
+if ~exist('tstim','var')
+    tstim = .4; % time of stimulation for plotting
+end
 if ~exist('directory','var')
     directory = '../../Output/';
 end
@@ -42,12 +45,12 @@ for jj = 1:length(couplings)
     xlabel('Time (s)'); title(['ISI = ',num2str(isi(ii)*1e3),' ms']);
     color = [jj/length(couplings),0,1-jj/length(couplings)];
     y = textread( [dir,'neurofield.vout.', num2str(couplings(jj))] );
-    hold on; box on; xlim([.4 .8]);
+    hold on; box on; xlim([tstim tstim+.4]);
 	plot(t,y.*1e3,'--','Color',color)
 	y = textread( [dir,'neurofield.bindout.', num2str(couplings(jj))] );
 	plot(t,y.*10,':','Color',color)
-    line([t(1) t(end)],[2.5 2.5],'LineStyle','--','Color','cyan');
-    line([t(1) t(end)],[4.6 4.6],'LineStyle','--','Color','cyan');
+    line([t(1) t(end)],[4.5 4.5],'LineStyle','--','Color','cyan');
+    line([t(1) t(end)],[6.6 6.6],'LineStyle','--','Color','cyan');
 	y = textread( [dir,'neurofield.caout.', num2str(couplings(jj))] );
 	plot(t,y.*1e7,'Color',color)
 end
@@ -55,9 +58,9 @@ end
 end
 %% plot STDP window
 
-[~,stdp] = system(['./stdp.pl ',directory,' ',num2str(300),' | sort -n']);
+[~,stdp] = system(['./stdp.pl ',directory,' ',num2str(tstim/deltat),' | sort -n']);
 stdp = str2num(stdp);
-subplot( 6,4,9:24); plot( stdp(:,1).*1e3, stdp(:,2), 'o-' );
+subplot( 6,4,9:24); plot( stdp(:,1).*1e3, stdp(:,2)-.055, 'o-' );
 line([stdp(1,1) stdp(end,1)].*1e3,[0 0],'LineStyle','--','Color','cyan');
 xlim([stdp(1,1) stdp(end,1)].*1e3);
 xlabel('ISI (ms)'); ylabel('% change in synaptic strength');

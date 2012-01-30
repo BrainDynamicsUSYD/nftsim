@@ -51,14 +51,14 @@ Release/main.h:
 doc: Documentation/doc.pdf
 
 Documentation/doc.pdf: Documentation/doc.tex
-	cd Documentation && pdflatex $(shell basename $<)
+	cd Documentation && pdflatex $(shell basename $<) && pdflatex $(shell basename $<)
 
 .PHONY: clean run doc
 
 # deletes all object files and exes
 clean:
 	echo Delete Release/ Documentation/doc
-	-rm -rI Release Documentation/doc.{aux,log,pdf}
+	-rm -rI Release Documentation/doc.{aux,log,pdf,out,toc} Documentation/x.log
 
 .SILENT:
 

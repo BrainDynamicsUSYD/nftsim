@@ -218,15 +218,11 @@ void Timeseries::get(double t, double *tseries, const long nodes){
         }
       break;
     case 1:{ // Pulse pattern 
-      if( t<=ts ) goto mean;
-      if(fmod((t-ts),tperiod) < pdur){
-    for(long i=0; i<nodes; i++){
-          tseries[i]=amp;
-        }
-  } else {
+      for(long i=0; i<nodes; i++)
+        tseries[i]=mean;
+      if( fmod((t-ts),tperiod)<pdur && t>=ts )
         for(long i=0; i<nodes; i++)
-          tseries[i]=mean;
-  }
+          tseries[i]=amp;
       break;
     }
     case 2:{ // White noise pattern
@@ -348,24 +344,23 @@ void Timeseries::get(double t, double *tseries, const long nodes){
         random->gaussian(deviate1,deviate2);
         *p=amp*deviate1 + mean;
       }
-      /*for(long i=0; i<nodes; i++)
-        tseries[i] = mean;*/
+      int width = 25; // width of square of nodes to stimulate
       // median nerve stimulation N20
       if( t>ts && t-ts<xspread ) 
-        for( long i=0; i<nodes; i++ )
-          tseries[i] -= xcent*sin( (t-ts)*3.141592654/xspread );
+        for(int i=int(sqrt(nodes))/2-width; i<int(sqrt(nodes))/2+width; i++)
+          for(int j=int(sqrt(nodes))/2-width; j<int(sqrt(nodes))/2+width; j++)
+            tseries[int(i+j*sqrt(nodes))] -= xcent*sin( (t-ts)*3.141592654/xspread );
       // median nerve stimulation P25
       else if( t-ts>=xspread && t-ts<xspread+yspread ) 
-        for( long i=0; i<nodes; i++ )
-          tseries[i] += ycent*sin( (t-ts-xspread)*3.141592654/yspread );
-      /*else if( t-ts>=xspread+yspread+xspread && t-ts<3*xspread+yspread ) 
-        for( long i=0; i<nodes; i++ )
-          tseries[i] -= xcent*sin( (t-ts-2*xspread)*3.141592654/xspread );*/
+        for(int i=int(sqrt(nodes))/2-width; i<int(sqrt(nodes))/2+width; i++)
+          for(int j=int(sqrt(nodes))/2-width; j<int(sqrt(nodes))/2+width; j++)
+            tseries[int(i+j*sqrt(nodes))] += ycent*sin( (t-ts-xspread)*3.141592654/yspread );
       // transcranial magnetic stimulation
       if( t-ts>=xspread/2+tpeak && t-ts<xspread/2+tpeak+stepwidth){
-        for( long i=0; i<nodes; i++ )
-          tseries[i] += stepheight;
-	  }
+        for(int i=int(sqrt(nodes))/2-width; i<int(sqrt(nodes))/2+width; i++)
+          for(int j=int(sqrt(nodes))/2-width; j<int(sqrt(nodes))/2+width; j++)
+            tseries[int(i+j*sqrt(nodes))] += stepheight;
+      }
       break;
     }
     mean: // Default is No pattern
