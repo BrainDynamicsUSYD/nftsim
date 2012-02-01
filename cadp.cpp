@@ -107,7 +107,7 @@ void CaDP::dump(ofstream& dumpf){
 }
 
 void CaDP::output(){
-  for( int i=1249; i</*nodes*/1250; i++ ) {
+  for( int i=0; i</*nodes*/1; i++ ) {
     synapoutf<<setprecision(14)<<rho*nu[i]<<endl;
     caoutf<<setprecision(14)<<Ca[i]<<endl;
     voutf<<setprecision(14)<<V[i]<<endl;
