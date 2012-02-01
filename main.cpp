@@ -27,6 +27,16 @@ using std::setprecision;
 int main(int argc, char* argv[])
 {
 
+  if(argc>2){
+    for(int i=1;i<(argc-1);i++){
+      if( strcmp(argv[i],"-?")==0 || strcmp(argv[i],"-h")==0 || strcmp(argv[i],"--help")==0 )
+      std::cerr << "NeuroField usage: " << endl
+        << "NeuroField [optional switches]" << endl
+        << "where the optional switches are" << endl
+        << "-d alternate.dump" << endl
+        << "-i alternate.conf" << endl
+        << "-o alternate.output" << endl
+
   // Open file for dumping data for restart -default is neurofield.dump
   int idumparg=0; // Index No. of dump file name in argv
   if(argc>2){
