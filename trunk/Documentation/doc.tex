@@ -220,6 +220,11 @@ Coupling types 1: Modulate 2: Simple 3: Simple 4: Simple 5: Simple 6: Simple $
 These lines specifies the type of the $n$ couplings, each preceeded by an index number and a colon. The coupling data should appear in the same order as in the connection matrix when the connection matrix is read top to bottom and then left to right.
 
 The following types of coupling are available: \type{Simple}, \type{Modcouple}, \type{STDP}, \type{Calcium}.
+\item
+\begin{lstlisting}
+Lambda: 3e-4 tGlu: 5e-3
+\end{lstlisting}
+Parameters governing glutamate dynamics, which is currently useful only for \type{Calcium} type coupling. \type{Lambda} is the glutamate release concentration per presynaptic spike, in moles. \type{tGlu} is the decay timescale of glutamate in seconds.
 \item A blank line finishes this section of the input file.
 \end{itemize}
 
@@ -588,7 +593,6 @@ According to Peter Drysdale:
 \item no need to rename neurofield.dump to neurofield.conf in restart mode?
 \item implement restart mode in launcher script?
 \item no need for NeuroField write defaults option?
-\item put in documentation for Lambda and tGlu, the glutamate dynamics
 \item tidy up helper scripts
 \end{enumerate}
 \end{document}
