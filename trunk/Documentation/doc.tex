@@ -60,7 +60,7 @@ Within the main directory, the user can find:
 \type{Configs/}& Stores configuration files for \type{NeuroField}.\\
 \type{Documentation/}& \type{Documentation/doc.tex} is the latex file for generating this document. Running \type{make doc} produces this document in \type{pdf} format, and \type{make clean} removes all the files latex produced (including \type{doc.pdf} and excluding \type{doc.tex}).\\
 \type{helper\_scripts/}& Stores helper scripts, including plotting routines and other post-processing of data procedures.\\
-\type{NeuroField}& A launcher script that handles compilation and launching of \type{NeuroField}, capable of automating parameter sweeps and submitting jobs in \type{yossarian}. Not to be confused with the executable \type{Release/NeuroField}.\\
+\type{Launch}& A launcher script that handles compilation and launching of \type{NeuroField}, capable of automating parameter sweeps and submitting jobs in \type{yossarian}.\\
 \type{Output/}& When using the launcher script to sweep over parameters, the launcher script produces this directory, which stores all output files \type{neurofield.*} in independent subdirectories.\\
 \type{Release/}& All compiled files, including the object files and the \type{NeuroField} executable is stored here. This directory will be deleted by \type{make clean}, so user data should not be stored here.\\
 \type{neurofield.*}& Output files of \type{NeuroField}.
@@ -74,13 +74,13 @@ Within the main directory, the user can find:
 
 \item To execute with only one set of parameters, edit your configuration file in \type{./Configs}, then run
 \begin{lstlisting}
-./NeuroField Configs/config_file
+./Launch Configs/config_file
 \end{lstlisting}
 For example,
 \begin{lstlisting}
-./NeuroField Configs/conf.emirs
+./Launch Configs/conf.emirs
 \end{lstlisting}
-The output will be stored in the current directory.\footnote{Tips for \type{vi} users: you can launch \type{NeuroField} in \type{vi} with \type{:!./NeuroField \% [optional params]} }
+The output will be stored in the current directory.\footnote{Tips for \type{vi} users: you can launch \type{NeuroField} in \type{vi} with \type{:!./Launch \% [optional params]} }
 
 \item To ease parameter exploration, the launcher script is capable of doing parameter sweeps. The launcher script supports sweeping over an arbitrary number of objects, parameters and runs. For example, if the user wants to launch \type{NeuroField} 3 times, with parameters varying according to the following table,
 
@@ -93,7 +93,7 @@ Object(s)&Parameter&1\textsuperscript{st} run&2\textsuperscript{nd} run&3\textsu
 
 simply list the above table entries into the argument list:
 \begin{lstlisting}
-./NeuroField Configs/conf.emirs 'Propagator 1' 'Propagator 2' gamma 10 20 30 'Coupling data 1' Nu 1 2 3
+./Launch Configs/conf.emirs 'Propagator 1' 'Propagator 2' gamma 10 20 30 'Coupling data 1' Nu 1 2 3
 \end{lstlisting}
 
 In terms of syntactic restriction, each row in the table can have an arbitary number of objects, but only one parameter; every row must have the same number of runs.
@@ -129,6 +129,11 @@ The \type{./Release/NeuroField} executable runs in one of two modes, initial run
 
 (2) The code dumps sufficient data about parameter values to restart. In restart mode the simulation will continue where it left off. Restart mode is accessed by running the code with command \type{Neurofield restart} rather than the usual \type{Neurofield} command on the command line. In order to run the code in restart mode it is necessary to take the \type{neurofield.dump} file which was produced from the run which will be restarted to be renamed as the new \type{neurofield.conf} file. The new \type{neurofield.conf} file should also be changed to reflect the new number of timesteps etc.  Note:- A restarting \type{neurofield.conf} file has different content to an initial run \type{neurofield.conf} and can only be used in restart mode.
 
+A brief description is given by
+\begin{lstlisting}
+./Release/NeuroField --help
+\end{lstlisting}
+
 \subsection{Writing a configuration file}
 
 \type{NeuroField} takes in a configuration file to build its population and their properties, as well as generate output. This section documents ways to write a configuration file.
@@ -158,8 +163,7 @@ The configuration file follows a logical structure: first the global simulation 
 \label{sec:global}
 \begin{itemize}
 
-\item The first line of the input file is skipped to allow the user to have a title
-line
+\item Any text before the entry, \type{Nodes per population:}, is disregarded by \type{NeuroField} and serves as comment.
 \item
 \begin{lstlisting}
 Nodes per population: 2500
@@ -172,7 +176,7 @@ Both spatial dimensions have periodic boundary conditions, so that populations h
 Number of neural populations: 5
 \end{lstlisting} This is the number of neural
 populations and includes the number of stimulus modes. It is denoted
-$n$ in this document.
+$n$ in this section.
 \item
 \begin{lstlisting}
 Number of neural connections: 11
