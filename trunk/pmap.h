@@ -12,7 +12,6 @@
 #include<fstream>
 #include<iostream>
 #include"istrm.h"
-#include"parameter.h"
 #include"qhistory.h"
 #include"propag.h"
 #include"tau.h"

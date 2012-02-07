@@ -25,19 +25,20 @@ $(addprefix Release/,$(OBJ)): Release/%.o: %.cpp %.h
 	mkdir -p Release
 	$(COMP) -c $< -o $@
 
-Release/main.o: main.cpp
-	mkdir -p Release
-	$(COMP) -c $< -o $@
-
-doc: Documentation/doc.pdf
-
 Documentation/doc.pdf: Documentation/doc.tex
 	cd Documentation && pdflatex $(shell basename $<) && pdflatex $(shell basename $<)
 
 .PHONY: clean doc
+
+doc: Documentation/doc.pdf
 
 clean:
 	echo Delete Release/ Documentation/doc
 	-rm -rI Release Documentation/doc.{aux,log,pdf,out,toc} Documentation/x.log
 
 .SILENT:
+
+.INTERMEDIATE: main.h
+
+main.h:
+	touch main.h

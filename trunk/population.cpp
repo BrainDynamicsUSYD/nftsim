@@ -32,12 +32,11 @@ Population::~Population(){
 void Population::init(Istrm& inputf,PropagNet& propagnet,ConnectMat& connectmat){
   inputf.ignore(200,32); //throwaway line naming population
   double Qinitial;
-  inputf.validate("Initial Q",58);
-  inputf >> Qinitial;
+  inputf.Param("Q",Qinitial);
   for(long i=0; i<nodes; i++)
       Q[i]=Qinitial;
   if (isstimulus) {
-    pstimulus = new Timeseries("Stimulus"," of stimulus",inputf);
+    pstimulus = new Timeseries(inputf);
   } else {
     pfr = new FiringR(pindex,inputf);
     pdr->init(inputf,propagnet,connectmat);
@@ -60,7 +59,7 @@ void Population::dump(ofstream& dumpf){
 }
 
 void Population::restart(Istrm& restartf,PropagNet& propagnet,ConnectMat& connectmat){
-  restartf.ignore(200,32); // Throwaway title line for population
+  /*restartf.ignore(200,32); // Throwaway title line for population
   restartf.ignore(200,58); // Throwaway upto colon i.e. Q array :
   for(long i=0; i<nodes; i++)
     restartf >> Q[i];
@@ -70,7 +69,7 @@ void Population::restart(Istrm& restartf,PropagNet& propagnet,ConnectMat& connec
   } else {
     pfr = new FiringR(pindex,restartf);
     pdr->restart(restartf,propagnet,connectmat);
-  }
+  }*/
 }
 
 // Step forward population one timestep method

@@ -1,6 +1,6 @@
 /***************************************************************************
                           poplist.cpp  -  Poplist is an object holding
-			                  an array of (neural) populations
+                                          an array of (neural) populations
                              -------------------
     copyright            : (C) 2005 by Peter Drysdale
     email                : peter@physics.usyd.edu.au
@@ -11,21 +11,21 @@ using std::endl;
 
 // Constructor for Poplist creates an array of (neural) populations
 Poplist::Poplist(long nodes, int numberofpops, ConnectMat& connectmat): numpops(numberofpops){
-  poparray = new Population *[numpops];
-  for(int i=0;i<numpops;i++){
-    poparray[i] = new Population(nodes,i,connectmat);
-  }
+  //poparray = new Population *[numpops];
+  for(int i=0;i<numpops;i++)
+    poparray.push_back( new Population(nodes,i,connectmat) );
 }
 
 // Destructor deletes each population object and then array which holds them
 Poplist::~Poplist(){
   for(int i=0;i<numpops; i++)
-    delete &get(i);
-  delete [ ] poparray;
+    if( poparray[i] )
+      delete poparray[i];
+  //delete [ ] poparray;
 }
 
 // get method returns a pointer to the "index"th Population in the population list
-inline Population& Poplist::get(int index){ return *poparray[index]; }
+inline Population& Poplist::get(int index) const{ return *poparray[index]; }
 
 void Poplist::init(Istrm& inputf,PropagNet& propagnet,ConnectMat& connectmat){
   for(int i=0; i<numpops; i++)

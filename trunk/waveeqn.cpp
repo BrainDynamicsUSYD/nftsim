@@ -8,6 +8,8 @@
 #include "waveeqn.h"
 #include<math.h>
 #include<cstdlib>
+#include<string>
+using std::string;
 #include"qhistory.h"
 
 using std::endl;
@@ -37,13 +39,17 @@ WaveEqn::~WaveEqn(){
   delete phipast;
   delete Qpast;
   if(tauobj) delete tauobj;
-  delete gammaobj;
-  delete effrangeobj;
 }
 
 void WaveEqn::init(Istrm& inputf,Qhistory& qhistory){
-  inputf.validate("Initial Phi",58);
-// Determine if an initial value is given or "Steady" initial condition
+  // Determine if an initial value is given or "Steady" initial condition
+  char cbuffer[200]; inputf.Param("Phi",cbuffer);
+  double fbuffer; if( (fbuffer=atof(cbuffer)) )
+    phipast->init(fbuffer);
+  else if( string(cbuffer) == "Steady" )
+    phipast->init(qhistory.getQbytime(0)[0]);
+
+  /*inputf.Param("Initial Phi");
   std::streampos sp;
   sp = inputf.tellg();
   char ch;
@@ -57,28 +63,14 @@ void WaveEqn::init(Istrm& inputf,Qhistory& qhistory){
     double initphi;
     inputf >> initphi;
     phipast->init(initphi);
-  }
-  inputf.validate("Deltax",58);
-  inputf >> deltax;
+  }*/
+  inputf.Param("Deltax",deltax);
   tauobj = new Tau(nodes,deltat,inputf,qhistory);
-  effrangeobj = new Parameter("Effective range",inputf);
-  int optionnum;
-  optionnum=inputf.choose("gamma:1 velocity:2",58);
-  if(1==optionnum){
-    inputf >> gamma;
-    gammaobj = new Parameter("gamma",gamma);
+  inputf.Param("Range",effrange);
+  if( !inputf.Optional("gamma",gamma) ) {
+    inputf.Param("velocity",gamma);
+    gamma = gamma/effrange;
   }
-  if(2==optionnum){
-    double velocity;
-    inputf >> velocity;
-    gammaobj = new Parameter("gamma", velocity/effrangeobj->get() );
-  }
-  if( !((1==optionnum)||(2==optionnum)) ){
-    std::cerr << "Last read looking for gamma or velocity found neither" << endl;
-    exit(EXIT_FAILURE);
-  }
-  gamma=gammaobj->get(); //Update the gamma value
-  effrange=effrangeobj->get(); //Update the effective range value
   if(gamma/2.0 < deltat || effrange/2.0 < deltax){
     std::cerr << "Wave equation with gamma: " << gamma << " effrange: " << effrange << endl;
     std::cerr << "Is neither adequately captured by grid spacing chosen" << endl;
@@ -101,32 +93,21 @@ void WaveEqn::init(Istrm& inputf,Qhistory& qhistory){
 void WaveEqn::dump(ofstream& dumpf){
   tauobj->dump(dumpf);
   dumpf << "Deltax: " << deltax << " ";
-  effrangeobj->dump(dumpf);
-  gammaobj->dump(dumpf);
-  dumpf << endl;
+  dumpf << "Range: " << effrange << " ";
+  dumpf << "gamma: " << gamma << " " << endl;
   phipast->dump(dumpf);
   Qpast->dump(dumpf);
 }
 
 void WaveEqn::restart(Istrm& restartf,Qhistory& qhistory){
-  restartf.ignore(200,45); // Throw away everything up to the dash char
+  /*restartf.ignore(200,45); // Throw away everything up to the dash char
   tauobj = new Tau(nodes,deltat,restartf,qhistory);
-  restartf.validate("Deltax",58);
-  restartf >> deltax;
-  effrangeobj = new Parameter("Effective range",restartf);
-  int optionnum;
-  optionnum=restartf.choose("gamma:1 velocity:2",58);
-  if(1==optionnum){
-    restartf >> gamma;
-    gammaobj = new Parameter("gamma",gamma);
+  restartf.Param("Deltax",deltax);
+  restartf.Param("Range",effrange);
+  if( !restartf.Optional("gamma",gamma) ) {
+    restartf.Param("velocity",gamma);
+    gamma = gamma/effrange;
   }
-  if(2==optionnum){
-    double velocity;
-    restartf >> velocity;
-    gammaobj = new Parameter("gamma", velocity/effrangeobj->get() );
-  }
-  gamma=gammaobj->get(); //Update the gamma value
-  effrange=effrangeobj->get(); //Update the effective range value
   if( !((1==optionnum)||(2==optionnum)) ){
     std::cerr << "Last read looking for gamma or velocity found neither" << endl;
     exit(EXIT_FAILURE);
@@ -142,7 +123,7 @@ void WaveEqn::restart(Istrm& restartf,Qhistory& qhistory){
   Qpast->restart(restartf);
   deltat2divided12=(deltat*deltat)/12.0F; //factor in wave equation
   deltatdivideddeltaxallsquared=(deltat*deltat)/(deltax*deltax);
-  p2=deltatdivideddeltaxallsquared*(effrange*effrange*gamma*gamma); // Square of mesh ratio, dimensionless
+  p2=deltatdivideddeltaxallsquared*(effrange*effrange*gamma*gamma); // Square of mesh ratio, dimensionless*/
 }
 
 void WaveEqn::stepwaveeq(double *Phi,Qhistory& qhistory){

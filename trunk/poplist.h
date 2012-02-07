@@ -10,6 +10,8 @@
 
 #include<fstream>
 #include<iostream>
+#include<vector>
+using std::vector;
 #include"istrm.h"
 #include"population.h"
 class ConnectMat; //forward declare ConnectMat
@@ -23,10 +25,10 @@ public:
   void dump(std::ofstream& dumpf);
   void restart(Istrm& restartf,PropagNet& propagnet,ConnectMat& connectmat);
   void stepPops(double timestep);
-  Population& get(int popindex);
+  Population& get(int popindex) const;
 private:
   Poplist(Poplist& ); // no copy constructor
-  Population** poparray; // Array of pointers to population objects
+  vector<Population*> poparray; // Array of pointers to population objects
   const int numpops; //number of populations in array of populations
 };
 

@@ -17,7 +17,6 @@ using std::ofstream;
 #include"timeseries.h"
 #include"qhistorylist.h"
 #include"connectmat.h"
-#include"parameter.h"
 
 class CaDP: public Couple {
 public: 
@@ -26,7 +25,7 @@ public:
   void init(Istrm& inputf, int coupleid); 
   void dump(ofstream& dumpf); // output values for restart
   void output(); // output variables as needed
-  void updatePa(double *Pa,double *Etaa,Qhistorylist& qhistorylist,ConnectMat& connectmat,Couplinglist& couplinglist);
+  void updatePa(double *Pa,double *Etaa,double const *postV,double const *glu);
 
 private:
   double sig( double x, double beta ) const;

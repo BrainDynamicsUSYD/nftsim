@@ -11,25 +11,26 @@
 #include<fstream>
 #include<iostream>
 #include<string>
+using std::string;
 #include<vector>
+using std::vector;
 #include"istrm.h"
 #include"random.h"
 
 class Timeseries {
 public: 
-  Timeseries(const char * typeid1, const char * typeid2, Istrm& inputf);
+  Timeseries( Istrm& inputf );
   ~Timeseries();
   void dump(std::ofstream& dumpf);
   void get(double t, double *tseries, const long nodes);
-  double getmean(){return mean;};
 private:
-  Timeseries(Timeseries& ) ; //no copy contructor
-  std::vector<Timeseries*> stimulus; // array of stimuli when mode==0
-  std::vector<double> stimtime; // array of time to start stimulus when mode==0
-  std::string id1; // name of type of time series used in mode e.g. "Concentration" .. modes
-  std::string id2; // name of type of time series used in start time messsage
-  int mode; // Number representing mode of timeseries
+  Timeseries(Timeseries& ) ; // No copy contructor
+
+  string mode; // Number representing mode of timeseries
   double ts; // Time before timeseries onset
+  Random *random; //Pointer to Random number generator object
+  std::vector<Timeseries*> sarray; // Array of stimuli when mode==0
+
   double tpeak; // Time to peak
   double amp; // Amplitude of timeseries
   double freq; // Frequency of sine timeseries
@@ -43,7 +44,6 @@ private:
   double yspread; //Spread of Gaussian in y direction
   double stepheight; // Step height in JC's ramped input
   double stepwidth; // Step width in JC's ramped input
-  Random *random; //Pointer to Random number generator object
   long seed; // seed for random number generator
 };
 
