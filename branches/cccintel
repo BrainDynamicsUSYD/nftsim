@@ -1,3 +1,0 @@
-#! /bin/sh
-/usr/physics/intel/cce/bin/icc -p -g -Drestrict=__restrict__ -vec-report1 -O2 -lm -o NeuroField main.cpp connectmat.cpp poplist.cpp population.cpp dendriticrlist.cpp dendriticr.cpp firingr.cpp propagnet.cpp qhistorylist.cpp qhistory.cpp couple.cpp couplinglist.cpp coupling.cpp proplist.cpp waveeqn.cpp random.cpp phiout.cpp istrm.cpp propag.cpp parameter.cpp pmap.cpp eqnset.cpp weqn.cpp prefact.cpp modcouple.cpp field.cpp modtheta.cpp timeseries.cpp modtheta1.cpp pharmonic.cpp coupleplast.cpp modsigma.cpp tau.cpp
-
