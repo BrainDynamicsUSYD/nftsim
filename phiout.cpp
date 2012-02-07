@@ -14,17 +14,18 @@ using std::setprecision;
 using std::endl;
 
 Phiout::Phiout(Istrm& inputf, std::ofstream& outputf, int numconct, long nodes){
+  int optionnum;
   inputf.ignore(200,58); // throwaway everything up to colon character
-  //inputf >> numtraces;
+  inputf >> numtraces;
   outputf << "Output Data - Number of traces: " << numtraces << endl;
   idoftrace = new int [numtraces];
   nodeoftrace = new long [numtraces];
   long i=0;
   while(i<numtraces){
-    inputf.ignore(200,58); // throwaway everything up to colon character
-    //long temp1;
     int idindex;
-    //inputf >> idindex;
+    long temp1;
+    inputf.ignore(200,58); // throwaway everything up to colon character
+    inputf >> idindex;
     if(idindex>numconct || idindex<1){
       std::cerr << "Propagator number " << idindex << " requested for output is invalid" << endl;
       exit(EXIT_FAILURE);
@@ -32,13 +33,12 @@ Phiout::Phiout(Istrm& inputf, std::ofstream& outputf, int numconct, long nodes){
     idoftrace[i]=idindex-1; // '-1' as idoftrace runs [0:n-1] rather than [1:n]
     outputf << "Propagator Number : "<< idindex << " ";
     inputf.ignore(200,58); // throwaway everything up to colon character (Single/All:)
-    /*int optionnum;
-	optionnum=inputf.choose("Single:1 All:2 ",32);
+    optionnum=inputf.choose("Single:1 All:2 ",32);
     outputf << "Single/All nodes: ";
     if(1==optionnum){
       outputf << " Single ";
       inputf.ignore(200,58); // throwaway everything up to colon character
-      //inputf >> temp1;
+      inputf >> temp1;
       if(temp1>nodes || temp1<1){
         std::cerr << "Node number " << temp1 << " requested for output is invalid" << endl;
         exit(EXIT_FAILURE);
@@ -64,7 +64,6 @@ Phiout::Phiout(Istrm& inputf, std::ofstream& outputf, int numconct, long nodes){
       std::cerr << "Error - possibly too many traces specified or invalid output specification" << endl;
       exit(EXIT_FAILURE);
     }
-	*/
     i++;
   }
 }

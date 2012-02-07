@@ -24,24 +24,27 @@ Pharmonic::~Pharmonic(){
   delete[ ] previousPhi;
   delete[ ] dPhidt;
   if(tauobj) delete tauobj;
+  delete gammaobj;
 }
 
 void Pharmonic::init(Istrm& inputf,Qhistory& qhistory){
   double phiinit;
 
-  inputf.Param("Initial Phi",phiinit);
+  inputf.validate("Initial Phi",58);
+  inputf >> phiinit;
   for(long i=0; i<nodes; i++){
     previousQ[i]=phiinit;
     previousPhi[i]=phiinit;
     dPhidt[i]=0.;
   }
   tauobj = new Tau(nodes,timestep,inputf,qhistory);
-  inputf.Param("gamma",gamma);
+  gammaobj = new Parameter("gamma",inputf);
 }
 
 void Pharmonic::dump(ofstream& dumpf){
   tauobj->dump(dumpf);
-  dumpf << "gamma: " << gamma << endl;
+  gammaobj->dump(dumpf);
+  dumpf << endl;
   dumpf << "Q_previous:";
   for(long i=0; i<nodes; i++){
     dumpf << previousQ[i] << " ";
@@ -62,8 +65,8 @@ void Pharmonic::dump(ofstream& dumpf){
 void Pharmonic::restart(Istrm& restartf,Qhistory& qhistory){
   restartf.ignore(200,45);
   tauobj = new Tau(nodes,timestep,restartf,qhistory);
-  restartf.Param("gamma",gamma);
-  /*double temp;
+  gammaobj = new Parameter("gamma",restartf);
+  double temp;
   restartf.validate("Q_previous",58);
   for(long i=0; i<nodes; i++){
     restartf >> temp;
@@ -78,7 +81,7 @@ void Pharmonic::restart(Istrm& restartf,Qhistory& qhistory){
   for(long i=0; i<nodes; i++){
     restartf >> temp;
     dPhidt[i]=temp;
-  }*/
+  }
 }
 
 void Pharmonic::stepwaveeq(double * Phi,Qhistory& qhistory){
@@ -98,6 +101,7 @@ void Pharmonic::stepwaveeq(double * Phi,Qhistory& qhistory){
   double C1deltatplusc2;
 
   double* Q=qhistory.getQbytime(*tauobj);
+  double gamma=gammaobj->get();
   double expgamma=exp(-gamma*timestep);
   factorgamma=(2.0/gamma);
   for(long i=0; i<nodes; i++){

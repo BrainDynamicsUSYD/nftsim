@@ -13,6 +13,7 @@
 using std::ofstream;
 #include<iostream>
 #include"istrm.h"
+#include"parameter.h"
 
 class DendriticR {
 public: 
@@ -26,8 +27,8 @@ private:
   DendriticR(DendriticR& ); // no copy constructor
   const long nodes;
   double* previousPab; // Holds Pab from one time step in the past 
-  double alpha; // Object which initializes and get alpha values
-  double beta; // Object which initializes and gets beta values
+  Parameter* alphaobj; // Object which initializes and get alpha values
+  Parameter* betaobj; // Object which initializes and gets beta values
 };
 
 #endif

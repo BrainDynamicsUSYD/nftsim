@@ -23,7 +23,7 @@ public:
   virtual ~Couple() = 0; // Must be defined in couple.cpp
   virtual void init(Istrm& inputf, int coupleid) = 0; 
   virtual void dump(std::ofstream& dumpf) = 0; 
-  virtual void updatePa(double *Pa,double *Etaa,double const *postV,double const *glu) = 0;
+  virtual void updatePa(double *Pa,double *Etaa,Qhistorylist& qhistorylist, ConnectMat& connectmat,Couplinglist& couplinglist) = 0;
   // return X(w) = G L(w) Gamma(w) == 0 unless *this is a Coupleplast
   virtual complex<double> X( int i ) const { return complex<double>(0,0); };
   virtual void output() = 0; 

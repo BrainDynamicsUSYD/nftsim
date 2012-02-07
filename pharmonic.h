@@ -14,6 +14,7 @@ using std::ofstream;
 #include<iostream>
 
 #include"istrm.h"
+#include"parameter.h"
 #include"qhistory.h"
 #include"propag.h"
 #include"tau.h"
@@ -34,7 +35,7 @@ private:
   double* previousQ; // Store one step in past firing rate field
   double* previousPhi; // Store one step in past phi field
   double* dPhidt; // Store estimated Phi time derivative
-  double gamma;
+  Parameter* gammaobj;
 };
 
 #endif

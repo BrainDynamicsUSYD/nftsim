@@ -14,6 +14,7 @@ using std::ofstream;
 //using std::vector;
 #include<vector>
 #include"istrm.h"
+#include"parameter.h"
 
 class FiringR {
 public: 
@@ -23,11 +24,9 @@ public:
   void getQ(double *V, double *Q,long nodes,double timestep);
 private: 
   FiringR(FiringR& ); // no copy constructor
-  double theta;
-  double sigma;
-  double Q_max;
-  double gradient;
-  double intercept;
+  std::vector<Parameter> params;
+  int type;
+  int pindex;
 };
 
 #endif

@@ -5,47 +5,22 @@
     email                : peter@physics.usyd.edu.au
  ***************************************************************************/
 
-#include<string>
-using std::string;
-#include<sstream>
-using std::stringstream;
-#include<cstdlib>
-#include"dendriticr.h"
+#include "dendriticr.h"
 using std::endl;
 
-DendriticR::DendriticR(long nodes):nodes(nodes)
-{
+DendriticR::DendriticR(long nodes):nodes(nodes){
   previousPab = new double [nodes];
 }
 DendriticR::~DendriticR(){
   delete[ ] previousPab;
+  delete alphaobj;
+  delete betaobj;
 }
 
-void DendriticR::init(Istrm& inputf, double& Vinit, int propindex, int qindex){
-  // Determine if an initial value is given or "Steady" initial condition
-  char cbuffer[200]; inputf.Param("V",cbuffer);
-  double fbuffer; if( (fbuffer=atof(cbuffer)) )
-    Vinit = fbuffer;
-  else if( string(cbuffer) == "Steady" ) {
-    stringstream ss; ss<<"Couple "<<propindex+1<<"*Nu:";
-    string sbuffer = inputf.Find( ss.str().c_str() );
-    double nu = atof(sbuffer.c_str());
-    ss.str(""); ss<<"Firing "<<qindex<<"*Q:";
-    sbuffer = inputf.Find( ss.str().c_str() );
-    double Q = atof(sbuffer.c_str());
-    Vinit = nu*Q;
-  }
-  else {
-    std::cout << "Phi must be given either a numeral or 'Steady'." << endl;
-    exit(EXIT_FAILURE);
-  }
-
-  for(long i=0; i<nodes; i++)
-    previousPab[i]=Vinit;
-  inputf.Param("alpha",alpha);
-  inputf.Param("beta",beta);
-
-  /*std::streampos sp;
+void DendriticR::init(Istrm& inputf, double& Vinit,int propindex, int qindex){
+  inputf.validate("V initial",58);
+// Determine if an initial value is given or "Steady" initial condition
+  std::streampos sp;
   sp = inputf.tellg();
   char ch;
   ch=inputf.get();
@@ -59,14 +34,18 @@ void DendriticR::init(Istrm& inputf, double& Vinit, int propindex, int qindex){
   } else {
     inputf.seekg(sp);
     inputf >> Vinit;
-  }*/
+  }
+  for(long i=0; i<nodes; i++){
+    previousPab[i]=Vinit;
+  } 
+  alphaobj = new Parameter("alpha",inputf);
+  betaobj = new Parameter("beta",inputf);
 }
 
-void DendriticR::dump(ofstream& dumpf)
-{
+void DendriticR::dump(ofstream& dumpf){
   dumpf << "Dendritic Response from population ";
-  dumpf << "alpha: " << alpha << " ";
-  dumpf << "beta: " << beta << " ";
+  alphaobj->dump(dumpf);
+  betaobj->dump(dumpf);
   dumpf << "Pab_previous:";
   for(long i=0; i<nodes; i++){
     dumpf << previousPab[i] << " ";
@@ -74,20 +53,18 @@ void DendriticR::dump(ofstream& dumpf)
   dumpf << endl; // Add endline to dendritic response input
 }
 
-void DendriticR::restart(Istrm& restartf)
-{
-  restartf.Param("alpha",alpha);
-  restartf.Param("beta",beta);
-  /*double tempPab;
-  restartf.validate("Pab_previous",':');
+void DendriticR::restart(Istrm& restartf){
+  alphaobj = new Parameter("alpha",restartf);
+  betaobj = new Parameter("beta",restartf);
+  double tempPab;
+  restartf.validate("Pab_previous",58);
   for(long i=0; i<nodes; i++){
     restartf >> tempPab;
     previousPab[i]=tempPab;
-  }*/
+  }
 }
 
-void DendriticR::stepVab(double *Pab, double * Vab, double *dVabdt, double timestep)
-{
+void DendriticR::stepVab(double *Pab, double * Vab, double *dVabdt, double timestep){
 //
 // Steps Vab(t+Timestep) using Pab(t+Timestep), current Pab(t) and current Vab(t)
 //
@@ -103,6 +80,8 @@ void DendriticR::stepVab(double *Pab, double * Vab, double *dVabdt, double times
   double deltaPdeltat;
   double C1;
 
+  double alpha=alphaobj->get();
+  double beta=betaobj->get();
   double expalpha=exp(-alpha*timestep);
   double factoralphabeta=(1.0/alpha)+(1.0/beta);
   if(alpha!=beta){

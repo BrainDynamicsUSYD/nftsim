@@ -12,6 +12,7 @@
 using std::ofstream;
 #include<iostream>
 #include"istrm.h"
+#include"parameter.h"
 #include"couple.h"
 #include"qhistorylist.h"
 #include"connectmat.h"
@@ -22,13 +23,13 @@ public:
   ~Coupling();
   void init(Istrm& inputf, int coupleid); // initialize the nu variable
   void dump(ofstream& dumpf); // dump nu for restart
-  void updatePa(double *Pa,double *Etaa,double const *postV,double const *glu);
+  void updatePa(double *Pa,double *Etaa,Qhistorylist& qhistorylist,ConnectMat& connectmat,Couplinglist& couplinglist);
   void output(); // dummy output routine - no output is generated
 
 private:
   Coupling(Coupling& ); // no copy constructor
   const long nodes;
-  double nu;
+  Parameter* nuobj;
 };
 
 #endif
