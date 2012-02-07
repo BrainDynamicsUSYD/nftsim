@@ -9,6 +9,7 @@
 #define PREFACT_H
 
 #include"istrm.h"
+#include"parameter.h"
 
 class Prefact {
 public: 

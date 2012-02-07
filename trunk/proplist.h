@@ -10,8 +10,6 @@
 
 #include<fstream>
 #include<iostream>
-#include<vector>
-using std::vector;
 #include"istrm.h"
 #include"propag.h"
 #include"waveeqn.h"
@@ -32,7 +30,7 @@ public:
 
 private:
   Proplist(Proplist& ); // no copy constructor
-  vector<Propag*> propagarray; // Array of pointers to propagator objects
+  Propag ** propagarray; // Array of pointers to propagator objects
   Propag& getpropag(int index); // method to obtain pointer to "i"th propagator
   const int numpropag; //number of propagator objects in the list
 };

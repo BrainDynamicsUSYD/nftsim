@@ -7,13 +7,11 @@
  ***************************************************************************/
 
 #include<cstdlib>
-#include<string>
-using std::string;
-#include<sstream>
 #include"couplinglist.h"
 #include"coupling.h"
+#include"modcouple.h"
+#include"stdp.h"
 #include"cadp.h"
-#include"poplist.h"
 using std::endl;
 
 //
@@ -21,24 +19,41 @@ using std::endl;
 //
 
 Couplinglist::Couplinglist(Istrm& inputf, ofstream& dumpf
-    ,int numconnects, long nodes, double deltat)
-    : numcoup(numconnects), numnodes(nodes), deltat(deltat) {
-  for( int i=0; i<numcoup; i++ ) {
-    std::stringstream ss; ss<<"Couple "<<i<<" - ";
-    string type = inputf.Find( ss.str().c_str() );
-    if(type=="Simple")
-      couparray.push_back( new Coupling(nodes,deltat) );
-    else if(type=="Calcium")
-      couparray.push_back( new CaDP(nodes,deltat) );
-    else {
+  ,int numconnects, long nodes, double deltat):numcoup(numconnects){
+  couparray = new Couple *[numcoup];
+  inputf.validate("Coupling type",115);// search for "propagator types NB:- the s is ASCII 115
+  dumpf << "Coupling types ";
+  int optionnum;
+  for(int i=0;i<numcoup;i++){
+    inputf.ignore(200,58);
+    optionnum=inputf.choose("Simple:1 Modulate:2 STDP:3 Calcium:4 Hebbian:5",32);
+    if(1==optionnum){
+      couparray[i] = new Coupling(nodes,deltat);
+      dumpf << (i+1) << ": Simple ";
+    }
+    if(2==optionnum){
+      couparray[i] = new Modcouple(nodes,deltat);
+      dumpf << (i+1) << ": Modulate ";
+    }
+    if(3==optionnum){
+      couparray[i] = new STDP(nodes,deltat);
+      dumpf << (i+1) << ": STDP ";
+    }
+    if(4==optionnum){
+      couparray[i] = new CaDP(nodes,deltat);
+      dumpf << (i+1) << ": Calcium ";
+    }
+    if( optionnum<1 || optionnum>5 ){
       std::cerr << "Invalid Coupling type" << endl;
       exit(EXIT_FAILURE);
     }
   }
-  string buffer = inputf.Find("Lambda"); Lambda = atof(buffer.c_str());
+  inputf.validate("Lambda",58); inputf >> Lambda;
+  inputf.validate("tGlu",58); inputf >> tGlu;
   dumpf << "Lambda: " << Lambda << endl;
-  buffer = inputf.Find("tGlu");
   dumpf << "tGlu: " << tGlu << endl;
+  numnodes = nodes;
+  this->deltat = deltat;
   glu = new double[numnodes];
   for( int i=0; i<numnodes; i++ )
     glu[i] = 0;
@@ -50,20 +65,21 @@ Couplinglist::Couplinglist(Istrm& inputf, ofstream& dumpf
 // Destructor deletes each coupling object and then array which holds them
 Couplinglist::~Couplinglist(){
   for(int i=0;i<numcoup; i++)
-    delete couparray[i];
+    delete getcoup(i);
+  delete [ ] couparray;
   if(glu) delete[] glu;
-  if(dglu) delete[] dglu;
 }
 
 void Couplinglist::init(Istrm& inputf){
-  for(int i=0; i<numcoup; i++)
-    getcoup(i).init(inputf,i);
+  for(int i=0; i<numcoup; i++) {
+    getcoup(i)->init(inputf,i);
+  }
 }
 
 void Couplinglist::dump(ofstream& dumpf){
   for(int i=0; i<numcoup; i++){
     dumpf << "Coupling " << (i+1) << " ";
-    getcoup(i).dump(dumpf);
+    getcoup(i)->dump(dumpf);
     dumpf << endl; //Append endl to coupling data
   }
   dumpf << "Lambda: " << Lambda << endl;
@@ -71,11 +87,11 @@ void Couplinglist::dump(ofstream& dumpf){
 }
 
 // updateP method updates P via each coupling object 
-void Couplinglist::updateP(double **P,double **Eta,const Poplist& poplist,const ConnectMat& connectmat){
+void Couplinglist::updateP(double **P,double **Eta,Qhistorylist& qhistorylist,ConnectMat& connectmat){
   for( int j=0; j<numnodes; j++ )
     dglu[j] = 0;//double ddglu = 0; double ts = 200e-3; double td = 200e-3;
   for( int i=0; i<numcoup; i++ )
-    if( getcoup(i).sign )
+    if( getcoup(i)->sign )
       for( int j=0; j<numnodes; j++ )
         dglu[j] += Lambda*Eta[i][j]*deltat;
   for( int j=0; j<numnodes; j++ ) {
@@ -94,11 +110,13 @@ void Couplinglist::updateP(double **P,double **Eta,const Poplist& poplist,const 
       glu[j] += 1/6*(k1+2*k2+2*k3+k4);
     */
   }
-  for(int i=0;i<numcoup;i++)
-    getcoup(i).updatePa(P[i],Eta[i],poplist.get(connectmat.getPostPop(i)).V,glu);
+  for(int i=0;i<numcoup;i++){
+    getcoup(i)->updatePa(P[i],Eta[i],qhistorylist,connectmat,*this);
+  }
 }
 
 void Couplinglist::output(){
-  for(int i=0;i<numcoup;i++)
-    getcoup(i).output();
+  for(int i=0;i<numcoup;i++){
+    getcoup(i)->output();
+  }
 }

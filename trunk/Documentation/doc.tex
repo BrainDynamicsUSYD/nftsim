@@ -60,7 +60,7 @@ Within the main directory, the user can find:
 \type{Configs/}& Stores configuration files for \type{NeuroField}.\\
 \type{Documentation/}& \type{Documentation/doc.tex} is the latex file for generating this document. Running \type{make doc} produces this document in \type{pdf} format, and \type{make clean} removes all the files latex produced (including \type{doc.pdf} and excluding \type{doc.tex}).\\
 \type{helper\_scripts/}& Stores helper scripts, including plotting routines and other post-processing of data procedures.\\
-\type{Launch}& A launcher script that handles compilation and launching of \type{NeuroField}, capable of automating parameter sweeps and submitting jobs in \type{yossarian}.\\
+\type{NeuroField}& A launcher script that handles compilation and launching of \type{NeuroField}, capable of automating parameter sweeps and submitting jobs in \type{yossarian}. Not to be confused with the executable \type{Release/NeuroField}.\\
 \type{Output/}& When using the launcher script to sweep over parameters, the launcher script produces this directory, which stores all output files \type{neurofield.*} in independent subdirectories.\\
 \type{Release/}& All compiled files, including the object files and the \type{NeuroField} executable is stored here. This directory will be deleted by \type{make clean}, so user data should not be stored here.\\
 \type{neurofield.*}& Output files of \type{NeuroField}.
@@ -74,13 +74,13 @@ Within the main directory, the user can find:
 
 \item To execute with only one set of parameters, edit your configuration file in \type{./Configs}, then run
 \begin{lstlisting}
-./Launch Configs/config_file
+./NeuroField Configs/config_file
 \end{lstlisting}
 For example,
 \begin{lstlisting}
-./Launch Configs/conf.emirs
+./NeuroField Configs/conf.emirs
 \end{lstlisting}
-The output will be stored in the current directory.\footnote{Tips for \type{vi} users: you can launch \type{NeuroField} in \type{vi} with \type{:!./Launch \% [optional params]} }
+The output will be stored in the current directory.\footnote{Tips for \type{vi} users: you can launch \type{NeuroField} in \type{vi} with \type{:!./NeuroField \% [optional params]} }
 
 \item To ease parameter exploration, the launcher script is capable of doing parameter sweeps. The launcher script supports sweeping over an arbitrary number of objects, parameters and runs. For example, if the user wants to launch \type{NeuroField} 3 times, with parameters varying according to the following table,
 
@@ -93,7 +93,7 @@ Object(s)&Parameter&1\textsuperscript{st} run&2\textsuperscript{nd} run&3\textsu
 
 simply list the above table entries into the argument list:
 \begin{lstlisting}
-./Launch Configs/conf.emirs 'Propagator 1' 'Propagator 2' gamma 10 20 30 'Coupling data 1' Nu 1 2 3
+./NeuroField Configs/conf.emirs 'Propagator 1' 'Propagator 2' gamma 10 20 30 'Coupling data 1' Nu 1 2 3
 \end{lstlisting}
 
 In terms of syntactic restriction, each row in the table can have an arbitary number of objects, but only one parameter; every row must have the same number of runs.
@@ -129,19 +129,20 @@ The \type{./Release/NeuroField} executable runs in one of two modes, initial run
 
 (2) The code dumps sufficient data about parameter values to restart. In restart mode the simulation will continue where it left off. Restart mode is accessed by running the code with command \type{Neurofield restart} rather than the usual \type{Neurofield} command on the command line. In order to run the code in restart mode it is necessary to take the \type{neurofield.dump} file which was produced from the run which will be restarted to be renamed as the new \type{neurofield.conf} file. The new \type{neurofield.conf} file should also be changed to reflect the new number of timesteps etc.  Note:- A restarting \type{neurofield.conf} file has different content to an initial run \type{neurofield.conf} and can only be used in restart mode.
 
-A brief description is given by
-\begin{lstlisting}
-./Release/NeuroField --help
-\end{lstlisting}
-
 \subsection{Writing a configuration file}
 
 \type{NeuroField} takes in a configuration file to build its population and their properties, as well as generate output. This section documents ways to write a configuration file.
 
+All configuration files are stored in \type{./Configs}. Users can write their own config files by editting existing ones. Alternatively,
+\begin{lstlisting}
+./NeuroField write defaults
+\end{lstlisting}
+generates a default configuration file to the present working directory.
+
 To write a configuration file, a user can follow these steps:
 \begin{enumerate}
-\item Determine your population model by drawing a schematic diagram, thereby constructing a connection matrix. An example is shown in Fig.~\ref{fig:pop}.
-\item Look up existing configuration files in \type{Configs/}. By checking the comment located at the top of a configuration file, and also the connection matrix, a user should find the most suitable existing file to construct his own. This is less tedious (and less error prone) than writing a new one from scratch.
+\item Obtain an existing config file, using the above options. This is less tedious (and less error prone) than writing a new one from scratch.
+\item Determine your population model by drawing a schematic diagram. An example is shown in Fig.~\ref{fig:pop}.
 \item Specify the global parameters and connectivity matrix (Sec.~\ref{sec:global}).
 \item Specify all populations (Sec.~\ref{sec:pop}).
 \item Specify all propagators (Sec.~\ref{sec:prop}).
@@ -149,29 +150,7 @@ To write a configuration file, a user can follow these steps:
 \item Specify all output requests (Sec.~\ref{sec:output}).
 \end{enumerate}
 
-\begin{figure}\begin{tabular}{l p{5cm}}
-\includegraphics[scale=0.3]{pop.png}&
-Connection matrix
-
-\begin{tabular}{ l l l l l l }
-	From: & e&i&r&s&n\\
-	To e: & 1&6&0&8&0\\
-	To i: & 2&0&0&0&0\\
-	To s: & 3&0&0&10&0\\
-	To s: & 4&0&7&0&11\\
-	To n: & 0&0&0&0&0
-\end{tabular}
-\end{tabular}
-
-\caption{An example thalamocortical population model and its connection matrix. After drawing the diagram, all populations, including the stimulus population, are named, and all connections numbered. A connection matrix is then constructed.}\label{fig:pop}
-
-\end{figure}
-
-{\bf A new format for the configuration file is proposed and is being implemented. As a general principle, the new format is more concise (e.g. \type{Nodes} rather than \type{Number of nodes}, etc), has less redundant information, but more rigorous cross-checking on the connection matrix. A new syntactic principle is that some lines require prefixing with the object name, e.g.
-\begin{lstlisting}
-Propag 3 - Wave - Phi: 8.87145 Deltax: 0.0035 Tauab: 0 Range: 0.08 gamma: 116
-\end{lstlisting}
-where the prefix \type{Propag 3 - } is required for parsing (before it purely for human reference), and in addition serve for cross-checking purpose.}
+\begin{figure}\begin{center}\includegraphics[scale=0.4]{pop.png}\caption{An example population model. Note all populations, including the stimulus population, are named, and all connections numbered for human referencing.}\label{fig:pop}\end{center}\end{figure}
 
 The configuration file follows a logical structure: first the global simulation information, next the information for each populations given, then the propagation data, then the coupling data and finally the output data. Each component is described in detail below; each bullet point corresponds to a line of the input file.
 
@@ -179,7 +158,8 @@ The configuration file follows a logical structure: first the global simulation 
 \label{sec:global}
 \begin{itemize}
 
-\item Any text before the entry, \type{Nodes per population:}, is disregarded by \type{NeuroField} and serves as comment.
+\item The first line of the input file is skipped to allow the user to have a title
+line
 \item
 \begin{lstlisting}
 Nodes per population: 2500
@@ -192,7 +172,7 @@ Both spatial dimensions have periodic boundary conditions, so that populations h
 Number of neural populations: 5
 \end{lstlisting} This is the number of neural
 populations and includes the number of stimulus modes. It is denoted
-$n$ in this section.
+$n$ in this document.
 \item
 \begin{lstlisting}
 Number of neural connections: 11
@@ -240,11 +220,6 @@ Coupling types 1: Modulate 2: Simple 3: Simple 4: Simple 5: Simple 6: Simple $
 These lines specifies the type of the $n$ couplings, each preceeded by an index number and a colon. The coupling data should appear in the same order as in the connection matrix when the connection matrix is read top to bottom and then left to right.
 
 The following types of coupling are available: \type{Simple}, \type{Modcouple}, \type{STDP}, \type{Calcium}.
-\item
-\begin{lstlisting}
-Lambda: 3e-4 tGlu: 5e-3
-\end{lstlisting}
-Parameters governing glutamate dynamics, which is currently useful only for \type{Calcium} type coupling. \type{Lambda} is the glutamate release concentration per presynaptic spike, in moles. \type{tGlu} is the decay timescale of glutamate in seconds.
 \item A blank line finishes this section of the input file.
 \end{itemize}
 
@@ -515,34 +490,15 @@ An \type{OpenMP} version of the code exists for running on multicore machines. I
 
 \subsection{Class diagram}
 
-\begin{figure}[h!]\begin{center}\includegraphics[scale=.8]{class.pdf}\caption{Schematic of the main class structure of \type{NeuroField}. Here, each line indicates that the top class has members in the bottom class, and \type{V}, \type{Q}, and \type{Eta} are 1D arrays of doubles, representing the fields $V_a$, $Q_a$, and $\phi_{ab}$.}\label{fig:class}\end{center}\end{figure}
+\subsection{Main integration loop}
 
-\subsection{Program flow}
+The main integration loop is coded in \type{main.cpp}. It is schematically illustrated as follows.
 
-We use the semicolon to denote a succession of functions/procedures, and \type{a()} $\Rightarrow$ \type{b()} symbol to denote function \type{b()} as content of function \type{a()}.
-
-\begin{center}
+\begin{figure}[h!]\begin{center}
 \begin{tabular}{ | l l p{12cm} | }
 \hline \\
 
-\type{main()}& $\Rightarrow$ &Open dump file; Open config file;\\[6pt]
-&&Read in global parameters;\type{ConnectMat::ConnectMat()};\\[6pt]
-&&\type{Poplist::Poplist()}; \type{PropagNet::PropagNet()};\\[6pt]
-&&\type{Poplist::init()/restart()}; \type{PropagNet::init()/restart()};\\[6pt]
-&&Open output; Integration loop; Dumping procedure \\[6pt]
-
-\\\hline
-\end{tabular}
-\end{center}
-where the constructors and initiations of \type{Poplist} and \type{PropagNet} constructs and initiates their member variables according to Fig.~\ref{fig:class}.
-
-\subsubsection{Main integration loop}
-
-\begin{center}
-\begin{tabular}{ | l l p{12cm} | }
-\hline \\
-
-Integration loop& $\Rightarrow$ &\type{PropagNet::stepQtoP(); Poplist::stepPops(); PropagNet::output() }\\[6pt]
+\type{main()}& $\Rightarrow$ &\type{PropagNet::stepQtoP(); Poplist::stepPops(); PropagNet::output() }\\[6pt]
 
 \type{stepQtoP()}& $\Rightarrow$ &
 \type{ Qhistorylist::updateQhistories() $\Rightarrow$ QHistory::updateQhistory(); }\\
@@ -559,7 +515,8 @@ Integration loop& $\Rightarrow$ &\type{PropagNet::stepQtoP(); Poplist::stepPops(
 
 \\\hline
 \end{tabular}
-\end{center}
+\caption{Main integration loop. We use the semicolon to denote a succession of functions, and \type{a()} $\Rightarrow$ \type{b()} symbol to denote function \type{b()} as content of function \type{a()}.}\label{fig:main-loop}
+\end{center}\end{figure}
 
 \begin{itemize}
 \item One integration step of the model implements the following stages: 1) Firing response/\linebreak stimulus response. 2) Wave equation integration step which includes Q delay processing 3) Coupling response 4) Dendritic response 5) Afferent summation.
@@ -573,43 +530,43 @@ Integration loop& $\Rightarrow$ &\type{PropagNet::stepQtoP(); Poplist::stepPops(
 The source code contains a main code \type{main.cpp} and various components defining classses of the code. Each class contains a header \type{.h} file and main program unit \type{.cpp} file:
 
 \begin{description}
-\item[CaDP] A coupling class implementing calcium dependent plasticity.
-\item[Connectmat] Reads and store connectivity matrix information which is called by other classes.
-\item[Couple] An abstract base class providing an interface for synaptic coupling objects. All objects which handle synaptic coupling must inherit from this object.
-\item[Coupling] A class which provides synaptic coupling with constant synaptic strengths.
-\item[Couplinglist] A container object for initializing and holding synaptic coupling objects.
-\item[Dendriticr] A class containing dendritic response from a given population to another population.
-\item[Dendriticrlist] A container calss of dendritic responses terminating on a particular neural population.
-\item[Eqnset] A class to provide the ``Eqnset"---multiple wave equations form of the propagator. This feature has not had significant testing. It uses the helper classes Prefact, Field and Weqn.
-\item[Field] A helper class to hold Phi field information for waveeqn and Eqnset (via Weqn).
-\item[Firingr] A class containing firign response and dendritic response information for a given neural population.
 \item[Istrm] A helper class inheriting from an input stream. This class allows some minimal input checking when reading configuration files. The important functions are:
 	\begin{enumerate}
 	\item validate: check the next text to be read for the intended keyword of input identifier,
 	\item optional: check whether an optional parameter keyword is next to be read,
 	\item find: search for the i'th instance of a particular keyword,
-	\item choose: return a number of corresponding to which character string from a list is being read.
+	\item choose: return a number of corresponding to whcih character string from a list is being read.
 	\end{enumerate}
+\item[Random] Generates random numbers for use by time series generating function.
+\item[Parameter] A helper calss to store individual parameters and their keyword names.
+\item[Connectmat] Reads and store connectivity matrix information which is called by other classes.
+\item[Propagnet] A class representing the propagator network, i.e. the simulated brain. This class dispatches update requests to the neural population for dendritic response and firing response, propagation of phi's along synapses and synaptic coupling.
+\item[Timeseries] Generated time series for stimulus input and other driven processes such as time modulated coupling strengths.
+\item[Proplist] A container object initializing and accessing all propagators in the simulation.
+\item[Poplist] A container for initializing and holding all neural population objects in the simulation.
+\item[Population] A class containing firing response and dendritic response information for a given neural population.
+\item[Firingr] A class containing firign response and dendritic response information for a given neural population.
+\item[Dendriticrlist] A container calss of dendritic responses terminating on a particular neural population.
+\item[Dendriticr] A class containing dendritic response from a given population to another population.
+\item[Propag] An abstract base class providing a uniform interface for all propagators to be accessed when stepping forward the code. All propagator types must inherit from this class.
+\item[Pmap] A class to provide the ``Mapping" propagator behaviour.
+\item[Pharmonic] A class to provide the ``Harmonic"---harmonic oscillator behaviour propagator. This si typically used for spatially uniform simulations as it is more efficient than a wave equation propagtor where the simulation will have no spatial variation.
+\item[Eqnset] A class to provide the ``Eqnset"---multiple wave equations form of the propagator. This feature has not had significant testing. It uses the helper classes Prefact, Field and Weqn.
+\item[Prefact] A helper class for Eqnset to calculate some prefactors used in the calculations of Eqnset.
+\item[Field] A helper class to hold Phi field information for waveeqn and Eqnset (via Weqn).
+\item[Weqn] A helper class for propagators to store infromation about Tau, the axonal delays associated wtih propagators.
+\item[Qhistorylist] A container object initializing and accessing Qhistory objects. These store time history of firing rates.
+\item[Qhistory] A container object containing time history information for firing rate Q. It is necessary to store time history information of firing rates since propagtors such as the wave equation and mapping operator are time delayed due to propagation time along axons.
+\item[Couplinglist] A container object for initializing and holding synaptic coupling objects.
+\item[Couple] An abstract base class providing an interface for synaptic coupling objects. All objects which handle synaptic coupling must inherit from this object.
+\item[Coupling] A class which provides synaptic coupling with constant synaptic strengths.
 \item[Modcouple] A class which provides synaptic coupling following a model proposed by Clearwater-Rennie for modelling neurotransmitter dynamics.
+\item[STDP] A coupling class implementing linear STDP plasticity.
+\item[CaDP] A coupling class implementing calcium dependent plasticity.
 \item[Modsigma] A class to allow the variance dynamics, modulated sigma model of firing response. This class is still in the testing phase.
 \item[Modtheta] A class to model a varying theta (firing threshold). This model was proposed by Kim-Wu.
 \item[Modtheta1] A class to model a varying theta (firing threshold). This is a later variant of a model proposed by Kim-Wu.
-\item[Parameter] A helper class to store individual parameters and their keyword names.
-\item[Pharmonic] A class to provide the ``Harmonic"---harmonic oscillator behaviour propagator. This si typically used for spatially uniform simulations as it is more efficient than a wave equation propagtor where the simulation will have no spatial variation.
 \item[Phiout] A class to output phi information from the simulation.
-\item[Pmap] A class to provide the ``Mapping" propagator behaviour.
-\item[Poplist] A container for initializing and holding all neural population objects in the simulation.
-\item[Population] A class containing firing response and dendritic response information for a given neural population.
-\item[Prefact] A helper class for Eqnset to calculate some prefactors used in the calculations of Eqnset.
-\item[Propag] An abstract base class providing a uniform interface for all propagators to be accessed when stepping forward the code. All propagator types must inherit from this class.
-\item[Propagnet] A class representing the propagator network, i.e. the simulated brain. This class dispatches update requests to the neural population for dendritic response and firing response, propagation of phi's along synapses and synaptic coupling.
-\item[Proplist] A container object initializing and accessing all propagators in the simulation.
-\item[Qhistorylist] A container object initializing and accessing Qhistory objects. These store time history of firing rates.
-\item[Qhistory] A container object containing time history information for firing rate Q. It is necessary to store time history information of firing rates since propagtors such as the wave equation and mapping operator are time delayed due to propagation time along axons.
-\item[Random] Generates random numbers for use by time series generating function.
-\item[STDP] A coupling class implementing linear STDP plasticity.
-\item[Timeseries] Generated time series for stimulus input and other driven processes such as time modulated coupling strengths.
-\item[Weqn] A helper class for propagators to store information about Tau, the axonal delays associated wtih propagators.
 \end{description}
 
 \subsection{Submission to svn}
@@ -625,10 +582,11 @@ According to Peter Drysdale:
 
 \section{TODO}
 \begin{enumerate}
-\item tidy up helper scripts
-\item restart mode is crippled; rewrite the whole thing.
-\item restart mode for Couplinglist was not planned, but needed.
+\item document switches in exe
 \item no need to rename neurofield.dump to neurofield.conf in restart mode?
 \item implement restart mode in launcher script?
+\item no need for NeuroField write defaults option?
+\item put in documentation for Lambda and tGlu, the glutamate dynamics
+\item tidy up helper scripts
 \end{enumerate}
 \end{document}

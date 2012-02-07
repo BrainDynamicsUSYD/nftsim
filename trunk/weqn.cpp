@@ -23,15 +23,30 @@ Weqn::Weqn(long nodes,long gsize,double dt,long longside,long shortside):
 Weqn::~Weqn(){
   if(tauobj) delete tauobj;
   delete Qpast;
+  delete gammaobj;
+  delete effrangeobj;
 }
 
 void Weqn::init(Istrm& inputf, double deltax,Qhistory& qhistory){
   tauobj = new Tau(nodes,deltat,inputf,qhistory);
-  inputf.Param("Range",effrange);
-  if( !inputf.Optional("gamma",gamma) ) {
-    inputf.Param("velocity",gamma);
-    gamma = gamma/effrange;
+  effrangeobj = new Parameter("Effective range",inputf);
+  int optionnum;
+  optionnum=inputf.choose("gamma:1 velocity:2",58);
+  if(1==optionnum){
+    inputf >> gamma;
+    gammaobj = new Parameter("gamma",gamma);
   }
+  if(2==optionnum){
+    double velocity;
+    inputf >> velocity;
+    gammaobj= new Parameter("gamma", velocity/effrangeobj->get() );
+  }
+  if( !((1==optionnum)||(2==optionnum)) ){
+    std::cerr << "Last read looking for gamma or velocity found neither" << endl;
+    exit(EXIT_FAILURE);
+  }
+  gamma=gammaobj->get(); //Update the gamma value
+  effrange=effrangeobj->get(); //Update the effective range value
   if(gamma/2.0 < deltat || effrange/2.0 < deltax){
     std::cerr << "Wave equation with gamma: " << gamma << " effrange: " << effrange << endl;
     std::cerr << "Is neither adequately captured by grid spacing chosen" << endl;
@@ -53,13 +68,14 @@ void Weqn::init(Istrm& inputf, double deltax,Qhistory& qhistory){
 
 void Weqn::dump(ofstream& dumpf){
   tauobj->dump(dumpf);
-  dumpf << "Range: " << effrange << endl;
-  dumpf << "gamma: " << gamma << endl;
+  effrangeobj->dump(dumpf);
+  gammaobj->dump(dumpf);
+  dumpf << endl;
   Qpast->dump(dumpf);
 }
 
 void Weqn::restart(Istrm& restartf, double deltax,Qhistory& qhistory){
-  /*restartf.ignore(200,45); // Throw away everything up to the dash char
+  restartf.ignore(200,45); // Throw away everything up to the dash char
   tauobj = new Tau(nodes,deltat,restartf,qhistory);
   effrangeobj = new Parameter("Effective range",restartf);
   int optionnum;
@@ -87,7 +103,7 @@ void Weqn::restart(Istrm& restartf, double deltax,Qhistory& qhistory){
   restartf.ignore(200,32); // throw away endl
   Qpast->restart(restartf);
   deltat2divided12=(deltat*deltat)/12.0F; //factor in wave equation
-  deltatdivideddeltaxallsquared=(deltat*deltat)/(deltax*deltax);*/
+  deltatdivideddeltaxallsquared=(deltat*deltat)/(deltax*deltax);
 }
 
 void Weqn::stepwaveeq(double *PhiRe, double *PhiIm,Qhistory& qhistory, Field* fieldReobj, Field* fieldImobj, Prefact* prefactobj){
@@ -105,6 +121,8 @@ void Weqn::stepwaveeq(double *PhiRe, double *PhiIm,Qhistory& qhistory, Field* fi
   double* Q=qhistory.getQbytime(*tauobj);
   double* Q_1= Qpast->U_1;
   double* Q_2= Qpast->U_2;
+  gamma=gammaobj->get(); //Update the gamma value
+  effrange=effrangeobj->get(); //Update the effective range value
   p2=deltatdivideddeltaxallsquared*(effrange*effrange*gamma*gamma)  ; // Square of mesh ratio, dimensionless
 //  twominusfourp2=2.0F-4.0F*p2; // factor in wave algorithm
   twominusthreep2=2.0F-3.0F*p2; // factor in wave algorithm
