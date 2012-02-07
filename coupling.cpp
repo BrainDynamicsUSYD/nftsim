@@ -13,27 +13,22 @@ Coupling::Coupling(long numnodes, double deltat)
 }
 
 Coupling::~Coupling(){
-  delete nuobj;
 }
 
 void Coupling::init(Istrm& inputf, int coupleid){
-  nuobj = new Parameter("Nu",inputf);
-  if( nuobj->get() > 0 )
+  inputf.Param("Nu",nu);
+  if( nu>0 )
     sign = 1;
   else
     sign = -1;
 }
 
 void Coupling::dump(ofstream& dumpf){
-  nuobj->dump(dumpf);
+  dumpf << "Nu: " << nu << endl;
 }
-//
-// Sum the coupling terms
-//
-void Coupling::updatePa(double * __restrict__ Pa,double * __restrict__ Etaa,Qhistorylist& qhistorylist,ConnectMat& connectmat,Couplinglist& couplinglist){
-  double nu=nuobj->get();
-  long n=nodes;
-  for(int i=0; i<n; i++)
+
+void Coupling::updatePa(double * __restrict__ Pa,double * __restrict__ Etaa,double const *postV,double const *glu){
+  for(int i=0; i<nodes; i++)
     Pa[i]=nu*Etaa[i];
 }
 

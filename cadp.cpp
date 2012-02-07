@@ -50,15 +50,15 @@ CaDP::~CaDP(){
 }
 
 void CaDP::init(Istrm& inputf, int coupleid){
-  inputf.validate("Nu",58); inputf >> nu[0];
-  inputf.validate("Nu_max",58); inputf >> nu_max;
-  inputf.validate("Threshold",58); inputf >> nu_th;
-  inputf.validate("LTD",58); inputf >> nu_ltd;
-  inputf.validate("LTP",58); inputf >> nu_ltp;
-  inputf.validate("B",58); inputf >> B;
-  inputf.validate("N",58); inputf >> N;
-  inputf.validate("rho",58); inputf >> rho;
-  srand ( time(NULL) );
+  inputf.Param("Nu",nu[0]);
+  inputf.Param("Nu_max",nu_max);
+  inputf.Param("Threshold",nu_th);
+  inputf.Param("LTD",nu_ltd);
+  inputf.Param("LTP",nu_ltp);
+  inputf.Param("B",B);
+  inputf.Param("N",N);
+  inputf.Param("rho",rho);
+
   for( int i=0; i<nodes; i++ ) {
     nu[i] = nu[0];
     Ca[i] = 0;
@@ -115,22 +115,19 @@ void CaDP::output(){
   }
 }
 
-void CaDP::updatePa(double *Pa, double *Etaa,Qhistorylist& qhistorylist,ConnectMat& connectmat,Couplinglist& couplinglist){
-  V = qhistorylist.getQhist(connectmat.getQindex(coupleid)).getVbytime(0);
+void CaDP::updatePa(double *Pa, double *Etaa,double const *postV,double const *glu){
+  //V = qhistorylist.getQhist(connectmat.getPostPop(coupleid)).getVbytime(0);
   for( int i=0; i<nodes; i++ ) {
-    binding[i] = sig( couplinglist.glu[i] -200e-6, B );
-    double dCa = deltat*(2e-3*binding[i])*(195e-3-V[i])*sig( V[i]-45.5e-3,62 )
+    binding[i] = sig( glu[i] -200e-6, B );
+    double dCa = deltat*(2e-3*binding[i])
+      *(195e-3-postV[i])*sig( postV[i]-45.5e-3,62 )
       -Ca[i]/50e-3*deltat;
     if( Ca[i]+dCa < 0 )
       Ca[i] = 0;
     else
       Ca[i] += dCa;
 	double dnu = deltat*( potentiate(Ca[i])*(nu_max-nu[i]) -depress(Ca[i])*nu[i] );
-    //if( sign*(nu[i]+dnu) < 0 )
-      //nu[i] = 0;
-    //else
       nu[i] += dnu;
-    // Sum the coupling terms transforming Phi_{ab} to P_{ab}
     Pa[i]=nu[i]*Etaa[i];
   }
 }

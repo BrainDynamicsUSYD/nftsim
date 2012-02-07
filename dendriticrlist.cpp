@@ -58,25 +58,17 @@ void DendriticRlist::init(Istrm& inputf,PropagNet& propagnet,ConnectMat& connect
   int end=propagnet.numconnects;
   int counter=0;
   for(int j=0; j<end; j++){
-    if(connectmat.getDRindex(j)==popindex){ // Test if the 'j'th P array in propagnet is connected to this population
+    if(connectmat.getPostPop(j)==popindex){ // Test if the 'j'th P array in propagnet is connected to this population
      localP[counter]=propagnet.P[j];
      counter++;
     }
   }
 // Read data from inputf
-  inputf.validate("Number of Dendritic responses",58);
-  int expectaff;
-  inputf >> expectaff; // Read in number of dendritic responses expected for this population
-  if (expectaff!=numaff){
-    std::cerr << "Number of afferent populations expected from connection matrix and that stated here are inconsistent" << endl;
-    std::cerr << expectaff << " " << numaff << endl;
-    exit(EXIT_FAILURE);
-  }
   int j=0;
   for(int i=0;i<numaff; i++,j++){
-    while(connectmat.getDRindex(j)!=popindex) j++;
+    while(connectmat.getPostPop(j)!=popindex) j++;
     double Vinit;
-    getdendr(i).init(inputf,Vinit,j,connectmat.getQindex(j)); // Important init returns inital values for V, dVdt
+    getdendr(i).init(inputf,Vinit,j,connectmat.getPrePop(j)); // Important init returns inital values for V, dVdt
     double * __restrict__ p=Va[i];
     double * __restrict__ p1=dVdt[i];
     long n=numnodes;
@@ -103,24 +95,18 @@ void DendriticRlist::dump(ofstream& dumpf){
 void DendriticRlist::restart(Istrm& restartf,PropagNet& propagnet,ConnectMat& connectmat){
 // Read data from restartf
   restartf.ignore(200,58); // Throwaway title line uptil colon
-  int expectaff;
-  restartf >> expectaff; // Read in number of dendritic responses expected for this population
-  if (expectaff!=numaff){
-    std::cerr << "Number of afferent populations expected from connection matrix and that stated here are inconsistent" << endl;
-    exit(EXIT_FAILURE);
-  }
   for(int i=0;i<numaff; i++)
     getdendr(i).restart(restartf);
 // initialize localP pointer array
   int end=propagnet.numconnects;
   int counter=0;
   for(int j=0; j<end; j++){
-    if(connectmat.getDRindex(j)==popindex){ // Test if the 'j'th P array in propagnet is connected to this population
+    if(connectmat.getPostPop(j)==popindex){ // Test if the 'j'th P array in propagnet is connected to this population
      localP[counter]=propagnet.P[j];
      counter++;
     }
   }
-  restartf.validate("Va, dVdt data",58);
+  /*restartf.validate("Va, dVdt data",58);
   double tempV;
   double tempdVdt;
   for(int i=0;i<numaff; i++){
@@ -132,7 +118,7 @@ void DendriticRlist::restart(Istrm& restartf,PropagNet& propagnet,ConnectMat& co
       p[j]=tempV;
       p1[j]=tempdVdt;
     }
-  }
+  }*/
   
 }
 

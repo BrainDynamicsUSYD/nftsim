@@ -13,7 +13,6 @@ using std::ofstream;
 #include<iostream>
 
 #include"istrm.h"
-#include"parameter.h"
 #include"qhistory.h"
 #include"propag.h"
 #include"field.h"
@@ -30,8 +29,6 @@ public:
   void stepwaveeq(double *PhiRe, double *PhiIm,Qhistory& qhistory, Field* fieldReobj, Field* filedImobj, Prefact* prefactobj);
 private:
   Weqn(Weqn& ); // no copy constructor
-  Parameter* gammaobj;
-  Parameter* effrangeobj;
   double gamma;
   double effrange;
   Tau* tauobj;

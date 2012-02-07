@@ -52,26 +52,21 @@ Eqnset::~Eqnset(){
 }
 
 void Eqnset::init(Istrm& inputf,Qhistory& qhistory){
-  inputf.validate("Deltax",58);
-  inputf >> deltax;
+  inputf.Param("Deltax",deltax);
   weqnobj->init(inputf,deltax,qhistory);
-  inputf.validate("Geometric centre",58);
-  inputf >> centrex;
-  inputf.validate("",58);
-  inputf >> centrey;
-  inputf.validate("Num. K",58);
-  inputf >> numk;
+  inputf.Param("Geometric centre",centrex);
+  inputf.Param("",centrey);
+  inputf.Param("Num. K",numk);
   karray= new double *[numk];
   double ktmp;
   for(int i=0; i<numk; i++){
     karray[i]= new double[2];
     double * kvect;
     kvect=karray[i];
-    inputf.validate("",58);
-    inputf >> ktmp;
+    inputf.Param("",ktmp);
     kvect[0]=ktmp;
-    inputf.validate("",44);
-    inputf >> ktmp;
+    //inputf.validate("",44);
+    inputf.Param("",ktmp);
     kvect[1]=ktmp;
   }
   fieldRe = new Field *[numk];
@@ -112,26 +107,21 @@ void Eqnset::dump(ofstream& dumpf){
 }
 
 void Eqnset::restart(Istrm& restartf,Qhistory& qhistory){
-  restartf.validate("Deltax",58);
-  restartf >> deltax;
+  restartf.Param("Deltax",deltax);
   weqnobj->restart(restartf,deltax,qhistory);
-  restartf.validate("geometric centre",58);
-  restartf >> centrex;
-  restartf.validate("",58);
-  restartf >> centrey;
-  restartf.validate("Num. K",58);
-  restartf >> numk;
+  restartf.Param("Geometric Centre",centrex);
+  restartf.Param("",centrey);
+  restartf.Param("Num. K",numk);
   karray= new double *[numk];
   double ktmp;
   for(int i=0; i<numk; i++){
     karray[i]= new double[2];
     double * kvect;
     kvect=karray[i];
-    restartf.validate("",58);
-    restartf >> ktmp;
+    restartf.Param("",ktmp);
     kvect[0]=ktmp;
-    restartf.validate("",44);
-    restartf >> ktmp;
+    //restartf.validate("",44);
+    restartf.Param("",ktmp);
     kvect[1]=ktmp;
   }
   fieldRe = new Field *[numk];

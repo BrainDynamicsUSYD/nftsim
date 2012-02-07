@@ -13,7 +13,6 @@ using std::ofstream;
 #include<iostream>
 
 #include"istrm.h"
-#include"parameter.h"
 #include"qhistory.h"
 #include"propag.h"
 #include"field.h"
@@ -29,10 +28,8 @@ public:
   void stepwaveeq(double *Phi,Qhistory& qhistory);
 private:
   WaveEqn(WaveEqn& ); // no copy contructor
-  Parameter* gammaobj;
-  Parameter* effrangeobj;
-  double gamma;
   double effrange;
+  double gamma;
   Tau* tauobj;
   double p2; // Square of mesh ratio, dimensionless equal to (deltat effrange gamma/deltax)^2
   const long nodes;

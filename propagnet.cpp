@@ -66,7 +66,7 @@ void PropagNet::restart(Istrm& restartf,Poplist& poplist,ConnectMat& connectmat)
 void PropagNet::stepQtoP(Poplist& poplist,ConnectMat& connectmat){
   pqhistorylist->updateQhistories(poplist); // Get new Q histories and add them to the keyrings
   pproplist->step(Eta,*pqhistorylist,connectmat); // Transform Q to Eta via stepping forward multiple wave equations
-  pcouplinglist->updateP(P,Eta,*pqhistorylist,connectmat); // Weight signal strengths for links between neural populations
+  pcouplinglist->updateP(P,Eta,poplist,connectmat); // Weight signal strengths for links between neural populations
 }
 
 void PropagNet::initoutput(Istrm& inputf, ofstream& outputf, int numconct, long nodes){

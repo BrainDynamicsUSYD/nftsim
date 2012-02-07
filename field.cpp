@@ -25,9 +25,10 @@ Field::~Field(){
 
 void Field::init(Istrm& inputf){
   inputf.ignore(200,58); // Spike up to colon to find Initial value
-  double Uinit;
-  inputf >> Uinit;
-  init(Uinit);
+  // !!!!CAUTION!!! this is crippled and this cripples eqnset!!!
+  //double Uinit;
+  //inputf >> Uinit;
+  //init(Uinit);
 }
 
 void Field::init(double Uinit){
@@ -61,13 +62,13 @@ void Field::restart(Istrm& restartf){
   U_1=U_A;
   U_2=U_B;
   restartf.ignore(200,58); //throw away endl and then ident _1: 
-  for(long i=0; i<gridsize; i++){
+  /*for(long i=0; i<gridsize; i++){
     restartf >> U_1[i];
   }
   restartf.ignore(200,58); //throw away endl and then ident _2:
   for(long i=0; i<gridsize; i++){
     restartf >> U_2[i];
-  }
+  }*/
   restartf.ignore(200,32); // throw away endl
 }
 
