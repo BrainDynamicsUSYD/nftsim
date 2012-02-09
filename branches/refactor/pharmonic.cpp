@@ -60,7 +60,7 @@ void Pharmonic::dump(ofstream& dumpf){
 }
 
 void Pharmonic::restart(Istrm& restartf,Qhistory& qhistory){
-  restartf.ignore(200,45);
+  restartf.ignore(45);
   tauobj = new Tau(nodes,timestep,restartf,qhistory);
   restartf.Param("gamma",gamma);
   /*double temp;

@@ -59,7 +59,7 @@ void Weqn::dump(ofstream& dumpf){
 }
 
 void Weqn::restart(Istrm& restartf, double deltax,Qhistory& qhistory){
-  /*restartf.ignore(200,45); // Throw away everything up to the dash char
+  /*restartf.ignore(45); // Throw away everything up to the dash char
   tauobj = new Tau(nodes,deltat,restartf,qhistory);
   effrangeobj = new Parameter("Effective range",restartf);
   int optionnum;
@@ -84,7 +84,7 @@ void Weqn::restart(Istrm& restartf, double deltax,Qhistory& qhistory){
     std::cerr << "Courant number is : " << (gamma*effrange*deltat/deltax) << endl;
     exit(EXIT_FAILURE);
   }
-  restartf.ignore(200,32); // throw away endl
+  restartf.ignore(32); // throw away endl
   Qpast->restart(restartf);
   deltat2divided12=(deltat*deltat)/12.0F; //factor in wave equation
   deltatdivideddeltaxallsquared=(deltat*deltat)/(deltax*deltax);*/

@@ -30,17 +30,17 @@ Population::~Population(){
 }
 
 void Population::init(Istrm& inputf,PropagNet& propagnet,ConnectMat& connectmat){
-  inputf.ignore(200,32); //throwaway line naming population
+  //inputf.ignore(32); //throwaway line naming population
   double Qinitial;
-  inputf.Param("Q",Qinitial);
-  for(long i=0; i<nodes; i++)
-      Q[i]=Qinitial;
-  if (isstimulus) {
+  if (isstimulus)
     pstimulus = new Timeseries(inputf);
-  } else {
+  else {
+    inputf.Param("Q",Qinitial);
+    for(long i=0; i<nodes; i++)
+      Q[i]=Qinitial;
     pfr = new FiringR(pindex,inputf);
     pdr->init(inputf,propagnet,connectmat);
-    inputf.ignore(200,32); //throwaway space line between populations
+    inputf.ignore(32); //throwaway space line between populations
   }
 }
 
@@ -59,11 +59,11 @@ void Population::dump(ofstream& dumpf){
 }
 
 void Population::restart(Istrm& restartf,PropagNet& propagnet,ConnectMat& connectmat){
-  /*restartf.ignore(200,32); // Throwaway title line for population
-  restartf.ignore(200,58); // Throwaway upto colon i.e. Q array :
+  /*restartf.ignore(32); // Throwaway title line for population
+  restartf.ignore(58); // Throwaway upto colon i.e. Q array :
   for(long i=0; i<nodes; i++)
     restartf >> Q[i];
-  restartf.ignore(200,32); // Throwaway appended endl at end of Q array
+  restartf.ignore(32); // Throwaway appended endl at end of Q array
   if (isstimulus) {
     pstimulus = new Timeseries("Stimulus"," of stimulus",restartf);
   } else {

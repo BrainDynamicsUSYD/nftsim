@@ -18,7 +18,7 @@ Pmap::~Pmap(){
 }
 
 void Pmap::init(Istrm& inputf,Qhistory& qhistory){
-  inputf.ignore(200,45); // Throw away everything up to the dash char
+  inputf.ignore(45); // Throw away everything up to the dash char
   tauobj= new Tau(nodes,deltat,inputf,qhistory);
 }
 

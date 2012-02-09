@@ -24,9 +24,9 @@ Couplinglist::Couplinglist(Istrm& inputf, ofstream& dumpf
     ,int numconnects, long nodes, double deltat)
     : numcoup(numconnects), numnodes(nodes), deltat(deltat) {
   for( int i=0; i<numcoup; i++ ) {
-    std::stringstream ss; ss<<"Couple "<<i<<" - ";
+    std::stringstream ss; ss<<"Couple "<<i+1<<" - ";
     string type = inputf.Find( ss.str().c_str() );
-    if(type=="Simple")
+    if(type=="Map")
       couparray.push_back( new Coupling(nodes,deltat) );
     else if(type=="Calcium")
       couparray.push_back( new CaDP(nodes,deltat) );
@@ -66,8 +66,6 @@ void Couplinglist::dump(ofstream& dumpf){
     getcoup(i).dump(dumpf);
     dumpf << endl; //Append endl to coupling data
   }
-  dumpf << "Lambda: " << Lambda << endl;
-  dumpf << "tGlu: " << tGlu << endl;
 }
 
 // updateP method updates P via each coupling object 

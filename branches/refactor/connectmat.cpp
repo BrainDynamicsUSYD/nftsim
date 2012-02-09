@@ -14,7 +14,7 @@ using std::endl;
 ConnectMat::ConnectMat(Istrm& inputf, int& nPop, int& nCnt )
 {
   // Read the number of populations
-  inputf.ignore(200,':');
+  inputf.ignore(':');
   // Expect format "From: 1 2 3 4", read the 
   vector<double> pop = inputf.Numbers();
   nPop = pop.size();
@@ -23,7 +23,7 @@ ConnectMat::ConnectMat(Istrm& inputf, int& nPop, int& nCnt )
   nDr.resize(nPop,0);
 
   for( int i=0; i<nPop; i++ ) {
-    inputf.ignore(200,':'); // ignore "To ?:"
+    inputf.ignore(':'); // ignore "To ?:"
     rawCntMat[i] = inputf.Numbers();
     if( rawCntMat[i].size() != uint(nPop) ) {
       std::cerr << "The connection matrix is not configured correctly."

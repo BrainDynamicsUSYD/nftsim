@@ -36,12 +36,12 @@ PropagNet::~PropagNet(){
   delete pcouplinglist;
 //
 //
-  if (pphiout) delete pphiout; // Free Phiout object if it was initialized by PropagNet::initoutput()
+  //if (pphiout) delete pphiout; // Free Phiout object if it was initialized by PropagNet::initoutput()
 }
 
 void PropagNet::init(Istrm& inputf,Poplist& poplist,ConnectMat& connectmat){
-  inputf.ignore(200,32); // Throwaway blank line
-  inputf.ignore(200,32); // Throwaway title line of propagation data
+  inputf.ignore(32); // Throwaway blank line
+  inputf.ignore(32); // Throwaway title line of propagation data
   pqhistorylist->init(inputf,poplist);
   pproplist->init(inputf,*pqhistorylist,connectmat);
   pcouplinglist->init(inputf);
@@ -55,7 +55,7 @@ void PropagNet::dump(ofstream& dumpf){
 }
 
 void PropagNet::restart(Istrm& restartf,Poplist& poplist,ConnectMat& connectmat){
-  restartf.ignore(200,32); // Throwaway blank line
+  restartf.ignore(32); // Throwaway blank line
   pqhistorylist->restart(restartf,poplist);
   pproplist->restart(restartf,*pqhistorylist,connectmat);
   pcouplinglist->init(restartf);
@@ -70,14 +70,14 @@ void PropagNet::stepQtoP(Poplist& poplist,ConnectMat& connectmat){
 }
 
 void PropagNet::initoutput(Istrm& inputf, ofstream& outputf, int numconct, long nodes){
-  pphiout = new Phiout(inputf,outputf,numconct,nodes);
+  //pphiout = new Phiout(inputf,outputf,numconct,nodes);
 }
 
 void PropagNet::dumpoutput(ofstream& dumpf){
-  pphiout->dump(dumpf);
+  //pphiout->dump(dumpf);
 }
 
 void PropagNet::output(ofstream& outputf){
-  pphiout->output(outputf,Eta);
+  //pphiout->output(outputf,Eta);
   pcouplinglist->output();
 }

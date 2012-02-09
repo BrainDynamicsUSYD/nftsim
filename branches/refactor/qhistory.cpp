@@ -87,16 +87,16 @@ void Qhistory::restart(Istrm& restartf,Poplist& poplist)
   for(std::vector<double *>::iterator it=qhistory.begin();it!=qhistory.end();++it){
     double *q=*it;
     double qtemp;
-    restartf.ignore(200,58); // throw away Qhistorydepth xx :
+    restartf.ignore(58); // throw away Qhistorydepth xx :
     for(long j=0;j<nodes;j++){
       //restartf >> qtemp;
       *(q+j) = qtemp;
     }
   }
-  restartf.ignore(200,32); // throwaway endl at end of Q history array
-  restartf.ignore(200,58); // throwaway Qhistory inew :
+  restartf.ignore(32); // throwaway endl at end of Q history array
+  restartf.ignore(58); // throwaway Qhistory inew :
   //restartf >> inew;
-  restartf.ignore(200,32); // throwaway endl at end of time index array*/
+  restartf.ignore(32); // throwaway endl at end of time index array*/
 }
 
 // Update Qhistory by reading in Q from population and updating keyring pointers

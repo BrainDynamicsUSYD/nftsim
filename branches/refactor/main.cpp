@@ -57,11 +57,6 @@ int main(int argc, char* argv[])
       if( strcmp(argv[i],"-i") == 0 )
         iconfarg = i + 1;
   Istrm inputf(iconfarg?argv[iconfarg]:"neurofield.conf");
-  if( !inputf ) {
-    std::cerr << "Unable to open "
-      << (iconfarg?argv[iconfarg]:"neurofield.conf") << " for input.\n";
-    exit(EXIT_FAILURE);
-  }
 
   // Parse in global parameters from conf file
   // Anything before Nodes per population is ignored as comment
@@ -77,7 +72,7 @@ int main(int argc, char* argv[])
   dumpf << " Deltat: " << deltat << endl;
 
   // glutamate dynamics is loaded by Couplinglist
-  inputf.ignore(200,':'); inputf.ignore(200,':');
+  inputf.ignore(':'); inputf.ignore(':');
 
   // Read in connection matrix, determine number of populations and connections
   inputf.ignore(':'); //Param("Connection matrix");

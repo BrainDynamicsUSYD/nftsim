@@ -23,6 +23,9 @@ Timeseries::Timeseries(Istrm& inputf)
     for( int i=0; i<nStim; i++ )
       sarray.push_back( new Timeseries(inputf) );
   }
+  else if( mode=="Const" ) { // constant noise
+    inputf.Param("Mean",mean);
+  }
   else if( mode=="White" ) { // white noise
     inputf.Optional("Ranseed",seed);
     inputf.Param("Amplitude",amp);
@@ -78,10 +81,13 @@ void Timeseries::dump(std::ofstream& dumpf){
   if( mode=="Composite" ) {
     dumpf << "Stimuli: " << sarray.size() << endl;
   }
+  else if( mode=="Const" ) { // constant noise
+    dumpf << "Mean" << mean <<endl;
+  }
   else if( mode=="White" ) { // white noise
     dumpf << "Ranseed: " << seed;
     dumpf << " Amplitude: " << amp;
-    dumpf << " Mean: " << mean;
+    dumpf << " Mean: " << mean << endl;
   }
   else if( mode=="CoherentWhite" ) { // spatially homogeneous white noise
     dumpf << "Ranseed: " << seed;
@@ -125,6 +131,10 @@ if( t<ts ) return;
       tseries[i] = 0; // reset firing, then let each stimulus superimpose
     for( unsigned int i=0; i<sarray.size(); i++ )
       sarray[i]->get( t, tseries, nodes );
+  }
+  else if( mode=="Const" ) { // constant noise
+    for( unsigned int i=0; i<sarray.size(); i++ )
+      tseries[i] += mean;
   }
   else if( mode=="White" ) { // white noise
     // For efficiency reasons random.gaussian random deviates are usually

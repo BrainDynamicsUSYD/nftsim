@@ -17,7 +17,7 @@ using std::ofstream;
 #include"proplist.h"
 #include"couplinglist.h"
 #include"connectmat.h"
-#include"phiout.h"
+//#include"phiout.h"
 class ConnectMat; //forward declare ConnectMat. Since we only use pointer to it no need for header
 class Poplist; // Forward declaration of Poplist since we only use pointer to it
 
@@ -43,7 +43,7 @@ private:
    Qhistorylist *pqhistorylist;
    Proplist *pproplist;
    Couplinglist *pcouplinglist;
-   Phiout *pphiout; // Pointer to Phi output object. NULL if not initialized by PropagNet::initoutput
+   //Phiout *pphiout; // Pointer to Phi output object. NULL if not initialized by PropagNet::initoutput
 };
 
 #endif

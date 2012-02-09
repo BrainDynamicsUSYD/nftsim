@@ -20,7 +20,7 @@ Proplist::Proplist(Istrm& inputf, std::ofstream& dumpf, int numconnects,
   :numpropag(numconnects)
 {
   for(int i=0;i<numpropag;i++) {
-    std::stringstream ss; ss<<"Propag "<<i<<" - ";
+    std::stringstream ss; ss<<"Propag "<<i+1<<" - ";
     string type = inputf.Find( ss.str().c_str() );
     if(type=="Wave")
       propagarray.push_back( new WaveEqn(nodes, deltat,

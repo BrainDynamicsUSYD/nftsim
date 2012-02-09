@@ -67,12 +67,12 @@ void DendriticRlist::init(Istrm& inputf,PropagNet& propagnet,ConnectMat& connect
   int j=0;
   for(int i=0;i<numaff; i++,j++){
     while(connectmat.getPostPop(j)!=popindex) j++;
-    double Vinit;
-    getdendr(i).init(inputf,Vinit,j,connectmat.getPrePop(j)); // Important init returns inital values for V, dVdt
-    double * __restrict__ p=Va[i];
-    double * __restrict__ p1=dVdt[i];
-    long n=numnodes;
-    double Vi=Vinit;
+      double Vinit;
+      getdendr(i).init(inputf,Vinit,j,connectmat.getPrePop(j)); // Important init returns inital values for V, dVdt
+      double * __restrict__ p=Va[i];
+      double * __restrict__ p1=dVdt[i];
+      long n=numnodes;
+      double Vi=Vinit;
     for(long j=0;j<n;j++) *p++=Vi; // Initialize Va arrays with initial values
     for(long j=0;j<n;j++) *p1++=0.0F;// Init dVdt arrays with initial values
   }
@@ -94,7 +94,7 @@ void DendriticRlist::dump(ofstream& dumpf){
 
 void DendriticRlist::restart(Istrm& restartf,PropagNet& propagnet,ConnectMat& connectmat){
 // Read data from restartf
-  restartf.ignore(200,58); // Throwaway title line uptil colon
+  restartf.ignore(58); // Throwaway title line uptil colon
   for(int i=0;i<numaff; i++)
     getdendr(i).restart(restartf);
 // initialize localP pointer array

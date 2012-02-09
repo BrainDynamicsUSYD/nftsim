@@ -22,23 +22,17 @@ DendriticR::~DendriticR(){
 }
 
 void DendriticR::init(Istrm& inputf, double& Vinit, int propindex, int qindex){
-  // Determine if an initial value is given or "Steady" initial condition
-  char cbuffer[200]; inputf.Param("V",cbuffer);
-  double fbuffer; if( (fbuffer=atof(cbuffer)) )
-    Vinit = fbuffer;
-  else if( string(cbuffer) == "Steady" ) {
+  // Determine if an initial value is given or "Steady==0" initial condition
+  inputf.Param("V",Vinit);
+  /*if( !Vinit ) {
     stringstream ss; ss<<"Couple "<<propindex+1<<"*Nu:";
     string sbuffer = inputf.Find( ss.str().c_str() );
     double nu = atof(sbuffer.c_str());
-    ss.str(""); ss<<"Firing "<<qindex<<"*Q:";
+    ss.str(""); ss<<"Firing "<<qindex+1<<"*Q:";
     sbuffer = inputf.Find( ss.str().c_str() );
     double Q = atof(sbuffer.c_str());
     Vinit = nu*Q;
-  }
-  else {
-    std::cout << "Phi must be given either a numeral or 'Steady'." << endl;
-    exit(EXIT_FAILURE);
-  }
+  }*/
 
   for(long i=0; i<nodes; i++)
     previousPab[i]=Vinit;

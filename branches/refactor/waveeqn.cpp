@@ -42,11 +42,11 @@ WaveEqn::~WaveEqn(){
 }
 
 void WaveEqn::init(Istrm& inputf,Qhistory& qhistory){
-  // Determine if an initial value is given or "Steady" initial condition
-  char cbuffer[200]; inputf.Param("Phi",cbuffer);
-  double fbuffer; if( (fbuffer=atof(cbuffer)) )
-    phipast->init(fbuffer);
-  else if( string(cbuffer) == "Steady" )
+  // Determine if an initial value is given or "Steady==0" initial condition
+  double buffer; inputf.Param("Phi",buffer);
+  if( buffer )
+    phipast->init(buffer);
+  else
     phipast->init(qhistory.getQbytime(0)[0]);
 
   /*inputf.Param("Initial Phi");
@@ -100,7 +100,7 @@ void WaveEqn::dump(ofstream& dumpf){
 }
 
 void WaveEqn::restart(Istrm& restartf,Qhistory& qhistory){
-  /*restartf.ignore(200,45); // Throw away everything up to the dash char
+  /*restartf.ignore(45); // Throw away everything up to the dash char
   tauobj = new Tau(nodes,deltat,restartf,qhistory);
   restartf.Param("Deltax",deltax);
   restartf.Param("Range",effrange);

@@ -13,17 +13,17 @@ using std::endl;
 Tau::Tau(long nodes,double dt,Istrm& inputf,Qhistory& qhistory):
             nodes(nodes), deltat(dt) {
   int taumax=0; // maximum timesteps amongst the tau values
-  float tauabfloat;
-  if( inputf.Optional("Tauab",tauabfloat) ) {
+  double tauabfloat;
+  if( inputf.Optional("Tau",tauabfloat) ) {
     tauab = int(tauabfloat);
     taumax = tauab;
   }
-  else if( inputf.Optional("Tauab",tauabfloat) ) {
+  else if( inputf.Optional("Taut",tauabfloat) ) {
     tauabfloat /= deltat;
     tauab = int(tauabfloat);
     taumax = tauab;
   }
-  else if( inputf.Optional("TauabArray",tauabfloat) ) {
+  else if( inputf.Optional("TauArray",tauabfloat) ) {
     qarray = new double[nodes];
     tauarr[0] = int(tauabfloat);
     taumax = tauarr[0];
@@ -36,7 +36,7 @@ Tau::Tau(long nodes,double dt,Istrm& inputf,Qhistory& qhistory):
       if( tauarr[i] > taumax )
         taumax = tauarr[i];
   }
-  else if( inputf.Optional("TauabArrayt",tauabfloat) ) {
+  else if( inputf.Optional("TauArrayt",tauabfloat) ) {
     qarray = new double[nodes];
     tauabfloat /= deltat;
     tauarr[0] = int(tauabfloat);
