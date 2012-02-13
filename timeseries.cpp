@@ -346,21 +346,33 @@ void Timeseries::get(double t, double *tseries, const long nodes){
       }
       int width = 25; // width of square of nodes to stimulate
       // median nerve stimulation N20
-      if( t>ts && t-ts<xspread ) 
-        for(int i=int(sqrt(nodes))/2-width; i<int(sqrt(nodes))/2+width; i++)
-          for(int j=int(sqrt(nodes))/2-width; j<int(sqrt(nodes))/2+width; j++)
-            tseries[int(i+j*sqrt(nodes))] -= xcent*sin( (t-ts)*3.141592654/xspread );
-      // median nerve stimulation P25
-      else if( t-ts>=xspread && t-ts<xspread+yspread ) 
-        for(int i=int(sqrt(nodes))/2-width; i<int(sqrt(nodes))/2+width; i++)
-          for(int j=int(sqrt(nodes))/2-width; j<int(sqrt(nodes))/2+width; j++)
-            tseries[int(i+j*sqrt(nodes))] += ycent*sin( (t-ts-xspread)*3.141592654/yspread );
-      // transcranial magnetic stimulation
-      if( t-ts>=xspread/2+tpeak && t-ts<xspread/2+tpeak+stepwidth){
-        for(int i=int(sqrt(nodes))/2-width; i<int(sqrt(nodes))/2+width; i++)
-          for(int j=int(sqrt(nodes))/2-width; j<int(sqrt(nodes))/2+width; j++)
-            tseries[int(i+j*sqrt(nodes))] += stepheight;
+      if( nodes>1 ){
+        if( t>ts && t-ts<xspread ) 
+          for(int i=int(sqrt(nodes))/2-width; i<int(sqrt(nodes))/2+width; i++)
+            for(int j=int(sqrt(nodes))/2-width; j<int(sqrt(nodes))/2+width; j++)
+              tseries[int(i+j*sqrt(nodes))] -= xcent*sin( (t-ts)*3.141592654/xspread );
+        // median nerve stimulation P25
+        else if( t-ts>=xspread && t-ts<xspread+yspread ) 
+          for(int i=int(sqrt(nodes))/2-width; i<int(sqrt(nodes))/2+width; i++)
+            for(int j=int(sqrt(nodes))/2-width; j<int(sqrt(nodes))/2+width; j++)
+              tseries[int(i+j*sqrt(nodes))] += ycent*sin( (t-ts-xspread)*3.141592654/yspread );
+        // transcranial magnetic stimulation
+        if( t-ts>=xspread/2+tpeak && t-ts<xspread/2+tpeak+stepwidth){
+          for(int i=int(sqrt(nodes))/2-width; i<int(sqrt(nodes))/2+width; i++)
+            for(int j=int(sqrt(nodes))/2-width; j<int(sqrt(nodes))/2+width; j++)
+              tseries[int(i+j*sqrt(nodes))] += stepheight;
+        }
       }
+	  else{
+        if( t>ts && t-ts<xspread ) 
+          tseries[0] -= xcent*sin( (t-ts)*3.141592654/xspread );
+        // median nerve stimulation P25
+        else if( t-ts>=xspread && t-ts<xspread+yspread ) 
+          tseries[0] += ycent*sin( (t-ts-xspread)*3.141592654/yspread );
+        // transcranial magnetic stimulation
+        if( t-ts>=xspread/2+tpeak && t-ts<xspread/2+tpeak+stepwidth)
+          tseries[0] += stepheight;
+	  }
       break;
     }
     mean: // Default is No pattern
