@@ -43,11 +43,11 @@ WaveEqn::~WaveEqn(){
 
 void WaveEqn::init(Istrm& inputf,Qhistory& qhistory){
   // Determine if an initial value is given or "Steady==0" initial condition
-  double buffer; inputf.Param("Phi",buffer);
-  if( buffer )
-    phipast->init(buffer);
-  else
+  string buffer; inputf.Param("Phi",buffer);
+  if( buffer=="Steady" )
     phipast->init(qhistory.getQbytime(0)[0]);
+  else
+    phipast->init( atof(buffer.c_str()) );
 
   /*inputf.Param("Initial Phi");
   std::streampos sp;
