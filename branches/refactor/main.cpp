@@ -107,6 +107,7 @@ int main(int argc, char* argv[])
       << (ioutarg?argv[ioutarg]:"neurofield.output") << " for output.\n";
     exit(EXIT_FAILURE);
   }
+  outputf.precision(14);
 
   // Initialize the output routine
   if(nSkip!=0) outputf << "Skippoints: " << nSkip << " ";
