@@ -75,6 +75,8 @@ void Population::restart(Istrm& restartf,PropagNet& propagnet,ConnectMat& connec
 // Step forward population one timestep method
 void Population::stepPop(double timestep){
   if (isstimulus) {
+    for( int i=0; i<nodes; i++ )
+      Q[i] = 0;
     pstimulus->get(t, Q, nodes);
   } else {
     pdr->stepVa(timestep);

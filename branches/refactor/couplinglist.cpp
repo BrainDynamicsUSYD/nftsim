@@ -35,9 +35,9 @@ Couplinglist::Couplinglist(Istrm& inputf, ofstream& dumpf
       exit(EXIT_FAILURE);
     }
   }
-  string buffer = inputf.Find("Lambda"); Lambda = atof(buffer.c_str());
+  string buffer = inputf.Find("Lambda:"); Lambda = atof(buffer.c_str());
   dumpf << "Lambda: " << Lambda << endl;
-  buffer = inputf.Find("tGlu");
+  buffer = inputf.Find("tGlu:"); tGlu = atof(buffer.c_str());
   dumpf << "tGlu: " << tGlu << endl;
   glu = new double[numnodes];
   for( int i=0; i<numnodes; i++ )

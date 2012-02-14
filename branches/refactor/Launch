@@ -17,7 +17,7 @@ if( $hostname =~ /^headnode.physics.usyd.edu.au/ ) {
 		my $answer = <STDIN>; if( $answer =~ /^y$/ ) {
 			print "Please enter job name: ";
 			$jobname = <STDIN>; 
-			print "Please enter estimated time of job (format HH:MM:SS): ";
+			print "Please enter estimated time of job (format HH:MM): ";
 			$walltime = <STDIN>;
 			print "Please enter email address for notification: ";
 			$email = <STDIN>;
@@ -28,7 +28,7 @@ if( $hostname =~ /^headnode.physics.usyd.edu.au/ ) {
 			print PBS "#PBS -j oe\n";
 			print PBS "#PBS -q batch\n";
 			print PBS "#PBS -l nodes=1:ppn=1\n";
-			print PBS "#PBS -l walltime=$walltime";
+			print PBS "#PBS -l walltime=$walltime:00";
 			print PBS "#PBS -m ea\n";
 			print PBS "#PBS -M $email";
 			print PBS "#PBS -V\n";
@@ -61,11 +61,11 @@ if( scalar(@ARGV)<2 ) {
 		truncate(PBS, $addr);
 		close PBS; open PBS, ">>pbs" or die $!;
 		my $pwd = `pwd`; chomp $pwd;
-		print PBS "cd ".$pwd." && time make run";
+		print PBS "cd ".$pwd." && time ./Release/NeuroField";
 		close PBS;
 		exec "qsub pbs" or die $!;
 	} else {
-		exec "time make run &";
+		exec "time ./Release/NeuroField &";
 	}
 }
 

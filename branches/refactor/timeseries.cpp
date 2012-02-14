@@ -133,7 +133,7 @@ if( t<ts ) return;
       sarray[i]->get( t, tseries, nodes );
   }
   else if( mode=="Const" ) { // constant noise
-    for( unsigned int i=0; i<sarray.size(); i++ )
+    for( unsigned int i=0; i<nodes; i++ )
       tseries[i] += mean;
   }
   else if( mode=="White" ) { // white noise
