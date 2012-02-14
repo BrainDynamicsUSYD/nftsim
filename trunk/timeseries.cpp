@@ -377,8 +377,12 @@ void Timeseries::get(double t, double *tseries, const long nodes){
     }
     mean: // Default is No pattern
     default:{
-      for(long i=0; i<nodes; i++)
-        tseries[i]=mean;
+      if(t>ts)
+        for(long i=0; i<nodes; i++)
+          tseries[i]=mean;
+      else
+        for(long i=0; i<nodes; i++)
+          tseries[i]=0;
       break;
     }
   }
