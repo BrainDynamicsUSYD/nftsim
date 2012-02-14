@@ -16,12 +16,17 @@ using std::list;
 #include"istrm.h"
 using std::endl;
 
-template void Istrm::Param<double>(const string& param, double& ret );
-template void Istrm::Param<int>(const string& param, int& ret );
-template void Istrm::Param<long>(const string& param, long& ret );
+template void Istrm::Param
+  <double>(const string& param, double& ret, int delim=':' );
+template void Istrm::Param
+  <int>(const string& param, int& ret, int delim=':' );
+template void Istrm::Param
+  <long>(const string& param, long& ret, int delim=':' );
 
-template bool Istrm::Optional<double>( const string& param, double& ret );
-template bool Istrm::Optional<long>( const string& param, long& ret );
+template bool Istrm::Optional
+  <double>( const string& param, double& ret, int delim=':' );
+template bool Istrm::Optional
+  <long>( const string& param, long& ret, int delim=':' );
 
 Istrm::Istrm(const char* filename)
   : std::ifstream(filename,std::ios::in)
@@ -42,9 +47,9 @@ Istrm::~Istrm()
   delete[] buffer;
 }
 
-template<class T> void Istrm::Param(const string& param, T& ret )
+template<class T> void Istrm::Param(const string& param, T& ret, int delim )
 {
-  if( Next(param) ) {
+  if( Next(param,delim) ) {
     if( !good() ) {
       std::cerr << "Input variable '" << param << "' is given a wrong type."
         << endl;
@@ -63,9 +68,9 @@ template<class T> void Istrm::Param(const string& param, T& ret )
   }
 }
 
-template<> void Istrm::Param<string>(const string& param, string& ret )
+template<> void Istrm::Param<string>(const string& param, string& ret, int delim )
 {
-  if( Next(param) ) {
+  if( Next(param,delim) ) {
     *this >> buffer;
     if( !good() ) {
       std::cerr << "Input variable '" << param << "' is given a wrong type."
@@ -86,10 +91,10 @@ template<> void Istrm::Param<string>(const string& param, string& ret )
 }
 
 
-template<class T> bool Istrm::Optional( const string& param, T& ret )
+template<class T> bool Istrm::Optional( const string& param, T& ret, int delim )
 {
   std::streampos sp = tellg();
-  if( Next(param) ) {
+  if( Next(param,delim) ) {
     *this >> ret;
     if( !good() ) {
       std::cerr << "Input variable '" << param << "' is given a wrong type."
@@ -172,12 +177,12 @@ Istrm& Istrm::ignore( int delim )
   return *this;
 }
 
-bool Istrm::Next( const string& Check ) {
+bool Istrm::Next( const string& Check, int delim ) {
   if( Check.empty() ) {
     std::cerr << "Istrm validating an empty string." << endl;
     exit(EXIT_FAILURE);
   }
-  getline(buffer, filesize, ':' );
+  getline(buffer, filesize, delim );
   if( !good() ) {
     std::cerr << "NeuroField cannot read configuration file." << endl;
     exit(EXIT_FAILURE);

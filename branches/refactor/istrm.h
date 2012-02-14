@@ -23,18 +23,19 @@ public:
   ~Istrm();
   // Looks for the next parameter called "param" and stores it in T
   // If "param" is not found, terminate program
-  template<class T> void Param(const string& param, T& ret );
+  template<class T> void Param(const string& param, T& ret, int delim=':' );
   // Looks for the next parameter called "param" and stores it in T
   // If "param" is not found, return false
-  template<class T> bool Optional( const string& param, T& ret );
+  template<class T> bool Optional( const string& param, T& ret, int delim=':' );
   // Read & return an arbitrary array of doubles
   vector<double> Numbers(void);
   // Find the next "Check", then returns the next input entry as string
   string Find( const string& Check );
-  bool Next( const string& Check );
   // ignores up to delim
-  Istrm& ignore( int delim=EOF );
+  Istrm& ignore( int delim=':' );
 private:
+  bool Next( const string& Check, int delim=':' );
+
   Istrm(const Istrm& other); // No copy constructor
   Istrm(); // No default constructor
   Istrm& operator=(const Istrm& other); // No assignment operator

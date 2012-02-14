@@ -21,9 +21,21 @@ DendriticR::~DendriticR(){
   delete[ ] previousPab;
 }
 
-void DendriticR::init(Istrm& inputf, double& Vinit, int propindex, int qindex){
+void DendriticR::init(Istrm& inputf, double& Vinit, int propindex, int qindex)
+{
   // Determine if an initial value is given or "Steady==0" initial condition
-  inputf.Param("V",Vinit);
+  string buffer; inputf.Param("V",buffer);
+  if( buffer == "Steady" ) {
+    stringstream ss; ss<<"Firing "<<qindex+1<<"*Q:";
+    buffer = inputf.Find(ss.str());
+    double q = atof(buffer.c_str());
+    ss.str(""); ss<<"Couple "<<propindex+1<<"*Nu:";
+    buffer = inputf.Find(ss.str());
+    double nu = atof(buffer.c_str());
+    Vinit = nu*q;
+  }
+  else
+    Vinit = atof(buffer.c_str());
   /*if( !Vinit ) {
     stringstream ss; ss<<"Couple "<<propindex+1<<"*Nu:";
     string sbuffer = inputf.Find( ss.str().c_str() );
