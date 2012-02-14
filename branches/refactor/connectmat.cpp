@@ -33,14 +33,14 @@ ConnectMat::ConnectMat(Istrm& inputf, int& nPop, int& nCnt )
   }
 
   // stores the presynaptic population index for each connection index
-  for( int i=0; i<nPop; i++ )
-    for( int j=0; j<nPop; j++ )
+  for( int j=0; j<nPop; j++ )
+    for( int i=0; i<nPop; i++ )
       if( rawCntMat[i][j] )
         preCnt.push_back(j);
 
   // stores the postsynaptic population index for each connection index
-  for( int i=0; i<nPop; i++ )
-    for( int j=0; j<nPop; j++ )
+  for( int j=0; j<nPop; j++ )
+    for( int i=0; i<nPop; i++ )
       if( rawCntMat[i][j] )
         postCnt.push_back(i);
 

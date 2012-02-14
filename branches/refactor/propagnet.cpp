@@ -6,7 +6,8 @@
  ***************************************************************************/
 
 #include<math.h>
-#include "propagnet.h"
+#include"propagnet.h"
+#include"poplist.h"
 using std::endl;
 
 PropagNet::PropagNet(double deltat, long n, int numpops, int numconct, Istrm& inputf, ofstream& dumpf)
@@ -15,8 +16,11 @@ PropagNet::PropagNet(double deltat, long n, int numpops, int numconct, Istrm& in
   for(int i=0;i<numconnects;i++)
     P[i]= new double[nodes]; 
   Eta = new double *[numconnects];
-  for(int i=0;i<numconnects;i++)
+  for(int i=0;i<numconnects;i++) {
     Eta[i]= new double[nodes]; 
+    for( int j=0; j<nodes; j++ )
+      Eta[i][j] = 0;
+  }
   pqhistorylist = new Qhistorylist(inputf,dumpf,numpops,nodes);
   pproplist = new Proplist(inputf,dumpf,numconct,nodes,deltat);
   pcouplinglist = new Couplinglist(inputf,dumpf,numconct,nodes,deltat);
@@ -67,6 +71,9 @@ void PropagNet::stepQtoP(Poplist& poplist,ConnectMat& connectmat){
   pqhistorylist->updateQhistories(poplist); // Get new Q histories and add them to the keyrings
   pproplist->step(Eta,*pqhistorylist,connectmat); // Transform Q to Eta via stepping forward multiple wave equations
   pcouplinglist->updateP(P,Eta,poplist,connectmat); // Weight signal strengths for links between neural populations
+  /*std::cout<<"V: "<<poplist.get(2).V[0];
+  std::cout<<" Q: "<<pqhistorylist->getQhist(2).getQbytime(0)[0];
+  std::cout<<" phi: "<<Eta[2][0] <<endl;*/
 }
 
 void PropagNet::initoutput(Istrm& inputf, ofstream& outputf, int numconct, long nodes){
@@ -79,5 +86,6 @@ void PropagNet::dumpoutput(ofstream& dumpf){
 
 void PropagNet::output(ofstream& outputf){
   //pphiout->output(outputf,Eta);
+  outputf<<Eta[2][0]<<endl;
   pcouplinglist->output();
 }

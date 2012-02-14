@@ -88,6 +88,7 @@ void WaveEqn::init(Istrm& inputf,Qhistory& qhistory){
   Qpast->init(Q);//+rand());
   deltat2divided12=(deltat*deltat)/12.0F; //factor in wave equation
   deltatdivideddeltaxallsquared=(deltat*deltat)/(deltax*deltax);
+  p2=deltatdivideddeltaxallsquared*(effrange*effrange*gamma*gamma); // Square of mesh ratio, dimensionless
 }
 
 void WaveEqn::dump(ofstream& dumpf){

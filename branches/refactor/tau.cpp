@@ -72,7 +72,7 @@ Tau::~Tau()
 }
 
 void Tau::dump(std::ofstream& dumpf){
-  if( tauarr.empty() ){
+  if( !tauarr.empty() ){
     dumpf << "- TauabArray";
     for(long i=0;i<nodes;i++)
       dumpf << ": " << tauarr[i] << " ";
