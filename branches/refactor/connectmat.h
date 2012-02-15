@@ -10,6 +10,7 @@
 #ifndef CONNECTMAT_H
 #define CONNECTMAT_H
 
+#include<fstream>
 #include<vector>
 using std::vector;
 
@@ -17,7 +18,7 @@ using std::vector;
 
 class ConnectMat {
 public: 
-  ConnectMat( Istrm& inputf, int& nPop, int& nCnt );
+  ConnectMat( long Nodes, Istrm& inputf, std::ofstream& dumpf, int& nPop, int& nCnt, double deltat, long nSteps, long nSkip, bool restart );
   ~ConnectMat();
   void dump(std::ofstream& dumpf); // Write out raw connection matrix
 

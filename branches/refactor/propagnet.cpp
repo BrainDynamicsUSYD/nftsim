@@ -86,6 +86,5 @@ void PropagNet::dumpoutput(ofstream& dumpf){
 
 void PropagNet::output(ofstream& outputf){
   //pphiout->output(outputf,Eta);
-  outputf<<Eta[2][0]<<endl;
-  pcouplinglist->output();
+  //pcouplinglist->output();
 }

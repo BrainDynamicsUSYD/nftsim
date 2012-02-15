@@ -11,13 +11,15 @@
 using std::string;
 #include<map>
 using std::map;
+#include<vector>
+using std::vector;
 #include<cstdlib>
 using std::endl;
 #include"ostrm.h"
 #include"istrm.h"
 using namespace std;
 
-Ostrm::Ostrm(unsigned long nodes) : nodes(nodes)
+Ostrm::Ostrm( long nodes ) : nodes(nodes)
 {
 }
 
@@ -29,19 +31,6 @@ Ostrm::~Ostrm()
       if( it->second->is_open() )
         it->second->close();
       delete dynamic_cast<ofstream*>(it->second);
-    }
-}
-
-void Ostrm::init( Istrm& inputf )
-{
-  vector<double> temp = inputf.Numbers();
-  for( uint i=0; i<temp.size(); i++ )
-    Node[i] = temp[i];
-  for( uint i=0; i<Node.size(); i++ )
-    if( Node[i] > nodes ) {
-      std::cerr<<"Trying to plot node "<<Node[i]
-          <<", which is bigger than the largest node."<<endl;
-      exit(EXIT_FAILURE);
     }
 }
 
@@ -66,4 +55,18 @@ void Ostrm::Register( const string& filename, const double* const trace )
   }
   std::ofstream* of = new ofstream(filename.c_str());
   stream.insert( pair<string,std::ofstream*>(filename,of) );
+  of->precision(14);
+}
+
+void operator>>( Istrm& istrm, Ostrm& ostrm )
+{
+  vector<double> temp = istrm.Numbers();
+  for( uint i=0; i<temp.size(); i++ )
+    if( temp[i] >= ostrm.nodes ) {
+      std::cerr<<"Error trying to plot node number "<<temp[i]
+        <<", which is bigger than the number of all nodes."<<endl;
+      exit(EXIT_FAILURE);
+    }
+    else
+      ostrm.Node[i] = temp[i];
 }

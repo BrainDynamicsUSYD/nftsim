@@ -26,13 +26,13 @@ void DendriticR::init(Istrm& inputf, double& Vinit, int propindex, int qindex)
   // Determine if an initial value is given or "Steady==0" initial condition
   string buffer; inputf.Param("V",buffer);
   if( buffer == "Steady" ) {
-    stringstream ss; ss<<"Firing "<<qindex+1<<"*Q:";
+    /*stringstream ss; ss<<"Firing "<<qindex+1<<"*Q:";
     buffer = inputf.Find(ss.str());
     double q = atof(buffer.c_str());
     ss.str(""); ss<<"Couple "<<propindex+1<<"*Nu:";
     buffer = inputf.Find(ss.str());
     double nu = atof(buffer.c_str());
-    Vinit = nu*q;
+    Vinit = nu*q;*/
   }
   else
     Vinit = atof(buffer.c_str());

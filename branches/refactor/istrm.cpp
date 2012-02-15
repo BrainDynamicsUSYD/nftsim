@@ -15,6 +15,7 @@ using std::vector;
 using std::list;
 #include"istrm.h"
 using std::endl;
+#include"ostrm.h"
 
 template void Istrm::Param
   <double>(const string& param, double& ret, int delim=':' );
@@ -22,6 +23,8 @@ template void Istrm::Param
   <int>(const string& param, int& ret, int delim=':' );
 template void Istrm::Param
   <long>(const string& param, long& ret, int delim=':' );
+template void Istrm::Param
+  <Ostrm>(const string& param, Ostrm& ret, int delim=':' );
 
 template bool Istrm::Optional
   <double>( const string& param, double& ret, int delim=':' );
@@ -93,7 +96,6 @@ template<> void Istrm::Param<string>(const string& param, string& ret, int delim
 
 template<class T> bool Istrm::Optional( const string& param, T& ret, int delim )
 {
-  std::streampos sp = tellg();
   if( Next(param,delim) ) {
     *this >> ret;
     if( !good() ) {
@@ -104,7 +106,6 @@ template<class T> bool Istrm::Optional( const string& param, T& ret, int delim )
     return true;
   }
   else {
-    seekg(sp);
     return false;
   }
 }
@@ -182,6 +183,7 @@ bool Istrm::Next( const string& Check, int delim ) {
     std::cerr << "Istrm validating an empty string." << endl;
     exit(EXIT_FAILURE);
   }
+  std::streampos sp = tellg();
   getline(buffer, filesize, delim );
   if( !good() ) {
     std::cerr << "NeuroField cannot read configuration file." << endl;
@@ -189,7 +191,9 @@ bool Istrm::Next( const string& Check, int delim ) {
   }
   string param(buffer);
   int pos = param.find( Check, param.length()-Check.length() );
-  if( pos == -1 )
+  if( pos == -1 ) {
     return false;
+    seekg(sp);
+  }
   return true;
 }

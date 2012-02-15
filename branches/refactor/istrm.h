@@ -31,10 +31,10 @@ public:
   vector<double> Numbers(void);
   // Find the next "Check", then returns the next input entry as string
   string Find( const string& Check );
+  bool Next( const string& Check, int delim=':' );
   // ignores up to delim
   Istrm& ignore( int delim=':' );
 private:
-  bool Next( const string& Check, int delim=':' );
 
   Istrm(const Istrm& other); // No copy constructor
   Istrm(); // No default constructor

@@ -7,13 +7,14 @@
 
 #include<fstream>
 using std::ofstream;
-using std::ios;
 #include <iostream>
 using std::endl;
-#include<iomanip>
-using std::setprecision;
+#include<sstream>
+using std::stringstream;
 #include<cstdlib>
 #include<cstring>
+#include<vector>
+using std::vector;
 
 #include"istrm.h"
 #include"connectmat.h"
@@ -42,13 +43,13 @@ int main(int argc, char* argv[])
     for( int i=1; i<argc-1; i++)
       if( strcmp(argv[i],"-d") == 0 )
         idumparg = i + 1;
-  ofstream dumpf(idumparg?argv[idumparg]:"neurofield.dump",ios::out);
+  ofstream dumpf(idumparg?argv[idumparg]:"neurofield.dump");
   if( !dumpf ) {
     std::cerr << "Unable to open "
       << (idumparg?argv[idumparg]:"neurofield.dump") << " for output.\n";
       exit(EXIT_FAILURE);
   }
-  dumpf << setprecision(14);
+  dumpf.precision(14);
 
   // Open conf file - default is neurofield.conf
   int iconfarg = 0;
@@ -57,6 +58,11 @@ int main(int argc, char* argv[])
       if( strcmp(argv[i],"-i") == 0 )
         iconfarg = i + 1;
   Istrm inputf(iconfarg?argv[iconfarg]:"neurofield.conf");
+
+  bool restart = false;
+  for( int i=0; i<argc-1; i++ )
+    if( strcmp(argv[i],"restart")==0 )
+      restart = true;
 
   // Parse in global parameters from conf file
   // Anything before Nodes per population is ignored as comment
@@ -76,62 +82,8 @@ int main(int argc, char* argv[])
 
   // Read in connection matrix, determine number of populations and connections
   inputf.ignore(':'); //Param("Connection matrix");
-  int nPop; int nCnt; ConnectMat connectmat(inputf,nPop,nCnt);
+  int nPop; int nCnt; ConnectMat connectmat(Nodes,inputf,dumpf,nPop,nCnt,deltat,nSteps,nSkip,restart);
   connectmat.dump(dumpf);
-
-  // Construct the classes
-  Poplist poplist(Nodes,nPop,connectmat);
-  PropagNet propagnet(deltat,Nodes,nPop,nCnt,inputf,dumpf);
-  bool restart = false;
-  for( int i=0; i<argc-1; i++ )
-    if( strcmp(argv[i],"restart")==0 )
-      restart = true;
-  if(restart) { // restart mode
-      poplist.restart(inputf,propagnet,connectmat);
-      propagnet.restart(inputf,poplist,connectmat);
-  }   
-  else { // normal mode
-    poplist.init(inputf,propagnet,connectmat);
-    propagnet.init(inputf,poplist,connectmat);
-  }
-
-  // Open file for outputting data 
-  int ioutarg = 0;
-  if( argc>2 )
-    for(int i=1;i<(argc-1);i++)
-      if(strcmp(argv[i],"-o")==0)
-        ioutarg = i + 1;
-  ofstream outputf( (ioutarg?argv[ioutarg]:"neurofield.output"),ios::out);
-  if( !outputf ) {
-    std::cerr << "Unable to open "
-      << (ioutarg?argv[ioutarg]:"neurofield.output") << " for output.\n";
-    exit(EXIT_FAILURE);
-  }
-  outputf.precision(14);
-
-  // Initialize the output routine
-  if(nSkip!=0) outputf << "Skippoints: " << nSkip << " ";
-  outputf << "Deltat: " << deltat << endl;
-  outputf << "Number of integration steps:" << nSteps << endl;
-  propagnet.initoutput(inputf,outputf,nCnt,Nodes);
-
-  //  Main integration Loop
-  long skip=nSkip;
-  for(int k=1;k<nSteps+1;k++){
-    propagnet.stepQtoP(poplist,connectmat);
-    poplist.stepPops(deltat);
-    if(0==skip){
-      propagnet.output(outputf);
-      skip=nSkip;
-    } else {
-      skip--;
-    }
-  }
-
-  // Dump data for restart
-  poplist.dump(dumpf);
-  propagnet.dump(dumpf);
-  propagnet.dumpoutput(dumpf);
 
   return EXIT_SUCCESS;
 }

@@ -21,7 +21,7 @@ using std::map;
 class Ostrm
 {
 public:
-  Ostrm(unsigned long nodes);
+  Ostrm(long nodes);
   ~Ostrm();
   void Step(void); // outputs all traces to their corresponding stream
   // register a trace to a stream
@@ -31,10 +31,11 @@ private:
   Ostrm(const Ostrm& other); // No copy constructor
   Ostrm(); // No default constructor
   Ostrm& operator=(const Ostrm& other); // No assignment operator
-  vector<unsigned long> Node; // list of nodes to output
+  long nodes; // number of nodes
+  vector<long> Node; // list of nodes to output
   map<string,const double* const> trace;
   map<string,std::ofstream*> stream;
-  unsigned long nodes;
+  friend void operator>>( Istrm& istrm, Ostrm& ostrm );
 };
 
 #endif
