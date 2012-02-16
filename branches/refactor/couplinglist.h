@@ -13,7 +13,7 @@ using std::ofstream;
 #include<iostream>
 #include<vector>
 using std::vector;
-#include"istrm.h"
+#include"configf.h"
 #include"qhistorylist.h"
 #include"connectmat.h"
 class Couple; // forward reference Couple as only using pointer here. Header is included in .cpp
@@ -21,9 +21,9 @@ class Couple; // forward reference Couple as only using pointer here. Header is 
 class Couplinglist {
 public: 
   double* glu; // glutamate concentration in synaptic cleft
-  Couplinglist(Istrm& inputf, ofstream& dump, int numconnects, long nodes, double deltat);
+  Couplinglist(Configf& inputf, ofstream& dump, int numconnects, long nodes, double deltat);
   ~Couplinglist();
-  void init(Istrm& inputf); // initialize each coupling object in list
+  void init(Configf& inputf); // initialize each coupling object in list
   void dump(ofstream& dumpf); // dump each coupling coefficient for restart
   // Transform Eta to P via coupling terms
   void updateP(double **P, double **Eta,const Poplist& poplist,const ConnectMat& connectmat);

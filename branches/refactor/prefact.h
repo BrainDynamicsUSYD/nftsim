@@ -8,7 +8,7 @@
 #ifndef PREFACT_H
 #define PREFACT_H
 
-#include"istrm.h"
+#include"configf.h"
 
 class Prefact {
 public: 

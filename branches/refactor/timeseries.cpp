@@ -9,9 +9,9 @@
 #include<iostream>
 using std::endl;
 #include "timeseries.h"
-#include"istrm.h"
+#include"configf.h"
 
-Timeseries::Timeseries(Istrm& inputf)
+Timeseries::Timeseries(Configf& inputf)
 {
   random=0; // Set pointer to null in case random is not created
   seed=-98716872;

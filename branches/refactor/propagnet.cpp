@@ -10,7 +10,7 @@
 #include"poplist.h"
 using std::endl;
 
-PropagNet::PropagNet(double deltat, long n, int numpops, int numconct, Istrm& inputf, ofstream& dumpf)
+PropagNet::PropagNet(double deltat, long n, int numpops, int numconct, Configf& inputf, ofstream& dumpf)
                       :numconnects(numconct),nodes(n){
   P = new double *[numconnects];
   for(int i=0;i<numconnects;i++)
@@ -43,7 +43,7 @@ PropagNet::~PropagNet(){
   //if (pphiout) delete pphiout; // Free Phiout object if it was initialized by PropagNet::initoutput()
 }
 
-void PropagNet::init(Istrm& inputf,Poplist& poplist,ConnectMat& connectmat){
+void PropagNet::init(Configf& inputf,Poplist& poplist,ConnectMat& connectmat){
   inputf.ignore(32); // Throwaway blank line
   inputf.ignore(32); // Throwaway title line of propagation data
   pqhistorylist->init(inputf,poplist);
@@ -58,7 +58,7 @@ void PropagNet::dump(ofstream& dumpf){
   pcouplinglist->dump(dumpf);
 }
 
-void PropagNet::restart(Istrm& restartf,Poplist& poplist,ConnectMat& connectmat){
+void PropagNet::restart(Configf& restartf,Poplist& poplist,ConnectMat& connectmat){
   restartf.ignore(32); // Throwaway blank line
   pqhistorylist->restart(restartf,poplist);
   pproplist->restart(restartf,*pqhistorylist,connectmat);
@@ -76,7 +76,7 @@ void PropagNet::stepQtoP(Poplist& poplist,ConnectMat& connectmat){
   //std::cout<<" phi: "<<Eta[2][0] <<endl;
 }
 
-void PropagNet::initoutput(Istrm& inputf, ofstream& outputf, int numconct, long nodes){
+void PropagNet::initoutput(Configf& inputf, ofstream& outputf, int numconct, long nodes){
   //pphiout = new Phiout(inputf,outputf,numconct,nodes);
 }
 

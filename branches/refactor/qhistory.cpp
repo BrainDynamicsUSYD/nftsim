@@ -47,7 +47,7 @@ void Qhistory::grow(int taumax)
   }
 }
 
-void Qhistory::init(Istrm& inputf,Poplist& poplist)
+void Qhistory::init(Configf& inputf,Poplist& poplist)
 {
   // copy the Q array incoming from Q in each population to Q array in Qhistory
   // Get pointer to start of the oldest Q array which is going to be overwritten
@@ -80,7 +80,7 @@ void Qhistory::dump(ofstream& dumpf)
   dumpf << endl;
 }
 
-void Qhistory::restart(Istrm& restartf,Poplist& poplist)
+void Qhistory::restart(Configf& restartf,Poplist& poplist)
 {
   /*int depth; restartf.Param("Qhistory depth",depth);
   grow(depth-3);  // ensure qhistory has correct depth (-3) is different convention between taumax and size

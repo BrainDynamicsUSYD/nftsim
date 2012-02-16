@@ -12,7 +12,7 @@
 #include<iostream>
 #include<vector>
 using std::vector;
-#include"istrm.h"
+#include"configf.h"
 #include"propag.h"
 #include"waveeqn.h"
 #include"pmap.h"
@@ -23,11 +23,11 @@ using std::vector;
 
 class Proplist {
 public: 
-  Proplist(Istrm& inputf, ofstream& dumpf, int numconnects, long nodes, double deltat);
+  Proplist(Configf& inputf, ofstream& dumpf, int numconnects, long nodes, double deltat);
   ~Proplist();
-  void init(Istrm& inputf,Qhistorylist& qhistorylist,ConnectMat& connectmat);
+  void init(Configf& inputf,Qhistorylist& qhistorylist,ConnectMat& connectmat);
   void dump(std::ofstream& dumpf);
-  void restart(Istrm& restartf,Qhistorylist& qhistorylist,ConnectMat& connectmat);
+  void restart(Configf& restartf,Qhistorylist& qhistorylist,ConnectMat& connectmat);
   void step(double **Eta,Qhistorylist& qhistorylist,ConnectMat& pconnectmat); // Transform Q to Eta via stepping forward multiple wave equations
 
 private:

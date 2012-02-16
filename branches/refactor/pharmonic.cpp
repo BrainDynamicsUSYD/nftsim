@@ -26,7 +26,7 @@ Pharmonic::~Pharmonic(){
   if(tauobj) delete tauobj;
 }
 
-void Pharmonic::init(Istrm& inputf,Qhistory& qhistory){
+void Pharmonic::init(Configf& inputf,Qhistory& qhistory){
   double phiinit;
 
   inputf.Param("Initial Phi",phiinit);
@@ -59,7 +59,7 @@ void Pharmonic::dump(ofstream& dumpf){
   dumpf << endl; // Add endline to propagator input
 }
 
-void Pharmonic::restart(Istrm& restartf,Qhistory& qhistory){
+void Pharmonic::restart(Configf& restartf,Qhistory& qhistory){
   restartf.ignore(45);
   tauobj = new Tau(nodes,timestep,restartf,qhistory);
   restartf.Param("gamma",gamma);

@@ -21,7 +21,7 @@ DendriticR::~DendriticR(){
   delete[ ] previousPab;
 }
 
-void DendriticR::init(Istrm& inputf, double& Vinit, int propindex, int qindex)
+void DendriticR::init(Configf& inputf, double& Vinit, int propindex, int qindex)
 {
   // Determine if an initial value is given or "Steady==0" initial condition
   string buffer; inputf.Param("V",buffer);
@@ -80,7 +80,7 @@ void DendriticR::dump(ofstream& dumpf)
   dumpf << endl; // Add endline to dendritic response input
 }
 
-void DendriticR::restart(Istrm& restartf)
+void DendriticR::restart(Configf& restartf)
 {
   restartf.Param("alpha",alpha);
   restartf.Param("beta",beta);

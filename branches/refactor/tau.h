@@ -12,12 +12,12 @@
 using std::vector;
 #include<fstream>
 #include<iostream>
-#include"istrm.h"
+#include"configf.h"
 class Qhistory; //forward declare Qhistory
 
 class Tau {
 public: 
-  Tau(long nodes,double deltat,Istrm& inputf,Qhistory& qhistory);
+  Tau(long nodes,double deltat,Configf& inputf,Qhistory& qhistory);
   ~Tau();
   void dump(std::ofstream& dumpf);
   int tauab; // stores a single value tau

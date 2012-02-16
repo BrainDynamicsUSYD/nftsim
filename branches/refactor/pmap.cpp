@@ -17,7 +17,7 @@ Pmap::~Pmap(){
   if(tauobj) delete tauobj;
 }
 
-void Pmap::init(Istrm& inputf,Qhistory& qhistory){
+void Pmap::init(Configf& inputf,Qhistory& qhistory){
   inputf.ignore(45); // Throw away everything up to the dash char
   tauobj= new Tau(nodes,deltat,inputf,qhistory);
 }
@@ -26,7 +26,7 @@ void Pmap::dump(std::ofstream& dumpf){
   tauobj->dump(dumpf);
 }
 
-void Pmap::restart(Istrm& restartf,Qhistory& qhistory){
+void Pmap::restart(Configf& restartf,Qhistory& qhistory){
   init(restartf,qhistory);
 }
 

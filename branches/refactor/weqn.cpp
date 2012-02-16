@@ -25,7 +25,7 @@ Weqn::~Weqn(){
   delete Qpast;
 }
 
-void Weqn::init(Istrm& inputf, double deltax,Qhistory& qhistory){
+void Weqn::init(Configf& inputf, double deltax,Qhistory& qhistory){
   tauobj = new Tau(nodes,deltat,inputf,qhistory);
   inputf.Param("Range",effrange);
   if( !inputf.Optional("gamma",gamma) ) {
@@ -58,7 +58,7 @@ void Weqn::dump(ofstream& dumpf){
   Qpast->dump(dumpf);
 }
 
-void Weqn::restart(Istrm& restartf, double deltax,Qhistory& qhistory){
+void Weqn::restart(Configf& restartf, double deltax,Qhistory& qhistory){
   /*restartf.ignore(45); // Throw away everything up to the dash char
   tauobj = new Tau(nodes,deltat,restartf,qhistory);
   effrangeobj = new Parameter("Effective range",restartf);

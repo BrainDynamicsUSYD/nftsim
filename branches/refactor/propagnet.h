@@ -12,7 +12,7 @@
 using std::ofstream;
 #include<iostream>
 
-#include"istrm.h"
+#include"configf.h"
 #include"qhistorylist.h"
 #include"proplist.h"
 #include"couplinglist.h"
@@ -23,14 +23,14 @@ class Poplist; // Forward declaration of Poplist since we only use pointer to it
 
 class PropagNet {
 public: 
-   PropagNet(double deltat, long nodes, int numpops, int numconct, Istrm& inputf, ofstream& dumpf);
+   PropagNet(double deltat, long nodes, int numpops, int numconct, Configf& inputf, ofstream& dumpf);
    ~PropagNet();
-   void init(Istrm& inputf,Poplist& poplist,ConnectMat& connectmat);
+   void init(Configf& inputf,Poplist& poplist,ConnectMat& connectmat);
    void dump(ofstream& dumpf);
-   void restart(Istrm& restartf,Poplist& poplist,ConnectMat& connectmat);
+   void restart(Configf& restartf,Poplist& poplist,ConnectMat& connectmat);
    void stepQtoP(Poplist& poplist,ConnectMat& connectmat); // Propagate the firing response of each population to pulse densities arriving at the dendrite trees of other populations
    void dumpoutput(ofstream& dumpf);
-   void initoutput(Istrm& inputf, ofstream& outputf, int numconct, long nodes);
+   void initoutput(Configf& inputf, ofstream& outputf, int numconct, long nodes);
    void output(ofstream& outputf);
    double **P; // Array storing pointers to the Pab arrays. There are numconct of them
    double **Eta; // Array storing pointers to the Etaab arrays

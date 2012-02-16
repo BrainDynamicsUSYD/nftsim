@@ -49,7 +49,7 @@ CaDP::~CaDP(){
   if(binding) delete[] binding;
 }
 
-void CaDP::init(Istrm& inputf, int coupleid){
+void CaDP::init(Configf& inputf, int coupleid){
   inputf.Param("Nu",nu[0]);
   inputf.Param("Nu_max",nu_max);
   inputf.Param("Threshold",nu_th);

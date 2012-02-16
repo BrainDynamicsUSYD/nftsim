@@ -12,15 +12,15 @@
 #include<fstream>
 using std::ofstream;
 #include<iostream>
-#include"istrm.h"
+#include"configf.h"
 
 class DendriticR {
 public: 
   DendriticR(long nodes);
   ~DendriticR();
-  void init(Istrm& inputf, double& Vinit,int propindex,int qindex);
+  void init(Configf& inputf, double& Vinit,int propindex,int qindex);
   void dump(ofstream& dumpf);
-  void restart(Istrm& restartf);
+  void restart(Configf& restartf);
   void stepVab(double *Pab, double * Vab, double *dVabdt, double timestep);
 private:
   DendriticR(DendriticR& ); // no copy constructor

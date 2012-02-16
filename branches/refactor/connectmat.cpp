@@ -11,27 +11,62 @@
 using std::vector;
 #include<sstream>
 using std::stringstream;
+#include<cmath>
 #include"connectmat.h"
 #include"ostrm.h"
 #include"poplist.h"
 #include"propagnet.h"
+#include"configf.h"
 using std::endl;
 
-ConnectMat::ConnectMat(long Nodes, Istrm& inputf, std::ofstream& dumpf, int& nPop, int& nCnt, double deltat, long nSteps, long nSkip, bool restart )
+ConnectMat::ConnectMat(void)
 {
+}
+
+ConnectMat::~ConnectMat()
+{
+}
+
+void ConnectMat::init( Configf& inputf )
+{
+  // Parse in global parameters from conf file
+  // Anything before Nodes per population is ignored as comment
+  inputf.Param("Integration steps",steps);
+  if( !inputf.Optional("Skip steps",skip) ) skip = 0;
+  inputf.Param("Deltat",deltat);
+  //dumpf << " Deltat: " << deltat << endl;
+  int nodes; inputf.Param("Nodes",nodes);
+  int longside;
+  if( inputf.Optional("Longside",longside) ) {
+    if (nodes%longside!= 0) {
+      std::cerr << "To define a rectangular grid nodes: " << nodes <<endl
+        << "divided by Longside: " << longside << endl
+        << "must have no remainder" << endl;
+      exit(EXIT_FAILURE); 
+    }
+  }
+  else
+    longside = sqrt(nodes);
+  //dumpf << "Dump file for NeuroField" << endl
+    //<< "Nodes: " << Nodes << endl;
+
+  // glutamate dynamics is loaded by Couplinglist
+  inputf.Next("Lambda"); inputf.Next("tGlu");
+
+  inputf.Next("Connection matrix");
   // Read the number of populations
-  inputf.ignore(':');
+  inputf.Next("From");
   // Expect format "From: 1 2 3 4", read the 
   vector<double> pop = inputf.Numbers();
-  nPop = pop.size();
+  int npop = pop.size();
 
-  rawCntMat.resize(nPop);
-  nDr.resize(nPop,0);
+  rawCntMat.resize(npop);
+  nDr.resize(npop,0);
 
-  for( int i=0; i<nPop; i++ ) {
+  for( int i=0; i<npop; i++ ) {
     inputf.ignore(':'); // ignore "To ?:"
     rawCntMat[i] = inputf.Numbers();
-    if( rawCntMat[i].size() != uint(nPop) ) {
+    if( rawCntMat[i].size() != uint(npop) ) {
       std::cerr << "The connection matrix is not configured correctly."
         << endl;
       exit(EXIT_FAILURE);
@@ -39,43 +74,36 @@ ConnectMat::ConnectMat(long Nodes, Istrm& inputf, std::ofstream& dumpf, int& nPo
   }
 
   // stores the presynaptic population index for each connection index
-  for( int j=0; j<nPop; j++ )
-    for( int i=0; i<nPop; i++ )
+  for( int j=0; j<npop; j++ )
+    for( int i=0; i<npop; i++ )
       if( rawCntMat[i][j] )
         preCnt.push_back(j);
 
   // stores the postsynaptic population index for each connection index
-  for( int j=0; j<nPop; j++ )
-    for( int i=0; i<nPop; i++ )
+  for( int j=0; j<npop; j++ )
+    for( int i=0; i<npop; i++ )
       if( rawCntMat[i][j] )
         postCnt.push_back(i);
 
   // number of dendritic response for each population
-  for( int i=0; i<nPop; i++ )
+  for( int i=0; i<npop; i++ )
     for( unsigned int j=0; j<postCnt.size(); j++ )
       if( postCnt[j] == i )
         nDr[i]++;
 
-  nCnt = postCnt.size(); // == preCnt.size()
+  int ncnt = postCnt.size(); // == preCnt.size()
 
   // Construct the classes
-  Poplist poplist(Nodes,nPop,*this);
-  PropagNet propagnet(deltat,Nodes,nPop,nCnt,inputf,dumpf);
-  if(restart) { // restart mode
-      poplist.restart(inputf,propagnet,*this);
-      propagnet.restart(inputf,poplist,*this);
-  }   
-  else { // normal mode
-    poplist.init(inputf,propagnet,*this);
-    propagnet.init(inputf,poplist,*this);
-  }
+  Poplist poplist(nodes,npop,*this);
+  //PropagNet propagnet(deltat,nodes,npop,ncnt,inputf);
+  //inputf>>poplist; inputf>>propagnet;
 
-  Ostrm ostrm(Nodes); inputf.Param("Outputs",ostrm);
+  Ostrm ostrm(nodes); inputf.Param("Outputs",ostrm);
   for( int i=0; i<3; i++ ) {
     if( inputf.Next("Propag") ) {
       vector<double> temp = inputf.Numbers();
       for( uint i=0; i<temp.size(); i++ ) {
-        if( i >= uint(nCnt) ) {
+        if( i >= uint(ncnt) ) {
           std::cerr<<"Error: trying to output propagator "<<i
             <<", which is outside the bound of all propagators."<<endl;
           exit(EXIT_FAILURE);
@@ -89,52 +117,33 @@ ConnectMat::ConnectMat(long Nodes, Istrm& inputf, std::ofstream& dumpf, int& nPo
     else if( inputf.Next("Couple") ) {
     }
   }
-
-  // Open file for outputting data 
-  /*int ioutarg = 0;
-  if( argc>2 )
-    for(int i=1;i<(argc-1);i++)
-      if(strcmp(argv[i],"-o")==0)
-        ioutarg = i + 1;
-  ofstream outputf( (ioutarg?argv[ioutarg]:"neurofield.output"));
-  if( !outputf ) {
-    std::cerr << "Unable to open "
-      << (ioutarg?argv[ioutarg]:"neurofield.output") << " for output.\n";
-    exit(EXIT_FAILURE);
-  }
-  outputf.precision(14);*/
-
-  // Initialize the output routine
-  //if(nSkip!=0) outputf << "Skippoints: " << nSkip << " ";
-  //outputf << "Deltat: " << deltat << endl;
-  //outputf << "Number of integration steps:" << nSteps << endl;
-  //propagnet.initoutput(inputf,outputf,nCnt,Nodes);
-
-  //  Main integration Loop
-  long skip=nSkip;
-  for(int k=1;k<nSteps+1;k++){
-    propagnet.stepQtoP(poplist,*this);
-    poplist.stepPops(deltat);
-    if(0==skip){
-      ostrm.Step();
-      //propagnet.output(outputf);
-      skip=nSkip;
-    } else {
-      skip--;
-    }
-  }
-
-  // Dump data for restart
-  poplist.dump(dumpf);
-  propagnet.dump(dumpf);
-  propagnet.dumpoutput(dumpf);
 }
 
-ConnectMat::~ConnectMat(){
+void ConnectMat::solve(void)
+{
+  for( int i=0; i<steps; i++ ) {
+    step();
+    //if( skip==0 )
+      //ostrm.step();
+    //else
+      //skip--;
+  }
 }
 
-void ConnectMat::dump(std::ofstream& dumpf){
-  dumpf << "Connection Matrix:" << endl
+void ConnectMat::restart( Restartf& restartf )
+{
+}
+
+
+void ConnectMat::step(void)
+{
+  //propagnet.stepQtoP(poplist,connectmat);
+  //poplist.stepPops(deltat);
+}
+
+void ConnectMat::dump(std::ofstream& dumpf) const
+{
+  dumpf << "Connection matrix:" << endl
     << "From:";
   for( unsigned int i=0; i<nDr.size(); i++ )
     dumpf << " " << i;
@@ -144,4 +153,6 @@ void ConnectMat::dump(std::ofstream& dumpf){
       dumpf << " " << rawCntMat[i][j];
   }
   dumpf << endl << endl;
+  //dumpf<<poplist;
+  //dumpf<<propagnet;
 }

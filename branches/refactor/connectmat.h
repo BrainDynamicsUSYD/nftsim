@@ -14,13 +14,26 @@
 #include<vector>
 using std::vector;
 
-#include"istrm.h"
+#include"nf.h"
+#include"configf.h"
 
-class ConnectMat {
+class ConnectMat : public NF
+{
+  ConnectMat(ConnectMat& ); // no copy constructor
+  vector<int> preCnt; // Array mapping connection number back to Qb arrays
+  vector<int> postCnt; // Array mapping connection number to dendritic responses populations
+  vector<int> nDr; // Array each element is the number of dendritic responses attached to population number 'index'
+  vector< vector<double> > rawCntMat; // Connection matrix, 2D vector
+  int steps; // number of integration steps to perform
+  int skip;  // number of steps to skip before output
+  double deltat; // an increment of time per timestep
+protected:
+  void init( Configf& configf );
+  void restart( Restartf& restartf );
+  void dump( Dumpf& dumpf ) const;
 public: 
-  ConnectMat( long Nodes, Istrm& inputf, std::ofstream& dumpf, int& nPop, int& nCnt, double deltat, long nSteps, long nSkip, bool restart );
+  ConnectMat();
   ~ConnectMat();
-  void dump(std::ofstream& dumpf); // Write out raw connection matrix
 
   // Given a connection index, return the presynaptic population index
   // Useful for finding Q for given connection index
@@ -30,14 +43,8 @@ public:
   int getPostPop( int index )const{ return postCnt[index]; };
   // Return the number of dendritic responses attached to particular population
   int getDRlength( int index )const{ return nDr[index]; };
-
-private:
-  ConnectMat(); // no default constructor
-  ConnectMat(ConnectMat& ); // no copy constructor
-  vector<int> preCnt; // Array mapping connection number back to Qb arrays
-  vector<int> postCnt; // Array mapping connection number to dendritic responses populations
-  vector<int> nDr; // Array each element is the number of dendritic responses attached to population number 'index'
-  vector< vector<double> > rawCntMat; // Connection matrix, 2D vector
+  void solve(void); // main integration loop
+  void step(void);
 };
 
 #endif

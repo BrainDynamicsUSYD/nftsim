@@ -15,7 +15,7 @@ using std::string;
 using std::endl;
 
 // Constructor creates an array of pointers to propagator objects
-Proplist::Proplist(Istrm& inputf, std::ofstream& dumpf, int numconnects,
+Proplist::Proplist(Configf& inputf, std::ofstream& dumpf, int numconnects,
             long nodes, double deltat)
   :numpropag(numconnects)
 {
@@ -56,7 +56,7 @@ Proplist::~Proplist(){
 // get method returns a pointer to the "index"th propagator object in the list
 inline Propag& Proplist::getpropag(int index){ return *propagarray[index]; }
 
-void Proplist::init(Istrm& inputf,Qhistorylist& qhistorylist,ConnectMat& connectmat){
+void Proplist::init(Configf& inputf,Qhistorylist& qhistorylist,ConnectMat& connectmat){
   for(int i=0; i<numpropag; i++){
     Qhistory& qhistory=qhistorylist.getQhist(connectmat.getPrePop(i));
     getpropag(i).init(inputf,qhistory);
@@ -70,7 +70,7 @@ void Proplist::dump(std::ofstream& dumpf){
     }
 }
 
-void Proplist::restart(Istrm& restartf,Qhistorylist& qhistorylist,ConnectMat& connectmat){
+void Proplist::restart(Configf& restartf,Qhistorylist& qhistorylist,ConnectMat& connectmat){
   for(int i=0; i<numpropag; i++){
     Qhistory& qhistory=qhistorylist.getQhist(connectmat.getPrePop(i));
     getpropag(i).restart(restartf,qhistory);

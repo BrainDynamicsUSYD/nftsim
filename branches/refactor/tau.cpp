@@ -10,7 +10,7 @@
 #include "qhistory.h"
 using std::endl;
 
-Tau::Tau(long nodes,double dt,Istrm& inputf,Qhistory& qhistory):
+Tau::Tau(long nodes,double dt,Configf& inputf,Qhistory& qhistory):
             nodes(nodes), deltat(dt) {
   int taumax=0; // maximum timesteps amongst the tau values
   double tauabfloat;

@@ -11,7 +11,7 @@
 #include<fstream>
 using std::ofstream;
 #include<iostream>
-#include"istrm.h"
+#include"configf.h"
 #include"firingr.h"
 #include"dendriticrlist.h"
 #include"timeseries.h"
@@ -22,9 +22,9 @@ class Population {
 public:
   Population(long nodes, int popindex,ConnectMat& connectmat);
   ~Population();
-  void init(Istrm& inputf,PropagNet& propagnet,ConnectMat& connectmat);
+  void init(Configf& inputf,PropagNet& propagnet,ConnectMat& connectmat);
   void dump(ofstream& dumpf);
-  void restart(Istrm& restartf,PropagNet& propagnet,ConnectMat& connectmat);
+  void restart(Configf& restartf,PropagNet& propagnet,ConnectMat& connectmat);
   void stepPop(double timestep);
   double * Q;  // Array of firing rate in population
   double * V;  // Array of soma potential in population (NULL if this is a stimulus population)

@@ -10,7 +10,7 @@ using std::endl;
 
 // Builds an array of keyrings of Q history. Each Q history
 // is passed a depth for its history
-Qhistorylist::Qhistorylist(Istrm& inputf, std::ofstream& dumpf, int numpops, long nodes):numhistories(numpops){
+Qhistorylist::Qhistorylist(Configf& inputf, std::ofstream& dumpf, int numpops, long nodes):numhistories(numpops){
   Qhistarray = new Qhistory *[numhistories];
   for(int i=0;i<numpops;i++){
     Qhistarray[i] = new Qhistory(nodes, i);
@@ -29,7 +29,7 @@ Qhistory& Qhistorylist::getQhist(int index){
   return *Qhistarray[index];
 }
 
-void Qhistorylist::init(Istrm& inputf,Poplist& poplist){
+void Qhistorylist::init(Configf& inputf,Poplist& poplist){
   for(int i=0;i<numhistories; i++)
     getQhist(i).init(inputf,poplist);
 }
@@ -42,7 +42,7 @@ void Qhistorylist::dump(std::ofstream& dumpf){
   dumpf << endl;
 }
 
-void Qhistorylist::restart(Istrm& restartf,Poplist& poplist){
+void Qhistorylist::restart(Configf& restartf,Poplist& poplist){
   for(int i=0;i<numhistories; i++)
     getQhist(i).restart(restartf,poplist);
 }

@@ -41,7 +41,7 @@ WaveEqn::~WaveEqn(){
   if(tauobj) delete tauobj;
 }
 
-void WaveEqn::init(Istrm& inputf,Qhistory& qhistory){
+void WaveEqn::init(Configf& inputf,Qhistory& qhistory){
   // Determine if an initial value is given or "Steady==0" initial condition
   string buffer; inputf.Param("Phi",buffer);
   if( buffer=="Steady" )
@@ -100,7 +100,7 @@ void WaveEqn::dump(ofstream& dumpf){
   Qpast->dump(dumpf);
 }
 
-void WaveEqn::restart(Istrm& restartf,Qhistory& qhistory){
+void WaveEqn::restart(Configf& restartf,Qhistory& qhistory){
   /*restartf.ignore(45); // Throw away everything up to the dash char
   tauobj = new Tau(nodes,deltat,restartf,qhistory);
   restartf.Param("Deltax",deltax);

@@ -12,7 +12,7 @@
 #include<fstream>
 using std::ofstream;
 #include<iostream>
-#include"istrm.h"
+#include"configf.h"
 #include"couple.h"
 #include"timeseries.h"
 #include"qhistorylist.h"
@@ -22,7 +22,7 @@ class CaDP: public Couple {
 public: 
   CaDP(long nodes, double deltat);
   ~CaDP();
-  void init(Istrm& inputf, int coupleid); 
+  void init(Configf& inputf, int coupleid); 
   void dump(ofstream& dumpf); // output values for restart
   void output(); // output variables as needed
   void updatePa(double *Pa,double *Etaa,double const *postV,double const *glu);

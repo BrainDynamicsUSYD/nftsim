@@ -12,7 +12,7 @@
 #include<iostream>
 #include<vector>
 using std::vector;
-#include"istrm.h"
+#include"configf.h"
 #include"population.h"
 class ConnectMat; //forward declare ConnectMat
 class PropagNet; //forward declare PropagNet
@@ -21,9 +21,9 @@ class Poplist {
 public: 
   Poplist(long nodes, int numberofpops,ConnectMat& connectmat);
   ~Poplist();
-  void init(Istrm& inputf,PropagNet& propagnet,ConnectMat& connectmat);
+  void init(Configf& inputf,PropagNet& propagnet,ConnectMat& connectmat);
   void dump(std::ofstream& dumpf);
-  void restart(Istrm& restartf,PropagNet& propagnet,ConnectMat& connectmat);
+  void restart(Configf& restartf,PropagNet& propagnet,ConnectMat& connectmat);
   void stepPops(double timestep);
   Population& get(int popindex) const;
 private:

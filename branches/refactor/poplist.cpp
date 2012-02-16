@@ -27,7 +27,7 @@ Poplist::~Poplist(){
 // get method returns a pointer to the "index"th Population in the population list
 inline Population& Poplist::get(int index) const{ return *poparray[index]; }
 
-void Poplist::init(Istrm& inputf,PropagNet& propagnet,ConnectMat& connectmat){
+void Poplist::init(Configf& inputf,PropagNet& propagnet,ConnectMat& connectmat){
   for(int i=0; i<numpops; i++)
     get(i).init(inputf,propagnet,connectmat);
 }
@@ -37,7 +37,7 @@ void Poplist::dump(std::ofstream& dumpf){
     get(i).dump(dumpf);
 }
 
-void Poplist::restart(Istrm& restartf,PropagNet& propagnet, ConnectMat& connectmat){
+void Poplist::restart(Configf& restartf,PropagNet& propagnet, ConnectMat& connectmat){
   for(int i=0; i<numpops; i++)
     get(i).restart(restartf,propagnet,connectmat);
 }

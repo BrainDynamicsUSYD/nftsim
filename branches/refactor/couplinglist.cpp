@@ -20,7 +20,7 @@ using std::endl;
 // Constructor for Couplinglist creates an array of coupling objects
 //
 
-Couplinglist::Couplinglist(Istrm& inputf, ofstream& dumpf
+Couplinglist::Couplinglist(Configf& inputf, ofstream& dumpf
     ,int numconnects, long nodes, double deltat)
     : numcoup(numconnects), numnodes(nodes), deltat(deltat) {
   for( int i=0; i<numcoup; i++ ) {
@@ -55,7 +55,7 @@ Couplinglist::~Couplinglist(){
   if(dglu) delete[] dglu;
 }
 
-void Couplinglist::init(Istrm& inputf){
+void Couplinglist::init(Configf& inputf){
   for(int i=0; i<numcoup; i++)
     getcoup(i).init(inputf,i);
 }

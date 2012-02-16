@@ -29,7 +29,7 @@ Population::~Population(){
   if (pstimulus)  delete pstimulus;
 }
 
-void Population::init(Istrm& inputf,PropagNet& propagnet,ConnectMat& connectmat){
+void Population::init(Configf& inputf,PropagNet& propagnet,ConnectMat& connectmat){
   //inputf.ignore(32); //throwaway line naming population
   double Qinitial;
   if (isstimulus)
@@ -58,7 +58,7 @@ void Population::dump(ofstream& dumpf){
   }
 }
 
-void Population::restart(Istrm& restartf,PropagNet& propagnet,ConnectMat& connectmat){
+void Population::restart(Configf& restartf,PropagNet& propagnet,ConnectMat& connectmat){
   /*restartf.ignore(32); // Throwaway title line for population
   restartf.ignore(58); // Throwaway upto colon i.e. Q array :
   for(long i=0; i<nodes; i++)

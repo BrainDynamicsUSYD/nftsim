@@ -513,6 +513,18 @@ These output files may be further processed by helper scripts and plotting routi
 
 An \type{OpenMP} version of the code exists for running on multicore machines. It scales sublinearly.
 
+\subsection{Coding style}
+
+Within the C++ source files, developers should stick to this conventions:
+
+\begin{tabular}{ l l }
+	Tabs:& two spaces.\\
+	Braces:& the K\&R style is strongly encouraged.\\
+	Class names:&UpperCamelCase\\
+	Function names:&lowerCamelCase\\
+	Variable names:&lowercase
+\end{tabular}
+
 \subsection{Class diagram}
 
 \begin{figure}[h!]\begin{center}\includegraphics[scale=.8]{class.pdf}\caption{Schematic of the main class structure of \type{NeuroField}. Here, each line indicates that the top class has members in the bottom class, and \type{V}, \type{Q}, and \type{Eta} are 1D arrays of doubles, representing the fields $V_a$, $Q_a$, and $\phi_{ab}$.}\label{fig:class}\end{center}\end{figure}

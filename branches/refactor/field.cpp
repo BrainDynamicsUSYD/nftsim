@@ -23,7 +23,7 @@ Field::~Field(){
   delete[ ] U_B;
 }
 
-void Field::init(Istrm& inputf){
+void Field::init(Configf& inputf){
   inputf.ignore(58); // Spike up to colon to find Initial value
   // !!!!CAUTION!!! this is crippled and this cripples eqnset!!!
   //double Uinit;
@@ -58,7 +58,7 @@ void Field::dump(std::ofstream& dumpf){
   dumpf << endl;
 }
 
-void Field::restart(Istrm& restartf){
+void Field::restart(Configf& restartf){
   U_1=U_A;
   U_2=U_B;
   restartf.ignore(58); //throw away endl and then ident _1: 

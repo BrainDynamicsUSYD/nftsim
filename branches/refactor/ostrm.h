@@ -16,7 +16,7 @@ using std::string;
 using std::vector;
 #include<map>
 using std::map;
-#include"istrm.h"
+#include"configf.h"
 
 class Ostrm
 {
@@ -26,7 +26,7 @@ public:
   void Step(void); // outputs all traces to their corresponding stream
   // register a trace to a stream
   void Register( const string& filename, const double* const trace );
-  void init( Istrm& inputf );
+  void init( Configf& inputf );
 private:
   Ostrm(const Ostrm& other); // No copy constructor
   Ostrm(); // No default constructor
@@ -35,7 +35,7 @@ private:
   vector<long> Node; // list of nodes to output
   map<string,const double* const> trace;
   map<string,std::ofstream*> stream;
-  friend void operator>>( Istrm& istrm, Ostrm& ostrm );
+  friend void operator>>( Configf& Configf, Ostrm& ostrm );
 };
 
 #endif

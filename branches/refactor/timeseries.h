@@ -14,12 +14,12 @@
 using std::string;
 #include<vector>
 using std::vector;
-#include"istrm.h"
+#include"configf.h"
 #include"random.h"
 
 class Timeseries {
 public: 
-  Timeseries( Istrm& inputf );
+  Timeseries( Configf& inputf );
   ~Timeseries();
   void dump(std::ofstream& dumpf);
   void get(double t, double *tseries, const long nodes);

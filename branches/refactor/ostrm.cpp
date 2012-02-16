@@ -16,7 +16,7 @@ using std::vector;
 #include<cstdlib>
 using std::endl;
 #include"ostrm.h"
-#include"istrm.h"
+#include"configf.h"
 using namespace std;
 
 Ostrm::Ostrm( long nodes ) : nodes(nodes)
@@ -58,7 +58,7 @@ void Ostrm::Register( const string& filename, const double* const trace )
   of->precision(14);
 }
 
-void operator>>( Istrm& istrm, Ostrm& ostrm )
+void operator>>( Configf& istrm, Ostrm& ostrm )
 {
   vector<double> temp = istrm.Numbers();
   for( uint i=0; i<temp.size(); i++ )

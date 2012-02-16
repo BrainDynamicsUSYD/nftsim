@@ -15,7 +15,7 @@ Coupling::Coupling(long numnodes, double deltat)
 Coupling::~Coupling(){
 }
 
-void Coupling::init(Istrm& inputf, int coupleid){
+void Coupling::init(Configf& inputf, int coupleid){
   inputf.Param("Nu",nu);
   if( nu>0 )
     sign = 1;

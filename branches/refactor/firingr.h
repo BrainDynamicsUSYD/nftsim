@@ -13,11 +13,11 @@ using std::ofstream;
 #include<iostream>
 //using std::vector;
 #include<vector>
-#include"istrm.h"
+#include"configf.h"
 
 class FiringR {
 public: 
-  FiringR(int popindex,Istrm& inputf);
+  FiringR(int popindex,Configf& inputf);
   ~FiringR();
   void dump(ofstream& dumpf);
   void getQ(double *V, double *Q,long nodes,double timestep);

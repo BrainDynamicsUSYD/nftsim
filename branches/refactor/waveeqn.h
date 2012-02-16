@@ -12,7 +12,7 @@
 using std::ofstream;
 #include<iostream>
 
-#include"istrm.h"
+#include"configf.h"
 #include"qhistory.h"
 #include"propag.h"
 #include"field.h"
@@ -22,9 +22,9 @@ class WaveEqn: public Propag {
 public: 
   WaveEqn(long nodes, double deltat, long longside); // For rectangular boundary
   ~WaveEqn();
-  void init(Istrm& inputf,Qhistory& qhistory);
+  void init(Configf& inputf,Qhistory& qhistory);
   void dump(ofstream& dumpf);
-  void restart(Istrm& restartf,Qhistory& qhistory);
+  void restart(Configf& restartf,Qhistory& qhistory);
   void stepwaveeq(double *Phi,Qhistory& qhistory);
 private:
   WaveEqn(WaveEqn& ); // no copy contructor

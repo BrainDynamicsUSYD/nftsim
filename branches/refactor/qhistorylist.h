@@ -10,17 +10,17 @@
 
 #include<fstream>
 #include<iostream>
-#include"istrm.h"
+#include"configf.h"
 #include"qhistory.h"
 class Poplist;
 
 class Qhistorylist {
 public:
-  Qhistorylist(Istrm& inputf, std::ofstream& dumpf, int numpops, long nodes);  
+  Qhistorylist(Configf& inputf, std::ofstream& dumpf, int numpops, long nodes);  
   ~Qhistorylist(); 
-  void init(Istrm& inputf,Poplist& poplist); // initialize each Q history
+  void init(Configf& inputf,Poplist& poplist); // initialize each Q history
   void dump(std::ofstream& dumpf);
-  void restart(Istrm& restartf,Poplist& poplist); // restart each Q history
+  void restart(Configf& restartf,Poplist& poplist); // restart each Q history
   Qhistory& getQhist(int index); // reference to Q history "i"
   void updateQhistories(Poplist& poplist); // get Q values from populations and move keyring pointers
 

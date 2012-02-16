@@ -13,7 +13,7 @@
 using std::ofstream;
 #include<iostream>
 
-#include"istrm.h"
+#include"configf.h"
 #include"qhistory.h"
 #include"propag.h"
 #include"tau.h"
@@ -22,9 +22,9 @@ class Pharmonic: public Propag {
 public: 
   Pharmonic(long nodes, double deltat);
   ~Pharmonic();
-  void init(Istrm& inputf,Qhistory& qhistory);
+  void init(Configf& inputf,Qhistory& qhistory);
   void dump(ofstream& dumpf);
-  void restart(Istrm& restartf,Qhistory& qhistory);
+  void restart(Configf& restartf,Qhistory& qhistory);
   void stepwaveeq(double *Phi,Qhistory& qhistory);
 private:
   Pharmonic(Pharmonic& ); // no copy constructor

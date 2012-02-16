@@ -14,7 +14,7 @@
 #include<vector>
 using std::vector;
 
-#include"istrm.h"
+#include"configf.h"
 #include"tau.h"
 
 class Poplist; //forward declare poplist. Header file is included in .cpp file
@@ -24,9 +24,9 @@ public:
   Qhistory(long nodes,int indexQ); // construct a Qhistory with depth qdepth
   ~Qhistory();
   void grow(int taumax); // Increase qdepth of Qhistory to at least taumax steps
-  void init(Istrm& inputf,Poplist& poplist); 
+  void init(Configf& inputf,Poplist& poplist); 
   void dump(std::ofstream& dumpf);
-  void restart(Istrm& restartf,Poplist& poplist);
+  void restart(Configf& restartf,Poplist& poplist);
 
   void updateQhistory(Poplist& poplist); // Update Qhistory by reading in Q from populations and moving pointers
   double* getQbytime(Tau& tauobj); // Get pointer to Q array with time tau

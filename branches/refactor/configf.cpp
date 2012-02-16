@@ -1,5 +1,5 @@
 /***************************************************************************
-                          istrm.cpp  -  Extensions to input streams for parsing
+                          configf.cpp  -  Extensions to input streams for parsing
                                         the input file
                              -------------------
     copyright            : (C) 2009 by Peter Drysdale
@@ -13,25 +13,24 @@ using std::string;
 using std::vector;
 #include<list>
 using std::list;
-#include"istrm.h"
-using std::endl;
+#include"configf.h"
 #include"ostrm.h"
+#include"nf.h"
+using std::endl;
 
-template void Istrm::Param
+template void Configf::Param
   <double>(const string& param, double& ret, int delim=':' );
-template void Istrm::Param
+template void Configf::Param
   <int>(const string& param, int& ret, int delim=':' );
-template void Istrm::Param
-  <long>(const string& param, long& ret, int delim=':' );
-template void Istrm::Param
-  <Ostrm>(const string& param, Ostrm& ret, int delim=':' );
+template void Configf::Param
+  <NF>(const string& param, NF& ret, int delim=':' );
 
-template bool Istrm::Optional
+template bool Configf::Optional
   <double>( const string& param, double& ret, int delim=':' );
-template bool Istrm::Optional
+template bool Configf::Optional
   <long>( const string& param, long& ret, int delim=':' );
 
-Istrm::Istrm(const char* filename)
+Configf::Configf(const char* filename)
   : std::ifstream(filename,std::ios::in)
 {
   if( !*this ) {
@@ -45,73 +44,13 @@ Istrm::Istrm(const char* filename)
   seekg(sp);
 }
 
-Istrm::~Istrm()
+Configf::~Configf()
 {
   delete[] buffer;
 }
 
-template<class T> void Istrm::Param(const string& param, T& ret, int delim )
-{
-  if( Next(param,delim) ) {
-    if( !good() ) {
-      std::cerr << "Input variable '" << param << "' is given a wrong type."
-        << endl;
-      exit(EXIT_FAILURE);
-    }
-    *this >> ret;
-  }
-  else {
-  std::cerr << "Unable to find next input variable :'"
-    << param << "' "<< endl
-    << "Last read was :'"
-    << buffer
-    << "' "<< endl
-    << "Please check the sequence of parameters." << endl;
-  exit(EXIT_FAILURE);
-  }
-}
-
-template<> void Istrm::Param<string>(const string& param, string& ret, int delim )
-{
-  if( Next(param,delim) ) {
-    *this >> buffer;
-    if( !good() ) {
-      std::cerr << "Input variable '" << param << "' is given a wrong type."
-        << endl;
-      exit(EXIT_FAILURE);
-    }
-    ret = string(buffer);
-  }
-  else {
-  std::cerr << "Unable to find next input variable :'"
-    << param << "' "<< endl
-    << "Last read was :'"
-    << buffer
-    << "' "<< endl
-    << "Please check the sequence of parameters." << endl;
-  exit(EXIT_FAILURE);
-  }
-}
-
-
-template<class T> bool Istrm::Optional( const string& param, T& ret, int delim )
-{
-  if( Next(param,delim) ) {
-    *this >> ret;
-    if( !good() ) {
-      std::cerr << "Input variable '" << param << "' is given a wrong type."
-        << endl;
-      exit(EXIT_FAILURE);
-    }
-    return true;
-  }
-  else {
-    return false;
-  }
-}
-
 // Reads an arbitrary number of doubles and return it in an array
-vector<double> Istrm::Numbers(void)
+vector<double> Configf::Numbers(void)
 {
   vector<double> ret;
   while( good() ) { // read until non-numeral
@@ -123,10 +62,10 @@ vector<double> Istrm::Numbers(void)
   return ret;
 }
 
-string Istrm::Find( const string& Check )
+string Configf::Find( const string& Check )
 {
   if( Check.empty() ) {
-    std::cerr << "Istrm validating an empty string." << endl;
+    std::cerr << "Configf validating an empty string." << endl;
     exit(EXIT_FAILURE);
   }
 
@@ -172,15 +111,16 @@ string Istrm::Find( const string& Check )
     exit(EXIT_FAILURE);
 }
 
-Istrm& Istrm::ignore( int delim )
+Configf& Configf::ignore( int delim )
 {
   std::ifstream::ignore(filesize,delim);
   return *this;
 }
 
-bool Istrm::Next( const string& Check, int delim ) {
+bool Configf::Next( const string& Check, int delim )
+{
   if( Check.empty() ) {
-    std::cerr << "Istrm validating an empty string." << endl;
+    std::cerr << "Configf validating an empty string." << endl;
     exit(EXIT_FAILURE);
   }
   std::streampos sp = tellg();
@@ -192,8 +132,8 @@ bool Istrm::Next( const string& Check, int delim ) {
   string param(buffer);
   int pos = param.find( Check, param.length()-Check.length() );
   if( pos == -1 ) {
-    return false;
     seekg(sp);
+    return false;
   }
   return true;
 }

@@ -12,7 +12,7 @@
 using std::ofstream;
 #include<iostream>
 
-#include"istrm.h"
+#include"configf.h"
 #include"qhistory.h"
 #include"propag.h"
 #include"field.h"
@@ -23,9 +23,9 @@ class Weqn {
 public: 
   Weqn(long nodes,long gridsize,double deltat,long longsidelength,long shortsidelength); // For rectangular boudary
   ~Weqn();
-  void init(Istrm& inputf, double deltax,Qhistory& qhistory);
+  void init(Configf& inputf, double deltax,Qhistory& qhistory);
   void dump(ofstream& dumpf);
-  void restart(Istrm& restartf, double deltax,Qhistory& qhistory);
+  void restart(Configf& restartf, double deltax,Qhistory& qhistory);
   void stepwaveeq(double *PhiRe, double *PhiIm,Qhistory& qhistory, Field* fieldReobj, Field* filedImobj, Prefact* prefactobj);
 private:
   Weqn(Weqn& ); // no copy constructor

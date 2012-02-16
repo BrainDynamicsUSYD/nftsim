@@ -51,7 +51,7 @@ Eqnset::~Eqnset(){
   if (scalfactarr) delete [ ] scalfactarr;
 }
 
-void Eqnset::init(Istrm& inputf,Qhistory& qhistory){
+void Eqnset::init(Configf& inputf,Qhistory& qhistory){
   inputf.Param("Deltax",deltax);
   weqnobj->init(inputf,deltax,qhistory);
   inputf.Param("Geometric centre",centrex);
@@ -106,7 +106,7 @@ void Eqnset::dump(ofstream& dumpf){
   }
 }
 
-void Eqnset::restart(Istrm& restartf,Qhistory& qhistory){
+void Eqnset::restart(Configf& restartf,Qhistory& qhistory){
   restartf.Param("Deltax",deltax);
   weqnobj->restart(restartf,deltax,qhistory);
   restartf.Param("Geometric Centre",centrex);

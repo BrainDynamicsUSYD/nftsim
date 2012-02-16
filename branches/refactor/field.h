@@ -12,17 +12,17 @@
 #include<fstream>
 #include<iostream>
 #include<string>
-#include"istrm.h"
+#include"configf.h"
 
 class Field {
 public: 
   Field(long gridsize,long longsidelength,long shortsidelength,const char * fname);
   ~Field();
-  void init(Istrm& inputf);
+  void init(Configf& inputf);
   void init(double Uinit);
   void init(double* Uinit);
   void dump(std::ofstream& dumpf);
-  void restart(Istrm& restartf);
+  void restart(Configf& restartf);
   void update(double* U);
   double *U_1; // Pointer to Eta one step in the past for field variable
   double *U_2; // Pointer to Eta two steps in the past for field variable  

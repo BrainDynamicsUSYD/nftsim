@@ -53,7 +53,7 @@ DendriticR& DendriticRlist::getdendr(int index){
   return *drarray[index];
 }
 
-void DendriticRlist::init(Istrm& inputf,PropagNet& propagnet,ConnectMat& connectmat){
+void DendriticRlist::init(Configf& inputf,PropagNet& propagnet,ConnectMat& connectmat){
 // initialize localP pointer array
   int end=propagnet.numconnects;
   int counter=0;
@@ -92,7 +92,7 @@ void DendriticRlist::dump(ofstream& dumpf){
   }
 }
 
-void DendriticRlist::restart(Istrm& restartf,PropagNet& propagnet,ConnectMat& connectmat){
+void DendriticRlist::restart(Configf& restartf,PropagNet& propagnet,ConnectMat& connectmat){
 // Read data from restartf
   restartf.ignore(58); // Throwaway title line uptil colon
   for(int i=0;i<numaff; i++)

@@ -11,7 +11,7 @@
 #include<fstream>
 using std::ofstream;
 #include<iostream>
-#include"istrm.h"
+#include"configf.h"
 #include"couple.h"
 #include"qhistorylist.h"
 #include"connectmat.h"
@@ -20,7 +20,7 @@ class Coupling: public Couple {
 public: 
   Coupling(long nodes, double deltat);
   ~Coupling();
-  void init(Istrm& inputf, int coupleid); // initialize the nu variable
+  void init(Configf& inputf, int coupleid); // initialize the nu variable
   void dump(ofstream& dumpf); // dump nu for restart
   void updatePa(double *Pa,double *Etaa,double const *postV,double const *glu);
   void output(); // dummy output routine - no output is generated

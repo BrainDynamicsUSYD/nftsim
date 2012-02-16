@@ -10,7 +10,7 @@
 
 #include<fstream>
 #include<iostream>
-#include"istrm.h"
+#include"configf.h"
 #include"qhistorylist.h"
 #include"connectmat.h"
 #include"couplinglist.h"
@@ -21,7 +21,7 @@ class Couple { // Abstract Base class for coupling type objects
 public: 
   Couple();
   virtual ~Couple() = 0; // Must be defined in couple.cpp
-  virtual void init(Istrm& inputf, int coupleid) = 0; 
+  virtual void init(Configf& inputf, int coupleid) = 0; 
   virtual void dump(std::ofstream& dumpf) = 0; 
   virtual void updatePa(double *Pa,double *Etaa,double const *postV,double const *glu) = 0;
   // return X(w) = G L(w) Gamma(w) == 0 unless *this is a Coupleplast

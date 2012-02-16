@@ -12,7 +12,7 @@
 #include<fstream>
 using std::ofstream;
 #include<iostream>
-#include"istrm.h"
+#include"configf.h"
 #include"field.h"
 #include"weqn.h"
 #include"qhistory.h"
@@ -22,9 +22,9 @@ class Eqnset: public Propag {
 public: 
   Eqnset(long nodes, double deltat, long longsidelength); // For rectangular boundary
   ~Eqnset();
-  void init(Istrm& inputf,Qhistory& qhistory); 
+  void init(Configf& inputf,Qhistory& qhistory); 
   void dump(ofstream& dumpf); 
-  void restart(Istrm& restartf,Qhistory& qhistory); 
+  void restart(Configf& restartf,Qhistory& qhistory); 
   void stepwaveeq(double* Phi,Qhistory& qhistory);
 private:
   Eqnset(Eqnset& ); // no copy constructor

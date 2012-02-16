@@ -1,5 +1,5 @@
 /***************************************************************************
-                          main.cpp  -  description
+                          main.cpp  -  main program
                              -------------------
     copyright            : (C) 2005 by PeterDrysdale
     email                : peter@physics.usyd.edu.au
@@ -9,21 +9,15 @@
 using std::ofstream;
 #include <iostream>
 using std::endl;
-#include<sstream>
-using std::stringstream;
 #include<cstdlib>
 #include<cstring>
-#include<vector>
-using std::vector;
 
-#include"istrm.h"
+#include"configf.h"
 #include"connectmat.h"
-#include"propagnet.h"
-#include"poplist.h"
 
 int main(int argc, char* argv[])
 {
-  // Print help message
+  // print help message
   if( argc>2 )
     for( int i=1; i<argc-1; i++ )
       if( strcmp(argv[i],"-?")==0 || strcmp(argv[i],"-h")==0
@@ -37,7 +31,37 @@ int main(int argc, char* argv[])
         return 0;
       }
 
-  // Open file for dumping data for restart -default is neurofield.dump
+  // open conf file - default is neurofield.conf
+  int iconfarg = 0;
+  if( argc>2 )
+    for( int i=1; i<argc-1; i++)
+      if( strcmp(argv[i],"-i") == 0 )
+        iconfarg = i + 1;
+  const char* confname = iconfarg?argv[iconfarg]:"neurofield.conf";
+
+  // if find keyword "restart" in the argument list, use restart mode
+  bool restart = false;
+  for( int i=0; i<argc-1; i++ )
+    if( strcmp(argv[i],"restart")==0 )
+      restart = true;
+
+  // initialize inputf, the stream of the configuration file
+  Configf* inputf = 0;
+  if(restart) {
+    std::cerr<<"Restart mode is not implemented yet!"<<endl;
+    exit(EXIT_FAILURE);
+    // istrm = new Restartf(confname);
+  }
+  else
+    inputf = new Configf(confname);
+
+  // read in connection matrix, determine number of populations and connections
+  ConnectMat cntmat; *inputf>>cntmat;
+  cntmat.solve();
+
+  delete inputf;
+
+  // open file for dumping data for restart - default is neurofield.dump
   int idumparg = 0; // Index No. of dump file name in argv
   if( argc>2 )
     for( int i=1; i<argc-1; i++)
@@ -50,40 +74,7 @@ int main(int argc, char* argv[])
       exit(EXIT_FAILURE);
   }
   dumpf.precision(14);
-
-  // Open conf file - default is neurofield.conf
-  int iconfarg = 0;
-  if( argc>2 )
-    for( int i=1; i<argc-1; i++)
-      if( strcmp(argv[i],"-i") == 0 )
-        iconfarg = i + 1;
-  Istrm inputf(iconfarg?argv[iconfarg]:"neurofield.conf");
-
-  bool restart = false;
-  for( int i=0; i<argc-1; i++ )
-    if( strcmp(argv[i],"restart")==0 )
-      restart = true;
-
-  // Parse in global parameters from conf file
-  // Anything before Nodes per population is ignored as comment
-  long Nodes; inputf.Param("Nodes",Nodes);
-  dumpf << "Dump file for NeuroField" << endl
-    << "Nodes: " << Nodes << endl;
-  int nSteps; inputf.Param("Integration steps",nSteps);
-  dumpf << "Integration steps :" << nSteps;
-  long nSkip=0;
-  if(inputf.Optional("Skippoints",nSkip))
-    dumpf << " Skippoints: " << nSkip << " ";
-  double deltat; inputf.Param("Deltat",deltat);
-  dumpf << " Deltat: " << deltat << endl;
-
-  // glutamate dynamics is loaded by Couplinglist
-  inputf.ignore(':'); inputf.ignore(':');
-
-  // Read in connection matrix, determine number of populations and connections
-  inputf.ignore(':'); //Param("Connection matrix");
-  int nPop; int nCnt; ConnectMat connectmat(Nodes,inputf,dumpf,nPop,nCnt,deltat,nSteps,nSkip,restart);
-  connectmat.dump(dumpf);
+  dumpf<<cntmat;
 
   return EXIT_SUCCESS;
 }

@@ -10,7 +10,7 @@
 #include<cmath>
 using std::endl;
 
-FiringR::FiringR(int popindex,Istrm& inputf){
+FiringR::FiringR(int popindex,Configf& inputf){
   if( inputf.Optional("Theta",theta) ) {
     inputf.Param("Sigma",sigma);
     inputf.Param("Qmax",Q_max);
