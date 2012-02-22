@@ -1,5 +1,5 @@
 /***************************************************************************
-                          couple.h  -  description
+                          couple.h  -  governs coupling strength nu
                              -------------------
     copyright            : (C) 2007 by Peter Drysdale
     email                : peter@physics.usyd.edu.au
@@ -8,26 +8,36 @@
 #ifndef COUPLE_H
 #define COUPLE_H
 
-#include<fstream>
-#include<iostream>
+#include"array.h"
+#include"population.h"
+#include"outputf.h"
 #include"configf.h"
-#include"qhistorylist.h"
-#include"connectmat.h"
-#include"couplinglist.h"
-#include<complex>
-using std::complex;
+#include"nf.h"
 
-class Couple { // Abstract Base class for coupling type objects
-public: 
+class Population;
+
+class Couple : public NF
+{
   Couple();
-  virtual ~Couple() = 0; // Must be defined in couple.cpp
-  virtual void init(Configf& inputf, int coupleid) = 0; 
-  virtual void dump(std::ofstream& dumpf) = 0; 
-  virtual void updatePa(double *Pa,double *Etaa,double const *postV,double const *glu) = 0;
-  // return X(w) = G L(w) Gamma(w) == 0 unless *this is a Coupleplast
-  virtual complex<double> X( int i ) const { return complex<double>(0,0); };
-  virtual void output() = 0; 
-  int sign; // == +-1, indicating excitatory or inhibitory coupling
+  Couple(Couple&);
+protected:
+  virtual void init( Configf& configf ); 
+  virtual void restart( Restartf& restartf ); 
+  virtual void dump( Dumpf& dumpf ) const; 
+
+  const vector<double>& glu;
+  const Population* const prepop;
+  const Population* const postpop;
+  vector<double> n;
+  int pos;
+public: 
+  Couple( int nodes, double deltat, int index, const vector<double>& glu,
+      const Population* const prepop, const Population* const postpop );
+  virtual ~Couple(void);
+  virtual void step(void);
+  virtual void output( Array<Outputf>& outputfs ) const; 
+  const vector<double>& nu(void) const;
+  bool excite(void) const;
 };
 
 #endif

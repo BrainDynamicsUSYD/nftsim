@@ -1,82 +1,68 @@
 /***************************************************************************
-                          tau.cpp  -  time delay object
+                          tau.cpp  -  implements axonal time delay
                              -------------------
     copyright            : (C) 2010 by Peter Drysdale
     email                : peter@physics.usyd.edu.au
  ***************************************************************************/
 
-#include<cstdlib>
-#include "tau.h"
-#include "qhistory.h"
+#include<iostream>
 using std::endl;
+#include<cmath>
+#include"tau.h"
 
-Tau::Tau(long nodes,double dt,Configf& inputf,Qhistory& qhistory):
-            nodes(nodes), deltat(dt) {
-  int taumax=0; // maximum timesteps amongst the tau values
-  double tauabfloat;
-  if( inputf.Optional("Tau",tauabfloat) ) {
-    tauab = int(tauabfloat);
-    taumax = tauab;
-  }
-  else if( inputf.Optional("Taut",tauabfloat) ) {
-    tauabfloat /= deltat;
-    tauab = int(tauabfloat);
-    taumax = tauab;
-  }
-  else if( inputf.Optional("TauArray",tauabfloat) ) {
-    qarray = new double[nodes];
-    tauarr[0] = int(tauabfloat);
-    taumax = tauarr[0];
-    tauarr = inputf.Numbers();
-    if( tauarr.size() != unsigned(nodes) ) {
-      std::cerr << "The number of Tauab has to be the same as the number of nodes." << endl;
+void Tau::init( Configf& configf )
+{
+  m = configf.Numbers();
+  if( m.size() == 1 ) {
+    if( m[0] && fmod(m[0],deltat) ) {
+      std::cerr<<"Value of tau not divisible by Deltat!"<<endl;
       exit(EXIT_FAILURE);
     }
-    for( int i=1; i<nodes; i++ )
-      if( tauarr[i] > taumax )
-        taumax = tauarr[i];
+    max = m[0];
   }
-  else if( inputf.Optional("TauArrayt",tauabfloat) ) {
-    qarray = new double[nodes];
-    tauabfloat /= deltat;
-    tauarr[0] = int(tauabfloat);
-    taumax = tauarr[0];
-    tauarr = inputf.Numbers();
-    if( tauarr.size() != unsigned(nodes) ) {
-      std::cerr << "The number of Tauab has to be the same as the number of nodes." << endl;
-      exit(EXIT_FAILURE);
-    }
-    for( int i=1; i<nodes; i++ ) {
-      tauarr[i] /= deltat;
-      if( tauarr[i] > taumax )
-        taumax = tauarr[i];
+  else if( m.size() == uint(nodes) ) {
+    for( int i=0; i<nodes; i++ ) {
+      if( fmod(m[0],deltat) ) {
+        std::cerr<<"Value of tau not divisible by Deltat!"<<endl;
+        exit(EXIT_FAILURE);
+      }
+      if( m[i]>max )
+        max = m[i];
     }
   }
   else {
-    std::cerr << "Last read looking for Tauab, Tauabt, TauabArray, or";
-    std::cerr << " TauabtArray found none of them." << endl;
+    std::cerr << "The number of Tau has to be one or the same as the number of nodes." << endl;
     exit(EXIT_FAILURE);
   }
-  if( 0<tauabfloat && tauabfloat<1 ) {
-    std::cerr << "Last read Tauab: " << tauabfloat << endl;
-    std::cerr << "Tauab must be greater than 1 as it is measured in" << endl;
-    std::cerr << "time steps not a time measured in seconds." << endl;
-    exit(EXIT_FAILURE);
-  }
+}
 
-  qhistory.grow(taumax);
+void Tau::restart( Restartf& restart )
+{
+}
+
+void Tau::dump( Dumpf& dumpf ) const
+{
+  /*if( !m.empty() ){
+    dumpf << "- TauabArray";
+    for(long i=0;i<nodes;i++)
+      dumpf << ": " << tauarr[i] << " ";
+  }
+  else
+    dumpf << "- Tauab: " << tauab << " ";*/
+};
+
+Tau::Tau(void) : NF(0,0,0), max(0), m(1,0)
+{
+}
+
+Tau::Tau( int nodes, double deltat, int index ) : NF(nodes,deltat,index), max(0)
+{
 }
 
 Tau::~Tau()
 {
 }
 
-void Tau::dump(std::ofstream& dumpf){
-  if( !tauarr.empty() ){
-    dumpf << "- TauabArray";
-    for(long i=0;i<nodes;i++)
-      dumpf << ": " << tauarr[i] << " ";
-  }
-  else
-    dumpf << "- Tauab: " << tauab << " ";
-};
+void Tau::step(void)
+{
+}

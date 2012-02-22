@@ -8,26 +8,21 @@
 #ifndef TIMESERIES_H
 #define TIMESERIES_H
 
-#include<fstream>
-#include<iostream>
 #include<string>
 using std::string;
 #include<vector>
 using std::vector;
-#include"configf.h"
 #include"random.h"
+#include"nf.h"
 
-class Timeseries {
-public: 
-  Timeseries( Configf& inputf );
-  ~Timeseries();
-  void dump(std::ofstream& dumpf);
-  void get(double t, double *tseries, const long nodes);
-private:
+class Timeseries : public NF
+{
   Timeseries(Timeseries& ) ; // No copy contructor
+  Timeseries(void) ; // No default contructor
 
   string mode; // Number representing mode of timeseries
-  double ts; // Time before timeseries onset
+  double onset; // Time before timeseries onset
+  double t; // time in seconds
   Random *random; //Pointer to Random number generator object
   std::vector<Timeseries*> sarray; // Array of stimuli when mode==0
 
@@ -45,6 +40,16 @@ private:
   double stepheight; // Step height in JC's ramped input
   double stepwidth; // Step width in JC's ramped input
   long seed; // seed for random number generator
+
+protected:
+  void init( Configf& configf );
+  void restart( Restartf& restartf );
+  void dump( Dumpf& dumpf ) const;
+public: 
+  Timeseries( int nodes, double deltat, int index );
+  virtual ~Timeseries();
+  void step(void);
+  void fire( vector<double>& Q ) const;
 };
 
 #endif

@@ -1,6 +1,7 @@
 \documentclass[12pt,a4paper]{article} 
 
 \title{NeuroField Reference}
+\author{Peter Drysdale \and Felix Fung \and Romesh Abeysuriya}
 \date{\today}
 
 \usepackage{listings}
@@ -46,6 +47,8 @@ breakatwhitespace=tru,	% sets if automatic breaks should only happen at whitespa
 
 \pagebreak
 \section{Users guide}
+
+Licensing, copyright issues, etc.
 
 This users guide covers the obtaining, setting up, configuring and launching of \type{NeuroField}.
 
@@ -515,7 +518,7 @@ An \type{OpenMP} version of the code exists for running on multicore machines. I
 
 \subsection{Coding style}
 
-Within the C++ source files, developers should stick to this conventions:
+Within the C++ source files, developers should stick to this conventions for consistency:
 
 \begin{tabular}{ l l }
 	Tabs:& two spaces.\\
@@ -626,7 +629,7 @@ The source code contains a main code \type{main.cpp} and various components defi
 
 \subsection{Submission to svn}
 
-\section{Known bugs or flaws}
+\subsection{Known bugs or flaws}
 According to Peter Drysdale:
 \begin{itemize}
 \item Code only runs for initial time set to zero. This only effects the stimulus routines.
@@ -635,7 +638,7 @@ According to Peter Drysdale:
 \item Code needs more commenting.
 \end{itemize}
 
-\section{TODO}
+\subsection{TODO}
 \begin{enumerate}
 \item tidy up helper scripts
 \item restart mode is crippled; rewrite the whole thing.

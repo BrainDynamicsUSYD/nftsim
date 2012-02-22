@@ -8,6 +8,11 @@
 #ifndef CONFIGF_H
 #define CONFIGF_H
 
+#include<sstream>
+using std::stringstream;
+#include<string>
+using std::string;
+
 #include<fstream>
 #include<iostream>
 #include<string>
@@ -15,13 +20,21 @@ using std::string;
 #include<vector>
 using std::vector;
 #include<cstdlib>
-#include"nf.h"
 using std::endl;
 
-class Configf: private std::ifstream {
+typedef std::ofstream Dumpf;
+
+class Configf : protected std::ifstream
+{
+  Configf(const Configf& other); // No copy constructor
+  Configf(); // No default constructor
+  Configf& operator=(const Configf& other); // No assignment operator
+
+  char* buffer;
+  uint filesize;
 public: 
-  Configf(const char* filename);
-  ~Configf();
+  Configf( const char* filename );
+  virtual ~Configf(void);
   // Looks for the next parameter called "param" and stores it in T
   // If "param" is not found, terminate program
   template<class T> void Param(const string& param, T& ret, int delim=':' );
@@ -33,15 +46,21 @@ public:
   // Find the next "Check", then returns the next input entry as string
   string Find( const string& Check );
   bool Next( const string& Check, int delim=':' );
-  // ignores up to delim
-  Configf& ignore( int delim=':' );
-private:
+};
 
-  Configf(const Configf& other); // No copy constructor
-  Configf(); // No default constructor
-  Configf& operator=(const Configf& other); // No assignment operator
-  char* buffer; // character buffer with size 200 bytes
-  uint filesize;
+// global function that returns string=="Object#" for config file parsing
+// also useful in naming outputf "solution.phi.#"
+string label( const string& prefix, int index );
+
+// Restartf does nothing new
+class Restartf : public Configf
+{
+  Restartf(const Restartf&);
+  Restartf();
+  Restartf& operator=(Restartf&);
+public:
+  Restartf( const char* filename );
+  virtual ~Restartf(void);
 };
 
 template<class T> void Configf::Param(const string& param, T& ret, int delim )

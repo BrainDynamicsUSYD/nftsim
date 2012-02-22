@@ -1,6 +1,6 @@
 Used by Felix to explore CaDP/PAS.
-Nodes: 1
 Integration steps: 8000 Deltat: 0.0001 
+Nodes: 1
 Glutamate dynamics - Lambda: 3e-4 tGlu: 5e-3
 
 Connection matrix:
@@ -8,9 +8,8 @@ From: 1 2
 To 1: 0 0
 To 2: 1 2
 
-Population 1 - Stimulus neurons
- Initial Q: 0.0
- Stimulus 1 - Mode: 0 Onset: 0.0002 Stimuli: 3
+Population 1: Stimulus neurons
+ Stimulus: Mode: 0 Onset: 0.0002 Stimuli: 3
   Mode: Sine Onset: 0.5 Amplitude: -7 Frequency: 100
   Mode: Sine Onset: 0.5.01 Amplitude: 18 Frequency: 100
   Mode: Pulse Onset: 0.525 Amplitude: 18 Pulse width: 4e-3

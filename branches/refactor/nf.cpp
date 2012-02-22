@@ -5,6 +5,7 @@
     email                : peter@physics.usyd.edu.au
  ***************************************************************************/
 
+#include"configf.h"
 #include"nf.h"
 
 Configf& operator>> ( Configf& configf, NF& nf )
@@ -15,6 +16,7 @@ Configf& operator>> ( Configf& configf, NF& nf )
 
 Restartf& operator>> ( Restartf& restartf, NF& nf )
 {
+  nf.init( restartf );
   nf.restart(restartf);
   return restartf;
 }
@@ -25,7 +27,8 @@ Dumpf& operator<< ( Dumpf& dumpf, const NF& nf )
   return dumpf;
 }
 
-NF::NF(void)
+NF::NF( int nodes, double deltat, int index )
+    : nodes(nodes), deltat(deltat), index(index)
 {
 }
 

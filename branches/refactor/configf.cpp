@@ -14,7 +14,6 @@ using std::vector;
 #include<list>
 using std::list;
 #include"configf.h"
-#include"ostrm.h"
 #include"nf.h"
 using std::endl;
 
@@ -30,8 +29,8 @@ template bool Configf::Optional
 template bool Configf::Optional
   <long>( const string& param, long& ret, int delim=':' );
 
-Configf::Configf(const char* filename)
-  : std::ifstream(filename,std::ios::in)
+Configf::Configf( const char* filename )
+  : std::ifstream(filename)
 {
   if( !*this ) {
     std::cerr << "Unable to open configuration file." << endl;
@@ -111,12 +110,6 @@ string Configf::Find( const string& Check )
     exit(EXIT_FAILURE);
 }
 
-Configf& Configf::ignore( int delim )
-{
-  std::ifstream::ignore(filesize,delim);
-  return *this;
-}
-
 bool Configf::Next( const string& Check, int delim )
 {
   if( Check.empty() ) {
@@ -124,7 +117,7 @@ bool Configf::Next( const string& Check, int delim )
     exit(EXIT_FAILURE);
   }
   std::streampos sp = tellg();
-  getline(buffer, filesize, delim );
+  getline( buffer, filesize, delim );
   if( !good() ) {
     std::cerr << "NeuroField cannot read configuration file." << endl;
     exit(EXIT_FAILURE);
@@ -136,4 +129,20 @@ bool Configf::Next( const string& Check, int delim )
     return false;
   }
   return true;
+}
+
+Restartf::Restartf( const char* filename )
+    : Configf(filename)
+{
+}
+
+Restartf::~Restartf(void)
+{
+}
+
+string label( const string& prefix, int index )
+{
+  stringstream ss;
+  ss<<prefix.c_str()<<index;
+  return ss.str();
 }

@@ -1,87 +1,113 @@
 /***************************************************************************
-                          population.cpp  -  Population object describes a
-			                     neural population
+                          population.cpp  -  neural population object
                              -------------------
     copyright            : (C) 2005 by Peter Drysdale
     email                : peter@physics.usyd.edu.au
  ***************************************************************************/
 
-#include "population.h"
-#include "connectmat.h"
+#include<iostream>
 using std::endl;
+#include"population.h"
 
-Population::Population(long n, int popindex,ConnectMat& connectmat)
-             :V(0),t(0),pindex(popindex),nodes(n),pfr(0),pdr(0),pstimulus(0){
-  Q = new double[nodes];
-  isstimulus=true;
-  if (connectmat.getDRlength(popindex)) { //If populations are attached to this dendritic tree it is not a stimulus population
-    isstimulus=false;
-    V = new double[nodes];
-    pdr = new DendriticRlist(nodes,popindex,connectmat);
+void Population::init( Configf& inputf )
+{
+  if( qresponse ) { // neural population
+    double Qinit; inputf.Param("Q",Qinit);
+    qhistory.resize( 1, vector<double>(nodes,Qinit) );
+    inputf.Param( "Firing", *qresponse );
   }
-}
-
-Population::~Population(){
-  delete[ ] Q;
-  if (V)  delete[ ] V;
-  if (pfr) delete pfr;
-  if (pdr)  delete pdr;
-  if (pstimulus)  delete pstimulus;
-}
-
-void Population::init(Configf& inputf,PropagNet& propagnet,ConnectMat& connectmat){
-  //inputf.ignore(32); //throwaway line naming population
-  double Qinitial;
-  if (isstimulus)
-    pstimulus = new Timeseries(inputf);
-  else {
-    inputf.Param("Q",Qinitial);
-    for(long i=0; i<nodes; i++)
-      Q[i]=Qinitial;
-    pfr = new FiringR(pindex,inputf);
-    pdr->init(inputf,propagnet,connectmat);
-    inputf.ignore(32); //throwaway space line between populations
+  else { // stimulus population
+    timeseries = new Timeseries(nodes,deltat,index);
+    inputf.Param( "Stimulus", *timeseries );
   }
+  settled = true;
 }
 
-void Population::dump(ofstream& dumpf){
-  dumpf << "Population " << endl; // Write a title line for the population
-  dumpf << "Q array : ";
-  for(long i=0; i<nodes; i++)
-    dumpf << Q[i] <<" ";
-  dumpf << endl; // append a endl to end of Q array
-  if (isstimulus) {
-    pstimulus->dump(dumpf);
-  } else {
-    pfr->dump(dumpf);
-    pdr->dump(dumpf);
+void Population::restart( Restartf& restartf )
+{
+}
+
+void Population::dump( Dumpf& dumpf ) const
+{
+}
+
+Population::Population( int nodes, double deltat, int index )
+    : NF(nodes,deltat,index),
+	qkey(0), qresponse(0), timeseries(0), settled(false)
+{
+}
+
+Population::~Population()
+{
+  if(qresponse) delete qresponse;
+  if(timeseries) delete timeseries;
+}
+
+void Population::step(void)
+{
+  if( qresponse ) { // neural population
+    qresponse->step();
+    qresponse->fire( qhistory[qkey] );
   }
-}
-
-void Population::restart(Configf& restartf,PropagNet& propagnet,ConnectMat& connectmat){
-  /*restartf.ignore(32); // Throwaway title line for population
-  restartf.ignore(58); // Throwaway upto colon i.e. Q array :
-  for(long i=0; i<nodes; i++)
-    restartf >> Q[i];
-  restartf.ignore(32); // Throwaway appended endl at end of Q array
-  if (isstimulus) {
-    pstimulus = new Timeseries("Stimulus"," of stimulus",restartf);
-  } else {
-    pfr = new FiringR(pindex,restartf);
-    pdr->restart(restartf,propagnet,connectmat);
-  }*/
-}
-
-// Step forward population one timestep method
-void Population::stepPop(double timestep){
-  if (isstimulus) {
+  else { // stimulus population
+    timeseries->step();
     for( int i=0; i<nodes; i++ )
-      Q[i] = 0;
-    pstimulus->get(t, Q, nodes);
-  } else {
-    pdr->stepVa(timestep);
-    pdr->SumAfferent(V);
-    pfr->getQ(V,Q,nodes,timestep);
+      qhistory[qkey][i] = 0; // reset Q for stimulus
+    timeseries->fire( qhistory[qkey] );
   }
-  t+=timestep;
+  // move pointer to keyring
+  qkey++;
+  if( uint(qkey) == qhistory.size() )
+    qkey = 0;
+}
+
+const vector<double>& Population::Q( const Tau& tau) const
+{
+  if( tau.m.size() == 1 ) {
+    double n = tau.m[0];
+    return qhistory[ n<qkey ? qhistory.size()+n-qkey : n-qkey ];
+  }
+  else { // tau.m.size() == nodes
+    static vector<double> temp(nodes);
+    for( int i=0; i<nodes; i++ )
+      temp[i] = qhistory[
+        tau.m[i]<qkey ? qhistory.size()+tau.m[i]-qkey : tau.m[i]-qkey ][i];
+    return temp;
+  }
+}
+
+const vector<double>& Population::V(void) const
+{
+  if( qresponse )
+    return qresponse->V();
+  else {
+    std::cerr<<"Trying to access V of a stimulus population."<<endl;
+    exit(EXIT_FAILURE);
+  }
+}
+
+void Population::add2Dendrite( int index,
+    Propag* const prepropag, Couple* const precouple )
+{
+  if( settled ) {
+    std::cerr<<"Population is already settled, no more dendrites can be added!"
+        <<endl;
+    exit(EXIT_FAILURE);
+  }
+
+  if( !qresponse )
+    qresponse = new QResponse(nodes,deltat,index);
+  qresponse->add2Dendrite( index, prepropag, precouple );
+}
+
+void Population::growHistory( const Tau& tau )
+{
+  if( settled ) {
+    std::cerr<<"Population is already settled, cannot resize firing history!"
+        <<endl;
+    exit(EXIT_FAILURE);
+  }
+
+  if( uint(tau.max) > qhistory.size() )
+    qhistory.resize( tau.max, qhistory[0] );
 }

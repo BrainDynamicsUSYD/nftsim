@@ -1,5 +1,5 @@
 /***************************************************************************
-                          cadp.h  - plasticity rule according to Shouval et al
+                          cadp.h  - calcium dependent plasticity couple
                              -------------------
     copyright            : (C) 2009
     email                : peter@physics.usyd.edu.au
@@ -8,37 +8,19 @@
 #ifndef CADP_H
 #define CADP_H
 
-#include<cstdlib>
-#include<fstream>
-using std::ofstream;
-#include<iostream>
-#include"configf.h"
 #include"couple.h"
-#include"timeseries.h"
-#include"qhistorylist.h"
-#include"connectmat.h"
 
-class CaDP: public Couple {
-public: 
-  CaDP(long nodes, double deltat);
-  ~CaDP();
-  void init(Configf& inputf, int coupleid); 
-  void dump(ofstream& dumpf); // output values for restart
-  void output(); // output variables as needed
-  void updatePa(double *Pa,double *Etaa,double const *postV,double const *glu);
+class CaDP : public Couple
+{
+  CaDP();
+  CaDP(CaDP&);
 
-private:
   double sig( double x, double beta ) const;
   double potentiate(double Ca) const;
   double depress(double Ca) const;
 
-  double deltat;
-  int coupleid; // == dendriticr index, used for getQindex to get V
-
-  double* V; // postsynaptic potential, with 2D spatial dependence
-  double* nu;
-  double* Ca;
-  double* binding; // glutamate binding
+  vector<double> Ca;
+  vector<double> binding; // glutamate binding
 
   double rho; // linearized sigmoid
   double N; // number of synpases per neuron
@@ -48,13 +30,16 @@ private:
   double nu_th; // threshold time-scale of plasticity
   double nu_ltd; // time-scale of depression
   double nu_ltp; // time-scale of potentiation
-
-  CaDP(CaDP& ); // no copy constructor
-  const long nodes;
-  ofstream synapoutf;
-  ofstream caoutf;
-  ofstream voutf;
-  ofstream bindoutf;
+protected:
+  virtual void init( Configf& configf );
+  virtual void restart( Restartf& restartf );
+  virtual void dump( Dumpf& dumpf ) const;
+public: 
+  CaDP( int nodes, double deltat, int index, const vector<double>& glu,
+          const Population* const prepop, const Population* const postpop );
+  virtual ~CaDP(void);
+  virtual void step(void);
+  virtual void output( Array<Outputf>& outputfs ) const;
 };
 
 #endif

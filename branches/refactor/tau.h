@@ -1,5 +1,5 @@
 /***************************************************************************
-                          tau.h  -  time delay object
+                          tau.h  -  implements axonal time delay
                              -------------------
     copyright            : (C) 2010 by Peter Drysdale
     email                : peter@physics.usyd.edu.au
@@ -10,24 +10,24 @@
 
 #include<vector>
 using std::vector;
-#include<fstream>
-#include<iostream>
-#include"configf.h"
-class Qhistory; //forward declare Qhistory
+#include"nf.h"
 
-class Tau {
-public: 
-  Tau(long nodes,double deltat,Configf& inputf,Qhistory& qhistory);
-  ~Tau();
-  void dump(std::ofstream& dumpf);
-  int tauab; // stores a single value tau
-  double* qarray; // array to pass to qhistory when isarraytau true to
-                  // hold q return values. Not needed for single value tau
-  vector<double> tauarr; //stores an array of tau values
-private:
+class Tau : public NF
+{
   Tau(Tau& ); // no copy constructor
-  const long nodes;
-  const double deltat; // Grid spacing in time
+  int max; // if tau is nonhomogeneous, == biggest element
+  vector<double> m; // tau values across nodes, size()==1 if homogeneous
+protected:
+  void init( Configf& configf );
+  void restart( Restartf& restartf );
+  void dump( Dumpf& dumpf ) const;
+public: 
+  Tau(void); // default is zero axonal delay
+  Tau( int nodes, double deltat, int index );
+  virtual ~Tau(void);
+  void step(void);
+
+  friend class Population;
 };
 
 #endif

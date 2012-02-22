@@ -1,5 +1,5 @@
 /***************************************************************************
-                          population.h  -  header file for populations object
+                          population.h  -  neural population object
                              -------------------
     copyright            : (C) 2005 by Peter Drysdale
     email                : peter@physics.usyd.edu.au
@@ -8,35 +8,43 @@
 #ifndef POPULATION_H
 #define POPULATION_H
 
-#include<fstream>
-using std::ofstream;
-#include<iostream>
-#include"configf.h"
-#include"firingr.h"
-#include"dendriticrlist.h"
+#include"array.h"
+using std::vector;
+#include"outputf.h"
+#include"tau.h"
+#include"qresponse.h"
 #include"timeseries.h"
-class ConnectMat; //forward declare ConnectMat. Header file included in .cpp file
-class PropagNet; //forward declare PropagNet since we are only using a pointer to it
+#include"propag.h"
+#include"couple.h"
+#include"configf.h"
+#include"nf.h"
 
-class Population {
-public:
-  Population(long nodes, int popindex,ConnectMat& connectmat);
-  ~Population();
-  void init(Configf& inputf,PropagNet& propagnet,ConnectMat& connectmat);
-  void dump(ofstream& dumpf);
-  void restart(Configf& restartf,PropagNet& propagnet,ConnectMat& connectmat);
-  void stepPop(double timestep);
-  double * Q;  // Array of firing rate in population
-  double * V;  // Array of soma potential in population (NULL if this is a stimulus population)
-private:
+class QResponse;
+class Propag;
+
+class Population : public NF
+{
+  Population(void); // no default constructor
   Population(Population& ); // no copy constructor
-  double t; // Current time
-  int pindex; // Population index
-  bool isstimulus; // TRUE if this population is a stimulus population (i.e. has no attached populations on dendrite tree
-  const long nodes; // number of nodes in this population
-  FiringR* pfr;  // Pointer to Firing Response of the neural population (NULL if this is a stimulus population)
-  DendriticRlist* pdr; // Pointer to List of dendritic responses of afferent neural populations (NULL if this is a stimulus population)
-  Timeseries* pstimulus; // Pointer to Stimulus of the neural population (NULL if this is not a stimulus population)
+  vector< vector<double> > qhistory; // keyring of Q
+  int qkey; // index to the present q in qhistory
+  QResponse* qresponse; // qresponse for neural population
+  Timeseries* timeseries; // timeseries for stimulus
+  bool settled; // if true, forbids add2Dendrite and growHistory
+protected:
+  void init( Configf& inputf );
+  void restart( Restartf& restartf );
+  void dump( Dumpf& dumpf ) const;
+public:
+  Population( int nodes, double deltat, int index );
+  virtual ~Population();
+  void step(void);
+  const vector<double>& Q( const Tau& tau ) const;
+  const vector<double>& V(void) const;
+  void add2Dendrite( int index,
+          Propag* const prepropag, Couple* const precouple );
+  void growHistory( const Tau& tau );
+  void output( Array<Outputf>& outputfs ) const;
 };
 
 #endif

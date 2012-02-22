@@ -1,19 +1,17 @@
 /***************************************************************************
-                          main.cpp  -  main program
+                          main.cpp  -  wrapper to NeuroField simulation class
                              -------------------
     copyright            : (C) 2005 by PeterDrysdale
     email                : peter@physics.usyd.edu.au
  ***************************************************************************/
 
-#include<fstream>
-using std::ofstream;
 #include <iostream>
 using std::endl;
 #include<cstdlib>
 #include<cstring>
 
 #include"configf.h"
-#include"connectmat.h"
+#include"solver.h"
 
 int main(int argc, char* argv[])
 {
@@ -55,26 +53,32 @@ int main(int argc, char* argv[])
   else
     inputf = new Configf(confname);
 
-  // read in connection matrix, determine number of populations and connections
-  ConnectMat cntmat; *inputf>>cntmat;
-  cntmat.solve();
-
-  delete inputf;
-
   // open file for dumping data for restart - default is neurofield.dump
+  Dumpf* dumpf = 0;
   int idumparg = 0; // Index No. of dump file name in argv
   if( argc>2 )
     for( int i=1; i<argc-1; i++)
       if( strcmp(argv[i],"-d") == 0 )
         idumparg = i + 1;
-  ofstream dumpf(idumparg?argv[idumparg]:"neurofield.dump");
+  dumpf = new Dumpf(idumparg?argv[idumparg]:"neurofield.dump");
   if( !dumpf ) {
     std::cerr << "Unable to open "
       << (idumparg?argv[idumparg]:"neurofield.dump") << " for output.\n";
       exit(EXIT_FAILURE);
   }
-  dumpf.precision(14);
-  dumpf<<cntmat;
+  dumpf->precision(14);
+
+  // if given "-s" or "--silent", suppress dumpfile
+  if( argc>2 )
+    for( int i=1; i<argc-1; i++ )
+      if( strcmp(argv[i],"-s")==0 || strcmp(argv[i],"--silent")==0 ) {
+        if(dumpf) delete dumpf;
+        dumpf = 0;
+      }
+
+  // construct, initialize and solve the neural field theory
+  Solver neurofield(dumpf); *inputf>>neurofield;
+  neurofield.solve();
 
   return EXIT_SUCCESS;
 }

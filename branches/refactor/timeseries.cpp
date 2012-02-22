@@ -9,75 +9,76 @@
 #include<iostream>
 using std::endl;
 #include "timeseries.h"
-#include"configf.h"
 
-Timeseries::Timeseries(Configf& inputf)
+void Timeseries::init( Configf& configf )
 {
   random=0; // Set pointer to null in case random is not created
   seed=-98716872;
-  inputf.Param("Mode",mode);
-  inputf.Param("Onset",ts);
+  configf.Param("Mode",mode);//configf>>mode;
+  configf.Param("Onset",onset);
   if( mode=="Composite" ) {
     // take in stimulus transition times and specifications of each stimulus
-    int nStim; inputf.Param("Stimuli",nStim);
-    for( int i=0; i<nStim; i++ )
-      sarray.push_back( new Timeseries(inputf) );
+    int nStim; configf.Param("Stimuli",nStim);
+    for( int i=0; i<nStim; i++ ) {
+      Timeseries* p = new Timeseries(nodes,deltat,index);
+      configf>>*p;
+      sarray.push_back(p);
+    }
   }
   else if( mode=="Const" ) { // constant noise
-    inputf.Param("Mean",mean);
+    configf.Param("Mean",mean);
   }
   else if( mode=="White" ) { // white noise
-    inputf.Optional("Ranseed",seed);
-    inputf.Param("Amplitude",amp);
+    configf.Optional("Ranseed",seed);
+    configf.Param("Amplitude",amp);
     random = new Random(seed);
-    inputf.Param("Mean",mean);
+    configf.Param("Mean",mean);
   }
   else if( mode=="CoherentWhite" ) { // spatially homogeneous white noise
-    inputf.Optional("Ranseed",seed);
-    inputf.Param("Amplitude",amp);
+    configf.Optional("Ranseed",seed);
+    configf.Param("Amplitude",amp);
     random = new Random(seed);
-    inputf.Param("Mean",mean);
+    configf.Param("Mean",mean);
   }
   else if( mode=="Pulse" ) { // periodic pulse pattern
-    inputf.Param("Amplitude",amp);
-    inputf.Param("Pulse width",pdur);
-    if( !inputf.Optional("Repetition",tperiod) )
+    configf.Param("Amplitude",amp);
+    configf.Param("Pulse width",pdur);
+    if( !configf.Optional("Repetition",tperiod) )
       tperiod = -1; // if repetition period not specified, do just one pulse
   }
   else if( mode=="Sine" ) { // sinusoidal stimuli
-    inputf.Param("Amplitude",amp);
-    inputf.Param("Frequency",freq);
+    configf.Param("Amplitude",amp);
+    configf.Param("Frequency",freq);
   }
   else if( mode=="Gaussian" ) { // spatial and temporal gaussian
-    inputf.Param("Amplitude",amp);
-    inputf.Param("Time to peak of stimulus",tpeak);
-    inputf.Param("Pulse Duration",pdur);
-    inputf.Param("Grid Spacing",deltax);
-    inputf.Param("x location",xcent);
-    inputf.Param("y location",ycent);
-    inputf.Param("x spread",xspread);
-    inputf.Param("y spread",yspread);
+    configf.Param("Amplitude",amp);
+    configf.Param("Time to peak of stimulus",tpeak);
+    configf.Param("Pulse Duration",pdur);
+    configf.Param("Grid Spacing",deltax);
+    configf.Param("x location",xcent);
+    configf.Param("y location",ycent);
+    configf.Param("x spread",xspread);
+    configf.Param("y spread",yspread);
   }
   else if( mode=="Ramp" ) { // ramp concentration pattern
-    inputf.Param("Step height",stepheight);
-    inputf.Param("Step width",stepwidth);
+    configf.Param("Step height",stepheight);
+    configf.Param("Step width",stepwidth);
   }
   else if( mode=="GaussPulse" ) { // gaussian pulse
-    inputf.Param("Amplitude",amp);
-    inputf.Param("Pulse Duration",pdur);
-    inputf.Param("Time at peak",tpeak);
+    configf.Param("Amplitude",amp);
+    configf.Param("Pulse Duration",pdur);
+    configf.Param("Time at peak",tpeak);
   }
 }
 
-Timeseries::~Timeseries(){
-  if(random) delete random;
-  for( unsigned int i=0; i<sarray.size(); i++ )
-    if(sarray[i]) delete sarray[i];
+void Timeseries::restart( Restartf& restartf )
+{
 }
 
-void Timeseries::dump(std::ofstream& dumpf){
+void Timeseries::dump( Dumpf& dumpf ) const
+{
   dumpf << " Mode:" << mode << " ";
-  dumpf << "Onset: " << ts << " ";
+  dumpf << "Onset: " << onset << " ";
   if( mode=="Composite" ) {
     dumpf << "Stimuli: " << sarray.size() << endl;
   }
@@ -123,18 +124,34 @@ void Timeseries::dump(std::ofstream& dumpf){
   }
 }
 
-void Timeseries::get(double t, double *tseries, const long nodes)
+Timeseries::Timeseries( int nodes, double deltat, int index )
+    : NF(nodes,deltat,index), t(0)
 {
-if( t<ts ) return;
+}
+
+Timeseries::~Timeseries(){
+  if(random) delete random;
+  for( unsigned int i=0; i<sarray.size(); i++ )
+    if(sarray[i]) delete sarray[i];
+}
+
+void Timeseries::step(void)
+{
+  t += deltat;
+}
+
+void Timeseries::fire( vector<double>& Q ) const
+{
+if( t<onset ) return;
   if( mode == "Composite" ) {
     for( int i=0; i<nodes; i++ )
-      tseries[i] = 0; // reset firing, then let each stimulus superimpose
+      Q[i] = 0; // reset firing, then let each stimulus superimpose
     for( unsigned int i=0; i<sarray.size(); i++ )
-      sarray[i]->get( t, tseries, nodes );
+      sarray[i]->fire(Q);
   }
   else if( mode=="Const" ) { // constant noise
     for( long i=0; i<nodes; i++ )
-      tseries[i] += mean;
+      Q[i] += mean;
   }
   else if( mode=="White" ) { // white noise
     // For efficiency reasons random.gaussian random deviates are usually
@@ -145,29 +162,29 @@ if( t<ts ) return;
     // if nodes is odd then update all but the last point in tseries[]
     for( long i=0; i<nodes-1; i+=2 ){
       random->gaussian(deviate1,deviate2);	
-      tseries[i]   += amp*deviate1 + mean;
-      tseries[i+1] += amp*deviate2 + mean;
+      Q[i]   += amp*deviate1 + mean;
+      Q[i+1] += amp*deviate2 + mean;
     }
     // if nodes is odd update last point which was otherwise not updated above
     if(nodes%2){
       random->gaussian(deviate1,deviate2);
-      tseries[nodes] += amp*deviate1 + mean;
+      Q[nodes] += amp*deviate1 + mean;
     }
   }
   else if( mode=="CoherentWhite" ) { // spatially homogeneous white noise
     double deviate1, deviate2;
     random->gaussian(deviate1,deviate2);
     for( long i=0; i<nodes; i++ )
-      tseries[i]=amp*deviate1 + mean;
+      Q[i]=amp*deviate1 + mean;
   }
   else if( mode=="Pulse" ) { // periodic pulse pattern
-    if( fmod((t-ts),tperiod)<pdur )
+    if( fmod((t-onset),tperiod)<pdur )
       for(long i=0; i<nodes; i++)
-        tseries[i] += amp;
+        Q[i] += amp;
   }
   else if( mode=="Sine" ) { // sinusoidal stimuli
     for(long i=0; i<nodes; i++)
-      tseries[i]=amp*sin(6.2831853F*freq*t);
+      Q[i]=amp*sin(6.2831853F*freq*t);
   }
   else if( mode=="Gaussian" ) { // spatial and temporal gaussian
     float x = 0;
@@ -186,21 +203,21 @@ if( t<ts ) return;
         y = j*deltax;
         ij = i*size + j;
         arg = pow((x - xcent)/xspread,2) +  pow((y - ycent)/yspread,2);
-        tseries[ij] = amp * temporal * exp(-arg);       
+        Q[ij] = amp * temporal * exp(-arg);       
       }
     }
   }
   else if( mode=="Ramp" ) { // ramp concentration pattern
-    if(0 == (fmod((t-ts),stepwidth)-stepwidth) ){
+    if(0 == (fmod((t-onset),stepwidth)-stepwidth) ){
       printf("%f\n", t);
       for(long i=0; i<nodes; i++){
-        tseries[i] = tseries[i] + stepheight;
+        Q[i] = Q[i] + stepheight;
       }
     }
   }
   else if( mode=="GaussPulse" ) { // gaussian pulse
     for(long i=0; i<nodes; i++){
-      tseries[i]=amp * (1 / (sqrt(6.2831853)*pdur)) * 
+      Q[i]=amp * (1 / (sqrt(6.2831853)*pdur)) * 
       (exp(-0.5*pow((t-tpeak), 2) / (pdur*pdur)));
     }
   }
