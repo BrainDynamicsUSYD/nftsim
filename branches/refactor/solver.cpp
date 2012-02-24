@@ -16,14 +16,14 @@ using std::endl;
 #include"array.h"
 #include"configf.h"
 
+#include"propag.h"
 //#include"waveeqn.h"
 //#include"pmap.h"
 //#include"eqnset.h"
 //#include"pharmonic.h"
 
-#include"propag.h"
 #include"couple.h"
-//#include"cadp.h"
+#include"cadp.h"
 
 void Solver::CntMat::init( Configf& configf )
 {
@@ -92,9 +92,9 @@ void Solver::init( Configf& configf )
 
   configf.Param("Integration steps",steps);
   if( !configf.Optional("Skip steps",skip) ) skip = 0;
-  double deltat; configf.Param("Deltat",deltat);
+  configf.Param("Deltat",deltat);
 
-  int nodes; configf.Param("Nodes",nodes);
+  configf.Param("Nodes",nodes);
   int longside;
   if( configf.Optional("Longside",longside) ) {
     if( nodes%longside != 0 ) {
@@ -133,6 +133,10 @@ void Solver::init( Configf& configf )
     else if(ptype=="Harmonic")
       propags.add( new
         PHarmonic(nodes,deltat, pops[cnt.pre[i]], pops[cnt.post[i]], longside));*/
+    else {
+      std::cerr<<"Invalid propagator type '"<<ptype<<"'."<<endl;
+      exit(EXIT_FAILURE);
+    }
     // END PUT YOUR PROPAGATORS HERE
 
     string ctype = configf.Find( label("Couple ",i+1) +":" );
@@ -140,9 +144,13 @@ void Solver::init( Configf& configf )
     if(ctype=="Map")
       couples.add( new
         Couple(nodes,deltat,index, glu, pops[cnt.pre[i]], pops[cnt.post[i]] ) );
-    /*else if(ctype=="Calcium")
+    else if(ctype=="Calcium")
       couples.add( new
-        CaDP( nodes, deltat, glu, pops[cnt.pre[i]], pops[cnt.post[i]] ) );*/
+        CaDP(nodes,deltat,index, glu, pops[cnt.pre[i]], pops[cnt.post[i]] ) );
+    else {
+      std::cerr<<"Invalid couple type '"<<ctype<<"'."<<endl;
+      exit(EXIT_FAILURE);
+    }
     // END PUT YOUR COUPLES HERE
   }
 
@@ -223,9 +231,13 @@ void Solver::dump(std::ofstream& dumpf) const
 }
 
 void Solver::solve(void)
-{
+{	std::cout.precision(14);
+std::cout<<std::scientific;
   for( int i=0; i<steps; i++ ) {
     step();
+    std::cout<<pops[1]->V()[0]<<"\t";
+	std::cout<<couples[1]->nu()[0]*4200<<"\t|\t";
+    std::cout<<propags[0]->phi()[0]<<"\t"<<propags[1]->phi()[0]<<endl;
     if( skip==0 )
       outputfs.step();
     else

@@ -18,14 +18,15 @@ void Dendrite::init( Configf& configf )
     exit(EXIT_FAILURE);
   }
   string buffer; configf.Param("V",buffer);
-  if( buffer == "Steady" )
+  if( buffer == "Steady" ) {
+    v.resize(nodes);
     for( int i=0; i<nodes; i++ )
       v[i] = prepropag->phi()[i]*precouple->nu()[i];
+  }
   else
     for( int i=0; i<nodes; i++ )
-      v[i] = atof( buffer.c_str() );
-  for(long i=0; i<nodes; i++)
-    oldnuphi[i] = v[i];
+      v[i] = atof(buffer.c_str());
+  oldnuphi = v;
   configf.Param("alpha",alpha);
   configf.Param("beta",beta);
 }
@@ -36,14 +37,14 @@ void Dendrite::restart( Restartf& restartf )
 
 void Dendrite::dump( Dumpf& dumpf ) const
 {
-  dumpf << "Dendritic Response from population ";
+/*  dumpf << "Dendritic Response from population ";
   dumpf << "alpha: " << alpha << " ";
   dumpf << "beta: " << beta << " ";
   dumpf << "nuphi_previous:";
-  for(long i=0; i<nodes; i++){
+  for(int i=0; i<nodes; i++){
     dumpf << oldnuphi[i] << " ";
   }
-  dumpf << endl; // Add endline to dendritic response input
+  dumpf << endl; // Add endline to dendritic response input*/
 }
 
 Dendrite::Dendrite( int nodes, double deltat, int index,
@@ -88,7 +89,7 @@ void Dendrite::step(void)
     double expbeta=exp(-beta*deltat);
     alphaminusbeta=alpha-beta;
 //#pragma omp parallel for private(adjustedPab,factoralphabeta,deltaPdeltat)
-    for(long i=0; i<nodes; i++) {
+    for(int i=0; i<nodes; i++) {
       deltaPdeltat=(nuphi[i]-oldnuphi[i])/deltat;
       adjustednuphi=oldnuphi[i]-factoralphabeta*deltaPdeltat-v[i];
       C1=(adjustednuphi*beta-dvdt[i]+deltaPdeltat)/alphaminusbeta;
@@ -101,7 +102,7 @@ void Dendrite::step(void)
   } 
   else {
     double C1deltatplusc2;
-    for(long i=0; i<nodes; i++) {
+    for(int i=0; i<nodes; i++) {
       deltaPdeltat=(nuphi[i]-oldnuphi[i])/deltat;
       adjustednuphi=oldnuphi[i]-factoralphabeta*deltaPdeltat-v[i];
       C1=dvdt[i]-alpha*adjustednuphi-deltaPdeltat;

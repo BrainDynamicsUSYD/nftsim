@@ -9,7 +9,6 @@
 
 void Propag::init( Configf& configf )
 {
-  //double phiinit; configf.Param("Phi",phiinit);
   p.resize(nodes);
   configf.Param("Tau",tau);
 }
@@ -24,7 +23,8 @@ void Propag::dump( Dumpf& dumpf ) const
 
 Propag::Propag( int nodes, double deltat, int index, const Population* const prepop,
         const Population* const postpop, int longside )
-    : NF(nodes,deltat,index), prepop(prepop), postpop(postpop), longside(longside)
+    : NF(nodes,deltat,index), prepop(prepop), postpop(postpop),
+         tau(nodes,deltat,index), longside(longside)
 {
 }
 

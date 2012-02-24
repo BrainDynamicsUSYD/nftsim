@@ -12,20 +12,22 @@ using std::endl;
 
 void Tau::init( Configf& configf )
 {
-  m = configf.Numbers();
-  if( m.size() == 1 ) {
-    if( m[0] && fmod(m[0],deltat) ) {
+  vector<double> temp = configf.Numbers();
+  if( temp.size() == 1 ) {
+    if( temp[0] && fmod(temp[0],deltat) ) {
       std::cerr<<"Value of tau not divisible by Deltat!"<<endl;
       exit(EXIT_FAILURE);
     }
+    m.resize(1,temp[0]/deltat);
     max = m[0];
   }
-  else if( m.size() == uint(nodes) ) {
+  else if( temp.size() == uint(nodes) ) {
     for( int i=0; i<nodes; i++ ) {
-      if( fmod(m[0],deltat) ) {
+      if( fmod(temp[0],deltat) ) {
         std::cerr<<"Value of tau not divisible by Deltat!"<<endl;
         exit(EXIT_FAILURE);
       }
+      m[i] = int(temp[i]/deltat);
       if( m[i]>max )
         max = m[i];
     }
@@ -44,7 +46,7 @@ void Tau::dump( Dumpf& dumpf ) const
 {
   /*if( !m.empty() ){
     dumpf << "- TauabArray";
-    for(long i=0;i<nodes;i++)
+    for(int i=0;i<nodes;i++)
       dumpf << ": " << tauarr[i] << " ";
   }
   else

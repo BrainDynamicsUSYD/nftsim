@@ -35,7 +35,7 @@ if( $hostname =~ /^headnode.physics.usyd.edu.au/ ) {
 			print PBS "\n";
 			close PBS
 		} else {
-			print "NeuroField not ran.\n";
+			print STDERR "NeuroField not ran.\n";
 			exit;
 		}
 	}
@@ -43,7 +43,7 @@ if( $hostname =~ /^headnode.physics.usyd.edu.au/ ) {
 }
 
 if(!$ARGV[0]) {
-	print "NeuroField script requires at least one argument to specify configuration file.\n";
+	print STDERR "NeuroField script requires at least one argument to specify configuration file.\n";
 	exit(1);
 }
 my $in = $ARGV[0];
@@ -51,9 +51,9 @@ my $in = $ARGV[0];
 # if only the configuration file is given, then run once with that config file
 if( scalar(@ARGV)<2 ) {
 	system "cp $in neurofield.conf";
-	print "Compiling NeuroField:\n";
+	print STDERR "Compiling NeuroField:\n";
 	`make`;
-	print "Done.\nRunning $in:\n";
+	print STDERR "Done.\nRunning $in:\n";
 	if($yossarian) {
 		open PBS, "+<pbs" or die $!;
 		my $addr; # delete last line of PBS script
@@ -119,9 +119,9 @@ else { die "The number of variation in parameters must be the constant [$runs?].
 #print "\nLine\n";
 #foreach( @line){foreach(@$_){print "$_ ";}print "\n";};
 
-print "Compiling NeuroField:\n";
+print STDERR "Compiling NeuroField:\n";
 `make`;
-print "Done.\n";
+print STDERR "Done.\n";
 
 for( my $i=0; $i<$runs; $i++ ) {
 	my $dir = "Output/";
@@ -135,7 +135,7 @@ for( my $i=0; $i<$runs; $i++ ) {
 		$dir .= "$field[$j]=$value[$j][$i],";
 		$msg .= "with $field[$j] = $value[$j][$i]; ";
 	}
-	$msg =~ s/; $/\.\n/; print $msg;
+	$msg =~ s/; $/\.\n/; print STDERR $msg;
 	$dir =~ s/ /_/g; $dir =~ s/,$//; `mkdir -p $dir`;
 	`cp Release/NeuroField $dir`;
 	chdir $dir;

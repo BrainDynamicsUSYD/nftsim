@@ -20,11 +20,6 @@ using std::vector;
 class Propag;
 class Couple;
 class Population;
-//template<class T> class Array;
-//class Array<Population>;
-//class Array<Propag>;
-//class Array<Couple>;
-//class Array<Outputf>;
 
 class Solver : public NF
 {

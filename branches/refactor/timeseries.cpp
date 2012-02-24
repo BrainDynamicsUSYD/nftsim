@@ -15,12 +15,13 @@ void Timeseries::init( Configf& configf )
   random=0; // Set pointer to null in case random is not created
   seed=-98716872;
   configf.Param("Mode",mode);//configf>>mode;
-  configf.Param("Onset",onset);
+  configf.Param("Onset",t); t = -t;
   if( mode=="Composite" ) {
     // take in stimulus transition times and specifications of each stimulus
-    int nStim; configf.Param("Stimuli",nStim);
+    int nStim; configf.Param("Number of Stimuli",nStim);
     for( int i=0; i<nStim; i++ ) {
-      Timeseries* p = new Timeseries(nodes,deltat,index);
+      // beware of non-unique indexing
+      Timeseries* p = new Timeseries(nodes,deltat,index*10+i+1);
       configf>>*p;
       sarray.push_back(p);
     }
@@ -44,7 +45,7 @@ void Timeseries::init( Configf& configf )
     configf.Param("Amplitude",amp);
     configf.Param("Pulse width",pdur);
     if( !configf.Optional("Repetition",tperiod) )
-      tperiod = -1; // if repetition period not specified, do just one pulse
+      tperiod = 99999999; // if repetition period not specified, do just one pulse
   }
   else if( mode=="Sine" ) { // sinusoidal stimuli
     configf.Param("Amplitude",amp);
@@ -69,6 +70,12 @@ void Timeseries::init( Configf& configf )
     configf.Param("Pulse Duration",pdur);
     configf.Param("Time at peak",tpeak);
   }
+  else if( mode=="MNS" ) { // median nerve stimulation
+    configf.Param("N20 width",xspread);
+    configf.Param("N20 height",xcent);
+    configf.Param("P25 width",yspread);
+    configf.Param("P25 height",ycent);
+  }
 }
 
 void Timeseries::restart( Restartf& restartf )
@@ -78,7 +85,7 @@ void Timeseries::restart( Restartf& restartf )
 void Timeseries::dump( Dumpf& dumpf ) const
 {
   dumpf << " Mode:" << mode << " ";
-  dumpf << "Onset: " << onset << " ";
+  //dumpf << "Onset: " << onset << " ";
   if( mode=="Composite" ) {
     dumpf << "Stimuli: " << sarray.size() << endl;
   }
@@ -122,10 +129,16 @@ void Timeseries::dump( Dumpf& dumpf ) const
     dumpf << " Pulse Duration: " << pdur;
     dumpf << " Time at peak: " << tpeak << endl;
   }
+  else if( mode=="MNS" ) { // median nerve stimulation
+    dumpf << "N20 width:" << xspread;
+    dumpf << "N20 height:" << xcent;
+    dumpf << "P25 width:" << yspread;
+    dumpf << "P25 height:" << ycent << endl;
+  }
 }
 
 Timeseries::Timeseries( int nodes, double deltat, int index )
-    : NF(nodes,deltat,index), t(0)
+    : NF(nodes,deltat,index)
 {
 }
 
@@ -142,15 +155,15 @@ void Timeseries::step(void)
 
 void Timeseries::fire( vector<double>& Q ) const
 {
-if( t<onset ) return;
+if( t<0 ) return;
   if( mode == "Composite" ) {
-    for( int i=0; i<nodes; i++ )
-      Q[i] = 0; // reset firing, then let each stimulus superimpose
-    for( unsigned int i=0; i<sarray.size(); i++ )
+    for( unsigned int i=0; i<sarray.size(); i++ ) {
+      sarray[i]->step();
       sarray[i]->fire(Q);
+    }
   }
   else if( mode=="Const" ) { // constant noise
-    for( long i=0; i<nodes; i++ )
+    for( int i=0; i<nodes; i++ )
       Q[i] += mean;
   }
   else if( mode=="White" ) { // white noise
@@ -160,7 +173,7 @@ if( t<onset ) return;
     double deviate1, deviate2;
     // if nodes is even then update every point in tseries[]
     // if nodes is odd then update all but the last point in tseries[]
-    for( long i=0; i<nodes-1; i+=2 ){
+    for( int i=0; i<nodes-1; i+=2 ){
       random->gaussian(deviate1,deviate2);	
       Q[i]   += amp*deviate1 + mean;
       Q[i+1] += amp*deviate2 + mean;
@@ -174,16 +187,16 @@ if( t<onset ) return;
   else if( mode=="CoherentWhite" ) { // spatially homogeneous white noise
     double deviate1, deviate2;
     random->gaussian(deviate1,deviate2);
-    for( long i=0; i<nodes; i++ )
+    for( int i=0; i<nodes; i++ )
       Q[i]=amp*deviate1 + mean;
   }
   else if( mode=="Pulse" ) { // periodic pulse pattern
-    if( fmod((t-onset),tperiod)<pdur )
-      for(long i=0; i<nodes; i++)
+    if( fmod(t,tperiod)<pdur )
+      for(int i=0; i<nodes; i++)
         Q[i] += amp;
   }
   else if( mode=="Sine" ) { // sinusoidal stimuli
-    for(long i=0; i<nodes; i++)
+    for(int i=0; i<nodes; i++)
       Q[i]=amp*sin(6.2831853F*freq*t);
   }
   else if( mode=="Gaussian" ) { // spatial and temporal gaussian
@@ -197,8 +210,8 @@ if( t<onset ) return;
       (exp(-0.5*pow((t-tpeak), 2) / (pdur*pdur))); //3.1415926F
     size = (int) sqrt(nodes);
     // Do spatial Gausian here....
-    for(long i=0; i<size; i++){
-      for(long j=0; j<size; j++){
+    for(int i=0; i<size; i++){
+      for(int j=0; j<size; j++){
         x = i*deltax;
         y = j*deltax;
         ij = i*size + j;
@@ -208,18 +221,27 @@ if( t<onset ) return;
     }
   }
   else if( mode=="Ramp" ) { // ramp concentration pattern
-    if(0 == (fmod((t-onset),stepwidth)-stepwidth) ){
+    if(0 == (fmod(t,stepwidth)-stepwidth) ){
       printf("%f\n", t);
-      for(long i=0; i<nodes; i++){
+      for(int i=0; i<nodes; i++){
         Q[i] = Q[i] + stepheight;
       }
     }
   }
   else if( mode=="GaussPulse" ) { // gaussian pulse
-    for(long i=0; i<nodes; i++){
+    for(int i=0; i<nodes; i++){
       Q[i]=amp * (1 / (sqrt(6.2831853)*pdur)) * 
       (exp(-0.5*pow((t-tpeak), 2) / (pdur*pdur)));
     }
+  }
+  else if( mode=="MNS" ) { // median nerve stimulation
+    if( t<xspread )
+      for( int i=0; i<nodes; i++ )
+        Q[i] = -xcent*sin(3.141592654*t/xspread);
+    else if( t<xspread+yspread )
+      for( int i=0; i<nodes; i++ )
+        Q[i] = ycent*sin(3.141592654*(t-xspread)/yspread);
+	;
   }
 }
     //int width = 25; // width of square of nodes to stimulate

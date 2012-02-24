@@ -21,7 +21,6 @@ class Timeseries : public NF
   Timeseries(void) ; // No default contructor
 
   string mode; // Number representing mode of timeseries
-  double onset; // Time before timeseries onset
   double t; // time in seconds
   Random *random; //Pointer to Random number generator object
   std::vector<Timeseries*> sarray; // Array of stimuli when mode==0
@@ -39,7 +38,7 @@ class Timeseries : public NF
   double yspread; //Spread of Gaussian in y direction
   double stepheight; // Step height in JC's ramped input
   double stepwidth; // Step width in JC's ramped input
-  long seed; // seed for random number generator
+  int seed; // seed for random number generator
 
 protected:
   void init( Configf& configf );

@@ -39,7 +39,7 @@ public:
   Population( int nodes, double deltat, int index );
   virtual ~Population();
   void step(void);
-  const vector<double>& Q( const Tau& tau ) const;
+  const vector<double>& Q( const Tau& tau = Tau() ) const;
   const vector<double>& V(void) const;
   void add2Dendrite( int index,
           Propag* const prepropag, Couple* const precouple );

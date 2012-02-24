@@ -26,8 +26,6 @@ template void Configf::Param
 
 template bool Configf::Optional
   <double>( const string& param, double& ret, int delim=':' );
-template bool Configf::Optional
-  <long>( const string& param, long& ret, int delim=':' );
 
 Configf::Configf( const char* filename )
   : std::ifstream(filename)

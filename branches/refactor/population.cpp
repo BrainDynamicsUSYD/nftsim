@@ -13,10 +13,13 @@ void Population::init( Configf& inputf )
 {
   if( qresponse ) { // neural population
     double Qinit; inputf.Param("Q",Qinit);
-    qhistory.resize( 1, vector<double>(nodes,Qinit) );
+    for( int i=0; i<3; i++ )
+      qhistory.push_back( vector<double>(nodes,Qinit) );
     inputf.Param( "Firing", *qresponse );
   }
   else { // stimulus population
+    for( int i=0; i<3; i++ )
+      qhistory.push_back( vector<double>(nodes,0) );
     timeseries = new Timeseries(nodes,deltat,index);
     inputf.Param( "Stimulus", *timeseries );
   }
@@ -50,28 +53,25 @@ void Population::step(void)
     qresponse->fire( qhistory[qkey] );
   }
   else { // stimulus population
-    timeseries->step();
     for( int i=0; i<nodes; i++ )
       qhistory[qkey][i] = 0; // reset Q for stimulus
+    timeseries->step();
     timeseries->fire( qhistory[qkey] );
   }
   // move pointer to keyring
-  qkey++;
-  if( uint(qkey) == qhistory.size() )
-    qkey = 0;
+  qkey = (qkey+1) % qhistory.size();
 }
 
 const vector<double>& Population::Q( const Tau& tau) const
 {
-  if( tau.m.size() == 1 ) {
-    double n = tau.m[0];
-    return qhistory[ n<qkey ? qhistory.size()+n-qkey : n-qkey ];
-  }
+  if( tau.m.size() == 1 )
+    return qhistory
+      [ tau.m[0]<=qkey ? qkey-tau.m[0] :qhistory.size()+qkey-tau.m[0] ];
   else { // tau.m.size() == nodes
     static vector<double> temp(nodes);
     for( int i=0; i<nodes; i++ )
-      temp[i] = qhistory[
-        tau.m[i]<qkey ? qhistory.size()+tau.m[i]-qkey : tau.m[i]-qkey ][i];
+      temp[i] = qhistory
+        [ tau.m[i]<=qkey ? qhistory.size()+qkey-tau.m[i] : qkey-tau.m[i] ][i];
     return temp;
   }
 }

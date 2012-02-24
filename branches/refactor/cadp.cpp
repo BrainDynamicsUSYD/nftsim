@@ -80,6 +80,7 @@ void CaDP::step(void)
     else
       n[i] += dnu;
   }
+  std::cout<<Ca[0]<<"\t"<<binding[0]<<"\t";
 }
 
 void CaDP::output( Array<Outputf>& outputfs ) const
