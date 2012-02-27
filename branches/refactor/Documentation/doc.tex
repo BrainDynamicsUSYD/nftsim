@@ -62,7 +62,20 @@ This users guide covers the obtaining, setting up, configuring and launching of 
 \subsection{Licensing issues}
 
 \subsection{Obtaining and setting up NeuroField}
-svn set up
+The code for NeuroField is managed by a version control system called `subversion'. This stores the entire history of the program, as well as providing a single place to obtain the latest copy of the code. 
+
+In order to use the repository, you will first need an account. This is separate to your Physics login, you will need to contact Romesh Abeysuriya (r.abeysuriya@physics.usyd.edu.au) or Sue Yang (xue.yang@sydney.edu.au) in order to obtain access. 
+
+Once you have done this, log into a computer in the School of Physics, and open a terminal by right clicking on the desktop and selecting `Create Terminal'. Enter the following command into the terminal window:
+	
+	\begin{lstlisting}
+svn co http://silliac.physics.usyd.edu.au:18080/svn/neurofield/trunk neurofield --username=<your SVN username>
+	\end{lstlisting}
+
+
+This will copy the latest version of program from the School of Physics server into the current directory of your terminal (typically your home directory).
+
+You can also use these steps to obtain a copy of NeuroField from a computer which is not connected to the School of Physics network (eg. personal laptops at home). You will require a version of SVN higher than 1.6. However, you will need to have your IP address/network domain registered for remote access, please contact Sebastian Juraszek to request this (ideally by logging a helpdesk request at [http://physics.usyd.edu.au/itsupport] - only available within the School of Physics). 
 
 \subsection{Directory layout}
 Within the main directory, the user can find:
@@ -70,7 +83,7 @@ Within the main directory, the user can find:
 \begin{tabular}{l p{12cm}}
 \type{*.h, *.cpp}& C++ source code.\\
 \type{Configs/}& Stores configuration files for \type{NeuroField}.\\
-\type{Documentation/}& \type{Documentation/doc.tex} is the \LaTeX file for generating this document. Running \type{make doc} produces this document in \type{pdf} format, and \type{make clean} removes all the files \LaTeX produced (including \type{doc.pdf} and excluding \type{doc.tex}).\\
+\type{Documentation/}& \type{Documentation/doc.tex} is the \LaTeX\ file for generating this document. Running \type{make doc} produces this document in \type{pdf} format, and \type{make clean} removes all the files \LaTeX\ produced (including \type{doc.pdf} and excluding \type{doc.tex}).\\
 \type{helper\_scripts/}& Stores helper scripts, including plotting routines and other post-processing of data procedures.\\
 \type{Launch}& A launcher script that handles compilation and launching of \type{NeuroField}, capable of automating parameter sweeps and submitting jobs in \type{yossarian}.\\
 \type{Output/}& When using the launcher script to sweep over parameters, the launcher script produces this directory, which stores all output files \type{neurofield.*} in independent subdirectories.\\
@@ -148,7 +161,7 @@ A brief description is given by
 
 \subsection{Writing a configuration file}
 
-\type{NeuroField} allows an arbitrary number of populations and connections between them, with all objects taking arbitrary parameter values. This are all configured via a configuration file. This section documents the specifications of configuration files, where we use \type{Configs/cortex.conf} as an illustrative example.
+\type{NeuroField} allows an arbitrary number of populations and connections between them, with all objects taking arbitrary parameter values. These are all configured via a configuration file. This section documents the specifications of configuration files, where we use \type{Configs/cortex.conf} as an illustrative example.
 
 To write a configuration file, a user can follow these steps:
 \begin{enumerate}
@@ -736,6 +749,27 @@ The source code contains a main code \type{main.cpp} and various components defi
 \end{description}
 
 \subsection{Submission to SVN}
+The SVN repository is a standard installation, so any tutorials on usage of SVN apply here. For developers, we suggest obtaining a copy of the entire repository with
+
+\begin{lstlisting}
+svn co http://silliac.physics.usyd.edu.au:18080/svn/neurofield/ neurofield --username=<your SVN username>
+\end{lstlisting}
+	
+The following folders are present:
+
+\begin{tabular}{l p{12cm}}
+\type{branches}& Folders for users to make changes to the program.\\
+\type{tags}& Previous versions of the program.\\
+\type{trunk}& Latest stable version of the program.\\
+\end{tabular}
+
+To make changes to the program, it is recommended to copy the trunk into a new subfolder within branches
+
+\begin{lstlisting}
+cp -r trunk ./branches/my_branch
+\end{lstlisting}
+	
+You can then freely modify the code in the branch with the benefit of version control, and other users can obtain your code through the branch. If your modifications are accepted for the main program, your branch will then be merged into the trunk subject to appropriate testing.
 
 \subsection{TODO}
 \begin{enumerate}
