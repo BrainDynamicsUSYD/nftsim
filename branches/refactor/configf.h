@@ -53,7 +53,7 @@ public:
 string label( const string& prefix, int index );
 
 // Restartf does nothing new
-class Restartf : public Configf
+/*class Restartf : public Configf
 {
   Restartf(const Restartf&);
   Restartf();
@@ -61,7 +61,8 @@ class Restartf : public Configf
 public:
   Restartf( const char* filename );
   virtual ~Restartf(void);
-};
+};*/
+class Restartf;
 
 template<class T> void Configf::Param(const string& param, T& ret, int delim )
 {

@@ -16,7 +16,7 @@ Configf& operator>> ( Configf& configf, NF& nf )
 
 Restartf& operator>> ( Restartf& restartf, NF& nf )
 {
-  nf.init( restartf );
+  //nf.init( restartf );
   nf.restart(restartf);
   return restartf;
 }

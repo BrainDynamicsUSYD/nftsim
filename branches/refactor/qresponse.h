@@ -37,7 +37,7 @@ protected:
   void dump( Dumpf& dumpf ) const;
 public: 
   QResponse( int nodes, double deltat, int index );
-  ~QResponse(void);
+  virtual ~QResponse(void);
   void step(void);
   void add2Dendrite( int index,
           Propag* const prepropag, Couple* const precouple );

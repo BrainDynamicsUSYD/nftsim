@@ -129,14 +129,14 @@ bool Configf::Next( const string& Check, int delim )
   return true;
 }
 
-Restartf::Restartf( const char* filename )
+/*Restartf::Restartf( const char* filename )
     : Configf(filename)
 {
 }
 
 Restartf::~Restartf(void)
 {
-}
+}*/
 
 string label( const string& prefix, int index )
 {

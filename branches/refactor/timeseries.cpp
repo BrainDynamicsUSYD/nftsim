@@ -43,7 +43,7 @@ void Timeseries::init( Configf& configf )
   }
   else if( mode=="Pulse" ) { // periodic pulse pattern
     configf.Param("Amplitude",amp);
-    configf.Param("Pulse width",pdur);
+    configf.Param("Width",pdur);
     if( !configf.Optional("Repetition",tperiod) )
       tperiod = 99999999; // if repetition period not specified, do just one pulse
   }
@@ -104,7 +104,7 @@ void Timeseries::dump( Dumpf& dumpf ) const
   }
   else if( mode=="Pulse" ) { // periodic pulse pattern
     dumpf << "Amplitude: " << amp;
-    dumpf << " Pulse width: " << pdur;
+    dumpf << " Width: " << pdur;
     dumpf << " Repetition: " << tperiod << endl;
   }
   else if( mode=="Sine" ) { // sinusoidal stimuli

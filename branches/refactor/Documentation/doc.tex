@@ -4,26 +4,21 @@
 \author{Peter Drysdale \and Felix Fung \and Romesh Abeysuriya}
 \date{\today}
 
+\usepackage[latin1]{inputenc}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows}
+
 \usepackage{listings}
 \usepackage{hyperref}
 \usepackage{graphicx}
 \usepackage[top=2cm,bottom=2cm,left=1.3cm,right=1.3cm]{geometry}
 \usepackage{multirow}
-%\usepackage{lscape}
+\usepackage{amsmath}
 
 \pagestyle{plain}
 \parindent=0.0cm
 \parskip=0.5cm
 
-%\textheight=25cm
-%\textwidth=16.3cm
-%\oddsidemargin=0.0cm
-%\evensidemargin=0.0cm
-%\marginparwidth=0.0cm
-%\marginparsep=0.0cm
-%\topmargin=0.0cm
-%\headheight=0.0cm
-%\headsep=0.0cm
 \footskip=1.3cm
 
 \lstset{
@@ -42,15 +37,29 @@ breakatwhitespace=tru,	% sets if automatic breaks should only happen at whitespa
 \begin{document}
 
 \maketitle
-\abstract{\type{NeuroField} is a computer program (accompanied with helper scripts) that solves the neural field model of Robinson et al. \type{NeuroField} allows generalization of the corticothalamic model by allowing users to specify an arbitrary number of populations and their coupling response, dendritic response, firing response and axonal propagation via a configuration file; all objects may have independent parameter values. Output is also determined by the configuration file. This document is a reference of \type{NeuroField} for both users and developers.}
+\abstract{\type{NeuroField} is a computer program (accompanied with helper scripts) that solves the neural field model of Robinson et al. This document is a reference of \type{NeuroField} for both users and developers.}
 \tableofcontents
 
 \pagebreak
 \section{Users guide}
 
-Licensing, copyright issues, etc.
+\type{NeuroField}, initially written by Peter Drysdale, is a \type{C++} program (accompanied with helper scripts) that solves the neural field model of Robinson et al.:
+\begin{align*}
+	D_{ab}V_{ab}(\mathbf{r},t) &= \nu_{ab}\phi_{ab}(\mathbf{r},t),\\
+			Q_a(\mathbf{r},t) &= S_a \big[\sum_b V_{ab}(\mathbf{r},t) \big],\\
+	\mathcal{D}_{ab}\phi_{ab}(\mathbf{r},t) &= Q_b(\mathbf{r},t-\tau_{ab}).
+\end{align*}
+\type{NeuroField} generalizes the neural field theory by allowing users to:
+\begin{enumerate}
+	\item Specify an arbitrary number of populations and connections between populations;
+	\item Specify the parameters for any objects, including populations, dendritic responses, firing responses, propagators, synapses, and stimulus pattern;
+	\item Choose alternative wave propagation types, i.e. choose different forms of \(\mathcal{D}_{ab}\);
+	\item Uses plastic synapses, i.e. \(\nu_{ab}=\nu_{ab}(\mathbf{r},t)\).
+\end{enumerate}
 
 This users guide covers the obtaining, setting up, configuring and launching of \type{NeuroField}.
+
+\subsection{Licensing issues}
 
 \subsection{Obtaining and setting up NeuroField}
 svn set up
@@ -61,7 +70,7 @@ Within the main directory, the user can find:
 \begin{tabular}{l p{12cm}}
 \type{*.h, *.cpp}& C++ source code.\\
 \type{Configs/}& Stores configuration files for \type{NeuroField}.\\
-\type{Documentation/}& \type{Documentation/doc.tex} is the latex file for generating this document. Running \type{make doc} produces this document in \type{pdf} format, and \type{make clean} removes all the files latex produced (including \type{doc.pdf} and excluding \type{doc.tex}).\\
+\type{Documentation/}& \type{Documentation/doc.tex} is the \LaTeX file for generating this document. Running \type{make doc} produces this document in \type{pdf} format, and \type{make clean} removes all the files \LaTeX produced (including \type{doc.pdf} and excluding \type{doc.tex}).\\
 \type{helper\_scripts/}& Stores helper scripts, including plotting routines and other post-processing of data procedures.\\
 \type{Launch}& A launcher script that handles compilation and launching of \type{NeuroField}, capable of automating parameter sweeps and submitting jobs in \type{yossarian}.\\
 \type{Output/}& When using the launcher script to sweep over parameters, the launcher script produces this directory, which stores all output files \type{neurofield.*} in independent subdirectories.\\
@@ -73,7 +82,7 @@ Within the main directory, the user can find:
 
 \begin{enumerate}
 
-\item Edit Makefile: Identify the platform to run NeuroField, and comment/uncomment the appropriate \type{COMP} and \type{CP} directions. Generally, this step is not needed, but users are encouraged to check.
+\item Edit \type{Makefile}: Identify the platform to run NeuroField, and comment/uncomment the appropriate \type{COMP} directions. Generally, this step is not needed, but users are encouraged to check.
 
 \item To execute with only one set of parameters, edit your configuration file in \type{./Configs}, then run
 \begin{lstlisting}
@@ -81,7 +90,7 @@ Within the main directory, the user can find:
 \end{lstlisting}
 For example,
 \begin{lstlisting}
-./Launch Configs/conf.emirs
+./Launch Configs/cortex.conf
 \end{lstlisting}
 The output will be stored in the current directory.\footnote{Tips for \type{vi} users: you can launch \type{NeuroField} in \type{vi} with \type{:!./Launch \% [optional params]} }
 
@@ -90,13 +99,13 @@ The output will be stored in the current directory.\footnote{Tips for \type{vi} 
 \begin{tabular}{l l r r r}
 Object(s)&Parameter&1\textsuperscript{st} run&2\textsuperscript{nd} run&3\textsuperscript{rd} run\\
 \hline
-\type{Propagator 1}, \type{Propagator 2}&\type{gamma}&10&20&30\\
-\type{Coupling data 1}&\type{Nu}&1&2&3
+\type{Propag 1}, \type{Propag 2}&\type{gamma}&10&20&30\\
+\type{Couple 1}&\type{nu}&1&2&3
 \end{tabular}
 
 simply list the above table entries into the argument list:
 \begin{lstlisting}
-./Launch Configs/conf.emirs 'Propagator 1' 'Propagator 2' gamma 10 20 30 'Coupling data 1' Nu 1 2 3
+./Launch Configs/cortex.conf 'Propag 1' 'Propag 2' gamma 10 20 30 'Couple 1' nu 1 2 3
 \end{lstlisting}
 
 In terms of syntactic restriction, each row in the table can have an arbitary number of objects, but only one parameter; every row must have the same number of runs.
@@ -107,13 +116,13 @@ In terms of syntactic restriction, each row in the table can have an arbitary nu
 \begin{lstlisting}
 make clean
 \end{lstlisting}
-to delete \type{./Release/} and the files latex produced in \type{Documentation/}.
+to delete \type{./Release/} and the files \LaTeX produced in \type{Documentation/}.
 
 \item This documentation can be generated by running 
 \begin{lstlisting}
 make doc
 \end{lstlisting}
-which produces \type{./Document\-ation.pdf}. \type{make clean} deletes the files (including \type{./Document\-ation.pdf}) created by latex.
+which produces \type{./Document\-ation.pdf}. \type{make clean} deletes the files (including \type{./Document\-ation.pdf}) created by \LaTeX.
 
 \end{enumerate}
 
@@ -139,7 +148,7 @@ A brief description is given by
 
 \subsection{Writing a configuration file}
 
-\type{NeuroField} takes in a configuration file to build its population and their properties, as well as generate output. This section documents ways to write a configuration file.
+\type{NeuroField} allows an arbitrary number of populations and connections between them, with all objects taking arbitrary parameter values. This are all configured via a configuration file. This section documents the specifications of configuration files, where we use \type{Configs/cortex.conf} as an illustrative example.
 
 To write a configuration file, a user can follow these steps:
 \begin{enumerate}
@@ -148,270 +157,305 @@ To write a configuration file, a user can follow these steps:
 \item Specify the global parameters and connectivity matrix (Sec.~\ref{sec:global}).
 \item Specify all populations (Sec.~\ref{sec:pop}).
 \item Specify all propagators (Sec.~\ref{sec:prop}).
-\item Specify all coupling (Sec.~\ref{sec:couple}).
+\item Specify all couples (Sec.~\ref{sec:couple}).
 \item Specify all output requests (Sec.~\ref{sec:output}).
 \end{enumerate}
 
-\begin{figure}\begin{tabular}{l p{5cm}}
-\includegraphics[scale=0.3]{pop.png}&
-Connection matrix
+\begin{figure}[h!]\begin{center}
+\tikzstyle{block} = [draw,text width=3em,text centered,minimum height=2em]
+\tikzstyle{line} = [draw, -latex']
+    
+\begin{tikzpicture}[node distance = 3em, auto]
+	\node[block] (epsilon) {$\epsilon$};
+	\node[right of=epsilon,node distance=4em](epsilone){};
+	\path[line](epsilon)--(epsilone);
+	\node[block, right of=epsilone] (e) {e};
+	\path[line] (epsilon) -- (e);
 
-\begin{tabular}{ l l l l l l }
-	From: & e&i&r&s&n\\
-	To e: & 1&6&0&8&0\\
-	To i: & 2&0&0&0&0\\
-	To s: & 3&0&0&10&0\\
-	To s: & 4&0&7&0&11\\
-	To n: & 0&0&0&0&0
+	\node[right of=e](re){};
+	\draw(e)--(re);
+	\node[above of=re](are){};
+	\draw(re)--(are);
+	\node[left of=are](ae){};
+	\draw(are)--(ae);
+	\path[line] (ae) -| (e);
+
+	\node[block, below of=epsilon] (iota) {$\iota$};
+	\node[right of=iota,node distance=4em](iotai){};
+	\path[line](iota)--(iotai);
+	\node[block, right of=iotai] (i) {i};
+	\path[line] (iota) -- (i);
+
+	\node[right of=i](ri){};
+	\draw(i)--(ri);
+	\node[below of=ri](bri){};
+	\draw(ri)--(bri);
+	\node[left of=bri](bi){};
+	\draw(bri)--(bi);
+	\path[line] (bi) -| (i);
+
+	\path[line] (e) -- (i);
+	\path[line] (iotai) -- (epsilone);
+\end{tikzpicture}
+\hspace{3cm}\begin{tabular}{ l l l l l }
+	From:& $\epsilon$ & $\iota$ & e & i \\
+	To $\epsilon$:& 0 & 0 & 0 & 0 \\
+	To $\iota$:& 0 & 0 & 0 & 0 \\
+	To e:& 1 & 0 & 2 & 3 \\
+	To i:& 0 & 4 & 5 & 6
 \end{tabular}
-\end{tabular}
+\caption{Left: schematic diagram of a purely cortical population model comprising excitatory and inhibitory populations, as well as two stimulus populations; each arrow indicates a connection between populations, so that each stimulus connects to a cortical population, and each cortical population connects to all cortical populations. Right: connection matrix indicating the connections between populations; zero indicates no connection, and a connection is indicated by a nonzero number, ordered top to bottom, left to right.}
+\label{fig:pop}\end{center}\end{figure}
 
-\caption{An example thalamocortical population model and its connection matrix. After drawing the diagram, all populations, including the stimulus population, are named, and all connections numbered. A connection matrix is then constructed.}\label{fig:pop}
 
+\begin{figure}\begin{center}
+	\begin{lstlisting}
+Purely cortical model with excitatory and inhibitory neurons
+Integration steps: 10000 Deltat: .0001 
+Nodes: 4
+Glutamate dynamics - Lambda: 3e-4 tGlu: 5e-3
+
+Connection matrix:
+From: 1 2 3 4
+To 1: 0 0 0 0
+To 2: 0 0 0 0
+To 3: 1 0 2 3
+To 4: 0 4 5 6
+
+Population 1: Stimulation
+ Stimulus: Mode: Const - Onset: 0.0002 Mean: 5
+
+Population 2: Stimulation
+ Stimulus: Mode: Const - Onset: 0.0002 Mean: 5
+
+Population 3: Excitatory neurons
+ Q: 8.87145
+ Firing: Sigmoid - Theta: 0.013 Sigma: 0.0038 Qmax: 340.0
+  Dendrite 1: V: 0.0 alpha: 83 beta: 769
+  Dendrite 2: V: Steady alpha: 83 beta: 769
+  Dendrite 3: V: Steady alpha: 83 beta: 769
+
+Population 4: Inhibitory neurons
+ Q: 8.87145
+ Firing: Sigmoid - Theta: 0.013 Sigma: 0.0038 Qmax: 340.0
+  Dendrite 4: V: 0.0 alpha: 83 beta: 769
+  Dendrite 5: V: Steady alpha: 83 beta: 769
+  Dendrite 6: V: Steady alpha: 83 beta: 769
+
+Propag 1: Map - Tau: 0
+Propag 2: Map - Tau: 0
+Propag 3: Wave - phi: Steady Deltax: 0.0035 Tau: 0 Range: 0.08 gamma: 116
+Propag 4: Wave - phi: Steady Deltax: 0.0035 Tau: 0 Range: 0.08 gamma: 116
+Propag 5: Map - Tau: 0
+Propag 6: Map - Tau: 0
+Couple 1: Map - nu: 0.00015
+Couple 2: Map - nu: 0.00015
+Couple 3: Map - nu: 0.0015
+Couple 4: Map - nu: 0.0015
+Couple 5: Map - nu:-0.0018
+Couple 6: Map - nu:-0.0018
+
+Output: Node: 1
+Propag: 3
+	\end{lstlisting}
+\end{center}
+\caption{An example configuration file, which can be found in \type{Configs/cortex.conf}.}
 \end{figure}
 
-{\bf A new format for the configuration file is proposed and is being implemented. As a general principle, the new format is more concise (e.g. \type{Nodes} rather than \type{Number of nodes}, etc), has less redundant information, but more rigorous cross-checking on the connection matrix. A new syntactic principle is that some lines require prefixing with the object name, e.g.
-\begin{lstlisting}
-Propag 3 - Wave - Phi: 8.87145 Deltax: 0.0035 Tauab: 0 Range: 0.08 gamma: 116
-\end{lstlisting}
-where the prefix \type{Propag 3 - } is required for parsing (before it purely for human reference), and in addition serve for cross-checking purpose.}
+In general, the entries in configuration file follow the following rules:
 
-The configuration file follows a logical structure: first the global simulation information, next the information for each populations given, then the propagation data, then the coupling data and finally the output data. Each component is described in detail below; each bullet point corresponds to a line of the input file.
+\begin{enumerate}
+	\item Each entry generally follows a \type{Pamameter: value} pattern.
+	\item Most parameters are essential. Failure to provide these parameters would result in \type{NeuroField} terminating with an error message. A minority of the parameters are optional.
+	\item The ordering of the parameters are important. Wrong parameter ordering results in \type{NeuroField} terminating with an error message.
+	\item With the exception of keywords, the configuration file is white-space independent, e.g., there can be either no spaces, many spaces, or new lines between the colon of \type{Integration steps: 10000} and 10000, but you cannot have two spaces between \type{Integration} and \type{steps}. For consistency and readability, users are encouraged to follow the existing white space scheme when reasonable.
+	\item Tip for \type{vi} users: \type{./helper\_scripts/neurofield.vim} implements syntax highlighting for configuration files in \type{vi}. See comments within for installation instructions.
+\end{enumerate}
 
 \subsubsection{Global information}
 \label{sec:global}
 \begin{itemize}
 
-\item Any text before the entry, \type{Nodes per population:}, is disregarded by \type{NeuroField} and serves as comment.
 \item
 \begin{lstlisting}
-Nodes per population: 2500
+Purely cortical model with excitatory and inhibitory neurons
 \end{lstlisting}
-This line contains the number of grid points in the spatial dimension per population of neurons. The code has been explicitly designed to have equal number of neurons per population.
+Any text before the entry, \type{Integration steps:}, is disregarded by \type{NeuroField} and serves as comment.
+\item
+\begin{lstlisting}
+Prvious steps: 0 Integration steps: 10000 Output onset: 0 Deltat: .0001 
+\end{lstlisting}
+\type{Previous steps} is an optional parameter generated by \type{NeuroField} for restart mode. Users should not touch this unless they know what they are doing.
+
+\type{Integration steps} is the number of steps the code should step forward during the run.
+
+\type{Output onset} is an optional parameter of how many integration steps should be skipped before output commenses.
+
+\type{Deltat} is the time increment for each time step.
+\item
+\begin{lstlisting}
+Nodes: 4 Longside: 2
+\end{lstlisting}
+\type{Nodes} is the number of grid points in the spatial dimension per population of neurons. The code has been explicitly designed to have equal number of neurons per population.
+
+\type{Longside} is an optional parameter, specifying the longside of the rectangular grid. If it is not supplied, it is assumed to be a square.
 
 Both spatial dimensions have periodic boundary conditions, so that populations have the topology of a torus.
 \item
 \begin{lstlisting}
-Number of neural populations: 5
-\end{lstlisting} This is the number of neural
-populations and includes the number of stimulus modes. It is denoted
-$n$ in this section.
-\item
-\begin{lstlisting}
-Number of neural connections: 11
-\end{lstlisting} This is the number of neural
-populations which are connected together. By definition this number lies in the
-range $n$ and $n^2$ where $n$ is the number of neural populations.
-\item A blank line is inserted in the file at this point
-\item
-\begin{lstlisting}
-Populations connections matrix 1 2 3 4 ....
-\end{lstlisting} The code ignores this
-line but it is useful to provide a way of lining up the data in the
-connections matrix.
-\item Now follows $n$ lines of connection matrix data. On each line the code looks for colon character followed by a number. There should be $n$ colons followed by a number on each line.
-	
-The row number corresponds to the population ID number of the TO population. The column number corresponds to the population ID number of the FROM population of the connection.
-
-Zeros correspond to unconnected populations whilst nonzero number correspond to connected populations. For easy of use it is suggested that each connection be numbered in ascending order when reading down columns as in the default input file. This allows human crosschecking with later sections of the input file.
-\item
-\begin{lstlisting}
-Number of integration steps: 100000 Skippoints: 49 Deltat: 0.0001
+Glutamate dynamics - Lambda: 3e-4 tGlu: 5e-3
 \end{lstlisting}
-The parameters are: 
-(1) the number of integration steps the code should step forward during the run, (2) An optional parameter of how many integration steps should be skipped before a time step should be outputted, and (3) the time increment for each time step.
+Parameters governing glutamate dynamics, which is currently useful only for \type{CaDP} couples.
 
+\type{Lambda} is the glutamate release concentration per presynaptic spike, in moles.
+
+\type{tGlu} is the decay timescale of glutamate in seconds.
 \item
 \begin{lstlisting}
-Q delay depths: 420 :0 :0 :420 :0
-\end{lstlisting} This line is no longer required 
-and is ignored.
-
-\item
-\begin{lstlisting}
-Propagator types 1: Waveeqn 2: Waveeqn 3: Waveeqn 4: Waveeqn 5: Mapping $
-6: Mapping 7: Mapping 8: Waveeqn 9: Waveeqn 10: Mapping 11: Mapping $
+Connection matrix:
+From: 1 2 3 4
+To 1: 0 0 0 0
+To 2: 0 0 0 0
+To 3: 1 0 2 3
+To 4: 0 4 5 6
 \end{lstlisting}
-These lines specifies the type of the $n$ propagator, each preceeded by an index number and a colon. The propagation data should appear in the same order as in the connection matrix when the connection matrix is read top to bottom and then left to right.
+We specify an arbitrarily sized square connection matrix, where each entry is the connection from the column population to the row population.
 
-The following types of propagator are available: \type{Mapping}, \type{Waveeqn},\type{Waveeqnrect}, \type{Harmonic}, \type{Eqnset}, \type{Eqnsetrect}.
-\item
-\begin{lstlisting}
-Coupling types 1: Modulate 2: Simple 3: Simple 4: Simple 5: Simple 6: Simple $ 
-7: Simple 8: Simple 9: Simple 10: Simple 11: Simple $
-\end{lstlisting}
-These lines specifies the type of the $n$ couplings, each preceeded by an index number and a colon. The coupling data should appear in the same order as in the connection matrix when the connection matrix is read top to bottom and then left to right.
+Zero indicates no connection.
 
-The following types of coupling are available: \type{Simple}, \type{Modcouple}, \type{STDP}, \type{Calcium}.
-\item
-\begin{lstlisting}
-Lambda: 3e-4 tGlu: 5e-3
-\end{lstlisting}
-Parameters governing glutamate dynamics, which is currently useful only for \type{Calcium} type coupling. \type{Lambda} is the glutamate release concentration per presynaptic spike, in moles. \type{tGlu} is the decay timescale of glutamate in seconds.
-\item A blank line finishes this section of the input file.
+A nonzero number indicates connection. This number must be indexed from top to bottom, left to right.
 \end{itemize}
 
 \subsubsection{Population data}
 \label{sec:pop}
-This section contains $n$ repeated population information sections.
-Each population is presented in the same order as the connections matrix.
-There are two types of neural populations: 1) ordinary populations
-and 2) stimulus populations:
+This section contains population information sections. There are two types of neural populations: ordinary populations and stimulus populations:
 \begin{description}
-\item[Ordinary populations]\ \\
-
-	\begin{itemize}
-	\item
-	\begin{lstlisting}
-Population 1 - Excitory neurons
-	\end{lstlisting}
-	The first line is ignored by the code but should be used for a text description of the population's name.
-	\item
-	\begin{lstlisting}
-Initial Q: 8.87145
-	\end{lstlisting}
-	When the simulation starts an initial value for the firing rate $Q$ is required.
-	\item
-	\begin{lstlisting}
-Firing Response Theta: 0.013 Sigma: 0.0038 Qmax: 250.0
-	\end{lstlisting}
-	These are the parameters of the population sigmoid firing response. Note the sigma value accepted by the code is in some Robinson papers it is known as $\tilde{\sigma}$. It is already scaled  by $\pi / \sqrt{3}$.
-
-	An alternative syntax is
-	\begin{lstlisting}
-Firing Response Sigmoid: Theta: 0.013 Sigma: 0.0038 Qmax: 250.0
-	\end{lstlisting}
-	Alternatively, you can specify a linear firing response by using
-	\begin{lstlisting}
-Firing Response Linear: Gradient: 1 Intercept: 1
-	\end{lstlisting}
-	\item
-	\begin{lstlisting}
-Number of Dendritic responses: 3
-	\end{lstlisting}
-	The code uses this line purely for crosschecking purposes. It is equal to the number of populations whose connections terminate on the dendrites of the current population i.e. the number of non-zero elements in the column of the connection matrix of this population. We shall denote this number $m$.
-	\item Now follow $m$ lines of dendritic response data. A complete dendritic response input line is given by
-	\begin{lstlisting}
-Dendritic Response from population 3 V initial: 0.0106457 alpha: 75.0 beta: 285.0
-	\end{lstlisting}
-	Each Dendritic response data line begins with an optional preamble which is ignored by the code. It is strongly suggested that for human readability this should be of the form {\tt \small Dendritic Response from population 3}.
-
-	The following three parameters are the initial value of the subvoltage $V_{ab}$ and the parameters $\alpha_{ab}$ and $\beta_{ab}$ of the dendritic response differential equation. It should be noted the code has a separate dendritic response differential equation for each different population synapsing on the dendritic tree.
-	
-	The subvoltage $V_{ab}$ is the voltage in the dendrite due to incoming connections from population $b$. In some earlier papers all pulse densities were summed before a single differential equation described the total voltage in the dendritic tree. This code allows different dendritic responses for pulse densities arriving from different populations. If each dendritic response in a population has the same alpha and beta values the earlier case is effectively reproduced.
-	
-	If all coupling are \type{Simple}, and the initial $V_{ab}$ is given by the initial values of $\nu_{ab}$ and $\phi_{ab}$ via $V_{ab}= \nu_{ab} \phi_{ab}$, as in a steady state, then the dendritic response may be given as
-	\begin{lstlisting}
-Dendritic Response from population 3 V initial: Steady alpha: 75.0 beta: 285.0
-	\end{lstlisting}
-	\item A blank line finishes each population information section.
-	\end{itemize}
 
 \item[Stimulus populations]\ \\
 
-The code identifies stimulus populations as populations which have no connections from other populations on their dendritic tree i.e., The column for that population contains no nonzero elements.  Each stimulus population information section is as follows.
+\type{NeuroField} identifies stimulus populations as populations which have no dendrites, i.e., the row for that population contains no nonzero elements.  Each stimulus population information section is as follows.
 \begin{itemize}
 	\item \begin{lstlisting}
-Population 5 - Stimulus neurons
+Population 1: Stimulation
 	\end{lstlisting}
-	The first line is ignored by the code but should be used for a text description of the population's name.
+	The identifier \type{Population 1} is required for cross-checking.
+
+	The descriptor \type{Stimulation} is not parsed by \type{NeuroField}, but it is strongly recommended for human referencing.
 	\item
 	\begin{lstlisting}
-Initial Q: 8.87145
+Stimulus: Mode: Const - Onset: 0.0002
 	\end{lstlisting}
-	When the simulation starts an initial value for the firing rate $Q$ is required.
-	\item The final line depends on the type of stimulus. Examples are:\\
+	The identifier \type{Stimulus} is required for cross-checking.
+
+	\type{Onset} specifies the time onset before the stimulus begins. Users should allow at least two timesteps for the transient state before onset.
+
+	\type{Mode} specifies the stimulus mode, which includes, for example:
 
 	Pulse stimulus pattern:
 	\begin{lstlisting}
-Stimulus mode: 1 Time to start of stimulus: 0.002 Amplitude: 20 Pulse Duration: 0.02 Pulse repetition period: 0.005
+Mode: Const - Amplitude: 20 Width: 0.02 Repetition: 1
 	\end{lstlisting}
 
 	White noise stimulus pattern (spatially uncorrelated), where Ranseed
 is an optional parameter for the random number generator's initial seed defaulting to -98716872:
 	\begin{lstlisting}
-Stimulus mode: 2 Time to start of stimulus: 0.002 Ranseed:-98716872 Amplitude: 20
+Mode: White - Ranseed:-98716872 Amplitude: 20
 	\end{lstlisting}
 
-	A ``special" stimulus pattern is the composite pattern, evoked by Stimulus mode 0. It takes in the time onset of an arbitrary number of arbitrary stimulus patterns, followed by the details of each stimulus pattern:
+	A ``special" stimulus pattern is the composite pattern. At onset (encouraged to be set to zero), it superimposes an arbitrary number of stimuli:
 	\begin{lstlisting}
-Stimulus mode: 0 Time to start of stimulus: 0 5 10 $
-Stimulus mode: 7 Time to start of stimulus: 0.0000 Mean: 0
-Stimulus mode: 2 Time to start of stimulus: 0.0000 Amplitude: 2 Mean: 5
+Stimulus: Mode: Composite - Onset: 0 Number of Stimuli: 2
+ Mode: MNS - Onset: 0.5
+  N20 width: .01 N20 height: 7 P25 width: .01 P25 height: 18
+ Mode: Pulse - Onset: 0.53 Amplitude: 18 Width: 4e-3
 	\end{lstlisting}
 
+	\end{itemize}
+\item[Ordinary populations]\ \\
+	Any non-stimulus population is an ordinary population.
+
+	\begin{itemize}
+	\item
+	\begin{lstlisting}
+Population 3: Excitory neurons
+	\end{lstlisting}
+	The identifier \type{Population 3} is required for cross-checking.
+	
+	The descriptor \type{Excitatory neurons} is not parsed by \type{NeuroField}, but it is strongly recommended for human referencing.
+	\item
+	\begin{lstlisting}
+Q: 8.87145
+	\end{lstlisting}
+	The initial firing rate.
+	\item
+	\begin{lstlisting}
+Firing: Sigmoid - Theta: 0.013 Sigma: 0.0038 Qmax: 340.0
+	\end{lstlisting}
+	Specify the sigmoidal firing response of the population.
+
+	\type{Sigma} is sometimes known as \(\tilde{\sigma}\). It is already scaled by \(\pi/\sqrt{3}\).
+
+	Alternatively, you can specify a linear firing response by using
+	\begin{lstlisting}
+Firing: Linear - Gradient: 1 Intercept: 1
+	\end{lstlisting}
+
+	\item
+	\begin{lstlisting}
+Dendrite 1: V: Steady alpha: 83 beta: 769
+	\end{lstlisting}
+	The identifier \type{Dendrite 1}, where 1 is the presynaptic connection index, is required for cross-checking. Users should find that these indices are simply ordered as 1, 2, 3, 4, ...
+	
+	\type{V} is the initial depolarization contribution from presynaptic activity. It can be a numerical value with units of V, or set at \type{Steady}, so that \type{NeuroField} calculates the initial value by \(V_{ab}=\nu_{ab}\phi_{ab}\).
+
+	\type{alpha} and \type{beta} are the parameters for the depolarization response.
 	\end{itemize}
 \end{description}
 
 \subsubsection{Propagation data}
 \label{sec:prop}
-\begin{itemize}
-\item The first line is ignored and is merely a title line
-\begin{lstlisting}
-Propagation data
-\end{lstlisting}
-\item Now follow $n$ lines of propagation data. There is a line of propagation data for each connection in the connection matrix. The propagation data should appear in the same order as in the connection matrix when the connection matrix is read top to bottom and then left to right. Each type of propagators has its own input parameters.
-\end{itemize}
-\begin{description}
-	\item[Mapping]\ \\
+\item
 	\begin{lstlisting}
-Propagator 5  - Tauab: 0
+Propag 1:
+	\end{lstlisting}
+	This identifier is required for cross-checking.
+\item A propagator type is required at this point. Choices are \type{Map}, \type{Wave}, \type{Harmonic}, and \type{Patchy}.
+\begin{description}
+	\item[Map]\ \\
+	\begin{lstlisting}
+Map - Tau: 0
 	\end{lstlisting}
 	This propagator is the mapping propagator where spatial spreading is negligible. Its form is given by
 	\[\phi_{ab}({\bf r}, t) = Q_b ({\bf r}, t - \tau_{ab}).\]
-	The input form has only one parameter \type{Tauab} (the delay term), i.e. number of time steps in the delay term. Alternative ways of specifying the delay term are described below.
+	Its only one parameter, \type{Tau}, is the the delay term. It is specified below.
 
-	\item[WaveEqn]\ \\
+	\item[Wave]\ \\
 	This propagator is the wave equation propagator governed by the equation
 	\[\left[\frac{1}{\gamma_{ab}^2}\frac{d^2}{d t^2}+\frac{2}{\gamma_{ab}}\frac{d} {d t}+1 \right] \phi_{ab}({\bf r},t) =Q_b({\bf r},t-\tau_{ab}).\]
 	Its input is given by
 	\begin{lstlisting}
-Propagator 2 - Initial Phi: 8.87145 Deltax: 0.0035 Tauab: 0 Effective Range: 0.08 gamma: 100.0
+Wave - phi: Steady Deltax: 0.0035 Tau: 0 Range: 0.08 gamma: 116
 	\end{lstlisting}
-	The \type{Initial Phi} is the initial value for $\phi_{ab}$ in the wave equation.
+	\type{phi} is the initial value for $\phi_{ab}$ in the wave equation. Inputting \type{Steady} gives \(\phi_{ab} = Q_b\).
 
-	\type{Deltax} is the length of a node in mm. This must satisfy the Courant condition, which cannot always be caught by the code \[\Delta t/\Delta x<\sqrt{2}/r_e\gamma_e.\]
+	\type{Deltax} is the length of a node in mm. This must satisfy the Courant condition, \[\Delta t/\Delta x<\sqrt{2}/r_e\gamma_e.\]
 
-	\type{Tauab} is $\tau_{ab}/ \Delta t$ the delay term in the wave equation i.e. number of time steps in the delay term. Alternative ways of specifying the delay term are described below.
-
-	\type{Effective range} is $r_{ab}$ in the wave equation.
+	\type{Range} is $r_{ab}$ in the wave equation.
 	
-	The final parameter can be \type{gamma} or \type{velocity} in the wave equation. If the initial $\phi_{ab}$ is equal to the initial $Q_{ab}$ as occurs in the steady state condition the propagator input can for example be given as
-	\begin{lstlisting}
-Propagator 2 - Initial Phi: Steady Tauab: 0 Effective Range: 0.08 velocity: 10.0
-	\end{lstlisting}
-
-	\item[Waveeqnrect]
-		This is a variation of \type{Waveeqn} that uses a rectangular grid rather than square grid. Using \type{Waveeqnrect} requires an additional grid length parameter in the propagator types declaration. An example is
-	\begin{lstlisting}
-Propagator types 1: Mapping 2: Waveeqnrect Longside: 100 $
-	\end{lstlisting}
+	The final parameter can be \type{gamma} or \type{velocity} in the wave equation.
 
 	\item[Harmonic]
 	This is a harmonic oscillator implementation of the damped wave equation. If there is no spatial variation, use \type{Harmonic} instead of \type{WaveEqn}.
 	The input form is given by 
 	\begin{lstlisting}
-Propagator 2 - Initial Phi: 8.87145 Tauab: 420 gamma: 10.0
-	\end{lstlisting}
-	An example of an alternative form is
-	\begin{lstlisting}
-Propagator 2 - Initial Phi: 8.87145 Tauabt: 0.42 gamma: 10.0
+Harmonic - phi: Steady Tau: 0 gamma: 116
 	\end{lstlisting}
 
-	\item[Eqnset]
+	\item[Patchy]
 	This is the Robinson patchy propagator. It has not been currently tested.
 
-	\item[Optional Tau forms]\ \\
-
-	In addition to specifying $\tau$ as a number of discrete steps via the relation -- \type{Tauab} $= \tau_{ab}/ \Delta t$.
-
-	\type{Tauabt} is the delay term in seconds rather than time steps.  In this case the program automatically rounds to an integer number of time steps. Care should be taken to understand this implicit rounding.  The simulation code is a finite differencing system and this approximation is a consequence of this fact.
-
-	\type{TauabArray} allows specification of the delay term at each grid point of the simulation allowing a spatially varying delay term. In this form the delays are specified in time steps. An example of this for a simulation with only 4 nodes per population is
-	\begin{lstlisting}
-TauabArray: 420 :430 :425 :410
-	\end{lstlisting}
-	\type{TauabtArray} is the analog of \type{TauabArray} but with delay terms specified in seconds rather than time steps.
+	\item[Tau]\ \\
+	The axonal time delay between populations. If it is spatially homogeneous, then it is a number with units of seconds. If it is spatially inhomogeneous, then input \(n\) numbers, where \(n=\) \type{Nodes}.
 
 \end{description}
 
@@ -419,16 +463,22 @@ TauabArray: 420 :430 :425 :410
 \label{sec:couple}
 
 \begin{itemize}
-\item The coupling data is $n$ lines of coupling data corresponding to each connection in the connection matrix. The coupling data should appear in the same order as in the connection matrix when the connection matrix is read top to bottom and then left to right. Different types of coupling has their own input form. A blank line finishes the coupling data section.
+
+	\item
+	\begin{lstlisting}
+Couple 1:
+	\end{lstlisting}
+	Identifier for cross-checking.
+	\item A couple type is required at this point. Choices are \type{Map}, \type{Modcouple}, and \type{CaDP}.
 
 \begin{description}
 
-	\item[Simple]\ \\
-	Nonplastic synaptic coupling wtih a single constant parameter Nu,
+	\item[Map]\ \\
+	Nonplastic synaptic coupling wtih a single constant parameter \type{nu},
 	\begin{lstlisting}
-Coupling data 1 - Nu: 0.0012
+Map - nu: 0.0012
 	\end{lstlisting}
-	The parameter Nu ($\nu_{ab}$) is the synaptic coupling parameter. It corresponds to the product of the mean synaptic strength $s_{ab}$ and $N_{ab}$, the mean number of connections from cells of type $b$ to cells of type $a$.
+	\type{nu} is the synaptic coupling parameter. It corresponds to the product of the mean synaptic strength $s_{ab}$ and $N_{ab}$, the mean number of connections from cells of type $b$ to cells of type $a$.
 
 	\item[Modcouple]\ \\
 	The modulated synaptic coupling implements the Clearwater/Rennie modulation equation. The modulation is given by
@@ -448,22 +498,16 @@ Coupling data 1 - Nu: 0.0012
 
 	An example Modcouple input form is given by
 	\begin{lstlisting}
-Coupling data 1  - Nuzero: 0.0002 Nuscal: 0.02 Mu: .1 Lambda: 1 k: .000001
-Concentration mode: 1  Time to start of Concentration: .01 Amplitude: .0001\\
-Pulse Duration: .2 Pulse repetition period: 40 \\
+ModCouple - Nuzero: 0.0002 Nuscal: 0.02 Mu: .1 Lambda: 1 k: .000001
+Concentration mode: 1  Time to start of Concentration: .01 Amplitude: .0001
+Pulse Duration: .2 Pulse repetition period: 40
 Number of traces: 100  Single/All: All nodes}
 	\end{lstlisting}
 
-	\item[STDP]\ \\
-	Coupling with STDP plasticity.
-	\begin{lstlisting}
-Coupling data 3  - Initial nu: 0.0012 rho: 4200 alpha: 83 beta: 769 gamma: 116 Ap: 1 Am: 0.35 Taup: 0.02 Taum: 0.02 B: 1e-6 N: 10000 Q_max: 20
-	\end{lstlisting}
-
 	\item[CaDP]\ \\
-	Calcium dependent plasticity according to Fung and Robinson. Note that in registering the coupling types, it is called \type{Calcium} instead of \type{CaDP}.
+	Calcium dependent plasticity according to Fung and Robinson.
 	\begin{lstlisting}
-Coupling data 2  - Nu: .4086e-4 Nu_max: .1e-3 Threshold: 1e-4 LTD: 5e-2 LTP: 8e-2 B: 2e4 N: 10000 rho: 4200
+CaDP - nu: .4086e-4 Nu_max: .1e-3 Threshold: 1e-4 LTD: 5e-2 LTP: 8e-2 B: 2e4 N: 10000 rho: 4200
 	\end{lstlisting}
 
 \end{description}
@@ -512,9 +556,15 @@ These output files may be further processed by helper scripts and plotting routi
 \pagebreak
 \section{Developers guide}
 
-\type{NeuroField} is coded in ANSI C++ (with one optional non-standard feature: the \type{restrict} keyword).
+\type{NeuroField} is coded in \type{ANSI C++}. This guide assumes readers have basic knowledge of \type{C++}, including object oriented programming, usage of template, and standard template library (STL). An \type{OpenMP} version of the code exists for running on multicore machines. It scales sublinearly.
 
-An \type{OpenMP} version of the code exists for running on multicore machines. It scales sublinearly.
+\type{NeuroField} solves each equation within the Robinson et al. model with an object:
+\begin{align*}
+	D_{ab}V_{ab}(\mathbf{r},t) &= \nu_{ab}\phi_{ab}(\mathbf{r},t), & \mathrm{Dendrite}\\
+					  Q_a(\mathbf{r},t) &= S_a \big[\sum_b V_{ab}(\mathbf{r},t) \big], & \mathrm{QResponse}\\
+	\mathcal{D}_{ab}\phi_{ab}(\mathbf{r},t) &= Q_b(\mathbf{r},t-\tau_{ab}).&  \mathrm{Propag}
+\end{align*}
+\type{Propag} and \type{Couple} is overloaded to give more sophisticated axonal propagation and synaptic plasticity, respectively.
 
 \subsection{Coding style}
 
@@ -530,54 +580,120 @@ Within the C++ source files, developers should stick to this conventions for con
 
 \subsection{Class diagram}
 
-\begin{figure}[h!]\begin{center}\includegraphics[scale=.8]{class.pdf}\caption{Schematic of the main class structure of \type{NeuroField}. Here, each line indicates that the top class has members in the bottom class, and \type{V}, \type{Q}, and \type{Eta} are 1D arrays of doubles, representing the fields $V_a$, $Q_a$, and $\phi_{ab}$.}\label{fig:class}\end{center}\end{figure}
+\begin{figure}[h!]\begin{center}
+\tikzstyle{block} = [draw,text width=8em,text centered,minimum height=4em]
+\tikzstyle{line} = [draw, -latex']
+    
+\begin{tikzpicture}[node distance = 3em, auto]
+	\node[] (solver) {\type{Solver}};
+    \node[below of=solver,node distance=3em] (vsolver) {};
+    \draw (solver) |- (vsolver);
+
+	\node[left of=vsolver,node distance=5em] (vpropag) {};
+    \draw (vsolver) -- (vpropag);
+	\node[left of=vpropag,node distance=10em] (vpop) {};
+    \draw (vpropag) -- (vpop);
+	\node[right of=vsolver,node distance=5em] (vcouple) {};
+    \draw (vsolver) -- (vcouple);
+	\node[right of=vcouple,node distance=10em] (voutput) {};
+    \draw (vcouple) -- (voutput);
+
+	\node[below of=vpropag] (apropag) {\type{Array$\langle$Propag$\rangle$}};
+    \draw (vpropag) -| (apropag);
+	\node[below of=vpop]    (apop) {\type{Array$\langle$Population$\rangle$}};
+    \draw (vpop) -| (apop);
+	\node[below of=vcouple] (acouple) {\type{Array$\langle$Couple$\rangle$}};
+    \draw (vcouple) -| (acouple);
+	\node[below of=voutput] (aoutput) {\type{Array$\langle$Output$\rangle$}};
+    \draw (voutput) -- (aoutput);
+
+	\node[below of=apropag] (propag) {\type{Propag} $\ni \phi_{ab}$};
+    \draw (apropag) -- (propag);
+	\node[below of=apop]    (pop) {\type{Population} $\ni Q_a$};
+    \draw (apop) -- (pop);
+	\node[below of=acouple] (couple) {\type{Couple} $\ni \nu_{ab}$};
+    \draw (acouple) -- (couple);
+	\node[below of=aoutput] (output) {\type{Output}};
+    \draw (aoutput) -- (output);
+
+	\node[below of=pop,node distance=3em](vpop){};
+    \draw (pop) |- (vpop);
+	\node[left of=vpop,node distance=4em](vs){};
+    \draw (vpop) |- (vs);
+	\node[right of=vpop,node distance=4em](vq){};
+    \draw (vpop) |- (vq);
+
+	\node[below of=vs,node distance=3em](s){\type{Timeseries}};
+    \draw (vs) -- (s);
+	\node[below of=vq,node distance=3em](q){\type{QResponse} $\ni V_a$};
+    \draw (vq) -- (q);
+
+	\node[below of=q](adendrite){\type{Array$\langle$Dendrite$\rangle$}};
+    \draw (q) -- (adendrite);
+	\node[below of=adendrite](dendrite){\type{Dendrite} $\ni V_{ab}$};
+    \draw (adendrite) -- (dendrite);
+
+	\node[below of=propag,node distance=3em](tau){\type{Tau} $\ni \tau_{ab}$};
+	\draw(propag)--(tau);
+\end{tikzpicture}
+\caption{Schematic of the main class structures in \type{NeuroField}. Each line indicates that the bottom class is a member of the top class. The \type{a} $\ni b$ symbol indicates that the dynamical field $b(\mathbf{r},t)$ is a member of the class \type{a}. Inheritance structures are NOT illustrated.}
+\label{fig:class}\end{center}\end{figure}
+
+%\begin{figure}[h!]\begin{center}\includegraphics[scale=.8]{class.pdf}\caption{}\end{center}\end{figure}
+
+\subsection{Class NF}
+\label{sec:nf}
+
+ALL classes (with the single exception being \type{Configf}) should derive from the \type{NF} object. This abstract base class contains 3 member variables, and 4 interface methods:
+
+\begin{tabular}{l p{10cm}}
+Variable\\[6pt]
+\type{nodes}&The number of nodes as specified from the configuration file.\\
+\type{deltat}&The time increment per timestep in units of seconds.\\
+\type{index}&The index associated with the object.\\[6pt]
+Methods\\[6pt]
+\type{init(Configf\& configf)}&Initializes the object with the config file.\\
+ \type{dump(Dumpf\& dumpf) const}&When the program terminates, all objects dump information into a dump file (\type{dumpf}) for later restart. \type{Dumpf} is an \type{ofstream}.\\
+\type{restart(Restartf\& restartf)}&Restarts the object in restart mode, \emph{in addition} to \type{init()}. The developer should have dumped all relevant information in dump, then reads it here.\\
+\type{step(void)}&At each timestep, this function is called.\\
+\end{tabular}
+
+All \type{NF} classes automatically handles the \type{ofstream::<<} and \type{ifstream::>>} operators.
+
+\subsection{Class Array}
+\label{sec:array}
+
+\type{Array} is a container array to store objects that supports the \type{ofstream::<<} and \type{ifstream::>>} operators, as well as a \type{step(void)} function. This object typically is, but not necessarily has to be an \type{NF} object.
+
+The \type{step(void)} function is equivalent to a \type{foreach(element).step()} in pseudocode. This function is encouraged over the use of \type{empty()}, \type{size()}, and \type{operator[]()}, which are discouraged to be used.
 
 \subsection{Program flow}
+
+Essentially, the program flow can be read from Fig.~\ref{fig:class}, so that objects take priority from top to bottom, left to right, both in terms of initialization and stepping through each timestep. A more detailed description is given below, and the reader is referred to the source code for complete description.
 
 We use the semicolon to denote a succession of functions/procedures, and \type{a()} $\Rightarrow$ \type{b()} symbol to denote function \type{b()} as content of function \type{a()}.
 
 \begin{center}
-\begin{tabular}{ | l l p{12cm} | }
+\begin{tabular}{ | l l p{11cm} | }
 \hline \\
 
-\type{main()}& $\Rightarrow$ &Open dump file; Open config file;\\[6pt]
-&&Read in global parameters;\type{ConnectMat::ConnectMat()};\\[6pt]
-&&\type{Poplist::Poplist()}; \type{PropagNet::PropagNet()};\\[6pt]
-&&\type{Poplist::init()/restart()}; \type{PropagNet::init()/restart()};\\[6pt]
-&&Open output; Integration loop; Dumping procedure \\[6pt]
-
-\\\hline
-\end{tabular}
-\end{center}
-where the constructors and initiations of \type{Poplist} and \type{PropagNet} constructs and initiates their member variables according to Fig.~\ref{fig:class}.
-
-\subsubsection{Main integration loop}
-
-\begin{center}
-\begin{tabular}{ | l l p{12cm} | }
-\hline \\
-
-Integration loop& $\Rightarrow$ &\type{PropagNet::stepQtoP(); Poplist::stepPops(); PropagNet::output() }\\[6pt]
-
-\type{stepQtoP()}& $\Rightarrow$ &
-\type{ Qhistorylist::updateQhistories() $\Rightarrow$ QHistory::updateQhistory(); }\\
-&&\type{ Proplist::step() $\Rightarrow$ Propag::stepwaveeq(); } \\
-&&\type{ Couplinglist::updateP() $\Rightarrow$ Couple::updatePa() }\\[6pt]
-
-\multirow{2}{*}{\type{stepPops()}}&\multirow{2}{*}{$\Rightarrow$}&
-\type{Timeseries::get()} if population is stimulus \\
-&& \type{Population::stepPop()} if normal population \\[6pt]
-
-\type{stepPop()} & $\Rightarrow$ & \type{ DendriticRlist::stepVa(); DendriticRlist::SumAfferent(); FiringR::getQ() } \\[6pt]
-
-\type{output()}&$\Rightarrow$& \type{Phiout::output(); Couplinglist::output() $\Rightarrow$ Couple::output() }\\
+\type{main()}& $\Rightarrow$ &Initialize the config file and dump file;\\[6pt]
+&&\type{Solver::init()};\type{Solver::solve()};\\[6pt]
+\type{Solver::init()}& $\Rightarrow$ &read in global parameters; Read in \type{CntMat};\\[6pt]
+&&Constructs \type{Population}; constructs \type{Propag}; constructs \type{Couple}; add \type{Dendrite} to \type{Population};\\[6pt]
+&&Reads configurations for \type{Population}, \type{Propag}, \type{Couple}, and \type{Output}.\\[6pt]
+\type{Solver::solve()}& $\Rightarrow$ & \type{for(...) Solver::step(); \type{Output::step()}}\\[6pt]
+\type{Solver::step()}& $\Rightarrow$ & \type{Population::step()}; \type{Propag::step()}; \type{Couple::step()};\\[6pt]
+\type{Population::step()}& $\Rightarrow$ & \type{QResponse::step()} if neural population;\\[6pt]
+&&\type{Timeseries::step()} if stimulus\\[6pt]
+\type{QResponse::step()}& $\Rightarrow$ & \type{Dendrite::step()}; sum over \(V_{ab}\)
 
 \\\hline
 \end{tabular}
 \end{center}
 
 \begin{itemize}
-\item One integration step of the model implements the following stages: 1) Firing response/\linebreak stimulus response. 2) Wave equation integration step which includes Q delay processing 3) Coupling response 4) Dendritic response 5) Afferent summation.
+\item One integration step of the model implements the following stages: 1) Dendritic response 2) Afferent summation. 3) Firing response/stimulus response. 4) Wave equation integration step which includes Q delay processing 5) Coupling response.
 \item Most of the computational load comes from integrating wave equations and harmonic oscillators within the dendritic responses.
 \item Wave equations are integrated by explicit finite differences integration. A nine point spatial stencil is used to reduce high frequency spatial instabilities when driven by random noise. Other parts of code are unaffected by spatial geometry so this can be switched to irregular gridding easily.
 \item Harmonic oscillators with dendritic rseponse are integrated using a heavily strength reduced explicit direct integration assuming constant drive. This was more efficient than a constant drive RK4 algorithm which would not be fourth order in any case due to the constant drive. Rennie used a constant drive RK4 for his 1997 code.
@@ -588,62 +704,47 @@ Integration loop& $\Rightarrow$ &\type{PropagNet::stepQtoP(); Poplist::stepPops(
 The source code contains a main code \type{main.cpp} and various components defining classses of the code. Each class contains a header \type{.h} file and main program unit \type{.cpp} file:
 
 \begin{description}
+\item[Array] An array container class, see Sec.~\ref{sec:array} for detail.
 \item[CaDP] A coupling class implementing calcium dependent plasticity.
-\item[Connectmat] Reads and store connectivity matrix information which is called by other classes.
-\item[Couple] An abstract base class providing an interface for synaptic coupling objects. All objects which handle synaptic coupling must inherit from this object.
-\item[Coupling] A class which provides synaptic coupling with constant synaptic strengths.
-\item[Couplinglist] A container object for initializing and holding synaptic coupling objects.
-\item[Dendriticr] A class containing dendritic response from a given population to another population.
-\item[Dendriticrlist] A container calss of dendritic responses terminating on a particular neural population.
-\item[Eqnset] A class to provide the ``Eqnset"---multiple wave equations form of the propagator. This feature has not had significant testing. It uses the helper classes Prefact, Field and Weqn.
-\item[Field] A helper class to hold Phi field information for waveeqn and Eqnset (via Weqn).
-\item[Firingr] A class containing firign response and dendritic response information for a given neural population.
-\item[Istrm] A helper class inheriting from an input stream. This class allows some minimal input checking when reading configuration files. The important functions are:
+\item[Solver::CntMat] Reads the connectivity matrix information for initialization.
+\item[Configf] A helper class inheriting from an input stream. The important functions are:
 	\begin{enumerate}
-	\item validate: check the next text to be read for the intended keyword of input identifier,
-	\item optional: check whether an optional parameter keyword is next to be read,
-	\item find: search for the i'th instance of a particular keyword,
-	\item choose: return a number of corresponding to which character string from a list is being read.
+	\item next: go to the next keyword
+	\item param: go to the next keyword and reads in a variable. If the keyword is not found, barks and exits.
+	\item optional: same as param, but does not bark nor exit.
+	\item find: search a keyword and return the next variable as string.
 	\end{enumerate}
-\item[Modcouple] A class which provides synaptic coupling following a model proposed by Clearwater-Rennie for modelling neurotransmitter dynamics.
-\item[Modsigma] A class to allow the variance dynamics, modulated sigma model of firing response. This class is still in the testing phase.
-\item[Modtheta] A class to model a varying theta (firing threshold). This model was proposed by Kim-Wu.
-\item[Modtheta1] A class to model a varying theta (firing threshold). This is a later variant of a model proposed by Kim-Wu.
-\item[Parameter] A helper class to store individual parameters and their keyword names.
-\item[Pharmonic] A class to provide the ``Harmonic"---harmonic oscillator behaviour propagator. This si typically used for spatially uniform simulations as it is more efficient than a wave equation propagtor where the simulation will have no spatial variation.
-\item[Phiout] A class to output phi information from the simulation.
-\item[Pmap] A class to provide the ``Mapping" propagator behaviour.
-\item[Poplist] A container for initializing and holding all neural population objects in the simulation.
-\item[Population] A class containing firing response and dendritic response information for a given neural population.
-\item[Prefact] A helper class for Eqnset to calculate some prefactors used in the calculations of Eqnset.
+\item[Couple] Models synaptic coupling by managing \(\nu_{ab}\). This class gives constant \(nu\), but by deriving from this class you can have synaptic plasticity.
+\item[Dendrite] Manages dendritic responses.
+%\item[Eqnset] A class to provide the ``Eqnset"---multiple wave equations form of the propagator. This feature has not had significant testing. It uses the helper classes Prefact, Field and Weqn.
+%\item[Field] A helper class to hold Phi field information for waveeqn and Eqnset (via Weqn).
+%\item[Modcouple] A class which provides synaptic coupling following a model proposed by Clearwater-Rennie for modelling neurotransmitter dynamics.
+%\item[Pharmonic] A class to provide the ``Harmonic"---harmonic oscillator behaviour propagator. This si typically used for spatially uniform simulations as it is more efficient than a wave equation propagtor where the simulation will have no spatial variation.
+%\item[Pmap] A class to provide the ``Mapping" propagator behaviour.
+\item[NF] An abstract base class which ALL classes should inherit. See Sec.~\ref{sec:nf} for detail.
+\item[Population] Models a neural population. If it receives any input from other populations, it is a normal population, and calculates its response via QResponse and Dendrite. Otherwise it is a stimulus response, and its firing rate is given by a Timeseries.
+%\item[Prefact] A helper class for Eqnset to calculate some prefactors used in the calculations of Eqnset.
 \item[Propag] An abstract base class providing a uniform interface for all propagators to be accessed when stepping forward the code. All propagator types must inherit from this class.
-\item[Propagnet] A class representing the propagator network, i.e. the simulated brain. This class dispatches update requests to the neural population for dendritic response and firing response, propagation of phi's along synapses and synaptic coupling.
-\item[Proplist] A container object initializing and accessing all propagators in the simulation.
-\item[Qhistorylist] A container object initializing and accessing Qhistory objects. These store time history of firing rates.
-\item[Qhistory] A container object containing time history information for firing rate Q. It is necessary to store time history information of firing rates since propagtors such as the wave equation and mapping operator are time delayed due to propagation time along axons.
-\item[Random] Generates random numbers for use by time series generating function.
+\item[QResponse] Manages Dendrites, finds the soma potential and calculates the neural firing response.
+\item[Random] Generates random numbers for Timeseries.
+\item[Restartf] Identical to Configf, but used in restart mode.
+\item[Solver] Encapsulates the entire \type{NeuroField} program.
 \item[STDP] A coupling class implementing linear STDP plasticity.
+\item[Tau] Stores the axonal time delay \(\tau_{ab}\), which can be spatially homogeneous or inhomogeneous. Belongs to Propag, but used by Population.
 \item[Timeseries] Generated time series for stimulus input and other driven processes such as time modulated coupling strengths.
-\item[Weqn] A helper class for propagators to store information about Tau, the axonal delays associated wtih propagators.
+%\item[Weqn] A helper class for propagators to store information about Tau, the axonal delays associated wtih propagators.
 \end{description}
 
-\subsection{Submission to svn}
-
-\subsection{Known bugs or flaws}
-According to Peter Drysdale:
-\begin{itemize}
-\item Code only runs for initial time set to zero. This only effects the stimulus routines.
-\item Inadequate range of stimulus patterns currently implemented.
-\item Documentation needs to be worked on.
-\item Code needs more commenting.
-\end{itemize}
+\subsection{Submission to SVN}
 
 \subsection{TODO}
 \begin{enumerate}
+\item optional initial V and phi?
+\item check numerical entry of connection matrix
+\item extend outputting routine
+\item implement nontrivial propagators
 \item tidy up helper scripts
 \item restart mode is crippled; rewrite the whole thing.
-\item restart mode for Couplinglist was not planned, but needed.
-\item no need to rename neurofield.dump to neurofield.conf in restart mode?
-\item implement restart mode in launcher script?
+\item implement restart mode in launcher script
 \end{enumerate}
 \end{document}

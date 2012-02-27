@@ -91,7 +91,7 @@ void Solver::init( Configf& configf )
   // Anything before the first ':' is ignored as comment
 
   configf.Param("Integration steps",steps);
-  if( !configf.Optional("Skip steps",skip) ) skip = 0;
+  if( !configf.Optional("Output onset",skip) ) skip = 0;
   configf.Param("Deltat",deltat);
 
   configf.Param("Nodes",nodes);
@@ -144,7 +144,7 @@ void Solver::init( Configf& configf )
     if(ctype=="Map")
       couples.add( new
         Couple(nodes,deltat,index, glu, pops[cnt.pre[i]], pops[cnt.post[i]] ) );
-    else if(ctype=="Calcium")
+    else if(ctype=="CaDP")
       couples.add( new
         CaDP(nodes,deltat,index, glu, pops[cnt.pre[i]], pops[cnt.post[i]] ) );
     else {

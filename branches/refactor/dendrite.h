@@ -39,7 +39,7 @@ protected:
 public: 
   Dendrite( int nodes, double deltat, int index,
       const Propag* prepropag, const Couple* precouple );
-  ~Dendrite(void);
+  virtual ~Dendrite(void);
   void step(void);
   const vector<double>& V(void) const;
 };

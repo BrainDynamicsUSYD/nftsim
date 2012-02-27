@@ -20,15 +20,15 @@ class Outputf: public NF
   Outputf(); // No default constructor
   Outputf& operator=(const Configf& other); // No assignment operator
   vector<int> node; // vector of nodes to output
-  Dumpf stream; // file to output
+  string name; // name of field
   const vector<double>& field; // field to output
 protected:
   virtual void init( Configf& configf );
   virtual void restart( Restartf& restartf );
   virtual void dump( Dumpf& dumpf ) const;
 public: 
-  Outputf( int nodes, double deltat, int index, const vector<int>& node,
-      const string& filename, const vector<double>& field );
+  Outputf( const vector<int>& node,
+      const string& name, const vector<double>& field );
   virtual ~Outputf(void);
   virtual void step(void);
 };

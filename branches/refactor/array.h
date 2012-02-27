@@ -10,8 +10,12 @@
 #ifndef ARRAY_H
 #define ARRAY_H
 
+#include<string>
+using std::string;
 #include<vector>
 using std::vector;
+#include<iostream>
+using std::endl;
 #include"nf.h"
 
 template<class T>
