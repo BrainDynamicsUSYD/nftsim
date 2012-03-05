@@ -16,6 +16,7 @@ using std::list;
 #include"configf.h"
 #include"nf.h"
 using std::endl;
+#include <iostream>
 
 template void Configf::Param
   <double>(const string& param, double& ret, int delim=':' );
@@ -61,51 +62,43 @@ vector<double> Configf::Numbers(void)
 
 string Configf::Find( const string& Check )
 {
+/* 
+This function implements a wildcard search that searches the config file assuming
+a structure like
+<unique>: extra_data - key1:value key2:value
+The search term Check takes the form "<unique>*keyn" and this function returns
+a string representation of the value associated with the key that was being searched for.
+The file pointer is returned to the same position as it was originally.
+Search is CASE SENSITIVE
+*/
+
   if( Check.empty() ) {
-    std::cerr << "Configf validating an empty string." << endl;
+    std::cerr << "Attempted to use Configf::Find searching for an empty string" << endl;
     exit(EXIT_FAILURE);
   }
-
-  // implements wildcard '*' by dividing Check into substrings
-  list<uint> wild; // stores the location of wildcard
-  wild.push_back(0);
-  string NoStar(Check); // eliminate the stars from Check
-  list<string> match; // substrings of Check
-  for( uint i=0; i<Check.length(); i++ )
-    if( Check[i] == '*' ) {
-      wild.push_back(i);
-      NoStar.erase(i,1);
-    }
-  wild.push_back( NoStar.length() );
-
-  match.push_back( Check.substr( *wild.begin(), *++wild.begin() ) );
-  for( list<uint>::iterator it = wild.begin(); it != --wild.end(); )
-    match.push_back( NoStar.substr( *it, *++it ) );
-
+  string result;
   int sp = tellg(); // store current file position
   seekg(0,std::ios::beg);
   read(buffer,filesize);
   string file_content(buffer);
-  string sub;
-  uint current = 0; // the current'th match
-  for( list<string>::iterator it = match.begin(); it != match.end(); it++ )
-    if( ( current = file_content.find( *it, current ) )!= std::string::npos )
-      if( it==--match.end() ) {
-        seekg(current+Check.length());
-        char temp[filesize]; *this >> temp;
-        seekg(sp);
-        return string(temp);
-      }
-      else
-        continue;
-    else {
-      std::cerr << "Unable to find essential object:'"
-        << Check << "'." << endl;
-      exit(EXIT_FAILURE);
-    }
-    std::cerr << "Unable to find essential object:'"
-      << Check << "'." << endl;
+  int wildcard_pos = Check.find('*');
+  int match = file_content.find(Check.substr(0,wildcard_pos));
+  if( match < 0) {
+    std::cerr << "Failed to find first part of string" << endl;
     exit(EXIT_FAILURE);
+  }
+  match = file_content.find(Check.substr(wildcard_pos+1,Check.length()),match);
+  if( match < 0) {
+    std::cerr << "Failed to find second part of string" << endl;
+    exit(EXIT_FAILURE);
+  }
+  match += Check.substr(wildcard_pos,Check.length()).length();
+  if(Check[Check.length()-1] != ':')
+    match += 1;
+  seekg(0+match);
+  *this >> result;
+  seekg(sp);
+  return string(result);
 }
 
 bool Configf::Next( const string& Check, int delim )
