@@ -10,7 +10,7 @@
 
 #include"array.h"
 #include"population.h"
-#include"outputf.h"
+#include"output.h"
 #include"configf.h"
 #include"nf.h"
 
@@ -35,7 +35,7 @@ public:
       const Population* const prepop, const Population* const postpop );
   virtual ~Couple(void);
   virtual void step(void);
-  virtual void output( Array<Outputf>& outputfs ) const; 
+  virtual vector<Output*> output(void) const; 
   const vector<double>& nu(void) const;
   bool excite(void) const;
 };

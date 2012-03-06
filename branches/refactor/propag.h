@@ -10,7 +10,7 @@
 #define PROPAG_H
 
 #include"array.h"
-#include"outputf.h"
+#include"output.h"
 #include"population.h"
 #include"tau.h"
 #include"configf.h"
@@ -39,7 +39,7 @@ public:
   virtual ~Propag(void);
   virtual void step(void); 
   virtual const vector<double>& phi(void) const;
-  void output( Array<Outputf>& outputfs ) const;
+  virtual vector<Output*> output(void) const;
 };
 
 #endif

@@ -111,3 +111,9 @@ void Population::growHistory( const Tau& tau )
   if( uint(tau.max) > qhistory.size() )
     qhistory.resize( tau.max, qhistory[0] );
 }
+
+vector<Output*> Population::output(void) const
+{
+  Output* temp = new Output( label("Pop.",index+1)+".V", V() );
+  return vector<Output*>(1,temp);
+}

@@ -24,7 +24,7 @@ syn match index '\d\+' contained
 
 syn keyword choose Composite Const White CoherentWhite Pulse Sine Gaussian Ramp GaussPulse MNS Sigmoid Linear Map Wave CaDP Q V phi Tau nu
 
-syn keyword header Integration steps Deltat Nodes Glutamate dynamics
+syn keyword header Time Deltat Nodes Glutamate dynamics
 
 syn keyword cntmatc From To nextgroup=cntmati skipwhite skipnl skipempty
 syn match cntmati '\d\+' contained

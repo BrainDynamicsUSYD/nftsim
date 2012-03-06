@@ -42,7 +42,8 @@ const vector<double>& Propag::phi(void) const
   return p;
 }
 
-void Propag::output( Array<Outputf>& outputfs ) const
+vector<Output*> Propag::output(void) const
 {
-  //outputfs.add( new Outputf(nodes,deltat,"neurofield.phi",p) );
+  Output* temp = new Output( label("Propag.",index+1)+".phi", p );
+  return vector<Output*>(1,temp);
 }

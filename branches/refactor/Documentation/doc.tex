@@ -269,7 +269,7 @@ Couple 5: Map - nu:-0.0018
 Couple 6: Map - nu:-0.0018
 
 Output: Node: 1
-Propag: 3
+Propag: 2
 	\end{lstlisting}
 \end{center}
 \caption{An example configuration file, which can be found in \type{Configs/cortex.conf}.}
@@ -529,24 +529,36 @@ CaDP - nu: .4086e-4 Nu_max: .1e-3 Threshold: 1e-4 LTD: 5e-2 LTP: 8e-2 B: 2e4 N: 
 \subsubsection{Output data}
 \label{sec:output}
 
-Currently \type{NeuroField} can output a time series for $\phi$ of any particular node in any population, specified as follows:
+\type{NeuroField} can output a time series for arbitrary fields on any particular nodes, into an output file named \type{neurofield.output} by default. A user chooses which objects to output, and on which nodes to output on. The object then outputs the field(s). For example, populations output $V_a$, propagators output $\phi_{ab}$, and couples output $\nu_{ab}$, and they may output additional fields if appropriate.
 
+An example output is
+\begin{lstlisting}
+                Time  |          Propag.2.phi
+                      |                     0
+1.00000000000000e-04  |  8.87145000000000e+00
+\end{lstlisting}
+
+Each column is a time series with its name indicated in the first line. The first column is always time, and in this example, the second column is \type{Propag.2.phi}, indicating that it is $\phi_{ee}$ (when checked against connection matrix). The delimiter \type{|} indicates that the two columns are different fields, rather than different nodes of the same field. The node number is indicated in the second line.
+
+To specify output in the configuration file, we start by 
 \begin{itemize}
-\item The first line of this section contains an optional preamble and a parameter of how many times series to be outputted e.g.
-\begin{lstlisting}
-Output data - Number of traces : 4
-\end{lstlisting}
+	\item
+	\begin{lstlisting}
+Output: Node: 1 Start: 0 Interval: .0002
+	\end{lstlisting}
+	We first specify which nodes to output.
 
-\item Following the first line each trace is specified on a separate line in the form:
-\begin{lstlisting}
-Wave Equation Number :1 Single/All Single node number :1
-\end{lstlisting}
+	\type{Start} is the time in seconds to start outputting. If this is not given, then output starts at time 0.
 
-A short cut to output all the traces in a population is given the the
-input form
-\begin{lstlisting}
-Wave Equation Number : 11 Single/All nodes: All nodes
-\end{lstlisting}
+	\type{Interval} is the time interval in seconds between each output. If this is not given, then \type{NeuroField} outputs every timestep.
+
+\item
+	\begin{lstlisting}
+Population: 3
+Propag: 2
+Couple: 2
+	\end{lstlisting}
+	Specify an arbitrary number of objects to output.
 
 \end{itemize}
 

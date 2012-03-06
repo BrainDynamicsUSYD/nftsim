@@ -1,5 +1,6 @@
 /***************************************************************************
-                          main.cpp  -  wrapper to NeuroField simulation class
+                          main.cpp  -  wrapper to NeuroField simulation class,
+                                       initializes config, dump and output files
                              -------------------
     copyright            : (C) 2005 by PeterDrysdale
     email                : peter@physics.usyd.edu.au
@@ -9,6 +10,8 @@
 using std::endl;
 #include<cstdlib>
 #include<cstring>
+#include<string>
+using std::string;
 
 #include"configf.h"
 #include"solver.h"
@@ -60,13 +63,13 @@ int main(int argc, char* argv[])
     for( int i=1; i<argc-1; i++)
       if( strcmp(argv[i],"-d") == 0 )
         idumparg = i + 1;
-  dumpf = new Dumpf(idumparg?argv[idumparg]:"neurofield.dump");
-  if( !dumpf ) {
+  dumpf = new Dumpf; dumpf->open(idumparg?argv[idumparg]:"neurofield.dump");
+  /*if( !dumpf ) {
     std::cerr << "Unable to open "
       << (idumparg?argv[idumparg]:"neurofield.dump") << " for output.\n";
       exit(EXIT_FAILURE);
   }
-  dumpf->precision(14);
+  dumpf->precision(14);*/
 
   // if given "-s" or "--silent", suppress dumpfile
   if( argc>2 )
@@ -76,8 +79,18 @@ int main(int argc, char* argv[])
         dumpf = 0;
       }
 
+  // open file for dumping data for restart - default is neurofield.dump
+  Dumpf* outputf = 0;
+  int ioutarg = 0; // Index No. of output file name in argv
+  if( argc>2 )
+    for( int i=1; i<argc-1; i++)
+      if( strcmp(argv[i],"-o") == 0 )
+        ioutarg = i + 1;
+  //outputf = new Dumpf(ioutarg?argv[ioutarg]:"neurofield.output");
+  Output::dumpf.open(string(ioutarg?argv[ioutarg]:"neurofield.output")); //= *outputf;
+
   // construct, initialize and solve the neural field theory
-  Solver neurofield(dumpf); *inputf>>neurofield;
+  Solver neurofield(dumpf,outputf); *inputf>>neurofield;
   neurofield.solve();
 
   return EXIT_SUCCESS;

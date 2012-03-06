@@ -36,9 +36,10 @@ void Couple::step(void)
 {
 }
 
-void Couple::output( Array<Outputf>& outputfs ) const
+vector<Output*> Couple::output(void) const
 {
-  //outputfs.add( new Outputf(nodes,deltat,"neurofield.nu",n) );
+  Output* temp = new Output( label("Couple",index+1)+".nu", n );
+  return vector<Output*>(1,temp);
 }
 
 const vector<double>& Couple::nu(void) const

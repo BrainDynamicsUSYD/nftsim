@@ -22,7 +22,15 @@ using std::vector;
 #include<cstdlib>
 using std::endl;
 
-typedef std::ofstream Dumpf;
+class Dumpf : public std::ofstream
+{
+  Dumpf(Dumpf&);
+  Dumpf& operator=(Dumpf&);
+public:
+  Dumpf(void);
+  void open( const string& filename );
+  ~Dumpf(void);
+};
 
 class Configf : protected std::ifstream
 {
@@ -53,7 +61,7 @@ public:
 string label( const string& prefix, int index );
 
 // Restartf does nothing new
-/*class Restartf : public Configf
+class Restartf : public Configf
 {
   Restartf(const Restartf&);
   Restartf();
@@ -61,8 +69,8 @@ string label( const string& prefix, int index );
 public:
   Restartf( const char* filename );
   virtual ~Restartf(void);
-};*/
-class Restartf;
+};
+//class Restartf;
 
 template<class T> void Configf::Param(const string& param, T& ret, int delim )
 {

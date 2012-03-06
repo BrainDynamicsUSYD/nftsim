@@ -1,12 +1,12 @@
 /***************************************************************************
-                          outputf.h  -  outputs a field into an ofstream
+                          output.h  -  outputs a field
                              -------------------
     copyright            : (C) 2005 by Peter Drysdale
     email                : peter@physics.usyd.edu.au
  ***************************************************************************/
 
-#ifndef OUTPUTF_H
-#define OUTPUTF_H
+#ifndef OUTPUT_H
+#define OUTPUT_H
 
 #include<string>
 using std::string;
@@ -14,12 +14,11 @@ using std::string;
 using std::vector;
 #include"nf.h"
 
-class Outputf: public NF
+class Output: public NF
 {
-  Outputf(const Configf& other); // No copy constructor
-  Outputf(); // No default constructor
-  Outputf& operator=(const Configf& other); // No assignment operator
-  vector<int> node; // vector of nodes to output
+  Output(const Output& other); // No copy constructor
+  Output(); // No default constructor
+  Output& operator=(const Configf& other); // No assignment operator
   string name; // name of field
   const vector<double>& field; // field to output
 protected:
@@ -27,10 +26,13 @@ protected:
   virtual void restart( Restartf& restartf );
   virtual void dump( Dumpf& dumpf ) const;
 public: 
-  Outputf( const vector<int>& node,
-      const string& name, const vector<double>& field );
-  virtual ~Outputf(void);
+  Output( const string& name, const vector<double>& field );
+  virtual ~Output(void);
   virtual void step(void);
+  const string& fieldname(void) const; // returns name
+
+  static vector<int> node; // vector of nodes to output
+  static Dumpf dumpf; // file to dump
 };
 
 #endif

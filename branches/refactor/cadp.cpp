@@ -80,12 +80,13 @@ void CaDP::step(void)
     else
       n[i] += dnu;
   }
-  std::cout<<Ca[0]<<"\t"<<binding[0]<<"\t";
 }
 
-void CaDP::output( Array<Outputf>& outputfs ) const
+vector<Output*> CaDP::output(void) const
 {
-  Couple::output(outputfs);
-  //outputfs.add( new Outputf(nodes,0,index,"Ca",Ca) );
-  //outputfs.add( new Outputf(nodes,0,index,"B",binding) );
+  vector<Output*> temp;
+  temp.push_back( new Output( label("Couple.",index+1)+".nu", nu() ) );
+  temp.push_back( new Output( label("Couple.",index+1)+".Ca", Ca ) );
+  temp.push_back( new Output( label("Couple.",index+1)+".B", binding ) );
+  return temp;
 }

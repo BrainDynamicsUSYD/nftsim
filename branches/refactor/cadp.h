@@ -39,7 +39,7 @@ public:
           const Population* const prepop, const Population* const postpop );
   virtual ~CaDP(void);
   virtual void step(void);
-  virtual void output( Array<Outputf>& outputfs ) const;
+  virtual vector<Output*> output(void) const;
 };
 
 #endif

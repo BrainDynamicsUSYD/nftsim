@@ -32,6 +32,7 @@ public:
   virtual void step(void);
 
   void add(T* t);
+  void add(vector<T*> t);
   bool empty(void) const;
   T* operator[]( int index ) const;
   unsigned int size(void) const;
@@ -44,6 +45,13 @@ template<class T>
 void Array<T>::add( T* t )
 {
   m.push_back(t);
+}
+
+template<class T>
+void Array<T>::add( vector<T*> t )
+{
+  for( uint i=0; i<t.size(); i++ )
+    m.push_back( t[i] );
 }
 
 template<class T>

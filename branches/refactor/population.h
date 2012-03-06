@@ -10,7 +10,7 @@
 
 #include"array.h"
 using std::vector;
-#include"outputf.h"
+#include"output.h"
 #include"tau.h"
 #include"qresponse.h"
 #include"timeseries.h"
@@ -44,7 +44,7 @@ public:
   void add2Dendrite( int index,
           Propag* const prepropag, Couple* const precouple );
   void growHistory( const Tau& tau );
-  void output( Array<Outputf>& outputfs ) const;
+  virtual vector<Output*> output(void) const;
 };
 
 #endif
