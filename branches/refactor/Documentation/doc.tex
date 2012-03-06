@@ -564,15 +564,14 @@ Couple: 2
 
 \subsection{Postprocessing}
 
-\type{NeuroField} outputs into \type{neurofield.*} files. This typically includes
+\type{NeuroField} produces 3 files:
 
 \begin{tabular}{l p{11.5cm}}
 \type{neurofield.conf}& When using the launcher script, this file is created to store the running configuration file.\\
-\type{neurofield.dump}& \type{NeuroField} dumps data here as it runs. This file can be used in restart mode to continue simulation (see Sec.~\ref{sec:exe}).\\
-\type{neurofield.output}& Output for $\phi$ is stored here.\\
+\type{neurofield.dump}& \type{NeuroField} dumps data here when it terminates. This file can be used in restart mode to continue simulation (see Sec.~\ref{sec:exe}). Creation of this file can be suppressed by a \type{-s} or \type{--silent} switch.\\
+\type{neurofield.output}& The result of the simulation is stored here for postprocessing.\\
 \type{neurofield.pbs}& If \type{NeuroField} is run in \type{yossarian}, then this file stores the output of the queueing system.
 \end{tabular}
-Other \type{neurofield.*} may be generated depending on the population systems. For example, using \type{CaDP} as coupling mode generates \type{neurofield.bindout},\type{neurofield.caout},\type{neurofield.synaptout}, and \type{neurofield.vout}.
 
 When evoked directly, the \type{Release/NeuroField} executable creates the output file in the present working directory. When the launcher script runs with only one set of parameters, all output files are also in the present working directory. However, if the launcher script sweeps over parameters, each parameter set has its own subdirectory inside \type{Output/}, and each set of \type{neurofield.*} files are stored in its subdirectory.
 
@@ -785,9 +784,8 @@ You can then freely modify the code in the branch with the benefit of version co
 
 \subsection{TODO}
 \begin{enumerate}
-\item optional initial V and phi?
+\item optional initial V and phi, correct the steady implementation.
 \item check numerical entry of connection matrix
-\item extend outputting routine
 \item implement nontrivial propagators
 \item tidy up helper scripts
 \item restart mode is crippled; rewrite the whole thing.
