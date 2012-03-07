@@ -82,15 +82,20 @@ void Solver::Outputs::init( Configf& configf )
 {
   // read in nodes to output
   configf.Next("Node");
-  vector<double> temp = configf.Numbers();
-  for( uint i=0; i<temp.size(); i++ )
-    if( temp[i] > nodes ) {
-      std::cerr<<"Trying to plot node number "<<temp[i]
-          <<", which is bigger than the highest node index."<<endl;
-      exit(EXIT_FAILURE);
-    }
-    else
-      Output::node.push_back( temp[i]-1 );
+  if( configf.Find("Node:") == "All" ) // beware of this slightly hackish line
+    for( int i=0; i<nodes; i++ )
+      Output::node.push_back(i);
+  else {
+    vector<double> temp = configf.Numbers();
+    for( uint i=0; i<temp.size(); i++ )
+      if( temp[i] > nodes ) {
+        std::cerr<<"Trying to plot node number "<<temp[i]
+            <<", which is bigger than the highest node index."<<endl;
+        exit(EXIT_FAILURE);
+      }
+      else
+        Output::node.push_back( temp[i]-1 );
+  }
 
   // read in time to start of output
   double tempf;
@@ -119,7 +124,7 @@ void Solver::Outputs::init( Configf& configf )
 
   // read in populations to output
   configf.Next("Population");
-  temp = configf.Numbers();
+  vector<double> temp = configf.Numbers();
   for( uint i=0; i<temp.size(); i++ ) {
     if( temp[i] > npop ) {
       std::cerr<<"Trying to print population "<<temp[i]
@@ -191,7 +196,6 @@ Solver::Outputs::Outputs(
 Solver::Solver( Dumpf* dumpf, Dumpf* outputf )
     : NF(0,0,0), dumpf(dumpf), outputs(pops,propags,couples)
 {
-  //Output::dumpf = *outputf;
 }
 
 Solver::~Solver()
@@ -200,8 +204,6 @@ Solver::~Solver()
     *dumpf<<*this;
     delete dumpf;
   }
-  //if(Output::dumpf)
-    //delete Output::dumpf;
 }
 
 void Solver::init( Configf& configf )

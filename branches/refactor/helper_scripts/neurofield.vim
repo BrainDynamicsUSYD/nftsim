@@ -17,7 +17,7 @@ syn match number '\<\d[[:digit:]]*[eE][\-+]\=\d\+\>'
 syn match number '\<[-+]\=\d[[:digit:]]*\.\d*[eE][\-+]\=\d\+\>'
 syn match number '\<\d[[:digit:]]*\.\d*[eE][\-+]\=\d\+\>'
 " A "Special" number
-syn keyword number Steady
+syn keyword number Steady All
 
 syn keyword key Connection matrix Population Stimulus Population Firing Dendrite Propag Couple Output nextgroup=index skipwhite skipnl skipempty
 syn match index '\d\+' contained
