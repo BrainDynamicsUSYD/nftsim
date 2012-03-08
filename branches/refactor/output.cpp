@@ -43,9 +43,9 @@ Output::~Output(void)
 
 void Output::step(void)
 {
-  dumpf<<"  |"; // delimit fields via '|'
+  dumpf<<dspace<<septor; // delimit fields via '|'
   for( uint i=0; i<node.size(); i++ )
-    dumpf<<"  "<<field[node[i]]; // nodes separated by double space
+    dumpf<<dspace<<field[node[i]]; // nodes separated by double space
 }
 
 const string& Output::fieldname(void) const

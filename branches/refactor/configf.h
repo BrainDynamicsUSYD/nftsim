@@ -22,16 +22,6 @@ using std::vector;
 #include<cstdlib>
 using std::endl;
 
-class Dumpf : public std::ofstream
-{
-  Dumpf(Dumpf&);
-  Dumpf& operator=(Dumpf&);
-public:
-  Dumpf(void);
-  void open( const string& filename );
-  ~Dumpf(void);
-};
-
 class Configf : protected std::ifstream
 {
   Configf(const Configf& other); // No copy constructor

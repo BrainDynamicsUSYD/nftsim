@@ -10,6 +10,7 @@
 #define NF_H
 
 #include"configf.h"
+#include"dumpf.h"
 
 class NF
 {

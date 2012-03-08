@@ -5,8 +5,6 @@
     email                : peter@physics.usyd.edu.au
  ***************************************************************************/
 
-#include<iomanip>
-using std::setw;
 #include<cmath>
 #include<string>
 using std::string;
@@ -159,15 +157,15 @@ void Solver::Outputs::init( Configf& configf )
   }
 
   // write out first row
-  Output::dumpf<<setw(20)<<"Time";
+  Output::dumpf<<"Time";
   for( uint i=0; i<m.size(); i++ )
     for( uint j=0; j<Output::node.size(); j++ )
-      Output::dumpf<<"  |"<<setw(22)<<m[i]->fieldname();
+      Output::dumpf<<dspace<<septor<<dspace<<m[i]->fieldname();
   // write out second row
-  Output::dumpf<<endl<<"                    ";
+  Output::dumpf<<endl<<" ";
   for( uint i=0; i<m.size(); i++ )
     for( uint j=0; j<Output::node.size(); j++ )
-      Output::dumpf<<"  |"<<setw(22)<<j;
+      Output::dumpf<<dspace<<septor<<dspace<<setw<<j;
   Output::dumpf<<endl;
 
 }

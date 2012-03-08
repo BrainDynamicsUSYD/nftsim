@@ -17,27 +17,6 @@ using std::list;
 #include"nf.h"
 using std::endl;
 
-Dumpf::Dumpf(void)
-{
-}
-
-void Dumpf::open( const string& filename )
-{
-  std::ofstream::open( filename.c_str() );
-  if(!*this) {
-    std::cerr<<"Error, cannot open file '"<<filename.c_str()<<"' for output."
-        <<endl;
-    exit(EXIT_FAILURE);
-  }
-  precision(14); *this<<std::scientific;
-}
-
-Dumpf::~Dumpf(void)
-{
-  if(is_open())
-    close();
-}
-
 template void Configf::Param
   <double>(const string& param, double& ret, int delim=':' );
 template void Configf::Param
