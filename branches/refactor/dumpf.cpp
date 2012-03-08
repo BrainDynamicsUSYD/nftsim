@@ -20,13 +20,17 @@ Dumpf::~Dumpf(void)
 
 void Dumpf::open( const string& filename )
 {
+  if( file.is_open() ) {
+    std::cerr<<"Attempting to dump into two files."<<endl;
+    file.close();
+    exit(EXIT_FAILURE);
+  }
   file.open( filename.c_str() );
   if( !file ) {
     std::cerr<<"Error, cannot open file'"<<filename.c_str()<<"' for output."
         <<endl;
     exit(EXIT_FAILURE);
   }
-  //file.precision(14); file<<std::scientific;
 }
 
 Dumpf& Dumpf::operator<< ( double f )

@@ -546,7 +546,7 @@ To specify output in the configuration file, we start by
 	\begin{lstlisting}
 Output: Node: 1 Start: 0 Interval: .0002
 	\end{lstlisting}
-	We first specify which nodes to output.
+	We first specify which nodes to output. \type{Node: All} is a shorthand to output all nodes.
 
 	\type{Start} is the time in seconds to start outputting. If this is not given, then output starts at time 0.
 
@@ -668,7 +668,7 @@ Within the C++ source files, developers should stick to this conventions for con
 \subsection{Class NF}
 \label{sec:nf}
 
-ALL classes (with the single exception being \type{Configf}) should derive from the \type{NF} object. This abstract base class contains 3 member variables, and 4 interface methods:
+\textbf{ALL} classes (with the exceptions being \type{Configf} and \type{Dumpf}) should derive from the \type{NF} object. This abstract base class contains 3 member variables, and 4 interface methods:
 
 \begin{tabular}{l p{10cm}}
 Variable\\[6pt]
@@ -691,12 +691,34 @@ All \type{NF} classes automatically handles the \type{ofstream::<<} and \type{if
 
 The \type{step(void)} function is equivalent to a \type{foreach(element).step()} in pseudocode. This function is encouraged over the use of \type{empty()}, \type{size()}, and \type{operator[]()}, which are discouraged to be used.
 
+\subsection{Input/Output}
+
+Input via the configuration file is implemented in the \type{init()} function, via \type{Configf}, which provides the following functions:
+	\begin{enumerate}
+	\item next: go to the next keyword
+	\item param: go to the next keyword and reads in a variable. If the keyword is not found, barks and exits.
+	\item optional: same as param, but does not bark nor exit.
+	\item find: search a keyword and return the next variable as string.
+	\end{enumerate}
+
+In restart mode, \type{init()} is called, followed by \type{restart()}. \type{Restartf} is identical to \type{Configf}.
+
+There are two modes of output. One is outputting the solution in \type{Population::output(), \type{Propag::output()}}, and \type{Couple::output()}, and the other is the dumping of data for restart implemented in \type{dump()}.
+
+To output solutions, return a vector of pointers to \type{new Output}, specifying the name and field of the solution. The name must be of the format
+\begin{lstlisting}
+label("Object.",index+1)+".field"
+\end{lstlisting}
+where \type{Object} and \type{field} should be appropriately named.
+
+\type{dumpf()} provides a \type{Dumpf} object, which is essentially an \type{ofstream}. Dump all data here, so that it can be read in \type{restart()}.
+
 \subsection{Writing a new class}
 
 In extending \type{NeuroField} it is likely new classes needs to be written. When doing this, it would be useful to keep in mind:
 \begin{enumerate}
 	\item When appropriate, the default constructor, copy constructor, and \type{operator=} should be made inaccessible by declaring them to be private.
-	\item The \type{NF} class MUST be inherited.
+	\item The \type{NF} class \textbf{MUST} be inherited.
 	\item The \type{init()}, \type{restart()}, \type{dump()}, \type{step()} functions should be overloaded appropriately. Keep in mind that \type{restart()} internally calls \type{init()} at the beginning.
 	\item \type{Population}, \type{Propag}, and \type{Couple} has the \type{output()} function to specify which field(s) to output. Overload this if appropriate.
 	\item When in doubt, read existing class implementations for examples.
@@ -742,12 +764,12 @@ We use the semicolon to denote a succession of functions/procedures, and \type{a
 \begin{tabular}{ | l l p{11cm} | }
 \hline \\
 
-\type{main()}& $\Rightarrow$ &Initialize the config file and dump file;\\[6pt]
+\type{main()}& $\Rightarrow$ &Initialize the config file, dump file and output file;\\[6pt]
 &&\type{Solver::init()};\type{Solver::solve()};\\[6pt]
 \type{Solver::init()}& $\Rightarrow$ &read in global parameters; Read in \type{CntMat};\\[6pt]
-&&Constructs \type{Population}; constructs \type{Propag}; constructs \type{Couple}; add \type{Dendrite} to \type{Population};\\[6pt]
-&&Reads configurations for \type{Population}, \type{Propag}, \type{Couple}, and \type{Output}.\\[6pt]
-\type{Solver::solve()}& $\Rightarrow$ & \type{for(...) Solver::step(); \type{Output::step()}}\\[6pt]
+&&Construct \type{Population}; construct \type{Propag}; construct \type{Couple}; \type{Population::add2Dendrite()};\\[6pt]
+&&Read configurations for \type{Population}, \type{Propag}, \type{Couple}, and \type{Output}.\\[6pt]
+\type{Solver::solve()}& $\Rightarrow$ & \type{for(...) \{ Solver::step(); \type{Output::step()}; \} }\\[6pt]
 \type{Solver::step()}& $\Rightarrow$ & \type{Population::step()}; \type{Propag::step()}; \type{Couple::step()};\\[6pt]
 \type{Population::step()}& $\Rightarrow$ & \type{QResponse::step()} if neural population;\\[6pt]
 &&\type{Timeseries::step()} if stimulus\\[6pt]
@@ -764,37 +786,21 @@ We use the semicolon to denote a succession of functions/procedures, and \type{a
 \item Harmonic oscillators with dendritic rseponse are integrated using a heavily strength reduced explicit direct integration assuming constant drive. This was more efficient than a constant drive RK4 algorithm which would not be fourth order in any case due to the constant drive. Rennie used a constant drive RK4 for his 1997 code.
 \end{itemize}
 
-\subsection{Component manifest}
-
-The source code contains a main code \type{main.cpp} and various components defining classses of the code. Each class contains a header \type{.h} file and main program unit \type{.cpp} file:
+\subsection{Other classes}
 
 \begin{description}
-\item[Array] An array container class, see Sec.~\ref{sec:array} for detail.
 \item[CaDP] A coupling class implementing calcium dependent plasticity.
-\item[Solver::CntMat] Reads the connectivity matrix information for initialization.
-\item[Configf] A helper class inheriting from an input stream. The important functions are:
-	\begin{enumerate}
-	\item next: go to the next keyword
-	\item param: go to the next keyword and reads in a variable. If the keyword is not found, barks and exits.
-	\item optional: same as param, but does not bark nor exit.
-	\item find: search a keyword and return the next variable as string.
-	\end{enumerate}
-\item[Couple] Models synaptic coupling by managing \(\nu_{ab}\). This class gives constant \(nu\), but by deriving from this class you can have synaptic plasticity.
 \item[Dendrite] Manages dendritic responses.
 %\item[Eqnset] A class to provide the ``Eqnset"---multiple wave equations form of the propagator. This feature has not had significant testing. It uses the helper classes Prefact, Field and Weqn.
 %\item[Field] A helper class to hold Phi field information for waveeqn and Eqnset (via Weqn).
 %\item[Modcouple] A class which provides synaptic coupling following a model proposed by Clearwater-Rennie for modelling neurotransmitter dynamics.
 %\item[Pharmonic] A class to provide the ``Harmonic"---harmonic oscillator behaviour propagator. This si typically used for spatially uniform simulations as it is more efficient than a wave equation propagtor where the simulation will have no spatial variation.
 %\item[Pmap] A class to provide the ``Mapping" propagator behaviour.
-\item[NF] An abstract base class which ALL classes should inherit. See Sec.~\ref{sec:nf} for detail.
-\item[Population] Models a neural population. If it receives any input from other populations, it is a normal population, and calculates its response via QResponse and Dendrite. Otherwise it is a stimulus response, and its firing rate is given by a Timeseries.
 %\item[Prefact] A helper class for Eqnset to calculate some prefactors used in the calculations of Eqnset.
-\item[Propag] An abstract base class providing a uniform interface for all propagators to be accessed when stepping forward the code. All propagator types must inherit from this class.
 \item[QResponse] Manages Dendrites, finds the soma potential and calculates the neural firing response.
 \item[Random] Generates random numbers for Timeseries.
-\item[Restartf] Identical to Configf, but used in restart mode.
 \item[Solver] Encapsulates the entire \type{NeuroField} program.
-\item[STDP] A coupling class implementing linear STDP plasticity.
+%\item[STDP] A coupling class implementing linear STDP plasticity.
 \item[Tau] Stores the axonal time delay \(\tau_{ab}\), which can be spatially homogeneous or inhomogeneous. Belongs to Propag, but used by Population.
 \item[Timeseries] Generated time series for stimulus input and other driven processes such as time modulated coupling strengths.
 %\item[Weqn] A helper class for propagators to store information about Tau, the axonal delays associated wtih propagators.

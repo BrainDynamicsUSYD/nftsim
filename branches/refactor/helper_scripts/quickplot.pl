@@ -24,12 +24,14 @@ for( my $i=0; $i<scalar(@fieldname); $i++ ) {
 	}
 }
 
-<F>; # dump away second line
+# use the second line to check node number
+@fieldname = split( /\|/, <F> );
+die("Node number incorrect!") if $node != $fieldname[$column+$node];
 
 while(<F>) {
 	my @result = split( /\|/ );
 	chomp(@result);
-	print O $result[0].$result[$column+$node]."\n";
+	print O $result[0].$result[$column+$node-1]."\n";
 }
 
 system "gnuplot -e 'plot \".".$name."\" with line' -p";
