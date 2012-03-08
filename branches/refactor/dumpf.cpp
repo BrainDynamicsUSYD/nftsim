@@ -7,12 +7,15 @@ using std::endl;
 
 Dumpf::Dumpf(void)
 {
+  ss.precision(14); ss<<std::scientific;
 }
 
 Dumpf::~Dumpf(void)
 {
-  if( file.is_open() )
+  if( file.is_open() ) {
+    file << ss.str().c_str();
     file.close();
+  }
 }
 
 void Dumpf::open( const string& filename )
@@ -23,36 +26,36 @@ void Dumpf::open( const string& filename )
         <<endl;
     exit(EXIT_FAILURE);
   }
-  file.precision(14); file<<std::scientific;
+  //file.precision(14); file<<std::scientific;
 }
 
 Dumpf& Dumpf::operator<< ( double f )
 {
-  file<<f;
+  ss<<f;
   return *this;
 }
 
 Dumpf& Dumpf::operator<< ( const string& s )
 {
-  file<<setw(20)<<s.c_str();
+  ss<<setw(20)<<s.c_str();
   return *this;
 }
 
 Dumpf& Dumpf::operator<< ( int i )
 {
-  file<<i;
+  ss<<i;
   return *this;
 }
 
 Dumpf& Dumpf::operator<< ( unsigned int i )
 {
-  file<<i;
+  ss<<i;
   return *this;
 }
 
 Dumpf& Dumpf::operator<< ( ostream& (*pf)(ostream&) )
 {
-  file<<pf;
+  ss<<pf;
   return *this;
 }
 
