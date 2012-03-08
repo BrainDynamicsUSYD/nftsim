@@ -588,7 +588,7 @@ These output files may be further processed by helper scripts and plotting routi
 					  Q_a(\mathbf{r},t) &= S_a \big[\sum_b V_{ab}(\mathbf{r},t) \big], & \mathrm{QResponse}\\
 	\mathcal{D}_{ab}\phi_{ab}(\mathbf{r},t) &= Q_b(\mathbf{r},t-\tau_{ab}).&  \mathrm{Propag}
 \end{align*}
-\type{Propag} and \type{Couple} is overloaded to give more sophisticated axonal propagation and synaptic plasticity, respectively.
+\type{Propag} and \type{Couple} is overloaded to give more sophisticated axonal propagation (see Sec.~\ref{sec:propag}) and synaptic plasticity (see Sec.~\ref{sec:couple}), respectively.
 
 \subsection{Coding style}
 
@@ -690,6 +690,47 @@ All \type{NF} classes automatically handles the \type{ofstream::<<} and \type{if
 \type{Array} is a container array to store objects that supports the \type{ofstream::<<} and \type{ifstream::>>} operators, as well as a \type{step(void)} function. This object typically is, but not necessarily has to be an \type{NF} object.
 
 The \type{step(void)} function is equivalent to a \type{foreach(element).step()} in pseudocode. This function is encouraged over the use of \type{empty()}, \type{size()}, and \type{operator[]()}, which are discouraged to be used.
+
+\subsection{Writing a new class}
+
+In extending \type{NeuroField} it is likely new classes needs to be written. When doing this, it would be useful to keep in mind:
+\begin{enumerate}
+	\item When appropriate, the default constructor, copy constructor, and \type{operator=} should be made inaccessible by declaring them to be private.
+	\item The \type{NF} class MUST be inherited.
+	\item The \type{init()}, \type{restart()}, \type{dump()}, \type{step()} functions should be overloaded appropriately. Keep in mind that \type{restart()} internally calls \type{init()} at the beginning.
+	\item \type{Population}, \type{Propag}, and \type{Couple} has the \type{output()} function to specify which field(s) to output. Overload this if appropriate.
+	\item When in doubt, read existing class implementations for examples.
+\end{enumerate}
+
+\subsubsection{Class Population}
+\label{sec:pop}
+
+Models a neural population, which may be either a stimulus or normal population. If it has any dendrites, i.e. it has presynaptic connections, then it is a normal population, and it is a stimulus if it does not have dendrites.
+
+In the former case, it contains the \type{QResponse} class and have a soma potential; in the latter case it contains the \type{Timeseries} class, and does not have a soma potential. See Fig.~\ref{fig:class} for reference.
+
+In either cases, the \type{Population} class has a keyring storing the firing rate history, coded as a 2D array plus an integer key.
+
+A population is ``settled" after \type{Population::init()} is called, after which no dendrites can be added, and the firing rate history cannot grow.
+
+\subsubsection{Class Propag}
+\label{sec:propag}
+
+The \type{Propag} class implements the axonal propagation as an identity map, i.e.
+\[ \mathcal{D}_{ab} = 1. \]
+
+To introduce more sophisticated axonal propagation, this class is inherited and overloaded.
+
+The \type{Propag} class provides a constant pointer to both presynaptic and postsynaptic populations.
+
+\subsubsection{Class Couple}
+\label{sec:couple}
+
+The \type{Couple} class manages \(\nu_{ab}\), which is constant in space and time.
+
+To introduce synaptic plasticity, derive from this class.
+
+The \type{Couple} class provides a constant pointer to both presynaptic and postsynaptic populations. Glutamate concentration is also provided. \type{pos} is $+1$ or $-1$, depending on the sign of \(\nu_{ab}\).
 
 \subsection{Program flow}
 

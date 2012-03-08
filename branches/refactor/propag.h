@@ -30,9 +30,9 @@ protected:
 
   const Population* const prepop;
   const Population* const postpop;
-  Tau tau;
+  Tau tau; // tau_ab
   int longside;
-  vector<double> p;
+  vector<double> p; // phi_ab
 public: 
   Propag( int nodes, double deltat, int index, const Population* const prepop,
       const Population* const postpop, int longside );

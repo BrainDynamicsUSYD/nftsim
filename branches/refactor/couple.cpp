@@ -11,7 +11,7 @@ void Couple::init( Configf& configf )
 {
   double nuinit; configf.Param("nu",nuinit);
   n.resize(nodes,nuinit);
-  pos = (nuinit>0)?1:0;
+  pos = (nuinit>0)?1:-1;
 }
 
 void Couple::restart( Restartf& restartf )
