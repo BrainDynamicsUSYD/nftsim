@@ -17,7 +17,6 @@ my $column;
 @fieldname = split( /\|/, <F> );
 
 for( my $i=0; $i<scalar(@fieldname); $i++ ) {
-	print $fieldname[$i]."\n";
 	if( $fieldname[$i] =~ /$name/xi ) {
 		$column = $i;
 		break;
@@ -26,13 +25,9 @@ for( my $i=0; $i<scalar(@fieldname); $i++ ) {
 
 # use the second line to check node number
 @fieldname = split( /\|/, <F> );
-die("Node number incorrect!") if $node != $fieldname[$column+$node];
+print $node.",".$fieldname[$column+$node-1]."\n";
+die("Node number incorrect!") if( $fieldname[$column+$node-1] !~ /$node/ );
 
-while(<F>) {
-	my @result = split( /\|/ );
-	chomp(@result);
-	print O $result[0].$result[$column+$node-1]."\n";
-}
-
-system "gnuplot -e 'plot \".".$name."\" with line' -p";
-exec "rm .".$name;
+# plot appropriate column
+my $output = 2*$column+$node;
+exec "gnuplot -e 'set nokey; plot \"$file\" using 1:$output with line' -p";

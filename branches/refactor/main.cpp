@@ -89,6 +89,11 @@ int main(int argc, char* argv[])
   //outputf = new Dumpf(ioutarg?argv[ioutarg]:"neurofield.output");
   Output::dumpf.open(string(ioutarg?argv[ioutarg]:"neurofield.output")); //= *outputf;
 
+  if( argc>2 )
+    for( int i=1; i<argc; i++)
+      if( strcmp(argv[i],"-v")==0 || strcmp(argv[i],"--verbose")==0 )
+        Output::dumpf.verbose();
+
   // construct, initialize and solve the neural field theory
   Solver neurofield(dumpf,outputf); *inputf>>neurofield;
   neurofield.solve();

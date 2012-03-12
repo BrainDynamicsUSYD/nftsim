@@ -10,6 +10,8 @@
 
 #include<sstream>
 using std::stringstream;
+#include<iostream>
+using std::istream;
 #include<string>
 using std::string;
 
@@ -26,12 +28,15 @@ class Dumpf
 
   ofstream file;
   stringstream ss;
+  ostream* s;
 public:
   Dumpf(void);
   ~Dumpf(void);
   void open( const string& filename );
+  void verbose(void);
+  void silent(void);
   Dumpf& operator<< ( double f );
-  Dumpf& operator<< ( const string& s );
+  Dumpf& operator<< ( const string& str );
   Dumpf& operator<< ( int i );
   Dumpf& operator<< ( unsigned int i );
   Dumpf& operator<< ( ostream& (*pf)(ostream&) ); // for manupulators eg endl
