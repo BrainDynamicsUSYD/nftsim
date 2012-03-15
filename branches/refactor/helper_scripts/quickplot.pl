@@ -8,7 +8,6 @@ my $name = $ARGV[1];
 my $node = $ARGV[2];
 
 open(F,$file) or die("Could not open $file");
-open(O,">.".$name) or die("Could not open .quickplot.output");
 
 my @fieldname;
 my $column;

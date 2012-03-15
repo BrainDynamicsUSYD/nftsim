@@ -17,9 +17,8 @@ using std::endl;
 #include"configf.h"
 
 #include"propag.h"
-/*#include"waveeqn.h"
-include"pmap.h"
-include"eqnset.h"
+#include"wave.h"
+/*include"eqnset.h"
 include"pharmonic.h"*/
 
 #include"couple.h"
@@ -249,15 +248,15 @@ void Solver::init( Configf& configf )
     if(ptype=="Map")
       propags.add( new
         Propag(nodes,deltat,i, pops[cnt.pre[i]], pops[cnt.post[i]], longside));
-    /*else if(ptype=="Wave")
+    else if(ptype=="Wave")
       propags.add( new
-        Wave(nodes,deltat, pops[cnt.pre[i]], pops[cnt.post[i]], longside));
-    else if(ptype=="Eqnset")
+        Wave(nodes,deltat,i, pops[cnt.pre[i]], pops[cnt.post[i]], longside));
+    /*else if(ptype=="Eqnset")
       propags.add( ne
-        Eqnset(nodes,deltat, pops[cnt.pre[i]], pops[cnt.post[i]], longside));
+        Eqnset(nodes,deltat,i, pops[cnt.pre[i]], pops[cnt.post[i]], longside));
     else if(ptype=="Harmonic")
       propags.add( new
-        PHarmonic(nodes,deltat, pops[cnt.pre[i]], pops[cnt.post[i]], longside));*/
+        PHarmonic(nodes,deltat,i, pops[cnt.pre[i]], pops[cnt.post[i]], longside));*/
     else {
       std::cerr<<"Invalid propagator type '"<<ptype<<"'."<<endl;
       exit(EXIT_FAILURE);
@@ -317,7 +316,7 @@ void Solver::dump( Dumpf& dumpf ) const
 
 void Solver::solve(void)
 {
-  for( int i=0; i<steps; i++ )
+  for( int i=0; i<=steps; i++ )
     step();
 }
 
