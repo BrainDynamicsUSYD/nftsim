@@ -22,7 +22,7 @@ syn keyword number Steady All
 syn keyword key Connection matrix Population Stimulus Population Firing Dendrite Propag Couple Output nextgroup=index skipwhite skipnl skipempty
 syn match index '\d\+' contained
 
-syn keyword choose Composite Const White CoherentWhite Pulse Sine Gaussian Ramp GaussPulse MNS Sigmoid Linear Map Wave CaDP Q V phi Tau nu
+syn keyword choose Composite Const White CoherentWhite Pulse Sine Gaussian Ramp GaussPulse MNS Sigmoid Linear Map Wave Harmonic CaDP Q V phi Tau nu
 
 syn keyword header Time Deltat Nodes Glutamate dynamics
 

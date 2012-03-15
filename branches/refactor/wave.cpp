@@ -5,8 +5,6 @@
     email                : peter@physics.usyd.edu.au
  ***************************************************************************/
 
-#include<iostream>
-using std::cout;
 #include<cmath>
 #include "wave.h"
 
@@ -55,9 +53,7 @@ Wave::~Wave(void)
 
 void Wave::step(void)
 {
-  //cout<<"p = "<<p[0]<<",\toldp[0] = "<<oldp[0]->c<<",\toldp[1] = "<<oldp[1]->c<<std::endl;
   for( int i=0; i<nodes; i++ ) {
-    //cout<<oldp[0]->get()<<"\t"<<oldp[0]->c<<std::endl;
     sump     = oldp[0]->n  +oldp[0]->s  +oldp[0]->w  +oldp[0]->e;
     diagsump = oldp[0]->nw +oldp[0]->ne +oldp[0]->sw +oldp[0]->se;
     sumQ     = oldQ[0]->n  +oldQ[0]->s  +oldQ[0]->w  +oldQ[0]->e;
