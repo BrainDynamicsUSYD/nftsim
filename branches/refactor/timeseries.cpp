@@ -188,16 +188,16 @@ if( t<0 ) return;
     double deviate1, deviate2;
     random->gaussian(deviate1,deviate2);
     for( int i=0; i<nodes; i++ )
-      Q[i]=amp*deviate1 + mean;
+      Q[i] += amp*deviate1 + mean;
   }
   else if( mode=="Pulse" ) { // periodic pulse pattern
     if( fmod(t,tperiod)<pdur )
-      for(int i=0; i<nodes; i++)
+      for( int i=0; i<nodes; i++ )
         Q[i] += amp;
   }
   else if( mode=="Sine" ) { // sinusoidal stimuli
-    for(int i=0; i<nodes; i++)
-      Q[i]=amp*sin(6.2831853F*freq*t);
+    for( int i=0; i<nodes; i++ )
+      Q[i] += amp*sin(6.2831853F*freq*t);
   }
   else if( mode=="Gaussian" ) { // spatial and temporal gaussian
     float x = 0;
@@ -216,35 +216,51 @@ if( t<0 ) return;
         y = j*deltax;
         ij = i*size + j;
         arg = pow((x - xcent)/xspread,2) +  pow((y - ycent)/yspread,2);
-        Q[ij] = amp * temporal * exp(-arg);       
+        Q[ij] += amp * temporal * exp(-arg);       
       }
     }
   }
   else if( mode=="Ramp" ) { // ramp concentration pattern
-    if(0 == (fmod(t,stepwidth)-stepwidth) ){
+    if( 0 == (fmod(t,stepwidth)-stepwidth ) ){
       printf("%f\n", t);
-      for(int i=0; i<nodes; i++){
-        Q[i] = Q[i] + stepheight;
+      for( int i=0; i<nodes; i++ ) {
+        Q[i] += Q[i] + stepheight;
       }
     }
   }
   else if( mode=="GaussPulse" ) { // gaussian pulse
-    for(int i=0; i<nodes; i++){
-      Q[i]=amp * (1 / (sqrt(6.2831853)*pdur)) * 
-      (exp(-0.5*pow((t-tpeak), 2) / (pdur*pdur)));
+    for( int i=0; i<nodes; i++ ) {
+      Q[i] += amp * (1 / (sqrt(6.2831853)*pdur)) *
+          (exp(-0.5*pow((t-tpeak), 2) / (pdur*pdur)));
     }
   }
   else if( mode=="MNS" ) { // median nerve stimulation
-    if( t<xspread )
+    int width = sqrt(nodes);
+    int stimwidth = 1; // width of square of nodes to stimulate
+    if( width%2 == 0 ) { // even
+      if( t<xspread )
+        for(int i=width/2-stimwidth; i<width/2+stimwidth; i++)
+          for(int j=width/2-stimwidth; j<width/2+stimwidth; j++)
+            Q[i+j*width] += -xcent*sin(3.141592654*t/xspread);
+      else if( t<xspread+yspread )
+        for(int i=width/2-stimwidth; i<width/2+stimwidth; i++)
+          for(int j=width/2-stimwidth; j<width/2+stimwidth; j++)
+            Q[i+j*width] += ycent*sin(3.141592654*(t-xspread)/yspread);
+    } else { // odd
+      if( t<xspread )
+        for(int i=width/2-stimwidth+1; i<width/2+stimwidth; i++)
+          for(int j=width/2-stimwidth+1; j<width/2+stimwidth; j++)
+            Q[i+j*width] += -xcent*sin(3.141592654*t/xspread);
+      else if( t<xspread+yspread )
+        for(int i=width/2-stimwidth+1; i<width/2+stimwidth; i++)
+          for(int j=width/2-stimwidth+1; j<width/2+stimwidth; j++)
+            Q[i+j*width] += ycent*sin(3.141592654*(t-xspread)/yspread);
+    }
+    /*if( t<xspread )
       for( int i=0; i<nodes; i++ )
-        Q[i] = -xcent*sin(3.141592654*t/xspread);
+        Q[i] += -xcent*sin(3.141592654*t/xspread);
     else if( t<xspread+yspread )
       for( int i=0; i<nodes; i++ )
-        Q[i] = ycent*sin(3.141592654*(t-xspread)/yspread);
-	;
+        Q[i] += ycent*sin(3.141592654*(t-xspread)/yspread);*/
   }
 }
-    //int width = 25; // width of square of nodes to stimulate
-      //for(int i=int(sqrt(nodes))/2-width; i<int(sqrt(nodes))/2+width; i++)
-        //for(int j=int(sqrt(nodes))/2-width; j<int(sqrt(nodes))/2+width; j++)
-          //tseries[int(i+j*sqrt(nodes))]

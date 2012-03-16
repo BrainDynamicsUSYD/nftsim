@@ -29,12 +29,13 @@ class Dumpf
   ofstream file;
   stringstream ss;
   ostream* s;
+  string filename;
+  void open(void);
 public:
   Dumpf(void);
   ~Dumpf(void);
   void open( const string& filename );
   void verbose(void);
-  void silent(void);
   Dumpf& operator<< ( double f );
   Dumpf& operator<< ( const string& str );
   Dumpf& operator<< ( int i );
@@ -43,7 +44,7 @@ public:
 };
 
 ostream& septor( ostream& os ); // implements the separator "|" between fields
-ostream& dspace( ostream& os ); // implements the separator "  " between node
+ostream& space( ostream& os ); //  puts a space into dumpfile
 ostream& setw( ostream& os );
 
 #endif

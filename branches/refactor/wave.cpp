@@ -53,14 +53,13 @@ Wave::~Wave(void)
 
 void Wave::step(void)
 {
-  for( int i=0; i<nodes; i++ ) {
+  for( int i=0; i<nodes; i++, (*oldp[0])++, (*oldQ[0])++ ) {
     sump     = oldp[0]->n  +oldp[0]->s  +oldp[0]->w  +oldp[0]->e;
     diagsump = oldp[0]->nw +oldp[0]->ne +oldp[0]->sw +oldp[0]->se;
     sumQ     = oldQ[0]->n  +oldQ[0]->s  +oldQ[0]->w  +oldQ[0]->e;
     diagsumQ = oldQ[0]->nw +oldQ[0]->ne +oldQ[0]->sw +oldQ[0]->se;
     drive = dfact*( tenminus3p2*exp1*oldQ[0]->c +prepop->Q(tau)[i] +exp2*oldQ[1]->c +exp1*.5*p2*(sumQ+.5*diagsumQ) );
     p[i] = twominus3p2*exp1*oldp[0]->c +exp1*.5*p2*(sump+.5*diagsump) -exp2*oldp[1]->c +drive;
-    (*oldp[0])++; (*oldQ[0])++;
   }
   Stencil* temp = oldp[1];
   oldp[1] = oldp[0];

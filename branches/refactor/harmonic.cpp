@@ -8,7 +8,9 @@ void Harmonic::init( Configf& configf )
   oldp.resize(nodes,initphi);
   oldQ.resize(nodes,initphi);
   dpdt.resize(nodes,0.);
+  double temp; configf.Optional("Deltax",temp); // for compatibility with Wave
   configf.Param("Tau",tau);
+  configf.Optional("Range",temp);
   configf.Param("gamma",gamma);
   twoongamma = 2./gamma;
   expgamma = exp(-gamma*deltat);

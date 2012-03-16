@@ -30,7 +30,7 @@ public:
   Stencil( int nodes, int longside );
   virtual ~Stencil(void);
 
-  void operator=( const vector<double>& field );
+  const vector<double>& operator=( const vector<double>& field );
 
   virtual void operator++(int i) const; // increment Moore grid
   void set( int node ) const; // point to node

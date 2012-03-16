@@ -77,7 +77,7 @@ protected:
   virtual void restart( Restartf& restartf );
   virtual void dump( Dumpf& dumpf ) const;
 public: 
-  Solver( Dumpf* dumpf, Dumpf* outputf );
+  Solver( Dumpf* dumpf );
   virtual ~Solver(void);
 
   void solve(void); // main integration loop

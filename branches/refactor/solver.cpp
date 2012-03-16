@@ -98,7 +98,7 @@ void Solver::Outputs::init( Configf& configf )
   if( !configf.Optional("Start",tempf) )
     start = 0;
   else {
-    if( fmod(tempf,deltat) ) {
+    if( remainder(tempf,deltat) >deltat ) {
       std::cerr<<"Value of output start time not divisible by Deltat."<<endl;
       exit(EXIT_FAILURE);
     }
@@ -110,7 +110,7 @@ void Solver::Outputs::init( Configf& configf )
   if( !configf.Optional("Interval",tempf) )
     interval = deltat;
   else {
-    if( fmod(tempf,deltat) ) {
+    if( remainder(tempf,deltat) >deltat ) {
       std::cerr<<"Value of output interval not divisible by Deltat."<<endl;
       exit(EXIT_FAILURE);
     }
@@ -155,15 +155,19 @@ void Solver::Outputs::init( Configf& configf )
   }
 
   // write out first row
-  Output::dumpf<<"Time";
-  for( uint i=0; i<m.size(); i++ )
+  Output::dumpf<<space<<"Time"<<space<<space<<septor;
+  for( uint i=0; i<m.size(); i++ ) {
     for( uint j=0; j<Output::node.size(); j++ )
-      Output::dumpf<<dspace<<septor<<dspace<<m[i]->fieldname();
+      Output::dumpf<<space<<space<<m[i]->fieldname();
+    Output::dumpf<<space<<space<<septor;
+  }
   // write out second row
-  Output::dumpf<<endl<<" ";
-  for( uint i=0; i<m.size(); i++ )
+  Output::dumpf<<endl<<space<<space<<space<<" "<<septor;
+  for( uint i=0; i<m.size(); i++ ) {
     for( uint j=0; j<Output::node.size(); j++ )
-      Output::dumpf<<dspace<<septor<<dspace<<setw<<j+1;
+      Output::dumpf<<space<<space<<setw<<j+1;
+    Output::dumpf<<space<<space<<septor;
+  }
   Output::dumpf<<endl;
 
 }
@@ -173,7 +177,7 @@ void Solver::Outputs::step(void)
   if( start )
     start--;
   else {
-    t += deltat; Output::dumpf<<t;
+    t += deltat; Output::dumpf<<t<<space<<space<<septor;
     m.step();
     Output::dumpf<<endl;
   }
@@ -189,7 +193,7 @@ Solver::Outputs::Outputs(
 {
 }
 
-Solver::Solver( Dumpf* dumpf, Dumpf* outputf )
+Solver::Solver( Dumpf* dumpf )
     : NF(0,0,0), dumpf(dumpf), outputs(pops,propags,couples)
 {
 }
@@ -317,7 +321,7 @@ void Solver::dump( Dumpf& dumpf ) const
 
 void Solver::solve(void)
 {
-  for( int i=0; i<=steps; i++ )
+  for( int i=0; i<steps; i++ )
     step();
 }
 

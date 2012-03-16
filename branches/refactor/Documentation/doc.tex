@@ -744,6 +744,8 @@ To introduce more sophisticated axonal propagation, this class is inherited and 
 
 The \type{Propag} class provides a constant pointer to both presynaptic and postsynaptic populations.
 
+For finite differences integration, \type{Stencil} provides a 9-point stencil. To use, initialize it with a \type{vector<double>}, then access the Moore grid with \type{nw}, \type{n}, ... . Loop over the stencil with the operator \type{++}.
+
 To ``register" your propagator, look for the \type{//PUT YOUR PROPAGATORS HERE} section in \type{solver.cpp}.
 
 \subsubsection{Class Couple}
@@ -789,13 +791,12 @@ We use the semicolon to denote a succession of functions/procedures, and \type{a
 \item Harmonic oscillators with dendritic rseponse are integrated using a heavily strength reduced explicit direct integration assuming constant drive. This was more efficient than a constant drive RK4 algorithm which would not be fourth order in any case due to the constant drive. Rennie used a constant drive RK4 for his 1997 code.
 \end{itemize}
 
-\subsection{Other classes}
+%\subsection{Other classes}
 
-\begin{description}
-\item[Stencil] A spatial grid with Moore (3\(\times\)3) stencil for explicit finite differences integration.
+%\begin{description}
 %\item[Modcouple] A class which provides synaptic coupling following a model proposed by Clearwater-Rennie for modelling neurotransmitter dynamics.
-\item[Random] Generates random numbers for Timeseries.
-\end{description}
+%\item[Random] Generates random numbers for Timeseries.
+%\end{description}
 
 \subsection{Submission to SVN}
 The SVN repository is a standard installation, so any tutorials on usage of SVN apply here. For developers, we suggest obtaining a copy of the entire repository with

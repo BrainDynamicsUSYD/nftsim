@@ -13,12 +13,13 @@ Stencil::~Stencil(void)
 {
 }
 
-void Stencil::operator=( const vector<double>& field )
+const vector<double>& Stencil::operator=( const vector<double>& field )
 {
   m = field;
   nw = m[_nw]; n  = m[_n]; ne = m[_ne];
   w  = m[_w]; c  = m[_c]; e  = m[_e];
   sw = m[_sw]; s  = m[_s]; se = m[_se];
+  return field;
 }
 
 void Stencil::operator++ (int i) const
