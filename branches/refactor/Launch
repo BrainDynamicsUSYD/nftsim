@@ -60,7 +60,7 @@ for( my $i=scalar(@ARGV)-1; $i>=1; $i-- ) {
 if( scalar(@ARGV)<2 ) {
 	system "cp $in neurofield.conf";
 	print STDERR "Compiling NeuroField:\n";
-	!system "make" or die;
+	!system "make" or die("Compilation error.\n");
 	print STDERR "Done.\nRunning $in:\n";
 	if($yossarian) {
 		open PBS, "+<pbs" or die $!;
@@ -128,7 +128,7 @@ else { die "The number of variation in parameters must be the constant [$runs?].
 #foreach( @line){foreach(@$_){print "$_ ";}print "\n";};
 
 print STDERR "Compiling NeuroField:\n";
-!system "make" or die;
+!system "make" or die("Compilation error.\n");
 print STDERR "Done.\n";
 
 for( my $i=0; $i<$runs; $i++ ) {

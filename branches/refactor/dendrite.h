@@ -25,13 +25,28 @@ class Dendrite : public NF
 
   vector<double> v;
   vector<double> dvdt;
-  vector<double> oldnuphi;
+  vector<double> oldnp;
 
   const Propag* prepropag;
   const Couple* precouple;
 
   double alpha;
   double beta;
+
+  // variables that are intialized once to speed up computation
+  double aminusb; // == alpha - beta
+  double expa; // == exp(-alpha*deltat)
+  double expb; // == exp(-beta*deltat)
+  double factorab; // == 1./alpha + 1./beta;
+
+  // variables that are used every timestep
+  double adjustednp;
+  double deltaPdeltat;
+  double C1;
+  double dpdt;
+  double C1expa;
+  double C2expb;
+  double C1dtplusC2;
 protected:
   void init( Configf& configf );
   void restart( Restartf& restartf );

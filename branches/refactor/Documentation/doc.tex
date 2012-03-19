@@ -43,7 +43,7 @@ breakatwhitespace=tru,	% sets if automatic breaks should only happen at whitespa
 \pagebreak
 \section{Users guide}
 
-\type{NeuroField}, initially written by Peter Drysdale, is a \type{C++} program (accompanied with helper scripts) that solves the neural field model of Robinson et al.:
+\type{NeuroField}, written by Peter Drysdale with contributions from James Roberts, Felix Fung and Romesh Abeysuriya, is a \type{C++} program (accompanied with helper scripts) that solves the neural field model of Robinson et al.:
 \begin{align*}
 	D_{ab}V_{ab}(\mathbf{r},t) &= \nu_{ab}\phi_{ab}(\mathbf{r},t),\\
 			Q_a(\mathbf{r},t) &= S_a \big[\sum_b V_{ab}(\mathbf{r},t) \big],\\
@@ -57,28 +57,28 @@ breakatwhitespace=tru,	% sets if automatic breaks should only happen at whitespa
 	\item Uses plastic synapses, i.e. \(\nu_{ab}=\nu_{ab}(\mathbf{r},t)\).
 \end{enumerate}
 
-This users guide covers the obtaining, setting up, configuring and launching of \type{NeuroField}.
+This users guide covers the obtaining and setting up (Sec.~\ref{sec:obtain}), configuring (Sec.~\ref{sec:config}) and launching of \type{NeuroField} (Sec.~\ref{sec:launch}).
 
-\subsection{Licensing issues}
+Within this documentation, specific terminology is in \type{typwriter font}. Commands are denoted as
+\begin{lstlisting}
+Command to put in computer
+\end{lstlisting}
 
 \subsection{Obtaining and setting up NeuroField}
-The code for NeuroField is managed by a version control system called `subversion'. This stores the entire history of the program, as well as providing a single place to obtain the latest copy of the code. 
+\label{sec:obtain}
 
-In order to use the repository, you will first need an account. This is separate to your Physics login, you will need to contact Romesh Abeysuriya (r.abeysuriya@physics.usyd.edu.au) or Sue Yang (xue.yang@sydney.edu.au) in order to obtain access. 
+The code for \type{NeuroField} is managed by a version control system called \type{subversion}, which provides a single place to obtain the latest copy of the code, as well as storing the entire history of the program. To access the repository, contact Romesh Abeysuriya (\url{r.abeysuriya@physics.usyd.edu.au}) or Sue Yang (\url{xue.yang@sydney.edu.au}).
 
-Once you have done this, log into a computer in the School of Physics, and open a terminal by right clicking on the desktop and selecting `Create Terminal'. Enter the following command into the terminal window:
-	
-	\begin{lstlisting}
+To set up the latest version of \type{NeuroField} in the current directory within the School of Physics, execute
+\begin{lstlisting}
 svn co http://silliac.physics.usyd.edu.au:18080/svn/neurofield/trunk neurofield --username=<your SVN username>
-	\end{lstlisting}
+\end{lstlisting}
 
-
-This will copy the latest version of program from the School of Physics server into the current directory of your terminal (typically your home directory).
-
-You can also use these steps to obtain a copy of NeuroField from a computer which is not connected to the School of Physics network (eg. personal laptops at home). You will require a version of SVN higher than 1.6. However, you will need to have your IP address/network domain registered for remote access, please contact Sebastian Juraszek to request this (ideally by logging a helpdesk request at [http://physics.usyd.edu.au/itsupport] - only available within the School of Physics). 
+You can also use these steps to obtain a copy of \type{NeuroField} from a computer which is not connected to the School of Physics network (eg. personal laptops at home). You will require a version of SVN higher than 1.6. However, you will need to have your IP address/network domain registered for remote access, please contact Sebastian Juraszek to request this (ideally by logging a helpdesk request at \url{http://physics.usyd.edu.au/itsupport} - only available within the School of Physics). 
 
 \subsection{Directory layout}
-Within the main directory, the user can find:
+
+The canonical directory is \type{neurofield/trunk}. Within this directory, the user can find:
 
 \begin{tabular}{l p{12cm}}
 \type{*.h, *.cpp}& C++ source code.\\
@@ -92,6 +92,7 @@ Within the main directory, the user can find:
 \end{tabular}
 
 \subsection{Using NeuroField via launcher script}
+\label{sec:launch}
 
 \begin{enumerate}
 
@@ -160,6 +161,7 @@ A brief description is given by
 \end{lstlisting}
 
 \subsection{Writing a configuration file}
+\label{sec:config}
 
 \type{NeuroField} allows an arbitrary number of populations and connections between them, with all objects taking arbitrary parameter values. These are all configured via a configuration file. This section documents the specifications of configuration files, where we use \type{Configs/cortex.conf} as an illustrative example.
 
@@ -724,7 +726,7 @@ In extending \type{NeuroField} it is likely new classes needs to be written. Whe
 \end{enumerate}
 
 \subsubsection{Class Population}
-\label{sec:pop}
+\label{sec:newpop}
 
 Models a neural population, which may be either a stimulus or normal population. If it has any dendrites, i.e. it has presynaptic connections, then it is a normal population, and it is a stimulus if it does not have dendrites.
 
@@ -735,7 +737,7 @@ In either cases, the \type{Population} class has a keyring storing the firing ra
 A population is ``settled" after \type{Population::init()} is called, after which no dendrites can be added, and the firing rate history cannot grow.
 
 \subsubsection{Class Propag}
-\label{sec:propag}
+\label{sec:newpropag}
 
 The \type{Propag} class implements the axonal propagation as an identity map, i.e.
 \[ \mathcal{D}_{ab} = 1. \]
@@ -749,7 +751,7 @@ For finite differences integration, \type{Stencil} provides a 9-point stencil. T
 To ``register" your propagator, look for the \type{//PUT YOUR PROPAGATORS HERE} section in \type{solver.cpp}.
 
 \subsubsection{Class Couple}
-\label{sec:couple}
+\label{sec:newcouple}
 
 The \type{Couple} class manages \(\nu_{ab}\), which is constant in space and time.
 
@@ -827,6 +829,5 @@ You can then freely modify the code in the branch with the benefit of version co
 \item check numerical entry of connection matrix
 \item tidy up helper scripts
 \item restart mode is crippled; rewrite the whole thing.
-\item implement argument parsing in launcher script
 \end{enumerate}
 \end{document}

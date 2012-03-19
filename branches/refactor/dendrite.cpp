@@ -26,9 +26,14 @@ void Dendrite::init( Configf& configf )
   else
     for( int i=0; i<nodes; i++ )
       v[i] = atof(buffer.c_str());
-  oldnuphi = v;
+  oldnp = v;
   configf.Param("alpha",alpha);
   configf.Param("beta",beta);
+
+  aminusb = alpha - beta;
+  expa = exp(-alpha*deltat);
+  expb = exp(-beta*deltat);
+  factorab = 1./alpha + 1./beta;
 }
 
 void Dendrite::restart( Restartf& restartf )
@@ -49,7 +54,7 @@ void Dendrite::dump( Dumpf& dumpf ) const
 
 Dendrite::Dendrite( int nodes, double deltat, int index,
     const Propag* prepropag, const Couple* precouple )
-  : NF(nodes,deltat,index), v(nodes), dvdt(nodes,0), oldnuphi(nodes),
+  : NF(nodes,deltat,index), v(nodes), dvdt(nodes,0), oldnp(nodes),
     prepropag(prepropag), precouple(precouple)
 {
 }
@@ -60,58 +65,34 @@ Dendrite::~Dendrite()
 
 void Dendrite::step(void)
 {
-//
-// Steps Vab(t+Timestep) using nuphi(t+Timestep), current nuphi(t) and current Vab(t)
-//
-//  The program assumes that alpha, beta are constant and nuphi(t) is linear for the time step
-//  This is since it is very costly to obtain nuphi(t).
-//  Under these assumptions the solution can be explicitly obtained.
-//  Calculating the explicit solution is computationally faster than using
-//  Runge-Kutta to evaluate the time step.
-//  At current time alpha and beta are not functions of space and so 
-//  computed variables are used to speed up the calculation.
-//
+  // assume that alpha, beta are constant and nu*phi is linear for the time step
 
-  vector<double> nuphi(nodes);
+  vector<double> np(nodes);
   for( int i=0; i<nodes; i++ )
-    nuphi[i] = precouple->nu()[i]*prepropag->phi()[i];
+    np[i] = precouple->nu()[i]*prepropag->phi()[i];
 
-  double adjustednuphi;
-  double deltaPdeltat;
-  double C1;
-
-  double expalpha=exp(-alpha*deltat);
-  double factoralphabeta=(1.0/alpha)+(1.0/beta);
-  if(alpha!=beta){
-    double alphaminusbeta;
-    double C1expalpha;
-    double C2expbeta;
-    double expbeta=exp(-beta*deltat);
-    alphaminusbeta=alpha-beta;
-//#pragma omp parallel for private(adjustedPab,factoralphabeta,deltaPdeltat)
+  if(alpha!=beta)
+//#pragma omp parallel for private(adjustedPab,deltaPdeltat)
     for(int i=0; i<nodes; i++) {
-      deltaPdeltat=(nuphi[i]-oldnuphi[i])/deltat;
-      adjustednuphi=oldnuphi[i]-factoralphabeta*deltaPdeltat-v[i];
-      C1=(adjustednuphi*beta-dvdt[i]+deltaPdeltat)/alphaminusbeta;
-      C1expalpha=C1*expalpha;
-      C2expbeta=expbeta*(-C1-adjustednuphi);
-      v[i]=C1expalpha+C2expbeta+nuphi[i]-factoralphabeta*deltaPdeltat;
-      dvdt[i]=C1expalpha*(-alpha)+C2expbeta*(-beta)+deltaPdeltat;
-      oldnuphi[i]=nuphi[i]; //Save current pulse density for next step
+      dpdt = ( np[i] -oldnp[i] )/deltat;
+      adjustednp = oldnp[i] -factorab*dpdt -v[i];
+      C1 = ( adjustednp*beta -dvdt[i] +dpdt )/aminusb;
+      C1expa = C1*expa;
+      C2expb = expb*(-C1-adjustednp);
+      v[i] = C1expa+C2expb+np[i] -factorab*dpdt;
+      dvdt[i] = C1expa*(-alpha) +C2expb*(-beta)+dpdt;
+      oldnp[i]=np[i]; //Save current pulse density for next step
     }
-  } 
-  else {
-    double C1deltatplusc2;
+  else // alpha==beta
     for(int i=0; i<nodes; i++) {
-      deltaPdeltat=(nuphi[i]-oldnuphi[i])/deltat;
-      adjustednuphi=oldnuphi[i]-factoralphabeta*deltaPdeltat-v[i];
-      C1=dvdt[i]-alpha*adjustednuphi-deltaPdeltat;
-      C1deltatplusc2=C1*deltat-adjustednuphi;
-      v[i]=C1deltatplusc2*expalpha+nuphi[i]-factoralphabeta*deltaPdeltat;
-      dvdt[i]=(C1-alpha*C1deltatplusc2)*expalpha+deltaPdeltat;
-      oldnuphi[i]=nuphi[i]; //Save current pulse density for next step
+      dpdt = ( np[i] -oldnp[i] )/deltat;
+      adjustednp = oldnp[i] -factorab*dpdt -v[i];
+      C1 = dvdt[i] -alpha*adjustednp -dpdt;
+      C1dtplusC2 = C1*deltat -adjustednp;
+      v[i] = C1dtplusC2*expa +np[i] -factorab*dpdt;
+      dvdt[i] = (C1-alpha*C1dtplusC2)*expa +dpdt;
+      oldnp[i]=np[i]; //Save current pulse density for next step
     }
-  }
 }
 
 const vector<double>& Dendrite::V(void) const
