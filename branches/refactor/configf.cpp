@@ -84,7 +84,7 @@ returned to the same position as it was originally. Search is CASE SENSITIVE
   size_t wildcard_pos = Check.find('*');
   size_t match = file_content.find(Check.substr(0,wildcard_pos));
   if( match == string::npos) {
-    std::cerr << "Failed to find first part of string" << endl;
+    std::cerr << "Failed to find '" << Check.substr(0,wildcard_pos) << "' which was the first part of the search term '" << Check << "'" << endl;
     exit(EXIT_FAILURE);
   }
   
@@ -92,7 +92,7 @@ returned to the same position as it was originally. Search is CASE SENSITIVE
   if(wildcard_pos != string::npos){
       match = file_content.find(Check.substr(wildcard_pos+1,Check.length()),match);
       if( match == string::npos) {
-        std::cerr << "Failed to find second part of string" << endl;
+    std::cerr << "Failed to find '" << Check.substr(wildcard_pos+1,Check.length()) << "' which was the second part of the search term '" << Check << "'" << endl;
         exit(EXIT_FAILURE);
       }
     match += Check.substr(wildcard_pos+1,Check.length()).length();
