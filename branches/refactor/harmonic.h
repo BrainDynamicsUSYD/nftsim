@@ -39,8 +39,8 @@ protected:
   double C1;
   double C1dtplusC2;
 public: 
-  Harmonic( int nodes, double deltat, int index, const Population* const prepop,
-      const Population* const postpop, int longside );
+  Harmonic( int nodes, double deltat, int index, Population& prepop,
+      Population& postpop, int longside );
   virtual ~Harmonic(void);
   virtual void step(void); 
 };

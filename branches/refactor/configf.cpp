@@ -61,19 +61,21 @@ vector<double> Configf::Numbers(void)
 
 string Configf::Find( const string& Check )
 {
-/* 
-This function implements a wildcard search that searches the config file assuming
-a structure like
-<unique>: extra_data - key1:value key2:value
-The search term Check takes the form "<unique>*keyn" or "<unique>"
-and this function returns a string representation of the value associated 
-with the key that was being searched for. If the search term is "<unique>"
-then a string representation of extra_data is returned. The file pointer is 
-returned to the same position as it was originally. Search is CASE SENSITIVE
-*/
+  /* 
+  This function implements a wildcard search that searches the config file
+  assuming a structure like
+    <unique>: extra_data - key1:value key2:value
+  The search term Check takes the form "<unique>*keyn" or "<unique>"
+  and this function returns a string representation of the value associated 
+  with the key that was being searched for. If the search term is "<unique>"
+  then a string representation of extra_data is returned. The file pointer is 
+  returned to the same position as it was originally.
+  Search is CASE SENSITIVE
+  */
 
   if( Check.empty() ) {
-    std::cerr << "Attempted to use Configf::Find searching for an empty string" << endl;
+    std::cerr << "Attempted to use Configf::Find searching for an empty string"
+            << endl;
     exit(EXIT_FAILURE);
   }
   string result;
@@ -130,6 +132,23 @@ bool Configf::Next( const string& Check, int delim )
     return false;
   }
   return true;
+}
+
+void Configf::go2( const string& keyword )
+{
+  seekg(0,std::ios::beg);
+  if( keyword.empty() ) {
+    std::cerr << "Searching for an empty string in configuration file." << endl;
+    exit(EXIT_FAILURE);
+  }
+  read(buffer,filesize);
+  string file_content(buffer);
+  if( file_content.find(keyword) == string::npos ) {
+    std::cerr<<"Configuration reading error: keyword "<<keyword<<"not found."
+        <<endl;
+    exit(EXIT_FAILURE);
+  }
+  seekg( file_content.find(keyword)-1 );
 }
 
 Restartf::Restartf( const char* filename )

@@ -108,7 +108,7 @@ void Solver::Outputs::init( Configf& configf )
 
   // read in output interval
   if( !configf.Optional("Interval",tempf) )
-    interval = deltat;
+    interval = 1;
   else {
     if( remainder(tempf,deltat) >deltat ) {
       std::cerr<<"Value of output interval not divisible by Deltat."<<endl;
@@ -165,7 +165,7 @@ void Solver::Outputs::init( Configf& configf )
   Output::dumpf<<endl<<space<<space<<space<<" "<<septor;
   for( uint i=0; i<m.size(); i++ ) {
     for( uint j=0; j<Output::node.size(); j++ )
-      Output::dumpf<<space<<space<<setw<<j+1;
+      Output::dumpf<<space<<space<<setw<<int(j+1);
     Output::dumpf<<space<<space<<septor;
   }
   Output::dumpf<<endl;
@@ -177,7 +177,7 @@ void Solver::Outputs::step(void)
   if( start )
     start--;
   else {
-    t += deltat; Output::dumpf<<t<<space<<space<<septor;
+    t += deltat*interval; Output::dumpf<<t<<space<<space<<septor;
     m.step();
     Output::dumpf<<endl;
   }
@@ -250,18 +250,18 @@ void Solver::init( Configf& configf )
     // PUT YOUR PROPAGATORS HERE
     if(ptype=="Map")
       propags.add( new
-        Propag(nodes,deltat,i, pops[cnt.pre[i]], pops[cnt.post[i]], longside));
+        Propag(nodes,deltat,i, *pops[cnt.pre[i]], *pops[cnt.post[i]], longside));
     else if(ptype=="Wave") {
       if( nodes==1 )
       propags.add( new
-        Harmonic(nodes,deltat,i, pops[cnt.pre[i]], pops[cnt.post[i]], longside));
+        Harmonic(nodes,deltat,i, *pops[cnt.pre[i]], *pops[cnt.post[i]], longside));
       else
       propags.add( new
-        Wave(nodes,deltat,i, pops[cnt.pre[i]], pops[cnt.post[i]], longside));
+        Wave(nodes,deltat,i, *pops[cnt.pre[i]], *pops[cnt.post[i]], longside));
     }
     else if(ptype=="Harmonic")
       propags.add( new
-        Harmonic(nodes,deltat,i, pops[cnt.pre[i]], pops[cnt.post[i]], longside));
+        Harmonic(nodes,deltat,i, *pops[cnt.pre[i]], *pops[cnt.post[i]], longside));
     else {
       std::cerr<<"Invalid propagator type '"<<ptype<<"'."<<endl;
       exit(EXIT_FAILURE);
@@ -289,22 +289,25 @@ void Solver::init( Configf& configf )
       if( cnt.post[j] == i )
         pops[i]->add2Dendrite( j, propags[j], couples[j] );
 
-  // read populations parameters
-  for( int i=0; i<cnt.npop; i++ )
-    configf.Param( label("Population ",i+1), *pops[i] );
+  // read couples parameters
+  configf.go2("Couple 1");
+  for( int i=0; i<cnt.ncnt; i++ )
+    configf.Param( label("Couple ",i+1), *couples[i] );
 
   // read propags parameters
+  configf.go2("Propag 1");
   for( int i=0; i<cnt.ncnt; i++ )
     configf.Param( label("Propag ",i+1), *propags[i] );
 
-  // read couples parameters
-  for( int i=0; i<cnt.ncnt; i++ )
-    configf.Param( label("Couple ",i+1), *couples[i] );
+  // read populations parameters
+  configf.go2("Population 1");
+  for( int i=0; i<cnt.npop; i++ )
+    configf.Param( label("Population ",i+1), *pops[i] );
 
   // initialize outputs
   outputs.nodes = nodes; outputs.deltat = deltat;
   outputs.npop = cnt.npop; outputs.ncnt = cnt.ncnt;
-  configf.Next("Output"); outputs.init(configf);
+  configf.go2("Output"); configf.Next("Output"); outputs.init(configf);
 }
 
 void Solver::restart( Restartf& restartf )

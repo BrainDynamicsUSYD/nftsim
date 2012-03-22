@@ -28,14 +28,14 @@ protected:
   void restart( Restartf& restartf );
   void dump( Dumpf& dumpf ) const;
 
-  const Population* const prepop;
-  const Population* const postpop;
+  Population& prepop;
+  Population& postpop;
   Tau tau; // tau_ab
   int longside;
   vector<double> p; // phi_ab
 public: 
-  Propag( int nodes, double deltat, int index, const Population* const prepop,
-      const Population* const postpop, int longside );
+  Propag( int nodes, double deltat, int index, Population& prepop,
+      Population& postpop, int longside );
   virtual ~Propag(void);
   virtual void step(void); 
   virtual const vector<double>& phi(void) const;

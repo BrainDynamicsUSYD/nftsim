@@ -3,13 +3,17 @@
 
 void Harmonic::init( Configf& configf )
 {
-  double initphi; configf.Param("phi",initphi);
-  p.resize(nodes,initphi);
-  oldp.resize(nodes,initphi);
-  oldQ.resize(nodes,initphi);
+  string buffer("Steady");
+  configf.Optional("phi",buffer);
+  if( buffer != "Steady" )
+    p.resize(nodes,atof(buffer.c_str()));
+  else
+    p.resize(nodes,prepop.Qinit(configf));
+  oldp.resize(nodes,atof(buffer.c_str()));
+  oldQ.resize(nodes,atof(buffer.c_str()));
   dpdt.resize(nodes,0.);
   double temp; configf.Optional("Deltax",temp); // for compatibility with Wave
-  configf.Param("Tau",tau);
+  configf.Param("Tau",tau); prepop.growHistory(tau);
   configf.Optional("Range",temp);
   configf.Param("gamma",gamma);
   twoongamma = 2./gamma;
@@ -24,8 +28,8 @@ void Harmonic::dump( Dumpf& dumpf ) const
 {
 }
 
-Harmonic::Harmonic( int nodes, double deltat, int index, const Population* const prepop,
-        const Population* const postpop, int longside )
+Harmonic::Harmonic( int nodes, double deltat, int index, Population& prepop,
+        Population& postpop, int longside )
     : Propag(nodes,deltat,index,prepop,postpop,longside)
 {
 }
@@ -38,7 +42,7 @@ void Harmonic::step(void)
 {
   // This implementation assumes gamma is constant
   // and Q(t) is linear for the timestep.
-  const vector<double>& Q = prepop->Q(tau);
+  const vector<double>& Q = prepop.Q(tau);
   for( int i=0; i<nodes; i++ ) {
     dQdt = ( Q[i] -oldQ[i] )/deltat;
     adjustedQ = oldQ[i] -twoongamma*dQdt -oldp[i];

@@ -11,6 +11,7 @@ void Propag::init( Configf& configf )
 {
   p.resize(nodes);
   configf.Param("Tau",tau);
+  prepop.growHistory(tau);
 }
 
 void Propag::restart( Restartf& restartf )
@@ -21,8 +22,8 @@ void Propag::dump( Dumpf& dumpf ) const
 {
 }
 
-Propag::Propag( int nodes, double deltat, int index, const Population* const prepop,
-        const Population* const postpop, int longside )
+Propag::Propag( int nodes, double deltat, int index, Population& prepop,
+        Population& postpop, int longside )
     : NF(nodes,deltat,index), prepop(prepop), postpop(postpop),
          tau(nodes,deltat,index), longside(longside)
 {
@@ -34,7 +35,7 @@ Propag::~Propag(void)
 
 void Propag::step(void)
 {
-  p = prepop->Q(tau);
+  p = prepop.Q(tau);
 }
 
 const vector<double>& Propag::phi(void) const

@@ -44,8 +44,8 @@ protected:
   double diagsumQ;
   double drive;
 public: 
-  Wave( int nodes, double deltat, int index, const Population* const prepop,
-      const Population* const postpop, int longside );
+  Wave( int nodes, double deltat, int index, Population& prepop,
+      Population& postpop, int longside );
   virtual ~Wave(void);
   virtual void step(void); 
 };

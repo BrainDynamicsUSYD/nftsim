@@ -40,6 +40,7 @@ public:
   virtual ~Population();
   void step(void);
   const vector<double>& Q( const Tau& tau = Tau() ) const;
+  double Qinit( Configf& configf ) const;
   const vector<double>& V(void) const;
   void add2Dendrite( int index,
           Propag* const prepropag, Couple* const precouple );

@@ -87,7 +87,7 @@ void Timeseries::dump( Dumpf& dumpf ) const
   dumpf << " Mode:" << mode << " ";
   //dumpf << "Onset: " << onset << " ";
   if( mode=="Composite" ) {
-    dumpf << "Stimuli: " << sarray.size() << endl;
+    dumpf << "Stimuli: " << int(sarray.size()) << endl;
   }
   else if( mode=="Const" ) { // constant noise
     dumpf << "Mean" << mean <<endl;
@@ -192,7 +192,8 @@ if( t<0 ) return;
   }
   else if( mode=="Pulse" ) { // periodic pulse pattern
     if( fmod(t,tperiod)<pdur )
-      for( int i=0; i<nodes; i++ )
+      //for( int i=0; i<nodes; i++ )
+      for( int i=12; i<=12; i++ )
         Q[i] += amp;
   }
   else if( mode=="Sine" ) { // sinusoidal stimuli

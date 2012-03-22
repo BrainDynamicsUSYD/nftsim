@@ -51,7 +51,7 @@ void Dumpf::verbose(void)
 
 Dumpf& Dumpf::operator<< ( double f )
 {
-  if( f>0 ) *s<<" ";
+  if( f>=0 ) *s<<" ";
   *s<<f;
   return *this;
 }
@@ -68,11 +68,11 @@ Dumpf& Dumpf::operator<< ( int i )
   return *this;
 }
 
-Dumpf& Dumpf::operator<< ( unsigned int i )
+/*Dumpf& Dumpf::operator<< ( unsigned int i )
 {
   *s<<i;
   return *this;
-}
+}*/
 
 Dumpf& Dumpf::operator<< ( ostream& (*pf)(ostream&) )
 {

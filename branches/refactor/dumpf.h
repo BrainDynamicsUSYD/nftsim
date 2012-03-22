@@ -39,7 +39,6 @@ public:
   Dumpf& operator<< ( double f );
   Dumpf& operator<< ( const string& str );
   Dumpf& operator<< ( int i );
-  Dumpf& operator<< ( unsigned int i );
   Dumpf& operator<< ( ostream& (*pf)(ostream&) ); // for manupulators eg endl
 };
 

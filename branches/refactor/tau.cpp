@@ -14,7 +14,7 @@ void Tau::init( Configf& configf )
 {
   vector<double> temp = configf.Numbers();
   if( temp.size() == 1 ) {
-    if( temp[0] && fmod(temp[0],deltat) ) {
+    if( remainder(temp[0],deltat) >deltat ) {
       std::cerr<<"Value of tau not divisible by Deltat!"<<endl;
       exit(EXIT_FAILURE);
     }
@@ -23,7 +23,7 @@ void Tau::init( Configf& configf )
   }
   else if( temp.size() == uint(nodes) ) {
     for( int i=0; i<nodes; i++ ) {
-      if( fmod(temp[0],deltat) ) {
+      if( remainder(temp[0],deltat) >deltat ) {
         std::cerr<<"Value of tau not divisible by Deltat!"<<endl;
         exit(EXIT_FAILURE);
       }

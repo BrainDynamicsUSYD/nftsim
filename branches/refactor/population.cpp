@@ -9,19 +9,26 @@
 using std::endl;
 #include"population.h"
 
-void Population::init( Configf& inputf )
+void Population::init( Configf& configf )
 {
   if( qresponse ) { // neural population
-    double Qinit; inputf.Param("Q",Qinit);
-    for( int i=0; i<3; i++ )
+    double Qinit; configf.Param("Q",Qinit);
+    if( !qhistory.size() )
       qhistory.push_back( vector<double>(nodes,Qinit) );
-    inputf.Param( "Firing", *qresponse );
+    else
+      for( uint i=0; i<qhistory.size(); i++ )
+        qhistory[i].resize(nodes,Qinit);
+    configf.Param( "Firing", *qresponse );
   }
   else { // stimulus population
-    for( int i=0; i<3; i++ )
+    //for( int i=0; i<3; i++ )
+    if( !qhistory.size() )
       qhistory.push_back( vector<double>(nodes,0) );
+    else
+      for( uint i=0; i<qhistory.size(); i++ )
+        qhistory[i].resize(nodes,0);
     timeseries = new Timeseries(nodes,deltat,index);
-    inputf.Param( "Stimulus", *timeseries );
+    configf.Param( "Stimulus", *timeseries );
   }
   settled = true;
 }
@@ -76,6 +83,12 @@ const vector<double>& Population::Q( const Tau& tau) const
   }
 }
 
+double Population::Qinit( Configf& configf ) const
+{
+  string buffer = configf.Find( label("Population ",index+1)+"*Q:");
+  return atof(buffer.c_str());
+}
+
 const vector<double>& Population::V(void) const
 {
   if( qresponse )
@@ -109,7 +122,7 @@ void Population::growHistory( const Tau& tau )
   }
 
   if( uint(tau.max) > qhistory.size() )
-    qhistory.resize( tau.max, qhistory[0] );
+    qhistory.resize( tau.max );
 }
 
 vector<Output*> Population::output(void) const

@@ -17,15 +17,15 @@ void Dendrite::init( Configf& configf )
     std::cerr<<"Dendrite from population "<<index+1<<" not found."<<endl;
     exit(EXIT_FAILURE);
   }
-  string buffer; configf.Param("V",buffer);
+  string buffer("Steady");
+  configf.Optional("V",buffer);
   if( buffer == "Steady" ) {
     v.resize(nodes);
     for( int i=0; i<nodes; i++ )
       v[i] = prepropag->phi()[i]*precouple->nu()[i];
   }
   else
-    for( int i=0; i<nodes; i++ )
-      v[i] = atof(buffer.c_str());
+    v.resize(nodes,atof(buffer.c_str()));
   oldnp = v;
   configf.Param("alpha",alpha);
   configf.Param("beta",beta);

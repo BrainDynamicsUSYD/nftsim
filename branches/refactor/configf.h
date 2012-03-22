@@ -33,6 +33,7 @@ class Configf : protected std::ifstream
 public: 
   Configf( const char* filename );
   virtual ~Configf(void);
+
   // Looks for the next parameter called "param" and stores it in T
   // If "param" is not found, terminate program
   template<class T> void Param(const string& param, T& ret, int delim=':' );
@@ -43,7 +44,11 @@ public:
   vector<double> Numbers(void);
   // Find the next "Check", then returns the next input entry as string
   string Find( const string& Check );
+
+  // points to next delim, and verify it is "check"+"delim"
   bool Next( const string& Check, int delim=':' );
+  // searches and points to next keyword
+  void go2( const string& keyword );
 };
 
 // global function that returns string=="Object#" for config file parsing
@@ -95,14 +100,14 @@ template<> inline void Configf::Param<string>(const string& param, string& ret, 
     ret = string(buffer);
   }
   else {
-  std::cerr << "Unable to find next input variable :'"
-    << param << "' "<< endl
-    << "Last read was :'"
-    << buffer
-    << "' "<< endl
-    << "Please check the sequence of parameters." << endl;
-  exit(EXIT_FAILURE);
-  }
+    std::cerr << "Unable to find next input variable :'"
+      << param << "' "<< endl
+      << "Last read was :'"
+      << buffer
+      << "' "<< endl
+      << "Please check the sequence of parameters." << endl;
+    exit(EXIT_FAILURE);
+    }
 }
 
 template<class T> bool Configf::Optional( const string& param, T& ret, int delim )
