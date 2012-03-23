@@ -1,0 +1,4 @@
+#!/bin/bash
+g++ stencil_test.cpp ../stencil.cpp ../nf.cpp -I ../ -o stencil_test
+./stencil_test
+
