@@ -2,24 +2,29 @@ function data = nf_extract(nf,t,traces,nodes)
     % output = nf_extract(nf,t,traces,nodes)
     % Given an nf object, return data from certain traces at particular times
     % nf - nf object
-    % t - can be a time e.g. 0.001 or a range [0.001 0.1]
+    % t - can be a time e.g. 0.001 or a range [0.001 0.1]. If empty, returns all times
     % traces - comma separated list of traces e.g. 'Propag.2.phi, Couple.2.nu'
     % nodes - an array of node numbers that are requested e.g. [1 2 3]
     % traces and nodes are optional
     
     % Romesh Abeysuriya 120322
     
-    % First, find the start/stop times
-    % These commands return an empty matrix if requested times are out of range
-    start = find(nf.time<=t(1),1,'last'); 
-    if length(t) == 2
-        stop = find(nf.time>=t(end),1,'first');
+    if nargin < 2 || isempty(t)
+        start = 1;
+        stop = length(nf.time);
     else
-        stop = start;
-    end
-    
-    if isempty(start) || isempty(stop)
-        error('Requested time(s) are out of range');
+        % First, find the start/stop times
+        % These commands return an empty matrix if requested times are out of range
+        start = find(nf.time<=t(1),1,'last'); 
+        if length(t) == 2
+            stop = find(nf.time>=t(end),1,'first');
+        else
+            stop = start;
+        end
+        
+        if isempty(start) || isempty(stop)
+            error('Requested time(s) are out of range');
+        end
     end
     
     % Now, work out which fields need to be extracted
