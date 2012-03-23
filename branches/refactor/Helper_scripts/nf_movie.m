@@ -14,9 +14,9 @@ function nf_movie( nf, field, fname )
     figure; h = surf( X, Y, data(:,:,1) );
     zlim([0 1]);
     shading interp; lighting gouraud; camlight;
-    F(nf.npoints) = getframe(gcf); % Trick to preallocate F
+    F(100) = getframe(gcf); % Trick to preallocate F
 
-    for t = 1:nf.npoints
+    for t = 1:100
         norm = max(max(data(:,:,t)));
         set( h, 'ZData', data(:,:,t)/norm );
         title( ['Time: ',num2str(nf.deltat * t)] );
@@ -24,9 +24,9 @@ function nf_movie( nf, field, fname )
     end
     
     % Output a movie if an avi filename was specified
-    if ~(nargin < 3 || isempty(avi))
+    if ~(nargin < 3 || isempty(fname))
         avi = avifile(fname);
         avi = addframe( avi, F );
-        close(avi);
+        avi = close(avi);
     end
 end
