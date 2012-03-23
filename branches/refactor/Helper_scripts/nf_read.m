@@ -30,6 +30,9 @@ function nf = nf_read(fname);
     nf.data = nf.data(2:end);
     nf.fields = nf.fields(2:end);
     nf.nodes = nf.nodes(2:end);
+    
+    nf.deltat = nf.time(2)-nf.time(1);
+    nf.npoints = length(nf.time);
 end
 
 

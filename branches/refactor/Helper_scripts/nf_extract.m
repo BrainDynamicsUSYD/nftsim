@@ -1,4 +1,4 @@
-function data = nf_extract(nf,t,traces,nodes)
+function data = nf_extract(nf,traces,t,nodes)
     % output = nf_extract(nf,t,traces,nodes)
     % Given an nf object, return data from certain traces at particular times
     % nf - nf object
@@ -9,11 +9,17 @@ function data = nf_extract(nf,t,traces,nodes)
     
     % Romesh Abeysuriya 120322
     
-    if nargin < 2 || isempty(t)
+    % If no nodes are provided, output all nodes
+    if nargin < 4 || isempty(nodes)
+        nodes = nf.nodes{1}; 
+    end
+    
+    % If no time is provided, output all times
+    if nargin < 3 || isempty(t) 
         start = 1;
         stop = length(nf.time);
     else
-        % First, find the start/stop times
+        % Find the start/stop times
         % These commands return an empty matrix if requested times are out of range
         start = find(nf.time<=t(1),1,'last'); 
         if length(t) == 2
@@ -27,8 +33,8 @@ function data = nf_extract(nf,t,traces,nodes)
         end
     end
     
-    % Now, work out which fields need to be extracted
-    if nargin < 3 || isempty(traces)
+    % If no traces are requested, output all traces
+    if nargin < 2 || isempty(traces)
         outputs = 1:length(nf.fields);
     else
         traces = regexp(traces,' *, *','split'); % Split traces into cell array
@@ -43,10 +49,6 @@ function data = nf_extract(nf,t,traces,nodes)
         end
     end
     
-    if nargin < 4 || isempty(nodes)
-        nodes = nf.nodes{1};
-    end
-
     % And assemble the output
     data = [];
     for j = 1:length(outputs)
