@@ -7,5 +7,5 @@ function nf_report(nf)
         fprintf(1,'%s ',nf.fields{j});
     end
     fprintf(1,'\nStart time: %.2fs\nStop time: %.2fs\ndeltat: %.2gs\nnpoints: %d\n',nf.time(1),nf.time(end),nf.time(2)-nf.time(1),length(nf.time));
-    fprintf(1,'Nodes: %s\n',num2str(nf.nodes{2}));
+    fprintf(1,'Nodes: %s\n',num2str(nf.nodes{1}));
 end
