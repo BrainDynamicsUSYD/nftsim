@@ -19,27 +19,27 @@ class Stencil
 protected:
   int nodes;
   int longside;
-  vector<double> m;
+  vector<double>* m;
 
   // pointers to the Moore grid
-  mutable int _nw; mutable int _n; mutable int _ne;
-  mutable int _w; mutable int _c; mutable int _e;
-  mutable int _sw; mutable int _s; mutable int _se;
+  int _nw; int _n; int _ne;
+  int  _w; int _c; int  _e;
+  int _sw; int _s; int _se;
 
 public:
   Stencil( int nodes, int longside );
   virtual ~Stencil(void);
 
-  const vector<double>& operator=( const vector<double>& field );
+  void assign( vector<double>* field );
 
-  virtual void operator++(int i) const; // increment Moore grid
-  void set( int node ) const; // point to node
+  virtual void operator++(int i); // increment Moore grid
+  void set( int node ); // point to node
   int get(void) const; // get current node index
 
   // get Moore grid
-  mutable double nw; mutable double n; mutable double ne;
-  mutable double w; mutable double c; mutable double e;
-  mutable double sw; mutable double s; mutable double se;
+  double nw; double n; double ne;
+  double  w; double c; double  e;
+  double sw; double s; double se;
 };
 
 #endif
