@@ -193,7 +193,7 @@ if( t<0 ) return;
   else if( mode=="Pulse" ) { // periodic pulse pattern
     if( fmod(t,tperiod)<pdur )
       //for( int i=0; i<nodes; i++ )
-      for( int i=12; i<=12; i++ )
+      for( int i=1274; i<1275; i++ )
         Q[i] += amp;
   }
   else if( mode=="Sine" ) { // sinusoidal stimuli

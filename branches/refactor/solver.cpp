@@ -115,7 +115,7 @@ void Solver::Outputs::init( Configf& configf )
       exit(EXIT_FAILURE);
     }
     else
-      interval = tempf/deltat;
+      interval = tempf/deltat+.5;
   }
 
   // read in populations to output
@@ -354,8 +354,8 @@ void Solver::step(void)
     */
   }
 
-  pops.step();
   propags.step();
   couples.step();
+  pops.step();
   outputs.step();
 }

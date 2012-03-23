@@ -24,8 +24,11 @@ protected:
   void restart( Restartf& restartf );
   void dump( Dumpf& dumpf ) const;
 
-  Stencil* oldp[2]; // keyring of past phi, oldp[0]==most recent
-  Stencil* oldQ[2]; // keyring of past Q, oldQ[0]==most recent
+  Stencil* oldp[2]; // stencil to past phi, oldp[0]==most recent
+  vector<double> oldpval[2]; // keyring of past phi
+  Stencil* oldQ[2]; // stencil to past Q, oldQ[0]==most recent
+  vector<double> oldQval[2]; // keyring of past Q
+  int key;
 
   // variables that's initialized once only
   double dt2on12;

@@ -6,25 +6,31 @@
  ***************************************************************************/
 
 #include<cmath>
-#include "wave.h"
+#include"wave.h"
+#include <iostream>
+using namespace std;
 
 void Wave::init( Configf& configf )
 {
   string buffer("Steady");
   configf.Optional("phi",buffer);
-  vector<double> Q(nodes,prepop.Qinit(configf));
+  double Q = prepop.Qinit(configf);
   configf.Param("Deltax",deltax);
   configf.Param("Tau",tau); prepop.growHistory(tau);
   if( buffer != "Steady" )
     p.resize(nodes,atof(buffer.c_str()));
   else
-    p = Q;
+    p.resize(nodes,Q);
   configf.Param("Range",range);
   configf.Param("gamma",gamma);
-  oldp[0] = new Stencil(nodes,longside); *oldp[0] = p;
-  oldp[1] = new Stencil(nodes,longside); *oldp[1] = p;
-  oldQ[0] = new Stencil(nodes,longside); *oldQ[0] = Q;
-  oldQ[1] = new Stencil(nodes,longside); *oldQ[1] = Q;
+  oldpval[0].resize(nodes,p[0]);
+  oldp[0] = new Stencil(nodes,longside); oldp[0]->assign(&oldpval[0]);
+  oldpval[1].resize(nodes,p[0]);
+  oldp[1] = new Stencil(nodes,longside); oldp[1]->assign(&oldpval[1]);
+  oldQval[0].resize(nodes,Q);
+  oldQ[0] = new Stencil(nodes,longside); oldQ[0]->assign(&oldQval[0]);
+  oldQval[1].resize(nodes,Q);
+  oldQ[1] = new Stencil(nodes,longside); oldQ[1]->assign(&oldQval[0]);
 
   dt2on12 = deltat*deltat/12.;
   dfact = dt2on12*gamma*gamma;
@@ -46,7 +52,7 @@ void Wave::dump( Dumpf& dumpf ) const
 
 Wave::Wave( int nodes, double deltat, int index, Population& prepop,
         Population& postpop, int longside )
-    : Propag(nodes,deltat,index,prepop,postpop,longside)
+    : Propag(nodes,deltat,index,prepop,postpop,longside), key(0)
 {
 }
 
@@ -65,11 +71,15 @@ void Wave::step(void)
     diagsumQ = oldQ[0]->nw +oldQ[0]->ne +oldQ[0]->sw +oldQ[0]->se;
     drive = dfact*( tenminus3p2*exp1*oldQ[0]->c +prepop.Q(tau)[i] +exp2*oldQ[1]->c +exp1*.5*p2*(sumQ+.5*diagsumQ) );
     p[i] = twominus3p2*exp1*oldp[0]->c +exp1*.5*p2*(sump+.5*diagsump) -exp2*oldp[1]->c +drive;
+	if (i==1274){
+		cout << "oldP[1]: " << oldp[1]->c << " oldp[0]: " << oldp[0]->c << " p[i]: " << p[i] << endl;
+	}
   }
-  Stencil* temp = oldp[1];
-  oldp[1] = oldp[0];
-  oldp[0] = temp; *oldp[0] = p;
-  temp = oldQ[1];
-  oldQ[1] = oldQ[0];
-  oldQ[0] = temp; *oldQ[0] = prepop.Q(tau);
+  key = !key;
+  oldpval[key] = p;
+  oldp[0]->assign(&oldpval[key]);
+  oldp[1]->assign(&oldpval[!key]);
+  oldpval[key] = prepop.Q(tau);
+  oldQ[0]->assign(&oldQval[key]);
+  oldQ[1]->assign(&oldQval[!key]);
 }

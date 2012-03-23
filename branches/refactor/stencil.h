@@ -26,6 +26,7 @@ protected:
   int  _w; int _c; int  _e;
   int _sw; int _s; int _se;
 
+  inline void update(void);
 public:
   Stencil( int nodes, int longside );
   virtual ~Stencil(void);

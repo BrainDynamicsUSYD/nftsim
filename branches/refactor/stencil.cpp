@@ -3,8 +3,17 @@
 using std::vector;
 #include"stencil.h"
 
+void Stencil::update(void)
+{
+  if(m) {
+    nw = (*m)[_nw]; n  = (*m)[_n]; ne = (*m)[_ne];
+    w  = (*m)[_w]; c  = (*m)[_c]; e  = (*m)[_e];
+    sw = (*m)[_sw]; s  = (*m)[_s]; se = (*m)[_se];
+  }
+}
+
 Stencil::Stencil( int nodes, int longside )
-    : nodes(nodes), longside(longside), m(nodes)
+    : nodes(nodes), longside(longside), m(0)
 {
   set(0);
 }
@@ -13,16 +22,13 @@ Stencil::~Stencil(void)
 {
 }
 
-const vector<double>& Stencil::operator=( const vector<double>& field )
+void Stencil::assign( vector<double>* field )
 {
   m = field;
-  nw = m[_nw]; n  = m[_n]; ne = m[_ne];
-  w  = m[_w]; c  = m[_c]; e  = m[_e];
-  sw = m[_sw]; s  = m[_s]; se = m[_se];
-  return field;
+  update();
 }
 
-void Stencil::operator++ (int i) const
+void Stencil::operator++ (int i)
 {
   _nw++; _n++; _ne++;
   _w++; _c++; _e++;
@@ -49,12 +55,10 @@ void Stencil::operator++ (int i) const
   if( _s >=nodes ) _s  -= nodes;
   if( _se>=nodes ) _se -= nodes;
 
-  nw = m[_nw]; n  = m[_n]; ne = m[_ne];
-  w  = m[_w]; c  = m[_c]; e  = m[_e];
-  sw = m[_sw]; s  = m[_s]; se = m[_se];
+  update();
 }
 
-void Stencil::set( int node ) const
+void Stencil::set( int node )
 {
   _c = node;
   _nw = _c-1-longside;
@@ -91,9 +95,7 @@ void Stencil::set( int node ) const
   if(_n <0) _n +=nodes;
   if(_ne<0) _ne+=nodes;
 
-  nw = m[_nw]; n  = m[_n]; ne = m[_ne];
-  w  = m[_w]; c  = m[_c]; e  = m[_e];
-  sw = m[_sw]; s  = m[_s]; se = m[_se];
+  update();
 }
 
 int Stencil::get(void) const

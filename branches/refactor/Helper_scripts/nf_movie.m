@@ -12,12 +12,12 @@ function nf_movie( nf, field, fname )
     [X,Y] = meshgrid(1:side,1:side);
 
     figure; h = surf( X, Y, data(:,:,1) );
-    zlim([0 1]);
+%     zlim([0 1]);
     shading interp; lighting gouraud; camlight;
     F(100) = getframe(gcf); % Trick to preallocate F
 
     for t = 1:100
-        norm = max(max(data(:,:,t)));
+        norm = 1;%max(max(data(:,:,t)));
         set( h, 'ZData', data(:,:,t)/norm );
         title( ['Time: ',num2str(nf.deltat * t)] );
         F(t) = getframe(gcf);

@@ -1,9 +1,0 @@
-#!/bin/bash
-
-for f in ./Configs/* ; do
-	echo $f
-	./Release/NeuroField -i $f
-	echo
-	echo "---------------"
-	echo
-done

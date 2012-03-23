@@ -3,7 +3,7 @@ function nf_report(nf)
     % Romesh Abeysuriya 120322
     fprintf(1,'NEUROFIELD OUTPUT INFORMATION\n')
     fprintf(1,'Traces: ');
-    for j = 2:length(nf.fields)
+    for j = 1:length(nf.fields)
         fprintf(1,'%s ',nf.fields{j});
     end
     fprintf(1,'\nStart time: %.2fs\nStop time: %.2fs\ndeltat: %.2gs\nnpoints: %d\n',nf.time(1),nf.time(end),nf.deltat,nf.npoints);
