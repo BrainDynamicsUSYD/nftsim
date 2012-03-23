@@ -7,7 +7,7 @@ using namespace std;
 
 int main(){
     vector<int> x;
-    Stencil*[2] old;
+    Stencil* old[2];
     
     for(int i = 1; i<=25; i++)
         x.push_back(i);
