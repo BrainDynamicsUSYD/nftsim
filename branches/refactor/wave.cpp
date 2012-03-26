@@ -64,22 +64,26 @@ Wave::~Wave(void)
 
 void Wave::step(void)
 {
-  for( int i=0; i<nodes; i++, (*oldp[0])++, (*oldQ[0])++ ) {
-    sump     = oldp[0]->n  +oldp[0]->s  +oldp[0]->w  +oldp[0]->e;
-    diagsump = oldp[0]->nw +oldp[0]->ne +oldp[0]->sw +oldp[0]->se;
-    sumQ     = oldQ[0]->n  +oldQ[0]->s  +oldQ[0]->w  +oldQ[0]->e;
-    diagsumQ = oldQ[0]->nw +oldQ[0]->ne +oldQ[0]->sw +oldQ[0]->se;
-    drive = dfact*( tenminus3p2*exp1*oldQ[0]->c +prepop.Q(tau)[i] +exp2*oldQ[1]->c +exp1*.5*p2*(sumQ+.5*diagsumQ) );
-    p[i] = twominus3p2*exp1*oldp[0]->c +exp1*.5*p2*(sump+.5*diagsump) -exp2*oldp[1]->c +drive;
-	if (i==1274){
-		cout << "oldP[1]: " << oldp[1]->c << " oldp[0]: " << oldp[0]->c << " p[i]: " << p[i] << endl;
-	}
+  for( int i=0; i<nodes; i++,
+          (*oldp[0])++, (*oldQ[0])++, (*oldp[1])++, (*oldQ[1])++ ) {
+    sump     = oldp[0]->n()  +oldp[0]->s()  +oldp[0]->w()  +oldp[0]->e();
+    diagsump = oldp[0]->nw() +oldp[0]->ne() +oldp[0]->sw() +oldp[0]->se();
+    sumQ     = oldQ[0]->n()  +oldQ[0]->s()  +oldQ[0]->w()  +oldQ[0]->e();
+    diagsumQ = oldQ[0]->nw() +oldQ[0]->ne() +oldQ[0]->sw() +oldQ[0]->se();
+    drive = dfact*( tenminus3p2*exp1*oldQ[0]->c() +prepop.Q(tau)[i] +exp2*oldQ[1]->c() +exp1*.5*p2*(sumQ+.5*diagsumQ) );
+    p[i] = twominus3p2*exp1*oldp[0]->c() +exp1*.5*p2*(sump+.5*diagsump) -exp2*oldp[1]->c() +drive;
   }
-  key = !key;
+
+  oldpval[1] = oldpval[0];
+  oldpval[0] = p;
+  oldQval[1] = oldQval[0];
+  oldQval[0] = prepop.Q(tau);
+
+  /*key = !key;
   oldpval[key] = p;
-  oldp[0]->assign(&oldpval[key]);
-  oldp[1]->assign(&oldpval[!key]);
+  oldp[0]->assign(&oldpval[key]);  // just updated value
+  oldp[1]->assign(&oldpval[!key]); // one timestep back
   oldpval[key] = prepop.Q(tau);
   oldQ[0]->assign(&oldQval[key]);
-  oldQ[1]->assign(&oldQval[!key]);
+  oldQ[1]->assign(&oldQval[!key]);*/
 }

@@ -26,7 +26,7 @@ protected:
   int  _w; int _c; int  _e;
   int _sw; int _s; int _se;
 
-  inline void update(void);
+  //void update(void);
 public:
   Stencil( int nodes, int longside );
   virtual ~Stencil(void);
@@ -34,13 +34,13 @@ public:
   void assign( vector<double>* field );
 
   virtual void operator++(int i); // increment Moore grid
-  void set( int node ); // point to node
+  virtual void set( int node ); // point to node
   int get(void) const; // get current node index
 
   // get Moore grid
-  double nw; double n; double ne;
-  double  w; double c; double  e;
-  double sw; double s; double se;
+  double nw(void) const; double n(void) const; double ne(void) const;
+  double  w(void) const; double c(void) const; double  e(void) const;
+  double sw(void) const; double s(void) const; double se(void) const;
 };
 
 #endif
