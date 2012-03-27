@@ -43,7 +43,7 @@ public:
   double Qinit( Configf& configf ) const;
   const vector<double>& V(void) const;
   void add2Dendrite( int index,
-          Propag* const prepropag, Couple* const precouple );
+          const Propag& prepropag, const Couple& precouple );
   void growHistory( const Tau& tau );
   virtual vector<Output*> output(void) const;
 };

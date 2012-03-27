@@ -22,7 +22,7 @@ void Dendrite::init( Configf& configf )
   if( buffer == "Steady" ) {
     v.resize(nodes);
     for( int i=0; i<nodes; i++ )
-      v[i] = prepropag->phi()[i]*precouple->nu()[i];
+      v[i] = prepropag.phi()[i]*precouple.nu()[i];
   }
   else
     v.resize(nodes,atof(buffer.c_str()));
@@ -53,7 +53,7 @@ void Dendrite::dump( Dumpf& dumpf ) const
 }
 
 Dendrite::Dendrite( int nodes, double deltat, int index,
-    const Propag* prepropag, const Couple* precouple )
+    const Propag& prepropag, const Couple& precouple )
   : NF(nodes,deltat,index), v(nodes), dvdt(nodes,0), oldnp(nodes),
     prepropag(prepropag), precouple(precouple)
 {
@@ -69,7 +69,7 @@ void Dendrite::step(void)
 
   vector<double> np(nodes);
   for( int i=0; i<nodes; i++ )
-    np[i] = precouple->nu()[i]*prepropag->phi()[i];
+    np[i] = precouple.nu()[i]*prepropag.phi()[i];
 
   if(alpha!=beta)
 //#pragma omp parallel for private(adjustedPab,deltaPdeltat)

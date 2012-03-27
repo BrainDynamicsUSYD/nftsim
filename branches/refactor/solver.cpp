@@ -287,7 +287,7 @@ void Solver::init( Configf& configf )
   for( int i=0; i<cnt.npop; i++ )
     for( int j=0; j<cnt.ncnt; j++ )
       if( cnt.post[j] == i )
-        pops[i]->add2Dendrite( j, propags[j], couples[j] );
+        pops[i]->add2Dendrite( j, *propags[j], *couples[j] );
 
   // read couples parameters
   configf.go2("Couple 1");

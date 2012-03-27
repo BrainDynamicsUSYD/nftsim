@@ -58,7 +58,7 @@ void QResponse::step(void)
 }
 
 void QResponse::add2Dendrite( int index,
-    Propag* const prepropag, Couple* const precouple )
+    const Propag& prepropag, const Couple& precouple )
 {
   dendrites.add( new Dendrite(nodes,deltat,index,prepropag,precouple) );
 }

@@ -100,7 +100,7 @@ const vector<double>& Population::V(void) const
 }
 
 void Population::add2Dendrite( int index,
-    Propag* const prepropag, Couple* const precouple )
+    const Propag& prepropag, const Couple& precouple )
 {
   if( settled ) {
     std::cerr<<"Population is already settled, no more dendrites can be added!"

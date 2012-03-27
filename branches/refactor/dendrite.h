@@ -27,8 +27,8 @@ class Dendrite : public NF
   vector<double> dvdt;
   vector<double> oldnp;
 
-  const Propag* prepropag;
-  const Couple* precouple;
+  const Propag& prepropag;
+  const Couple& precouple;
 
   double alpha;
   double beta;
@@ -53,7 +53,7 @@ protected:
   void dump( Dumpf& dumpf ) const;
 public: 
   Dendrite( int nodes, double deltat, int index,
-      const Propag* prepropag, const Couple* precouple );
+      const Propag& prepropag, const Couple& precouple );
   virtual ~Dendrite(void);
   void step(void);
   const vector<double>& V(void) const;
