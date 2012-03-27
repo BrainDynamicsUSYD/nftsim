@@ -17,6 +17,16 @@ void Dumpf::open(void)
   }
 }
 
+void Dumpf::checkFlush(void)
+{
+  if( s == &ss )
+    if( ss.tellp() >1e6 /*==1Mb*/ ) {
+      open();
+      file<<ss.str().c_str();
+      ss.str("");
+    }
+}
+
 Dumpf::Dumpf(void)
 {
   file.precision(14); file<<std::scientific;
@@ -53,30 +63,28 @@ Dumpf& Dumpf::operator<< ( double f )
 {
   if( f>=0 ) *s<<" ";
   *s<<f;
+  checkFlush();
   return *this;
 }
 
 Dumpf& Dumpf::operator<< ( const string& str )
 {
   *s<<setw(20)<<str.c_str();
+  checkFlush();
   return *this;
 }
 
 Dumpf& Dumpf::operator<< ( int i )
 {
   *s<<i;
+  checkFlush();
   return *this;
 }
-
-/*Dumpf& Dumpf::operator<< ( unsigned int i )
-{
-  *s<<i;
-  return *this;
-}*/
 
 Dumpf& Dumpf::operator<< ( ostream& (*pf)(ostream&) )
 {
   *s<<pf;
+  checkFlush();
   return *this;
 }
 

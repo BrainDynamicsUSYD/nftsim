@@ -192,8 +192,8 @@ if( t<0 ) return;
   }
   else if( mode=="Pulse" ) { // periodic pulse pattern
     if( fmod(t,tperiod)<pdur )
-      //for( int i=0; i<nodes; i++ )
-      for( int i=1274; i<1275; i++ )
+      for( int i=0; i<nodes; i++ )
+      //for( int i=1274; i<1275; i++ )
         Q[i] += amp;
   }
   else if( mode=="Sine" ) { // sinusoidal stimuli
@@ -237,7 +237,7 @@ if( t<0 ) return;
   }
   else if( mode=="MNS" ) { // median nerve stimulation
     int width = sqrt(nodes);
-    int stimwidth = 1; // width of square of nodes to stimulate
+    int stimwidth = 20; // width of square of nodes to stimulate
     if( width%2 == 0 ) { // even
       if( t<xspread )
         for(int i=width/2-stimwidth; i<width/2+stimwidth; i++)

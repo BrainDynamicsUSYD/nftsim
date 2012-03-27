@@ -26,13 +26,13 @@ protected:
   virtual void dump( Dumpf& dumpf ) const; 
 
   const vector<double>& glu;
-  const Population* const prepop;
-  const Population* const postpop;
+  const Population& prepop;
+  const Population& postpop;
   vector<double> n;
   int pos;
 public: 
   Couple( int nodes, double deltat, int index, const vector<double>& glu,
-      const Population* const prepop, const Population* const postpop );
+      const Population& prepop, const Population& postpop );
   virtual ~Couple(void);
   virtual void step(void);
   virtual vector<Output*> output(void) const; 

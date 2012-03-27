@@ -272,10 +272,10 @@ void Solver::init( Configf& configf )
     // PUT YOUR COUPLES HERE
     if(ctype=="Map")
       couples.add( new
-        Couple(nodes,deltat,i, glu, pops[cnt.pre[i]], pops[cnt.post[i]] ) );
+        Couple(nodes,deltat,i, glu, *pops[cnt.pre[i]], *pops[cnt.post[i]] ) );
     else if(ctype=="CaDP")
       couples.add( new
-        CaDP(nodes,deltat,i, glu, pops[cnt.pre[i]], pops[cnt.post[i]] ) );
+        CaDP(nodes,deltat,i, glu, *pops[cnt.pre[i]], *pops[cnt.post[i]] ) );
     else {
       std::cerr<<"Invalid couple type '"<<ctype<<"'."<<endl;
       exit(EXIT_FAILURE);

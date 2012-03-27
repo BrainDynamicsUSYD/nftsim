@@ -12,6 +12,8 @@ function data = nf_extract(nf,traces,t,nodes)
     % If no nodes are provided, output all nodes
     if nargin < 4 || isempty(nodes)
         nodes = nf.nodes{1}; 
+    elseif ~all(ismember(nodes,nf.nodes{1}))
+        error('You have requested a nonexistant node');
     end
     
     % If no time is provided, output all times

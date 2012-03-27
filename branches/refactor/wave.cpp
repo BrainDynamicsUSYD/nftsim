@@ -8,7 +8,7 @@
 #include<cmath>
 #include"wave.h"
 #include <iostream>
-using namespace std;
+using std::endl;
 
 void Wave::init( Configf& configf )
 {
@@ -40,6 +40,11 @@ void Wave::init( Configf& configf )
   twominus3p2 = 2.-3.*p2;
   exp1 = exp(-deltat*gamma);
   exp2 = exp(-2.*deltat*gamma);
+
+  if( gamma*range*deltat/deltax >1.41 ) {
+    std::cerr<<"Wave equation does not fulfill the Courant condition."<<endl;
+    exit(EXIT_FAILURE);
+  }
 }
 
 void Wave::restart( Restartf& restartf )

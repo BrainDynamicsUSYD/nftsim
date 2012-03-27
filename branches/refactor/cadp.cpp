@@ -31,8 +31,6 @@ void CaDP::init( Configf& configf )
   configf.Param("LTD",nu_ltd);
   configf.Param("LTP",nu_ltp);
   configf.Param("B",B);
-  configf.Param("N",N);
-  configf.Param("rho",rho);
 }
 
 void CaDP::restart( Restartf& restartf )
@@ -46,13 +44,11 @@ void CaDP::dump( Dumpf& dumpf ) const
   dumpf<<"Threshold"<<nu_th<<" ";
   dumpf<<"LTD: "<<nu_ltd<<" ";
   dumpf<<"LTP: "<<nu_ltp<<" ";
-  dumpf<<"B: "<<B<<" ";
-  dumpf<<"N: "<<N<<" ";
-  dumpf<<"rho: "<<rho<<" ";*/
+  dumpf<<"B: "<<B<<" ";*/
 }
 
 CaDP::CaDP( int nodes, double deltat, int index, const vector<double>& glu,
-        const Population* const prepop, const Population* const postpop )
+        const Population& prepop, const Population& postpop )
   : Couple(nodes,deltat,index,glu,prepop,postpop), Ca(nodes,0),binding(nodes,0)
 {
 }
@@ -63,7 +59,7 @@ CaDP::~CaDP(void)
 
 void CaDP::step(void)
 {
-  const vector<double>& V = postpop->V();
+  const vector<double>& V = postpop.V();
   for( int i=0; i<nodes; i++ ) {
     binding[i] = sig( glu[i] -200e-6, B );
     double dCa = deltat*(2e-3*binding[i])

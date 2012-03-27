@@ -31,6 +31,7 @@ class Dumpf
   ostream* s;
   string filename;
   void open(void);
+  void checkFlush(void);
 public:
   Dumpf(void);
   ~Dumpf(void);
