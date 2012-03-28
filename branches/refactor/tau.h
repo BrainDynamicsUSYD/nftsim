@@ -1,10 +1,3 @@
-/***************************************************************************
-                          tau.h  -  implements axonal time delay
-                             -------------------
-    copyright            : (C) 2010 by Peter Drysdale
-    email                : peter@physics.usyd.edu.au
- ***************************************************************************/
-
 #ifndef TAU_H
 #define TAU_H
 

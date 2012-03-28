@@ -1,11 +1,3 @@
-/***************************************************************************
-                          qresponse.h  -  gives the firing rate due to
-                                          dendritic inputs and soma potential
-                             -------------------
-    copyright            : (C) 2009 by Peter Drysdale
-    email                : peter@physics.usyd.edu.au
- ***************************************************************************/
-
 #ifndef QRESPONSE_H
 #define QRESPONSE_H
 

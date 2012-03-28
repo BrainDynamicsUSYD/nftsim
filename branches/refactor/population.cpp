@@ -1,10 +1,3 @@
-/***************************************************************************
-                          population.cpp  -  neural population object
-                             -------------------
-    copyright            : (C) 2005 by Peter Drysdale
-    email                : peter@physics.usyd.edu.au
- ***************************************************************************/
-
 #include<iostream>
 using std::endl;
 #include"population.h"
@@ -12,13 +5,13 @@ using std::endl;
 void Population::init( Configf& configf )
 {
   if( qresponse ) { // neural population
-    double Qinit; configf.Param("Q",Qinit);
+    double Qinit; configf.param("Q",Qinit);
     if( !qhistory.size() )
       qhistory.push_back( vector<double>(nodes,Qinit) );
     else
       for( uint i=0; i<qhistory.size(); i++ )
         qhistory[i].resize(nodes,Qinit);
-    configf.Param( "Firing", *qresponse );
+    configf.param( "Firing", *qresponse );
   }
   else { // stimulus population
     //for( int i=0; i<3; i++ )
@@ -28,7 +21,7 @@ void Population::init( Configf& configf )
       for( uint i=0; i<qhistory.size(); i++ )
         qhistory[i].resize(nodes,0);
     timeseries = new Timeseries(nodes,deltat,index);
-    configf.Param( "Stimulus", *timeseries );
+    configf.param( "Stimulus", *timeseries );
   }
   settled = true;
 }
@@ -85,7 +78,7 @@ const vector<double>& Population::Q( const Tau& tau) const
 
 double Population::Qinit( Configf& configf ) const
 {
-  string buffer = configf.Find( label("Population ",index+1)+"*Q:");
+  string buffer = configf.find( label("Population ",index+1)+"*Q:");
   return atof(buffer.c_str());
 }
 

@@ -1,10 +1,3 @@
-/***************************************************************************
-                          dumpf.h  -  dumps data into a file
-                             -------------------
-    copyright            : (C) 2005 by Peter Drysdale
-    email                : peter@physics.usyd.edu.au
- ***************************************************************************/
-
 #ifndef DUMPF_H
 #define DUMPF_H
 

@@ -1,10 +1,3 @@
-/***************************************************************************
-                          population.h  -  neural population object
-                             -------------------
-    copyright            : (C) 2005 by Peter Drysdale
-    email                : peter@physics.usyd.edu.au
- ***************************************************************************/
-
 #ifndef POPULATION_H
 #define POPULATION_H
 

@@ -1,10 +1,3 @@
-/***************************************************************************
-                          timeseries.h  - a generic time series generator 
-                             -------------------
-    copyright            : (C) 2007 by Peter Drysdale
-    email                : peter@physics.usyd.edu.au
- ***************************************************************************/
-
 #ifndef TIMESERIES_H
 #define TIMESERIES_H
 

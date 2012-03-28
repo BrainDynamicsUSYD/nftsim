@@ -1,12 +1,3 @@
-/***************************************************************************
-                          array.h  -  generic array class to hold objects,
-                                      including populations, dendrites,
-                                      propags, couples, and outputs
-                             -------------------
-    copyright            : (C) 2010 by Peter Drysdale
-    email                : peter@physics.usyd.edu.au
- ***************************************************************************/
-
 #ifndef ARRAY_H
 #define ARRAY_H
 

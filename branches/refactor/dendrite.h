@@ -1,10 +1,3 @@
-/***************************************************************************
-                          dendrite.h  -  calculates dendritic response
-                             -------------------
-    copyright            : (C) 2005 by Peter Drysdale
-    email                : peter@physics.usyd.edu.au
- ***************************************************************************/
-
 #ifndef DENDRITICR_H
 #define DENDRITICR_H
 

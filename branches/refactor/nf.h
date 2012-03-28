@@ -1,11 +1,3 @@
-/***************************************************************************
-                          nf.h  -  abstract base class to specify interface
-                                   of every other classes except configf
-                             -------------------
-    copyright            : (C) 2010 by Peter Drysdale
-    email                : peter@physics.usyd.edu.au
- ***************************************************************************/
-
 #ifndef NF_H
 #define NF_H
 

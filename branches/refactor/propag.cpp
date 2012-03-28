@@ -1,16 +1,9 @@
-/***************************************************************************
-                          propag.cpp  -  description
-                             -------------------
-    copyright            : (C) 2006 by Peter Drysdale
-    email                : peter@physics.usyd.edu.au
- ***************************************************************************/
-
 #include "propag.h"
 
 void Propag::init( Configf& configf )
 {
   p.resize(nodes);
-  configf.Param("Tau",tau);
+  configf.param("Tau",tau);
   prepop.growHistory(tau);
 }
 

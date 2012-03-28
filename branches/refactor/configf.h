@@ -1,10 +1,3 @@
-/***************************************************************************
-                          configf.h  -  an extension of istream
-                             -------------------
-    copyright            : (C) 2005 by Peter Drysdale
-    email                : peter@physics.usyd.edu.au
- ***************************************************************************/
-
 #ifndef CONFIGF_H
 #define CONFIGF_H
 
@@ -36,17 +29,17 @@ public:
 
   // Looks for the next parameter called "param" and stores it in T
   // If "param" is not found, terminate program
-  template<class T> void Param(const string& param, T& ret, int delim=':' );
+  template<class T> void param(const string& param, T& ret, int delim=':' );
   // Looks for the next parameter called "param" and stores it in T
   // If "param" is not found, return false
-  template<class T> bool Optional( const string& param, T& ret, int delim=':' );
+  template<class T> bool optional( const string& param, T& ret, int delim=':' );
   // Read & return an arbitrary array of doubles
-  vector<double> Numbers(void);
+  vector<double> numbers(void);
   // Find the next "Check", then returns the next input entry as string
-  string Find( const string& Check );
+  string find( const string& Check );
 
   // points to next delim, and verify it is "check"+"delim"
-  bool Next( const string& Check, int delim=':' );
+  bool next( const string& Check, int delim=':' );
   // searches and points to next keyword
   void go2( const string& keyword );
 };
@@ -67,9 +60,9 @@ public:
 };
 //class Restartf;
 
-template<class T> void Configf::Param(const string& param, T& ret, int delim )
+template<class T> void Configf::param(const string& param, T& ret, int delim )
 {
-  if( Next(param,delim) ) {
+  if( next(param,delim) ) {
     if( !good() ) {
       std::cerr << "Input variable '" << param << "' is given a wrong type."
         << endl;
@@ -88,9 +81,9 @@ template<class T> void Configf::Param(const string& param, T& ret, int delim )
   }
 }
 
-template<> inline void Configf::Param<string>(const string& param, string& ret, int delim )
+template<> inline void Configf::param<string>(const string& param, string& ret, int delim )
 {
-  if( Next(param,delim) ) {
+  if( next(param,delim) ) {
     *this >> buffer;
     if( !good() ) {
       std::cerr << "Input variable '" << param << "' is given a wrong type."
@@ -110,9 +103,9 @@ template<> inline void Configf::Param<string>(const string& param, string& ret, 
     }
 }
 
-template<class T> bool Configf::Optional( const string& param, T& ret, int delim )
+template<class T> bool Configf::optional( const string& param, T& ret, int delim )
 {
-  if( Next(param,delim) ) {
+  if( next(param,delim) ) {
     *this >> ret;
     if( !good() ) {
       std::cerr << "Input variable '" << param << "' is given a wrong type."

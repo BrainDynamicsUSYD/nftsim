@@ -1,15 +1,8 @@
-/***************************************************************************
-                          couple.cpp  -  governs coupling strength nu
-                             -------------------
-    copyright            : (C) 2007 by Peter Drysdale
-    email                : peter@physics.usyd.edu.au
- ***************************************************************************/
-
 #include "couple.h"
 
 void Couple::init( Configf& configf )
 {
-  double nuinit; configf.Param("nu",nuinit);
+  double nuinit; configf.param("nu",nuinit);
   n.resize(nodes,nuinit);
   pos = (nuinit>0)?1:-1;
 }

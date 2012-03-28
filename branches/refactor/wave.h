@@ -1,10 +1,3 @@
-/***************************************************************************
-                          wave.h  -  damped wave propagator
-                             -------------------
-    copyright            : (C) 2006 by Peter Drysdale
-    email                : peter@physics.usyd.edu.au
- ***************************************************************************/
-
 #ifndef WAVE_H
 #define WAVE_H
 

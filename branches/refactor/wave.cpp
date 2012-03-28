@@ -1,10 +1,3 @@
-/***************************************************************************
-                          wave.cpp  -  description
-                             -------------------
-    copyright            : (C) 2006 by Peter Drysdale
-    email                : peter@physics.usyd.edu.au
- ***************************************************************************/
-
 #include<cmath>
 #include"wave.h"
 #include <iostream>
@@ -13,16 +6,16 @@ using std::endl;
 void Wave::init( Configf& configf )
 {
   string buffer("Steady");
-  configf.Optional("phi",buffer);
+  configf.optional("phi",buffer);
   double Q = prepop.Qinit(configf);
-  configf.Param("Deltax",deltax);
-  configf.Param("Tau",tau); prepop.growHistory(tau);
+  configf.param("Deltax",deltax);
+  configf.param("Tau",tau); prepop.growHistory(tau);
   if( buffer != "Steady" )
     p.resize(nodes,atof(buffer.c_str()));
   else
     p.resize(nodes,Q);
-  configf.Param("Range",range);
-  configf.Param("gamma",gamma);
+  configf.param("Range",range);
+  configf.param("gamma",gamma);
   oldpval[0].resize(nodes,p[0]);
   oldp[0] = new Stencil(nodes,longside); oldp[0]->assign(&oldpval[0]);
   oldpval[1].resize(nodes,p[0]);

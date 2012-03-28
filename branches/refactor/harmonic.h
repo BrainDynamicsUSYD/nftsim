@@ -1,11 +1,3 @@
-/***************************************************************************
-                          harmonic.h  -  spatially homogeneous harmonic
-                                         oscillator propagator
-                             -------------------
-    copyright            : (C) 2006 by Peter Drysdale
-    email                : peter@physics.usyd.edu.au
- ***************************************************************************/
-
 #ifndef HARMONIC_H
 #define HARMONIC_H
 

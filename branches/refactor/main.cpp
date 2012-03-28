@@ -1,11 +1,3 @@
-/***************************************************************************
-                          main.cpp  -  wrapper to NeuroField simulation class,
-                                       initializes config, dump and output files
-                             -------------------
-    copyright            : (C) 2005 by PeterDrysdale
-    email                : peter@physics.usyd.edu.au
- ***************************************************************************/
-
 #include <iostream>
 using std::endl;
 #include<cstdlib>

@@ -1,10 +1,3 @@
-/***************************************************************************
-                          couple.h  -  governs coupling strength nu
-                             -------------------
-    copyright            : (C) 2007 by Peter Drysdale
-    email                : peter@physics.usyd.edu.au
- ***************************************************************************/
-
 #ifndef COUPLE_H
 #define COUPLE_H
 

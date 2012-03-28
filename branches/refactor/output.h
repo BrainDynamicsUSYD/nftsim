@@ -1,10 +1,3 @@
-/***************************************************************************
-                          output.h  -  outputs a field
-                             -------------------
-    copyright            : (C) 2005 by Peter Drysdale
-    email                : peter@physics.usyd.edu.au
- ***************************************************************************/
-
 #ifndef OUTPUT_H
 #define OUTPUT_H
 

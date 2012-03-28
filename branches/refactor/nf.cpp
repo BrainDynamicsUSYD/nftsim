@@ -1,10 +1,3 @@
-/***************************************************************************
-                          nf.cpp  -  abstract base class to specify interface
-                             -------------------
-    copyright            : (C) 2010 by Peter Drysdale
-    email                : peter@physics.usyd.edu.au
- ***************************************************************************/
-
 #include"configf.h"
 #include"nf.h"
 

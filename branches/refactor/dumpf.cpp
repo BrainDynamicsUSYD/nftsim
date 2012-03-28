@@ -20,7 +20,7 @@ void Dumpf::open(void)
 void Dumpf::checkFlush(void)
 {
   if( s == &ss )
-    if( ss.tellp() >1e6 /*==1Mb*/ ) {
+    if( ss.tellp() >100e6 /*==100Mb*/ ) {
       open();
       file<<ss.str().c_str();
       ss.str("");

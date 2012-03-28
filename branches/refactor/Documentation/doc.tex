@@ -701,7 +701,7 @@ Within the C++ source files, developers should stick to this conventions for con
 \subsection{Class NF}
 \label{sec:nf}
 
-\textbf{ALL} classes (with the exceptions being \type{Configf} and \type{Dumpf}) should derive from the \type{NF} object. This abstract base class contains 3 member variables, and 4 interface methods:
+\textbf{ALL} classes that requires the configuration file should derive from the \type{NF} object. This abstract base class contains 3 member variables, and 4 interface methods:
 
 \begin{tabular}{l p{10cm}}
 Variable\\[6pt]
@@ -762,7 +762,7 @@ where \type{Object} and \type{field} should be appropriately named.
 In extending \type{NeuroField} it is likely new classes needs to be written. When doing this, it would be useful to keep in mind:
 \begin{enumerate}
 	\item When appropriate, the default constructor, copy constructor, and \type{operator=} should be made inaccessible by declaring them to be private.
-	\item The \type{NF} class \textbf{MUST} be inherited.
+	\item If the configuration file is used, the \type{NF} class \textbf{MUST} be inherited.
 	\item The \type{init()}, \type{restart()}, \type{dump()}, \type{step()} functions should be overloaded appropriately. Keep in mind that \type{restart()} internally calls \type{init()} at the beginning.
 	\item \type{Population}, \type{Propag}, and \type{Couple} has the \type{output()} function to specify which field(s) to output. Overload this if appropriate.
 	\item When in doubt, read existing class implementations for examples.

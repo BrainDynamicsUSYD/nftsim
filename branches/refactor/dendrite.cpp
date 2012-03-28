@@ -1,10 +1,3 @@
-/***************************************************************************
-                          dendrite.cpp  -  calculates dendritic response
-                             -------------------
-    copyright            : (C) 2009 by Peter Drysdale
-    email                : peter@physics.usyd.edu.au
- ***************************************************************************/
-
 #include<cstdlib>
 #include<iostream>
 using std::endl;
@@ -13,12 +6,12 @@ using std::endl;
 
 void Dendrite::init( Configf& configf )
 {
-  if( !configf.Next( label("Dendrite ",index+1) )) {
+  if( !configf.next( label("Dendrite ",index+1) )) {
     std::cerr<<"Dendrite from population "<<index+1<<" not found."<<endl;
     exit(EXIT_FAILURE);
   }
   string buffer("Steady");
-  configf.Optional("V",buffer);
+  configf.optional("V",buffer);
   if( buffer == "Steady" ) {
     v.resize(nodes);
     for( int i=0; i<nodes; i++ )
@@ -27,8 +20,8 @@ void Dendrite::init( Configf& configf )
   else
     v.resize(nodes,atof(buffer.c_str()));
   oldnp = v;
-  configf.Param("alpha",alpha);
-  configf.Param("beta",beta);
+  configf.param("alpha",alpha);
+  configf.param("beta",beta);
 
   aminusb = alpha - beta;
   expa = exp(-alpha*deltat);

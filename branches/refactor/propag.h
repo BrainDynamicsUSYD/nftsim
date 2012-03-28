@@ -1,11 +1,3 @@
-/***************************************************************************
-                          propag.h  -  mapping propagator
-                                       inherit for more sophisticated propagator
-                             -------------------
-    copyright            : (C) 2006 by Peter Drysdale
-    email                : peter@physics.usyd.edu.au
- ***************************************************************************/
-
 #ifndef PROPAG_H
 #define PROPAG_H
 

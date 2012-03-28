@@ -1,10 +1,3 @@
-/***************************************************************************
-                          cadp.h  - calcium dependent plasticity couple
-                             -------------------
-    copyright            : (C) 2009
-    email                : peter@physics.usyd.edu.au
- ***************************************************************************/
-
 #ifndef CADP_H
 #define CADP_H
 

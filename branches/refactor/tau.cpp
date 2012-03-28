@@ -1,10 +1,3 @@
-/***************************************************************************
-                          tau.cpp  -  implements axonal time delay
-                             -------------------
-    copyright            : (C) 2010 by Peter Drysdale
-    email                : peter@physics.usyd.edu.au
- ***************************************************************************/
-
 #include<iostream>
 using std::endl;
 #include<cmath>
@@ -12,7 +5,7 @@ using std::endl;
 
 void Tau::init( Configf& configf )
 {
-  vector<double> temp = configf.Numbers();
+  vector<double> temp = configf.numbers();
   if( temp.size() == 1 ) {
     if( remainder(temp[0],deltat) >deltat ) {
       std::cerr<<"Value of tau not divisible by Deltat!"<<endl;

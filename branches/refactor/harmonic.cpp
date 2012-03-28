@@ -4,7 +4,7 @@
 void Harmonic::init( Configf& configf )
 {
   string buffer("Steady");
-  configf.Optional("phi",buffer);
+  configf.optional("phi",buffer);
   if( buffer != "Steady" )
     p.resize(nodes,atof(buffer.c_str()));
   else
@@ -12,10 +12,10 @@ void Harmonic::init( Configf& configf )
   oldp.resize(nodes,atof(buffer.c_str()));
   oldQ.resize(nodes,atof(buffer.c_str()));
   dpdt.resize(nodes,0.);
-  double temp; configf.Optional("Deltax",temp); // for compatibility with Wave
-  configf.Param("Tau",tau); prepop.growHistory(tau);
-  configf.Optional("Range",temp);
-  configf.Param("gamma",gamma);
+  double temp; configf.optional("Deltax",temp); // for compatibility with Wave
+  configf.param("Tau",tau); prepop.growHistory(tau);
+  configf.optional("Range",temp);
+  configf.param("gamma",gamma);
   twoongamma = 2./gamma;
   expgamma = exp(-gamma*deltat);
 }

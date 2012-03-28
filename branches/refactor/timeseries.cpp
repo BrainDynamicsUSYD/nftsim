@@ -1,10 +1,3 @@
-/***************************************************************************
-                          timeseries.cpp  -  a generic time series generator 
-                             -------------------
-    copyright            : (C) 2008 by Peter Drysdale
-    email                : peter@physics.usyd.edu.au
- ***************************************************************************/
-
 #include <cmath>
 #include<iostream>
 using std::endl;
@@ -14,11 +7,11 @@ void Timeseries::init( Configf& configf )
 {
   random=0; // Set pointer to null in case random is not created
   seed=-98716872;
-  configf.Param("Mode",mode);//configf>>mode;
-  configf.Param("Onset",t); t = -t;
+  configf.param("Mode",mode);//configf>>mode;
+  configf.param("Onset",t); t = -t;
   if( mode=="Composite" ) {
     // take in stimulus transition times and specifications of each stimulus
-    int nStim; configf.Param("Number of Stimuli",nStim);
+    int nStim; configf.param("Number of Stimuli",nStim);
     for( int i=0; i<nStim; i++ ) {
       // beware of non-unique indexing
       Timeseries* p = new Timeseries(nodes,deltat,index*10+i+1);
@@ -27,54 +20,55 @@ void Timeseries::init( Configf& configf )
     }
   }
   else if( mode=="Const" ) { // constant noise
-    configf.Param("Mean",mean);
+    configf.param("Mean",mean);
   }
   else if( mode=="White" ) { // white noise
-    configf.Optional("Ranseed",seed);
-    configf.Param("Amplitude",amp);
+    configf.optional("Ranseed",seed);
+    configf.param("Amplitude",amp);
     random = new Random(seed);
-    configf.Param("Mean",mean);
+    configf.param("Mean",mean);
   }
   else if( mode=="CoherentWhite" ) { // spatially homogeneous white noise
-    configf.Optional("Ranseed",seed);
-    configf.Param("Amplitude",amp);
+    configf.optional("Ranseed",seed);
+    configf.param("Amplitude",amp);
     random = new Random(seed);
-    configf.Param("Mean",mean);
+    configf.param("Mean",mean);
   }
   else if( mode=="Pulse" ) { // periodic pulse pattern
-    configf.Param("Amplitude",amp);
-    configf.Param("Width",pdur);
-    if( !configf.Optional("Rep Rate",tperiod) )
+    configf.param("Amplitude",amp);
+    configf.param("Width",pdur);
+    if( !configf.optional("Rep Rate",tperiod) )
       tperiod = 99999999; // if repetition period not specified, do just one pulse
   }
   else if( mode=="Sine" ) { // sinusoidal stimuli
-    configf.Param("Amplitude",amp);
-    configf.Param("Frequency",freq);
+    configf.param("Amplitude",amp);
+    configf.param("Frequency",freq);
   }
   else if( mode=="Gaussian" ) { // spatial and temporal gaussian
-    configf.Param("Amplitude",amp);
-    configf.Param("Time to peak of stimulus",tpeak);
-    configf.Param("Pulse Duration",pdur);
-    configf.Param("Grid Spacing",deltax);
-    configf.Param("x location",xcent);
-    configf.Param("y location",ycent);
-    configf.Param("x spread",xspread);
-    configf.Param("y spread",yspread);
+    configf.param("Amplitude",amp);
+    configf.param("Time to peak of stimulus",tpeak);
+    configf.param("Pulse Duration",pdur);
+    configf.param("Grid Spacing",deltax);
+    configf.param("x location",xcent);
+    configf.param("y location",ycent);
+    configf.param("x spread",xspread);
+    configf.param("y spread",yspread);
   }
   else if( mode=="Ramp" ) { // ramp concentration pattern
-    configf.Param("Step height",stepheight);
-    configf.Param("Step width",stepwidth);
+    configf.param("Step height",stepheight);
+    configf.param("Step width",stepwidth);
   }
   else if( mode=="GaussPulse" ) { // gaussian pulse
-    configf.Param("Amplitude",amp);
-    configf.Param("Pulse Duration",pdur);
-    configf.Param("Time at peak",tpeak);
+    configf.param("Amplitude",amp);
+    configf.param("Pulse Duration",pdur);
+    configf.param("Time at peak",tpeak);
   }
   else if( mode=="MNS" ) { // median nerve stimulation
-    configf.Param("N20 width",xspread);
-    configf.Param("N20 height",xcent);
-    configf.Param("P25 width",yspread);
-    configf.Param("P25 height",ycent);
+    configf.param("N20 width",xspread);
+    configf.param("N20 height",xcent);
+    configf.param("P25 width",yspread);
+    configf.param("P25 height",ycent);
+    configf.param("Width",deltax);
   }
 }
 
@@ -237,24 +231,23 @@ if( t<0 ) return;
   }
   else if( mode=="MNS" ) { // median nerve stimulation
     int width = sqrt(nodes);
-    int stimwidth = 20; // width of square of nodes to stimulate
     if( width%2 == 0 ) { // even
       if( t<xspread )
-        for(int i=width/2-stimwidth; i<width/2+stimwidth; i++)
-          for(int j=width/2-stimwidth; j<width/2+stimwidth; j++)
+        for(int i=width/2-deltax; i<width/2+deltax; i++)
+          for(int j=width/2-deltax; j<width/2+deltax; j++)
             Q[i+j*width] += -xcent*sin(3.141592654*t/xspread);
       else if( t<xspread+yspread )
-        for(int i=width/2-stimwidth; i<width/2+stimwidth; i++)
-          for(int j=width/2-stimwidth; j<width/2+stimwidth; j++)
+        for(int i=width/2-deltax; i<width/2+deltax; i++)
+          for(int j=width/2-deltax; j<width/2+deltax; j++)
             Q[i+j*width] += ycent*sin(3.141592654*(t-xspread)/yspread);
     } else { // odd
       if( t<xspread )
-        for(int i=width/2-stimwidth+1; i<width/2+stimwidth; i++)
-          for(int j=width/2-stimwidth+1; j<width/2+stimwidth; j++)
+        for(int i=width/2-deltax+1; i<width/2+deltax; i++)
+          for(int j=width/2-deltax+1; j<width/2+deltax; j++)
             Q[i+j*width] += -xcent*sin(3.141592654*t/xspread);
       else if( t<xspread+yspread )
-        for(int i=width/2-stimwidth+1; i<width/2+stimwidth; i++)
-          for(int j=width/2-stimwidth+1; j<width/2+stimwidth; j++)
+        for(int i=width/2-deltax+1; i<width/2+deltax; i++)
+          for(int j=width/2-deltax+1; j<width/2+deltax; j++)
             Q[i+j*width] += ycent*sin(3.141592654*(t-xspread)/yspread);
     }
     /*if( t<xspread )

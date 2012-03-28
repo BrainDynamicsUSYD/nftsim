@@ -1,10 +1,3 @@
-/***************************************************************************
-                          solver.cpp  -  runs the NeuroField simulation
-                             -------------------
-    copyright            : (C) 2005 by Peter Drysdale
-    email                : peter@physics.usyd.edu.au
- ***************************************************************************/
-
 #include<cmath>
 #include<string>
 using std::string;
@@ -28,16 +21,16 @@ using std::endl;
 void Solver::CntMat::init( Configf& configf )
 {
   // Read the number of populations
-  configf.Next("From");
+  configf.next("From");
   // Expect format "From: 1 2 3 4", read the 
-  vector<double> pop = configf.Numbers();
+  vector<double> pop = configf.numbers();
   npop = pop.size();
 
   raw.resize(npop);
 
   for( int i=0; i<npop; i++ ) {
-    configf.Next( label("To ",i+1) ); // ignore "To ?:"
-    raw[i] = configf.Numbers();
+    configf.next( label("To ",i+1) ); // ignore "To ?:"
+    raw[i] = configf.numbers();
     if( raw[i].size() != uint(npop) ) {
       std::cerr << "The connection matrix is not configured correctly."
         << endl;
@@ -77,12 +70,12 @@ void Solver::CntMat::dump( Dumpf& dumpf ) const
 void Solver::Outputs::init( Configf& configf )
 {
   // read in nodes to output
-  configf.Next("Node");
-  if( configf.Find("Node:") == "All" ) // beware of this slightly hackish line
+  configf.next("Node");
+  if( configf.find("Node:") == "All" ) // beware of this slightly hackish line
     for( int i=0; i<nodes; i++ )
       Output::node.push_back(i);
   else {
-    vector<double> temp = configf.Numbers();
+    vector<double> temp = configf.numbers();
     for( uint i=0; i<temp.size(); i++ )
       if( temp[i] > nodes ) {
         std::cerr<<"Trying to plot node number "<<temp[i]
@@ -95,7 +88,7 @@ void Solver::Outputs::init( Configf& configf )
 
   // read in time to start of output
   double tempf;
-  if( !configf.Optional("Start",tempf) )
+  if( !configf.optional("Start",tempf) )
     start = 0;
   else {
     if( remainder(tempf,deltat) >deltat ) {
@@ -107,7 +100,7 @@ void Solver::Outputs::init( Configf& configf )
   }
 
   // read in output interval
-  if( !configf.Optional("Interval",tempf) )
+  if( !configf.optional("Interval",tempf) )
     interval = 1;
   else {
     if( remainder(tempf,deltat) >deltat ) {
@@ -119,8 +112,8 @@ void Solver::Outputs::init( Configf& configf )
   }
 
   // read in populations to output
-  configf.Next("Population");
-  vector<double> temp = configf.Numbers();
+  configf.next("Population");
+  vector<double> temp = configf.numbers();
   for( uint i=0; i<temp.size(); i++ ) {
     if( temp[i] > npop ) {
       std::cerr<<"Trying to print population "<<temp[i]
@@ -131,8 +124,8 @@ void Solver::Outputs::init( Configf& configf )
   }
 
   // read in propags to output
-  configf.Next("Propag");
-  temp = configf.Numbers();
+  configf.next("Propag");
+  temp = configf.numbers();
   for( uint i=0; i<temp.size(); i++ ) {
     if( temp[i] > ncnt ) {
       std::cerr<<"Trying to print propagator "<<temp[i]
@@ -143,8 +136,8 @@ void Solver::Outputs::init( Configf& configf )
   }
 
   // read in couples to output
-  configf.Next("Couple");
-  temp = configf.Numbers();
+  configf.next("Couple");
+  temp = configf.numbers();
   for( uint i=0; i<temp.size(); i++ ) {
     if( temp[i] > ncnt ) {
       std::cerr<<"Trying to print couple "<<temp[i]
@@ -211,8 +204,8 @@ void Solver::init( Configf& configf )
   // Anything before the first ':' is ignored as comment
 
   // read in simulation time and timestep
-  double tempf; configf.Param("Time",tempf);
-  configf.Param("Deltat",deltat);
+  double tempf; configf.param("Time",tempf);
+  configf.param("Deltat",deltat);
   if( remainder(tempf,deltat) >deltat ) {
     std::cerr<<"Value of total simulation time not divisible by Deltat."<<endl;
     exit(EXIT_FAILURE);
@@ -221,9 +214,9 @@ void Solver::init( Configf& configf )
     steps = tempf/deltat;
 
   // read in grid size and grid geometry
-  configf.Param("Nodes",nodes);
+  configf.param("Nodes",nodes);
   int longside;
-  if( configf.Optional("Longside",longside) ) {
+  if( configf.optional("Longside",longside) ) {
     if( nodes%longside != 0 ) {
       std::cerr << "To define a rectangular grid nodes: " << nodes <<endl
         << "divided by Longside: " << longside << endl
@@ -236,17 +229,17 @@ void Solver::init( Configf& configf )
 
   // glutamte dynamics
   glu.resize(nodes,0); dglu.resize(nodes,0);
-  configf.Param("Lambda",Lambda); configf.Param("tGlu",tGlu);
+  configf.param("Lambda",Lambda); configf.param("tGlu",tGlu);
 
   // read in connection matrix
-  configf.Next("Connection matrix"); cnt.init(configf);
+  configf.next("Connection matrix"); cnt.init(configf);
 
   // construct populations
   for( int i=0; i<cnt.npop; i++ )
     pops.add( new Population(nodes,deltat,i) );
 
   for( int i=0; i<cnt.ncnt; i++ ) {
-    string ptype = configf.Find( label("Propag ",i+1) +":" );
+    string ptype = configf.find( label("Propag ",i+1) +":" );
     // PUT YOUR PROPAGATORS HERE
     if(ptype=="Map")
       propags.add( new
@@ -268,7 +261,7 @@ void Solver::init( Configf& configf )
     }
     // END PUT YOUR PROPAGATORS HERE
 
-    string ctype = configf.Find( label("Couple ",i+1) +":" );
+    string ctype = configf.find( label("Couple ",i+1) +":" );
     // PUT YOUR COUPLES HERE
     if(ctype=="Map")
       couples.add( new
@@ -292,22 +285,22 @@ void Solver::init( Configf& configf )
   // read couples parameters
   configf.go2("Couple 1");
   for( int i=0; i<cnt.ncnt; i++ )
-    configf.Param( label("Couple ",i+1), *couples[i] );
+    configf.param( label("Couple ",i+1), *couples[i] );
 
   // read propags parameters
   configf.go2("Propag 1");
   for( int i=0; i<cnt.ncnt; i++ )
-    configf.Param( label("Propag ",i+1), *propags[i] );
+    configf.param( label("Propag ",i+1), *propags[i] );
 
   // read populations parameters
   configf.go2("Population 1");
   for( int i=0; i<cnt.npop; i++ )
-    configf.Param( label("Population ",i+1), *pops[i] );
+    configf.param( label("Population ",i+1), *pops[i] );
 
   // initialize outputs
   outputs.nodes = nodes; outputs.deltat = deltat;
   outputs.npop = cnt.npop; outputs.ncnt = cnt.ncnt;
-  configf.go2("Output"); configf.Next("Output"); outputs.init(configf);
+  configf.go2("Output"); configf.next("Output"); outputs.init(configf);
 }
 
 void Solver::restart( Restartf& restartf )

@@ -1,10 +1,3 @@
-/***************************************************************************
-                          cadp.cpp  - calcium dependent plasticity couple
-                             -------------------
-   copyright            : (C) 2009 
-    email                : peter@physics.usyd.edu.au
- ***************************************************************************/
-
 #include<cmath>
 #include "cadp.h"
 
@@ -26,11 +19,11 @@ double CaDP::depress(double Ca) const
 void CaDP::init( Configf& configf )
 {
   Couple::init(configf); // initialize nu and excite()
-  configf.Param("Nu_max",nu_max);
-  configf.Param("Threshold",nu_th);
-  configf.Param("LTD",nu_ltd);
-  configf.Param("LTP",nu_ltp);
-  configf.Param("B",B);
+  configf.param("Nu_max",nu_max);
+  configf.param("Threshold",nu_th);
+  configf.param("LTD",nu_ltd);
+  configf.param("LTP",nu_ltp);
+  configf.param("B",B);
 }
 
 void CaDP::restart( Restartf& restartf )

@@ -1,10 +1,3 @@
-/***************************************************************************
-                          output.cpp  -  outputs a field
-                             -------------------
-    copyright            : (C) 2009 by Peter Drysdale
-    email                : peter@physics.usyd.edu.au
- ***************************************************************************/
-
 #include<iostream>
 #include"output.h"
 using std::endl;

@@ -1,11 +1,3 @@
-/***************************************************************************
-                          configf.cpp  -  Extensions to input streams for parsing
-                                        the input file
-                             -------------------
-    copyright            : (C) 2009 by Peter Drysdale
-    email                : peter@physics.usyd.edu.au
- ***************************************************************************/
-
 #include<cstdlib>
 #include<string>
 using std::string;
@@ -17,14 +9,14 @@ using std::list;
 #include"nf.h"
 using std::endl;
 
-template void Configf::Param
+template void Configf::param
   <double>(const string& param, double& ret, int delim=':' );
-template void Configf::Param
+template void Configf::param
   <int>(const string& param, int& ret, int delim=':' );
-template void Configf::Param
+template void Configf::param
   <NF>(const string& param, NF& ret, int delim=':' );
 
-template bool Configf::Optional
+template bool Configf::optional
   <double>( const string& param, double& ret, int delim=':' );
 
 Configf::Configf( const char* filename )
@@ -47,7 +39,7 @@ Configf::~Configf()
 }
 
 // Reads an arbitrary number of doubles and return it in an array
-vector<double> Configf::Numbers(void)
+vector<double> Configf::numbers(void)
 {
   vector<double> ret;
   while( good() ) { // read until non-numeral
@@ -59,7 +51,7 @@ vector<double> Configf::Numbers(void)
   return ret;
 }
 
-string Configf::Find( const string& Check )
+string Configf::find( const string& Check )
 {
   /* 
   This function implements a wildcard search that searches the config file
@@ -113,7 +105,7 @@ string Configf::Find( const string& Check )
   return string(result);
 }
 
-bool Configf::Next( const string& Check, int delim )
+bool Configf::next( const string& Check, int delim )
 {
   if( Check.empty() ) {
     std::cerr << "Configf validating an empty string." << endl;

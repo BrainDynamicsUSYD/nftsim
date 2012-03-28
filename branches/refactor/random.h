@@ -1,10 +1,3 @@
-/***************************************************************************
-                          random.h  -  description
-                             -------------------
-    copyright            : (C) 2005 by Peter Drysdale
-    email                : peter@physics.usyd.edu.au
- ***************************************************************************/
-
 #ifndef RANDOM_H
 #define RANDOM_H
 

@@ -1,10 +1,3 @@
-/***************************************************************************
-                          random.cpp  -  description
-                             -------------------
-    copyright            : (C) 2005 by Peter Drysdale
-    email                : peter@physics.usyd.edu.au
- ***************************************************************************/
-
 #include "random.h"
 #include <math.h>
 #include <iostream>

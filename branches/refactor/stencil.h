@@ -1,10 +1,3 @@
-/***************************************************************************
-                          stencil.h  -  rectangular (toroidal) Moore stencil
-                             -------------------
-    copyright            : (C) 2006 by Peter Drysdale
-    email                : peter@physics.usyd.edu.au
- ***************************************************************************/
-
 #ifndef STENCIL_H
 #define STENCIL_H
 

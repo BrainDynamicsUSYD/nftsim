@@ -1,24 +1,16 @@
-/***************************************************************************
-                          qresponse.cpp  -  gives the firing rate due to
-                                            dendritic inputs and soma potential
-                             -------------------
-    copyright            : (C) 2009 by Peter Drysdale
-    email                : peter@physics.usyd.edu.au
- ***************************************************************************/
-
 #include<cmath>
 #include"qresponse.h"
 using std::endl;
 
 void QResponse::init( Configf& configf )
 {
-  if( configf.Optional("Theta",theta) ) {
-    configf.Param("Sigma",sigma);
-    configf.Param("Qmax",Q_max);
+  if( configf.optional("Theta",theta) ) {
+    configf.param("Sigma",sigma);
+    configf.param("Qmax",Q_max);
   }
   else {
-    configf.Param("Gradient",gradient);
-    configf.Param("Intercept",intercept);
+    configf.param("Gradient",gradient);
+    configf.param("Intercept",intercept);
   }
   configf>>dendrites;
 }

@@ -1,12 +1,5 @@
-/***************************************************************************
-                          solver.h  -  runs the NeuroField simulation
-                             -------------------
-    copyright            : (C) 2005 by Peter Drysdale
-    email                : peter@physics.usyd.edu.au
- ***************************************************************************/
-
-#ifndef NEUROFIELD_H
-#define NEUROFIELD_H
+#ifndef SOLVER_H
+#define SOLVER_H
 
 #include<vector>
 using std::vector;
