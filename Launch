@@ -1,0 +1,181 @@
+#!/usr/bin/perl -w
+use strict;
+
+# Check if is running on yossarian.
+# If it is, then prompt user whether to terminate or submit to PBS.
+# In the latter case, prompt for PBS parameters
+# to generate PBS script from helper_scripts/pbs.
+# If a PBS script is present (regardless of when it's generated), submit it.
+my $hostname = `hostname`;
+my $yossarian = 0;
+my $jobname = "";
+my $walltime = "";
+my $email = "";
+if( $hostname =~ /^headnode.physics.usyd.edu.au/ ) {
+	if( !(-e "pbs") ) {
+		print "Attempting to run NeuroField in Yossarian requires submitting a job to the PBS system. Continue? (y/n): ";
+		my $answer = <STDIN>; if( $answer =~ /^y$/ ) {
+			print "Please enter job name: ";
+			$jobname = <STDIN>; 
+			print "Please enter estimated time of job (format HH:MM): ";
+			$walltime = <STDIN>;
+			print "Please enter email address for notification: ";
+			$email = <STDIN>;
+			open PBS, ">pbs" or die $!;
+			print PBS "#!/bin/bash\n";
+			print PBS "#PBS -N $jobname";
+			print PBS "#PBS -o neurofield.pbs\n";
+			print PBS "#PBS -j oe\n";
+			print PBS "#PBS -q batch\n";
+			print PBS "#PBS -l nodes=1:ppn=1\n";
+			print PBS "#PBS -l walltime=$walltime:00";
+			print PBS "#PBS -m ea\n";
+			print PBS "#PBS -M $email";
+			print PBS "#PBS -V\n";
+			print PBS "\n";
+			close PBS
+		} else {
+			print STDERR "NeuroField not ran.\n";
+			exit;
+		}
+	}
+	$yossarian = 1;
+}
+
+if(!$ARGV[0]) {
+	print STDERR "NeuroField script requires at least one argument to specify configuration file.\n";
+	exit(1);
+}
+my $in = $ARGV[0];
+
+my $arglist = "";
+for( my $i=scalar(@ARGV)-1; $i>=1; $i-- ) {
+	if( $ARGV[$i] =~ /^-/ ) {
+		$arglist .= " ".$ARGV[$i];
+		splice @ARGV, $i, 1;
+	}
+}
+
+# if only the configuration file is given, then run once with that config file
+if( scalar(@ARGV)<2 ) {
+	system "cp $in neurofield.conf";
+	print STDERR "Compiling NeuroField:\n";
+	!system "make" or die("Compilation error.\n");
+	print STDERR "Done.\nRunning $in:\n";
+	if($yossarian) {
+		open PBS, "+<pbs" or die $!;
+		my $addr; # delete last line of PBS script
+		while( <PBS> ) { $addr = tell(PBS) unless eof(PBS) }
+		truncate(PBS, $addr);
+		close PBS; open PBS, ">>pbs" or die $!;
+		my $pwd = `pwd`; chomp $pwd;
+		print PBS "cd ".$pwd." && time ./Release/NeuroField";
+		close PBS;
+		exec "qsub pbs" or die $!;
+	} else {
+		exec "time ./Release/NeuroField $arglist &";
+	}
+}
+
+# Parse argument list: all numerical arguments are parameter values; the last alphanumeric argument is the field name, all other alphanumeric arguments are lines subject to be modified,
+
+my @value   = []; # list of parameter values
+my @field   = ""; # parameter to be varied
+my @line    = []; # lines/object subjected to being varied (eg. 'Propagator 1')
+my $runs    = 0;  # number of runs == width (not height) of 2D array value
+my $tmpruns = 0;  # temporarily store number of runs while parsing arguments
+my $fields  = 1;  # number of fields to vary == height of 2D array value
+my $temp;         # pointer to an array
+
+foreach my $arg ( reverse(@ARGV) )
+{
+	next if( $arg eq $in ); # skip over configuration file
+
+	# argument is numerical, appending with 's' preserves original sign
+	if( $arg =~ /^[-\d\.e]+s?$/ ) {
+		if( $field[-1] ne "" ) {
+			# there are previous fields, now reset counter
+			push( @value, [] );
+			push( @field, "" );
+			push( @line, [] );
+			if( $runs == 0 ) { $runs = $tmpruns; }
+			else { die "The number of variation in parameters must be the constant [$runs?].\n" if( $tmpruns!=$runs ); }
+			$tmpruns = 0;
+			$fields++;
+		}
+		$temp = $value[-1];
+		push( @$temp, $arg );
+		$tmpruns++;
+	} else { # argument is alphanumerical
+		if( $field[-1] eq "" ) { # if this is the last alphanumeric argument, parse as field
+			$field[-1] = $arg;
+		} else { # field is already specified
+			$temp = $line[-1];
+			push( @$temp, $arg );
+		}
+	}
+}
+if( $runs == 0 ) { $runs = $tmpruns; }
+else { die "The number of variation in parameters must be the constant [$runs?].\n" if( $tmpruns!=$runs ); }
+
+#print "Value\n";
+#foreach( @value){
+#foreach(@$_)
+#{print "$_ ";}print "\n";};
+#print "\nField\n";
+#foreach( @field){print "$_ ";};
+#print "\nLine\n";
+#foreach( @line){foreach(@$_){print "$_ ";}print "\n";};
+
+print STDERR "Compiling NeuroField:\n";
+!system "make" or die("Compilation error.\n");
+print STDERR "Done.\n";
+
+for( my $i=0; $i<$runs; $i++ ) {
+	my $dir = "Output/";
+	my $msg = "Running ";
+	for( my $j=0; $j<$fields; $j++ ) {
+		$temp = $line[$j];
+		for( my $k=0; $k<@$temp; $k++ ) {
+			$dir .= "$line[$j][$k],";
+			$msg .= "$line[$j][$k], ";
+		}
+		$dir .= "$field[$j]=$value[$j][$i],";
+		$msg .= "with $field[$j] = $value[$j][$i]; ";
+	}
+	$msg =~ s/; $/\.\n/; print STDERR $msg;
+	$dir =~ s/ /_/g; $dir =~ s/,$//; `mkdir -p $dir`;
+	`cp Release/NeuroField $dir`;
+	chdir $dir;
+	open IN,  "<../../$in" or die $!;
+	open OUT, ">neurofield.conf" or die $!;
+	while( my $write=<IN> ) {
+		for( my $j=0; $j<$fields; $j++ ) {
+			foreach($line[$j]){ foreach my $line (@$_) {
+			if( $write =~ /^\s*$line/ ) {
+				my $sign = ""; # stores the sign of the original value
+				my $tmpv = $value[$j][$i]; # strip value of postfix 's'
+				if( $tmpv =~ /s$/ ) { # preserves sign if appended by 's'
+					$tmpv = $1 if( $tmpv =~ /([-\d\.e]+)/ );
+					$sign = $1 if( $write =~ /$field[$j]:\s*(-?)/ );
+				}
+				$write =~ s/$field[$j]:\s*([-\d\.e]+)/$field[$j]: $sign$tmpv/ ;
+			}}}
+		}
+		print OUT $write;
+	}
+	if($yossarian) {
+		open PBS, "<../../pbs" or die $!;
+		open NEWPBS, ">pbs" or die $!;
+		while(<PBS>) { print NEWPBS if( /^\#/ ); }
+		close PBS;
+		my $pwd = `pwd`; chomp $pwd;
+		print NEWPBS "cd ".$pwd." && time ./NeuroField $arglist";
+		close NEWPBS;
+		system "bash -c 'qsub pbs' &";
+	} else {
+		system "time ./NeuroField $arglist &";
+	}
+	close IN; close OUT;
+	chdir "../..";
+}

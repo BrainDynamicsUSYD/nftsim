@@ -1,0 +1,11 @@
+#!/bin/bash
+echo "Testing configf::find()"
+echo "EXPECTED OUTPUT"
+echo "-------"
+echo "-0.0008"
+echo "Map"
+echo "ACTUAL OUTPUT"
+echo "-------"
+g++ find_test.cpp ../configf.cpp ../nf.cpp -I ../ -o find_test
+./find_test
+
