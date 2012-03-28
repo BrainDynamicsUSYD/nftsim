@@ -31,7 +31,7 @@ void Solver::CntMat::init( Configf& configf )
   for( int i=0; i<npop; i++ ) {
     configf.next( label("To ",i+1) ); // ignore "To ?:"
     raw[i] = configf.numbers();
-    if( raw[i].size() != uint(npop) ) {
+    if( raw[i].size() != size_t(npop) ) {
       std::cerr << "The connection matrix is not configured correctly."
         << endl;
       exit(EXIT_FAILURE);
@@ -76,7 +76,7 @@ void Solver::Outputs::init( Configf& configf )
       Output::node.push_back(i);
   else {
     vector<double> temp = configf.numbers();
-    for( uint i=0; i<temp.size(); i++ )
+    for( size_t i=0; i<temp.size(); i++ )
       if( temp[i] > nodes ) {
         std::cerr<<"Trying to plot node number "<<temp[i]
             <<", which is bigger than the highest node index."<<endl;
@@ -114,7 +114,7 @@ void Solver::Outputs::init( Configf& configf )
   // read in populations to output
   configf.next("Population");
   vector<double> temp = configf.numbers();
-  for( uint i=0; i<temp.size(); i++ ) {
+  for( size_t i=0; i<temp.size(); i++ ) {
     if( temp[i] > npop ) {
       std::cerr<<"Trying to print population "<<temp[i]
           <<", which is an invalid population."<<endl;
@@ -126,7 +126,7 @@ void Solver::Outputs::init( Configf& configf )
   // read in propags to output
   configf.next("Propag");
   temp = configf.numbers();
-  for( uint i=0; i<temp.size(); i++ ) {
+  for( size_t i=0; i<temp.size(); i++ ) {
     if( temp[i] > ncnt ) {
       std::cerr<<"Trying to print propagator "<<temp[i]
           <<", which is an invalid propagator."<<endl;
@@ -138,7 +138,7 @@ void Solver::Outputs::init( Configf& configf )
   // read in couples to output
   configf.next("Couple");
   temp = configf.numbers();
-  for( uint i=0; i<temp.size(); i++ ) {
+  for( size_t i=0; i<temp.size(); i++ ) {
     if( temp[i] > ncnt ) {
       std::cerr<<"Trying to print couple "<<temp[i]
           <<", which is an invalid couple."<<endl;
@@ -149,15 +149,15 @@ void Solver::Outputs::init( Configf& configf )
 
   // write out first row
   Output::dumpf<<space<<"Time"<<space<<space<<septor;
-  for( uint i=0; i<m.size(); i++ ) {
-    for( uint j=0; j<Output::node.size(); j++ )
+  for( size_t i=0; i<m.size(); i++ ) {
+    for( size_t j=0; j<Output::node.size(); j++ )
       Output::dumpf<<space<<space<<m[i]->fieldname();
     Output::dumpf<<space<<space<<septor;
   }
   // write out second row
   Output::dumpf<<endl<<space<<space<<space<<" "<<septor;
-  for( uint i=0; i<m.size(); i++ ) {
-    for( uint j=0; j<Output::node.size(); j++ )
+  for( size_t i=0; i<m.size(); i++ ) {
+    for( size_t j=0; j<Output::node.size(); j++ )
       Output::dumpf<<space<<space<<setw<<int(j+1);
     Output::dumpf<<space<<space<<septor;
   }
@@ -326,7 +326,7 @@ void Solver::step(void)
   // glutamte dynamics
   for( int j=0; j<nodes; j++ )
     dglu[j] = 0;//double ddglu = 0; double ts = 200e-3; double td = 200e-3;
-  for( uint i=0; i<couples.size(); i++ )
+  for( size_t i=0; i<couples.size(); i++ )
     if( couples[i]->excite() )
       for( int j=0; j<nodes; j++ )
         dglu[j] += Lambda*propags[i]->phi()[j]*deltat;

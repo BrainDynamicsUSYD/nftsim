@@ -9,7 +9,7 @@ void Population::init( Configf& configf )
     if( !qhistory.size() )
       qhistory.push_back( vector<double>(nodes,Qinit) );
     else
-      for( uint i=0; i<qhistory.size(); i++ )
+      for( size_t i=0; i<qhistory.size(); i++ )
         qhistory[i].resize(nodes,Qinit);
     configf.param( "Firing", *qresponse );
   }
@@ -18,7 +18,7 @@ void Population::init( Configf& configf )
     if( !qhistory.size() )
       qhistory.push_back( vector<double>(nodes,0) );
     else
-      for( uint i=0; i<qhistory.size(); i++ )
+      for( size_t i=0; i<qhistory.size(); i++ )
         qhistory[i].resize(nodes,0);
     timeseries = new Timeseries(nodes,deltat,index);
     configf.param( "Stimulus", *timeseries );
@@ -114,7 +114,7 @@ void Population::growHistory( const Tau& tau )
     exit(EXIT_FAILURE);
   }
 
-  if( uint(tau.max) > qhistory.size() )
+  if( size_t(tau.max) > qhistory.size() )
     qhistory.resize( tau.max );
 }
 

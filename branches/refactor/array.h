@@ -41,28 +41,28 @@ void Array<T>::add( T* t )
 template<class T>
 void Array<T>::add( vector<T*> t )
 {
-  for( uint i=0; i<t.size(); i++ )
+  for( size_t i=0; i<t.size(); i++ )
     m.push_back( t[i] );
 }
 
 template<class T>
 void Array<T>::init( Configf& configf )
 {
-  for( uint i=0; i<m.size(); i++ )
+  for( size_t i=0; i<m.size(); i++ )
     configf>>*m[i];
 }
 
 template<class T>
 void Array<T>::restart( Restartf& restartf )
 {
-  for( uint i=0; i<m.size(); i++ )
+  for( size_t i=0; i<m.size(); i++ )
     restartf>>*m[i];
 }
 
 template<class T>
 void Array<T>::dump( Dumpf& dumpf ) const
 {
-  for( uint i=0; i<m.size(); i++ )
+  for( size_t i=0; i<m.size(); i++ )
     dumpf<<*m[i];
 }
 
@@ -75,7 +75,7 @@ bool Array<T>::empty(void) const
 template<class T>
 void Array<T>::step(void)
 {
-  for( uint i=0; i<m.size(); i++ )
+  for( size_t i=0; i<m.size(); i++ )
     m[i]->step();
 }
 
@@ -88,7 +88,7 @@ Array<T>::Array(void)
 template<class T>
 Array<T>::~Array(void)
 {
-  for( uint i=0; i<m.size(); i++ )
+  for( size_t i=0; i<m.size(); i++ )
     if( m[i] )
       delete m[i];
 }
