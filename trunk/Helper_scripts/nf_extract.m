@@ -1,5 +1,5 @@
 function data = nf_extract(nf,traces,t,nodes)
-    % output = nf_extract(nf,t,traces,nodes)
+    % output = nf_extract(nf,traces,t,nodes)
     % Given an nf object, return data from certain traces at particular times
     % nf - nf object
     % t - can be a time e.g. 0.001 or a range [0.001 0.1]. If empty, returns all times
