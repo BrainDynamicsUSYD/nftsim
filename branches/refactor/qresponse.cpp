@@ -44,7 +44,7 @@ void QResponse::step(void)
   dendrites.step();
   for( int i=0; i<nodes; i++ )
     v[i] = 0;
-  for( size_t i=0; i<dendrites.size(); i++ )
+  for( uint i=0; i<dendrites.size(); i++ )
     for( int j=0; j<nodes; j++ )
       v[j] += dendrites[i]->V()[j];
 }

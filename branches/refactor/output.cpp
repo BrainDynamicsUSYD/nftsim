@@ -28,7 +28,7 @@ Output::~Output(void)
 
 void Output::step(void)
 {
-  for( size_t i=0; i<node.size(); i++ )
+  for( uint i=0; i<node.size(); i++ )
     dumpf<<space<<field[node[i]]; // nodes separated by double space
   dumpf<<space<<space<<septor; // delimit fields via '|'
 }

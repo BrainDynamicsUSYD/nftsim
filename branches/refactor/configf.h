@@ -22,7 +22,7 @@ class Configf : protected std::ifstream
   Configf& operator=(const Configf& other); // No assignment operator
 
   char* buffer;
-  size_t filesize;
+  uint filesize;
 public: 
   Configf( const char* filename );
   virtual ~Configf(void);
