@@ -112,7 +112,7 @@ function varargout = nf_eirs(p,file_id,nonlinear,grid_edge)
     fprintf(fid,'\n');
 
     fprintf(fid,'Output: Node: %d\n',round((grid_edge^2 + grid_edge)/2));
-    fprintf(fid,'Population:\n');
+    fprintf(fid,'Population: 1 2 3 4\n');
     fprintf(fid,'Propag: 1 2 10 8 11\n');
     fprintf(fid,'Couple:\n');
 
@@ -120,7 +120,7 @@ function varargout = nf_eirs(p,file_id,nonlinear,grid_edge)
     
     fprintf(1,'Integration time: %d s sampled at %d Hz\nGrid size %dx%d, outputting node %d\nSimulating...',int_time,1/deltat,grid_edge,grid_edge,round((grid_edge^2 + grid_edge)/2));
     tic;
-    [status] = system(sprintf('neurofield -i neurofield_%i.conf -d neurofield_%i.dump -o neurofield_%i.output',file_id,file_id,file_id));
+    [status] = system(sprintf('./Release/NeuroField -i neurofield_%i.conf -d neurofield_%i.dump -o neurofield_%i.output',file_id,file_id,file_id));
     fprintf(1,'took %.3f seconds\n',toc);
     
     if status ~= 0
@@ -130,14 +130,14 @@ function varargout = nf_eirs(p,file_id,nonlinear,grid_edge)
     
     fprintf(1,'Parsing output...');
     nf = nf_read(sprintf('neurofield_%i.output',file_id));
-    data = nf_extract(nf,{'propag.1.phi','propag.10.phi','propag.8.phi'});
+    data = nf_extract(nf,{'propag.1.phi','propag.2.phi','propag.10.phi','propag.8.phi'});
     fprintf(1,'done!\n');
     
 	% Plot the time series
 	figure
 	subplot(1,2,1);
 	plot(nf.time,data);
-	legend('Excitatory','Reticular','Relay')
+	legend('Excitatory','Inhibitory','Reticular','Relay')
     title('Neurofield time series')
     xlabel('Time (s)');
     ylabel('Phi (s^{-1})');
@@ -152,7 +152,7 @@ function varargout = nf_eirs(p,file_id,nonlinear,grid_edge)
     ylabel('Power (arbitrary)');
     title(sprintf('X: %.3f Y: %.3f Z: %.3f',p.xyz(1),p.xyz(2),p.xyz(3)));
         
-    %try
+    try
         [f_a,P_a] = analytic_spectrum(p,1);
         % And renormalize it
         P_a = interp1(f_a,P_a,f,'pchip','extrap');
@@ -161,7 +161,7 @@ function varargout = nf_eirs(p,file_id,nonlinear,grid_edge)
         loglog(f,P_a,'r--');
         legend('neurofield','Analytic');
         hold off
-    %end
+    end
     
 
     set(gcf,'Position',get(gcf,'Position')+[-1 0 1 0].*get(gcf,'Position')); % Double the horizontal size of the figure

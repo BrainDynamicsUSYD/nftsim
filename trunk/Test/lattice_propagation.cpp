@@ -15,8 +15,8 @@ int main(void)
 	for( int t=0; t<10; t++ ) {
 		vector<double> temp(nodes,0);
 		for( int i=0; i<nodes; i++, stencil++ )
-			temp[i] += stencil.n +stencil.s +stencil.e +stencil.w
-				+stencil.nw +stencil.sw +stencil.ne +stencil.se;
+			temp[i] += stencil.n() +stencil.s() +stencil.e() +stencil.w()
+				+stencil.nw() +stencil.sw() +stencil.ne() +stencil.se();
 		for( int i=0; i<nodes; i++ )
 			m[i] += temp[i];
 
