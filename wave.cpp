@@ -14,16 +14,28 @@ void Wave::init( Configf& configf )
     p.resize(nodes,atof(buffer.c_str()));
   else
     p.resize(nodes,Q);
+
   configf.param("Range",range);
   configf.param("gamma",gamma);
+
   oldpval[0].resize(nodes,p[0]);
-  oldp[0] = new Stencil(nodes,longside); oldp[0]->assign(&oldpval[0]);
   oldpval[1].resize(nodes,p[0]);
-  oldp[1] = new Stencil(nodes,longside); oldp[1]->assign(&oldpval[1]);
   oldQval[0].resize(nodes,Q);
-  oldQ[0] = new Stencil(nodes,longside); oldQ[0]->assign(&oldQval[0]);
   oldQval[1].resize(nodes,Q);
-  oldQ[1] = new Stencil(nodes,longside); oldQ[1]->assign(&oldQval[0]);
+  
+  if( topology == "Torus" ) {
+    oldp[0] = new TStencil(nodes,longside); oldp[0]->assign(&oldpval[0]);
+    oldp[1] = new TStencil(nodes,longside); oldp[1]->assign(&oldpval[1]);
+    oldQ[0] = new TStencil(nodes,longside); oldQ[0]->assign(&oldQval[0]);
+    oldQ[1] = new TStencil(nodes,longside); oldQ[1]->assign(&oldQval[0]);
+  }
+  else {
+    double bath = atof( topology.substr( topology.find(" ") ).c_str() );
+    oldp[0] = new Stencil(nodes,longside,bath); oldp[0]->assign(&oldpval[0]);
+    oldp[1] = new Stencil(nodes,longside,bath); oldp[1]->assign(&oldpval[1]);
+    oldQ[0] = new Stencil(nodes,longside,bath); oldQ[0]->assign(&oldQval[0]);
+    oldQ[1] = new Stencil(nodes,longside,bath); oldQ[1]->assign(&oldQval[0]);
+  }
 
   dt2on12 = deltat*deltat/12.;
   dfact = dt2on12*gamma*gamma;
@@ -49,8 +61,9 @@ void Wave::dump( Dumpf& dumpf ) const
 }
 
 Wave::Wave( int nodes, double deltat, int index, Population& prepop,
-        Population& postpop, int longside )
-    : Propag(nodes,deltat,index,prepop,postpop,longside), key(0)
+        Population& postpop, int longside, string topology )
+    : Propag(nodes,deltat,index,prepop,postpop,longside,topology),
+        key(0), topology(topology)
 {
 }
 

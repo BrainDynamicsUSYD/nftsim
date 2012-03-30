@@ -2,16 +2,13 @@
 #define WAVE_H
 
 #include"propag.h"
+#include"tstencil.h"
 #include"stencil.h"
 
 class Wave : public Propag
 {
   Wave(); // no default constructor
   Wave(Wave&); // no copy constructor
-
-  double deltax; // spatial length of a node
-  double range;  // characteristic damping length
-  double gamma;  // damping coefficient
 protected:
   void init( Configf& configf );
   void restart( Restartf& restartf );
@@ -23,7 +20,12 @@ protected:
   vector<double> oldQval[2]; // keyring of past Q
   int key;
 
+  string topology; // topology of brain region
+
   // variables that's initialized once only
+  double deltax; // spatial length of a node
+  double range;  // characteristic damping length
+  double gamma;  // damping coefficient
   double dt2on12;
   double dfact;
   double dt2ondx2;
@@ -41,7 +43,7 @@ protected:
   double drive;
 public: 
   Wave( int nodes, double deltat, int index, Population& prepop,
-      Population& postpop, int longside );
+      Population& postpop, int longside, string topology );
   virtual ~Wave(void);
   virtual void step(void); 
 };

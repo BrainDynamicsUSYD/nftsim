@@ -48,6 +48,8 @@ Population::~Population()
 
 void Population::step(void)
 {
+  // move pointer to keyring
+  qkey = (qkey+1) % qhistory.size();
   if( qresponse ) { // neural population
     qresponse->step();
     qresponse->fire( qhistory[qkey] );
@@ -58,16 +60,29 @@ void Population::step(void)
     timeseries->step();
     timeseries->fire( qhistory[qkey] );
   }
-  // move pointer to keyring
-  qkey = (qkey+1) % qhistory.size();
+  /*if(index==1){
+	  for( int i=0; i<qhistory.size(); i++ ){
+		  std::cout.width(8);
+		  std::cout<<qhistory[i][0]<<" ";
+	  }
+	  std::cout<<endl;
+  }*/
 }
 
 const vector<double>& Population::Q( const Tau& tau) const
 {
-  if( tau.m.size() == 1 )
-    return qhistory
-      [ tau.m[0]<=qkey ? qkey-tau.m[0] :qhistory.size()+qkey-tau.m[0] ];
-  else { // tau.m.size() == nodes
+  if( tau.m.size() == 1 ){ // homogeneous tau
+	  /*if(index==0) {
+		  std::cout.width(7); std::cout<<"Tau: "<<tau.m[0]<<"\t";
+		  for( int i=qkey-3; i<qkey+3; i++ )
+			if(i>0 && uint(i)<qhistory.size())
+			  std::cout<<qhistory[i][0]<<"\t";
+			else
+				std::cout<<"       "<<"\t";
+		  std::cout<<"\tIndex:\t"<<(qkey-tau.m[0]+qhistory.size())%qhistory.size()<<"/"<<qhistory.size()<<",\tQ: "<<qhistory[(qkey-tau.m[0]+qhistory.size())%qhistory.size()][0]<<std::endl;
+	  }*/
+    return qhistory[(qkey-tau.m[0]+qhistory.size())%qhistory.size()];}
+  else { // tau.m.size() == nodes, inhomogeneous tau
     static vector<double> temp(nodes);
     for( int i=0; i<nodes; i++ )
       temp[i] = qhistory
@@ -78,8 +93,12 @@ const vector<double>& Population::Q( const Tau& tau) const
 
 double Population::Qinit( Configf& configf ) const
 {
-  string buffer = configf.find( label("Population ",index+1)+"*Q:");
-  return atof(buffer.c_str());
+  if( qresponse ) {
+    string buffer = configf.find( label("Population ",index+1)+"*Q:");
+    return atof(buffer.c_str());
+  }
+  else
+    return 0;
 }
 
 const vector<double>& Population::V(void) const
@@ -115,7 +134,7 @@ void Population::growHistory( const Tau& tau )
   }
 
   if( size_t(tau.max) > qhistory.size() )
-    qhistory.resize( tau.max );
+    qhistory.resize( tau.max+1 );
 }
 
 vector<Output*> Population::output(void) const

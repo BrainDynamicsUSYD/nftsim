@@ -50,7 +50,7 @@ my $in = $ARGV[0];
 
 my $arglist = "";
 for( my $i=scalar(@ARGV)-1; $i>=1; $i-- ) {
-	if( $ARGV[$i] =~ /^-/ ) {
+	if( $ARGV[$i] =~ /^-[a-zA-Z]/ ) {
 		$arglist .= " ".$ARGV[$i];
 		splice @ARGV, $i, 1;
 	}

@@ -51,7 +51,7 @@ class Solver : public NF
     int ncnt;
     double deltat;
     
-    double t;
+    int t;
     Array<Output> m;
     int start; // time to start of output
     int interval; // output interval

@@ -3,6 +3,8 @@
 using std::string;
 #include<iostream>
 using std::endl;
+#include<sstream>
+using std::stringstream;
 
 #include"solver.h"
 #include"population.h"
@@ -98,6 +100,7 @@ void Solver::Outputs::init( Configf& configf )
     else
       start = tempf/deltat;
   }
+  t = 0;
 
   // read in output interval
   if( !configf.optional("Interval",tempf) )
@@ -170,9 +173,12 @@ void Solver::Outputs::step(void)
   if( start )
     start--;
   else {
-    t += deltat*interval; Output::dumpf<<t<<space<<space<<septor;
-    m.step();
-    Output::dumpf<<endl;
+    t++;
+    if( t%interval==0 ) {
+      Output::dumpf<<double(t)*deltat<<space<<space<<septor;
+      m.step();
+      Output::dumpf<<endl;
+    }
   }
 }
 
@@ -226,6 +232,14 @@ void Solver::init( Configf& configf )
   }
   else
     longside = sqrt(nodes);
+  string topology("Torus");
+  if( configf.optional("Topology",topology) )
+    if( topology == "Nonperiodic" ) {
+      double bath;
+      configf.param("Bath",bath);
+      stringstream ss; ss<<topology<<" "<<bath;
+      topology = ss.str();
+    }
 
   // glutamte dynamics
   glu.resize(nodes,0); dglu.resize(nodes,0);
@@ -243,18 +257,18 @@ void Solver::init( Configf& configf )
     // PUT YOUR PROPAGATORS HERE
     if(ptype=="Map")
       propags.add( new
-        Propag(nodes,deltat,i, *pops[cnt.pre[i]], *pops[cnt.post[i]], longside));
+        Propag(nodes,deltat,i, *pops[cnt.pre[i]], *pops[cnt.post[i]], longside, topology));
     else if(ptype=="Wave") {
       if( nodes==1 )
       propags.add( new
-        Harmonic(nodes,deltat,i, *pops[cnt.pre[i]], *pops[cnt.post[i]], longside));
+        Harmonic(nodes,deltat,i, *pops[cnt.pre[i]], *pops[cnt.post[i]], longside, topology));
       else
       propags.add( new
-        Wave(nodes,deltat,i, *pops[cnt.pre[i]], *pops[cnt.post[i]], longside));
+        Wave(nodes,deltat,i, *pops[cnt.pre[i]], *pops[cnt.post[i]], longside, topology));
     }
     else if(ptype=="Harmonic")
       propags.add( new
-        Harmonic(nodes,deltat,i, *pops[cnt.pre[i]], *pops[cnt.post[i]], longside));
+        Harmonic(nodes,deltat,i, *pops[cnt.pre[i]], *pops[cnt.post[i]], longside, topology));
     else {
       std::cerr<<"Invalid propagator type '"<<ptype<<"'."<<endl;
       exit(EXIT_FAILURE);

@@ -32,7 +32,7 @@ protected:
   double C1dtplusC2;
 public: 
   Harmonic( int nodes, double deltat, int index, Population& prepop,
-      Population& postpop, int longside );
+      Population& postpop, int longside, string topology );
   virtual ~Harmonic(void);
   virtual void step(void); 
 };

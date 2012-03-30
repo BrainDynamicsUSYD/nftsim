@@ -9,6 +9,8 @@ class Stencil
   Stencil(); // no default constructor
   Stencil& operator=(const Stencil&);
   Stencil(const Stencil&);
+
+  double bath;
 protected:
   int nodes;
   int longside;
@@ -18,10 +20,8 @@ protected:
   int _nw; int _n; int _ne;
   int  _w; int _c; int  _e;
   int _sw; int _s; int _se;
-
-  //void update(void);
 public:
-  Stencil( int nodes, int longside );
+  Stencil( int nodes, int longside, double bath=0 );
   virtual ~Stencil(void);
 
   void assign( vector<double>* field );
@@ -31,9 +31,9 @@ public:
   int get(void) const; // get current node index
 
   // get Moore grid
-  double nw(void) const; double n(void) const; double ne(void) const;
-  double  w(void) const; double c(void) const; double  e(void) const;
-  double sw(void) const; double s(void) const; double se(void) const;
+  virtual double nw()const; virtual double n()const; virtual double ne()const;
+  virtual double  w()const; virtual double c()const; virtual double  e()const;
+  virtual double sw()const; virtual double s()const; virtual double se()const;
 };
 
 #endif

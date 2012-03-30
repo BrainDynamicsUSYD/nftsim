@@ -1,11 +1,11 @@
 #include <iostream>
 #include<vector>
-#include "../stencil.h"
+#include "tstencil.h"
 // Unit test for stencil.cpp
 
 using namespace std;
 
-void ce(const Stencil& s){
+void ce(const TStencil& s){
     cout << s.c() << " " << s.e() << endl;
     return;
 }
@@ -14,7 +14,7 @@ int main(){
 	const int side = 5; const int nodes = side*side;
     vector<double> x(nodes);
     vector<double> y(nodes);
-    Stencil s(nodes,side);
+    TStencil s(nodes,side);
     
     for(int i = 0; i<nodes; i++){
         x[i] = i+1;

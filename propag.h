@@ -1,6 +1,8 @@
 #ifndef PROPAG_H
 #define PROPAG_H
 
+#include<string>
+using std::string;
 #include"array.h"
 #include"output.h"
 #include"population.h"
@@ -27,7 +29,7 @@ protected:
   vector<double> p; // phi_ab
 public: 
   Propag( int nodes, double deltat, int index, Population& prepop,
-      Population& postpop, int longside );
+      Population& postpop, int longside, string topology );
   virtual ~Propag(void);
   virtual void step(void); 
   virtual const vector<double>& phi(void) const;

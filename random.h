@@ -1,27 +1,29 @@
 #ifndef RANDOM_H
 #define RANDOM_H
 
-class Random {
-public: 
-  Random(long seed);
-  ~Random();
-  double ran();
-  void gaussian(double& deviate1, double& deviate2);
-private:
+class Random
+{
   Random(Random& ); // no copy constructor
-  long idum;
-  enum {IA=16807}; // Use "enum hack" to obtain more portable static const int
-  enum {IM=2147483647}; // Use "enum hack" to obtain more portable static const int
-  enum {IQ=127773}; // Use "enum hack" to obtain more portable static const int
-  enum {IR=2836}; // Use "enum hack" to obtain more portable static const int
-  enum {NTAB=32}; // Use "enum hack" to obtain more portable static const int
-  enum {NDIV=(1+(IM-1)/NTAB)}; // Use "enum hack" to obtain more portable static const int
+
+  // Use "enum hack" to obtain more portable static const int
+  enum {IA=16807};
+  enum {IM=2147483647};
+  enum {IQ=127773};
+  enum {IR=2836};
+  enum {NTAB=32};
+  enum {NDIV=(1+(IM-1)/NTAB)};
   const double EPS;
   const double RNMX;
   const double AM;
-//
-  long iy;
-  long* iv;
+
+  int idum;
+  int iy;
+  int* iv;
+public: 
+  Random(int seed);
+  ~Random(void);
+  double ran(void);
+  void gaussian(double& deviate1, double& deviate2);
 };
 
 #endif

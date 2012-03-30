@@ -3,14 +3,14 @@
 
 void Harmonic::init( Configf& configf )
 {
+  double Q = prepop.Qinit(configf);
   string buffer("Steady");
   configf.optional("phi",buffer);
   if( buffer != "Steady" )
-    p.resize(nodes,atof(buffer.c_str()));
-  else
-    p.resize(nodes,prepop.Qinit(configf));
-  oldp.resize(nodes,atof(buffer.c_str()));
-  oldQ.resize(nodes,atof(buffer.c_str()));
+    Q = atof(buffer.c_str());
+  p.resize(nodes,Q);
+  oldp.resize(nodes,Q);
+  oldQ.resize(nodes,Q);
   dpdt.resize(nodes,0.);
   double temp; configf.optional("Deltax",temp); // for compatibility with Wave
   configf.param("Tau",tau); prepop.growHistory(tau);
@@ -29,8 +29,8 @@ void Harmonic::dump( Dumpf& dumpf ) const
 }
 
 Harmonic::Harmonic( int nodes, double deltat, int index, Population& prepop,
-        Population& postpop, int longside )
-    : Propag(nodes,deltat,index,prepop,postpop,longside)
+        Population& postpop, int longside, string topology )
+    : Propag(nodes,deltat,index,prepop,postpop,longside,topology)
 {
 }
 
