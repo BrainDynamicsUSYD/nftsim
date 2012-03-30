@@ -43,6 +43,7 @@ function varargout = nf_eirs(p,file_id,nonlinear,grid_edge)
 		fprintf(1,'Deltat = %f\n',deltat);
 	end
 	
+    noiseamp = sqrt(p.phin^2/deltat/2)
     
     % WRITE THE FILE
     fid = fopen(sprintf('neurofield_%i.conf',file_id),'w');
@@ -83,7 +84,7 @@ function varargout = nf_eirs(p,file_id,nonlinear,grid_edge)
     end
 
     fprintf(fid,'Population 5: Stimulation\n');
-    fprintf(fid,'Stimulus: Mode: White - Onset: 0 Amplitude: 1 Mean: 1\n');
+    fprintf(fid,'Stimulus: Mode: CoherentWhite - Onset: 0 Amplitude: %f Mean: 1\n',noiseamp);
     fprintf(fid,'\n');
     
     fprintf(fid,'Propag 1: Wave - Deltax: %f Tau: %f Range: %f gamma: %f\n',deltax,0,p.re,p.gammae);
