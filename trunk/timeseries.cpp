@@ -241,7 +241,18 @@ void Timeseries::fire( vector<double>& Q ) const
   }
   else if( mode=="PAS" ) { // median nerve stimulation
     int width = sqrt(nodes);
-    if( width%2 == 0 ) { // even
+    if( deltax==0 ) {
+      if( 0<t && t<=xspread )
+        for( int i=0; i<nodes; i++ )
+          Q[i] += -xcent*sin(3.141592654*t/xspread);
+      else if( xspread<t && t<xspread+yspread )
+        for( int i=0; i<nodes; i++ )
+          Q[i] += ycent*sin(3.141592654*(t-xspread)/yspread);
+      if( xspread/2+tpeak<t && t<=xspread/2+tpeak+4e-3 )
+        for( int i=0; i<nodes; i++ )
+          Q[i] += amp;
+    }
+    else if( width%2 == 0 ) { // even
       if( 0<t && t<=xspread )
         for(int i=width/2-deltax; i<width/2+deltax; i++)
           for(int j=width/2-deltax; j<width/2+deltax; j++)
@@ -268,11 +279,5 @@ void Timeseries::fire( vector<double>& Q ) const
           for(int j=width/2-deltax+1; j<width/2+deltax; j++)
             Q[i+j*width] += amp;
     }
-    /*if( t<xspread )
-      for( int i=0; i<nodes; i++ )
-        Q[i] += -xcent*sin(3.141592654*t/xspread);
-    else if( t<xspread+yspread )
-      for( int i=0; i<nodes; i++ )
-        Q[i] += ycent*sin(3.141592654*(t-xspread)/yspread);*/
   }
 }

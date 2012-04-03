@@ -217,7 +217,7 @@ void Solver::init( Configf& configf )
     exit(EXIT_FAILURE);
   }
   else
-    steps = tempf/deltat;
+    steps = tempf/deltat +.5;
 
   // read in grid size and grid geometry
   configf.param("Nodes",nodes);
@@ -361,8 +361,8 @@ void Solver::step(void)
     */
   }
 
-  propags.step();
   couples.step();
   pops.step();
+  propags.step();
   outputs.step();
 }

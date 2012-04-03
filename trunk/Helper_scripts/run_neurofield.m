@@ -6,7 +6,7 @@ function [f_arr,P_arr,t,y] = run_neurofield(p,file_id)
         file_id = 1;
     end
     
-    lin = [1 1 1]; % [cortex reticular relay] for linear functions
+    lin = [0 0 0]; % [cortex reticular relay] for linear functions
     linfun(1) = p.phia(1).*(1-p.phia(1)/p.qmax)/p.sigma;
     linfun(2) = p.phia(1)-linfun(1)*sinv(p.phia(1),p);
     linfun(3) = p.phia(2).*(1-p.phia(2)/p.qmax)/p.sigma;
@@ -41,8 +41,8 @@ function [f_arr,P_arr,t,y] = run_neurofield(p,file_id)
 	% Calculate the keyring size
 	dsize = round(p.taues/deltat);
     
-    %noiseamp=1; % Noise amplitude
-    noiseamp = sqrt(p.phin^2/deltat/2); % Correctly set the noise amplitude for input point
+    noiseamp=1; % Noise amplitude
+    %noiseamp = sqrt(p.phin^2/deltat/2); % Correctly set the noise amplitude for input point
        
     fprintf(fid,'A Configuration file for the code ''NeuroField''\n');
     fprintf(fid,'Nodes per population: %i\n',grid_size^2);
@@ -69,7 +69,7 @@ function [f_arr,P_arr,t,y] = run_neurofield(p,file_id)
     if lin(1)
         fprintf(fid,'  Firing response Linear: Gradient: %f Intercept: %f\n',linfun(1),linfun(2));
     else
-        fprintf(fid,'  Firing response Theta: %f Sigma: %f Qmax: %f\n',p.theta,p.sigma,p.qmax);
+        fprintf(fid,'  Firing response Theta: %f Sigma: %untitled.jpgf Qmax: %f\n',p.theta,p.sigma,p.qmax);
     end
     fprintf(fid,' Number of Dendritic responses: 3\n');
     fprintf(fid,'  Dendritic response from population 1 V initial: Steady alpha: %f beta: %f\n',p.alpha_ab(1),p.beta_ab(1));  % Initial V is actually Vab
@@ -143,18 +143,19 @@ function [f_arr,P_arr,t,y] = run_neurofield(p,file_id)
         fprintf(fid,'Output Data - Number of traces : %i \n',grid_size^2);
         fprintf(fid,'Wave Equation Number :1 Single/All: All nodes\n'); % phie
     else
-        fprintf(fid,'Output Data - Number of traces : 4 \n');
+        fprintf(fid,'Output Data - Number of traces : 5 \n');
         fprintf(fid,'Wave Equation Number :1 Single/All: Single node number :1\n'); % phie
         fprintf(fid,'Wave Equation Number :5 Single/All: Single node number :1\n'); % phii
         fprintf(fid,'Wave Equation Number :7 Single/All: Single node number :1\n'); % phir
         fprintf(fid,'Wave Equation Number :10 Single/All: Single node number :1\n'); % phis - the phis going into Vr
+        fprintf(fid,'Wave Equation Number :11 Single/All: Single node number :1\n'); % phin
     end
     
     fclose(fid);
 
     fprintf(1,'Executing NF...');
     tic;
-	[status] = system(sprintf('/home/romesha/neurofield/tags/drysdale/Release/NeuroField -i neurofield_%i.conf -d neurofield_%i.dump -o neurofield_%i.output',file_id,file_id,file_id));
+	[status] = system(sprintf('/home/ffung/neurofield/tags/drysdale/Release/NeuroField -i neurofield_%i.conf -d neurofield_%i.dump -o neurofield_%i.output',file_id,file_id,file_id));
     fprintf(1,'took %.3f seconds\n',toc);
     
     if status ~= 0
@@ -199,23 +200,16 @@ function [f_arr,P_arr,t,y] = run_neurofield(p,file_id)
     decimation_factor = 1;
     v = decimate(y(:,1)-mean(y(:,1)),decimation_factor);
     [f{1},P{1}] = pwelch_spectrum(v,1/deltat/decimation_factor);
-    [f{2},P{2}] = analytic_spectrum(p,1);
-    [f{3},~,P{3}] = rfft(v,1/deltat/decimation_factor);
-    colour = {'b','r','g'};
+
+
     f_arr = f{1};
     P_arr = P{1}; % Use pwelch as output
 
-    P{2} = interp1(f{2},P{2},f{1},'pchip','extrap');
-    normconst = (P{2}\P{1});
-        
-    P{2} = P{2}.*normconst;
     
     % Plot the power spectrum
 	subplot(1,2,2);
-    loglog(f{1},P{1},colour{1});
-    hold on
-    loglog(f{1},P{2},'r--');
-    %loglog(f{3},P{3},colour{3});
+    loglog(f{1},P{1});
+
     set(gca,'XLim',[1 45]);
     
     legend('neurofield','Analytic');

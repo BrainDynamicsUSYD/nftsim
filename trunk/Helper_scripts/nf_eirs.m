@@ -84,7 +84,7 @@ function varargout = nf_eirs(p,file_id,nonlinear,grid_edge)
     end
 
     fprintf(fid,'Population 5: Stimulation\n');
-    fprintf(fid,'Stimulus: Mode: CoherentWhite - Onset: 0 Amplitude: %f Mean: 1\n',noiseamp);
+    fprintf(fid,'Stimulus: Mode: White - Onset: 0 Amplitude: %f Mean: 1\n',noiseamp);
     fprintf(fid,'\n');
     
     fprintf(fid,'Propag 1: Wave - Deltax: %f Tau: %f Range: %f gamma: %f\n',deltax,0,p.re,p.gammae);
@@ -112,8 +112,8 @@ function varargout = nf_eirs(p,file_id,nonlinear,grid_edge)
     fprintf(fid,'\n');
 
     fprintf(fid,'Output: Node: %d\n',round((grid_edge^2 + grid_edge)/2));
-    fprintf(fid,'Population: 1 2 3 4\n');
-    fprintf(fid,'Propag: 1 2 10 8 11\n');
+    fprintf(fid,'Population:\n');
+    fprintf(fid,'Propag: 1 2 10 8\n');
     fprintf(fid,'Couple:\n');
 
     fclose(fid);

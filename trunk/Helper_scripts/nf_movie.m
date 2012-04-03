@@ -18,6 +18,10 @@ function nf_movie( nf, field, normalize, fname )
         datamean(t) = mean(mean(data(:,:,t)));
     end
 
+    if nargin < 3 || isempty(normalize)
+        normalize = 0;
+    end
+    
     plotdata = data;
     switch normalize
         case 1
