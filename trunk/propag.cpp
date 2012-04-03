@@ -1,6 +1,3 @@
-#include<iostream>
-using std::cout;
-using std::endl;
 #include "propag.h"
 
 void Propag::init( Configf& configf )

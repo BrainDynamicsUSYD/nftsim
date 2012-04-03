@@ -86,8 +86,10 @@ string Configf::find( const string& Check )
   if(wildcard_pos != string::npos){
       match = file_content.find(Check.substr(wildcard_pos+1,Check.length()),match);
       if( match == string::npos) {
-    std::cerr << "Failed to find '" << Check.substr(wildcard_pos+1,Check.length()) << "' which was the second part of the search term '" << Check << "'" << endl;
-        exit(EXIT_FAILURE);
+        seekg(sp);
+        return string("");
+    /*std::cerr << "Failed to find '" << Check.substr(wildcard_pos+1,Check.length()) << "' which was the second part of the search term '" << Check << "'" << endl;
+        exit(EXIT_FAILURE);*/
       }
     match += Check.substr(wildcard_pos+1,Check.length()).length();
 
