@@ -1,3 +1,6 @@
+#include<iostream>
+using std::cout;
+using std::endl;
 #include "propag.h"
 
 void Propag::init( Configf& configf )
@@ -39,6 +42,7 @@ const vector<double>& Propag::phi(void) const
 
 vector<Output*> Propag::output(void) const
 {
-  Output* temp = new Output( label("Propag.",index+1)+".phi", p );
-  return vector<Output*>(1,temp);
+  vector<Output*> temp;
+  temp.push_back( new Output( label("Propag.",index+1)+".phi", p ) );
+  return temp;
 }
