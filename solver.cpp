@@ -161,7 +161,7 @@ void Solver::Outputs::init( Configf& configf )
   Output::dumpf<<endl<<space<<space<<space<<" "<<septor;
   for( size_t i=0; i<m.size(); i++ ) {
     for( size_t j=0; j<Output::node.size(); j++ )
-      Output::dumpf<<space<<space<<setw<<int(j+1);
+      Output::dumpf<<space<<space<<setw<<Output::node[j]+1;
     Output::dumpf<<space<<space<<septor;
   }
   Output::dumpf<<endl;

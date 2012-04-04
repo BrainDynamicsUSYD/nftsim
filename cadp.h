@@ -15,14 +15,14 @@ class CaDP : public Couple
   vector<double> Ca;
   vector<double> binding; // glutamate binding
 
-  double rho; // linearized sigmoid
-  double N; // number of synpases per neuron
   double B; // 1/stanard deviation of glutamate binding
 
   double nu_max; // maximum synaptic strength
   double nu_th; // threshold time-scale of plasticity
   double nu_ltd; // time-scale of depression
   double nu_ltp; // time-scale of potentiation
+
+  double tCa; // time-scale of calcium influx/cascade
 protected:
   virtual void init( Configf& configf );
   virtual void restart( Restartf& restartf );
