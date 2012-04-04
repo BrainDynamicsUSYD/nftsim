@@ -39,6 +39,8 @@ void Timeseries::init( Configf& configf )
     configf.param("Width",pdur);
     if( !configf.optional("Rep Rate",tperiod) )
       tperiod = 99999999; // if repetition period not specified, do just one pulse
+    if( !configf.optional("Radius",deltax) )
+      deltax = 0;
   }
   else if( mode=="Sine" ) { // sinusoidal stimuli
     configf.param("Amplitude",amp);
@@ -191,10 +193,20 @@ void Timeseries::fire( vector<double>& Q ) const
   }
   else if( mode=="Pulse" ) { // periodic pulse pattern
     if( t<0 ) return;
-    if( fmod(t,tperiod)<pdur )
-      //for( int i=0; i<nodes; i++ )
-      for( int i=1274; i<1275; i++ )
-        Q[i] += amp;
+    if( fmod(t,tperiod)<pdur ) {
+      int width = sqrt(nodes);
+      if( deltax==0 )
+        for( int i=0; i<nodes; i++ )
+          Q[i] += amp;
+      else if( width%2 == 0 ) // even
+        for(int i=width/2-deltax; i<width/2+deltax; i++)
+          for(int j=width/2-deltax; j<width/2+deltax; j++)
+            Q[i+j*width] += amp;
+      else // odd
+        for(int i=width/2-deltax+1; i<width/2+deltax; i++)
+          for(int j=width/2-deltax+1; j<width/2+deltax; j++)
+            Q[i+j*width] += amp;
+    }
   }
   else if( mode=="Sine" ) { // sinusoidal stimuli
     if( t<0 ) return;

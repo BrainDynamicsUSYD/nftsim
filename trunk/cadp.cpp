@@ -24,6 +24,8 @@ void CaDP::init( Configf& configf )
   configf.param("LTD",nu_ltd);
   configf.param("LTP",nu_ltp);
   configf.param("B",B);
+  if( !configf.optional("tCa",tCa) )
+    tCa = 50e-3;
 }
 
 void CaDP::restart( Restartf& restartf )
@@ -57,7 +59,7 @@ void CaDP::step(void)
     binding[i] = sig( glu[i] -200e-6, B );
     double dCa = deltat*(2e-3*binding[i])
       *(195e-3-V[i])*sig( V[i]-45.5e-3,62 )
-      -Ca[i]/50e-3*deltat;
+      -Ca[i]/tCa*deltat;
     if( Ca[i]+dCa < 0 )
       Ca[i] = 0;
     else
