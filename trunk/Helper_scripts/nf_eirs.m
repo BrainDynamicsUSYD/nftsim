@@ -14,7 +14,7 @@ function varargout = nf_eirs(p,file_id,nonlinear,grid_edge)
     % WARNING- Depends on nf_read, nf_extract, pwelch_spectrum, and optionally 
     
     if nargin < 4 || isempty(grid_edge)
-        grid_edge = 1;
+        grid_edge = 3;
     end
 
     if nargin < 3 || isempty(nonlinear)
@@ -43,7 +43,7 @@ function varargout = nf_eirs(p,file_id,nonlinear,grid_edge)
 		fprintf(1,'Deltat = %f\n',deltat);
 	end
 	
-    noiseamp = sqrt(p.phin^2/deltat/2)
+    noiseamp = sqrt(p.phin^2/deltat/2);
     
     % WRITE THE FILE
     fid = fopen(sprintf('neurofield_%i.conf',file_id),'w');
@@ -120,7 +120,7 @@ function varargout = nf_eirs(p,file_id,nonlinear,grid_edge)
     
     fprintf(1,'Integration time: %d s sampled at %d Hz\nGrid size %dx%d, outputting node %d\nSimulating...',int_time,1/deltat,grid_edge,grid_edge,round((grid_edge^2 + grid_edge)/2));
     tic;
-    [status] = system(sprintf('./Release/NeuroField -i neurofield_%i.conf -d neurofield_%i.dump -o neurofield_%i.output',file_id,file_id,file_id));
+    [status] = system(sprintf('neurofield -i neurofield_%i.conf -d neurofield_%i.dump -o neurofield_%i.output',file_id,file_id,file_id));
     fprintf(1,'took %.3f seconds\n',toc);
     
     if status ~= 0
@@ -151,7 +151,8 @@ function varargout = nf_eirs(p,file_id,nonlinear,grid_edge)
     xlabel('Frequency (Hz)');
     ylabel('Power (arbitrary)');
     title(sprintf('X: %.3f Y: %.3f Z: %.3f',p.xyz(1),p.xyz(2),p.xyz(3)));
-        
+    set(gca,'XLim',[1 45]);
+    
     try
         [f_a,P_a] = analytic_spectrum(p,1);
         % And renormalize it
