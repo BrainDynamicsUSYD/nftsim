@@ -1,7 +1,7 @@
-" neurofield.vim
+" nf_conf.vim
 " implements syntax highlighting for *.conf in vi
 " to install, copy this file into ~/.vim/syntax/
-" and add "au BufRead,BufNewFile *.conf setfiletype neurofield" into
+" and add "au BufRead,BufNewFile *.conf setfiletype nf_conf" into
 " ~/.vim/filetype.vim
 
 " Integer with - + or nothing in front
@@ -22,7 +22,7 @@ syn keyword number Steady All Torus Nonperiodic
 syn keyword key Connection matrix Population Stimulus Population Firing Dendrite Propag Couple Output nextgroup=index skipwhite skipnl skipempty
 syn match index '\d\+' contained
 
-syn keyword choose Composite Const White CoherentWhite Pulse Sine Gaussian Ramp GaussPulse PAS Sigmoid Linear Map Wave Harmonic CaDP Q V phi Tau nu
+syn keyword choose Composite Const White CoherentWhite Pulse Sine Gaussian Ramp GaussPulse PAS Sigmoid Linear Map Wave Harmonic CaDP BCM Q V phi Tau nu
 
 syn keyword header Time Deltat Nodes Topology Bath Glutamate dynamics
 
