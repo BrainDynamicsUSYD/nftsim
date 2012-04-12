@@ -17,6 +17,7 @@ using std::stringstream;
 
 #include"couple.h"
 #include"cadp.h"
+#include"bcm.h"
 
 #include"output.h"
 
@@ -283,6 +284,9 @@ void Solver::init( Configf& configf )
     else if(ctype=="CaDP")
       couples.add( new
         CaDP(nodes,deltat,i, glu, *pops[cnt.pre[i]], *pops[cnt.post[i]] ) );
+    else if(ctype=="BCM")
+      couples.add( new
+        BCM(nodes,deltat,i, glu, *pops[cnt.pre[i]], *pops[cnt.post[i]] ) );
     else {
       std::cerr<<"Invalid couple type '"<<ctype<<"'."<<endl;
       exit(EXIT_FAILURE);

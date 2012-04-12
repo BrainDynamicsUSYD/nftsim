@@ -14,7 +14,6 @@ void Population::init( Configf& configf )
     configf.param( "Firing", *qresponse );
   }
   else { // stimulus population
-    //for( int i=0; i<3; i++ )
     if( !qhistory.size() )
       qhistory.push_back( vector<double>(nodes,0) );
     else
@@ -60,32 +59,13 @@ void Population::step(void)
     timeseries->step();
     timeseries->fire( qhistory[qkey] );
   }
-  /*if(index==4){
-	  for( size_t i=0; i<qhistory.size(); i++ ){
-		  std::cout.width(8);
-		  std::cout<<qhistory[i][0]<<" ";
-	  }
-	  std::cout<<endl;
-  }*/
 }
 
 const vector<double>& Population::Q( const Tau& tau) const
 {
 	std::cout.precision(14);
-  if( tau.m.size() == 1 ){ // homogeneous tau
-	  if(index==0) {
-//std::cout <<std::scientific<< "Q[0]: Idx: " << (qkey-0+qhistory.size())%qhistory.size() << "=" << qhistory[(qkey-0+qhistory.size())%qhistory.size()][0]<< ";\tQ[425]: Idx: " << (qkey-425+qhistory.size())%qhistory.size() << "=" << qhistory[(qkey-425+qhistory.size())%qhistory.size()][0] << std::endl;
-//std::cout <<std::scientific<< qhistory[(qkey-0+qhistory.size())%qhistory.size()][0]<< " " << qhistory[(qkey-425+qhistory.size())%qhistory.size()][0] << std::endl;
-		  //std::cout<<tau.m[0]<<std::endl;
-//std::cout.width(7); std::cout<<"Tau: "<<tau.m[0]<<"\t";
-		  //for( int i=qkey-3; i<qkey+3; i++ )
-			//if(i>0 && uint(i)<qhistory.size())
-			  //std::cout<<qhistory[i][0]<<"\t";
-			//else
-				//std::cout<<"       "<<"\t";
-		  //std::cout<<"\tIndex:\t"<<(qkey-tau.m[0]+qhistory.size())%qhistory.size()<<"/"<<qhistory.size()<<",\tQ: "<<qhistory[(qkey-tau.m[0]+qhistory.size())%qhistory.size()][0]<<std::endl;
-	  }
-    return qhistory[(qkey-tau.m[0]+qhistory.size())%qhistory.size()];}
+  if( tau.m.size() == 1 ) // homogeneous tau
+    return qhistory[(qkey-tau.m[0]+qhistory.size())%qhistory.size()];
   else { // tau.m.size() == nodes, inhomogeneous tau
     static vector<double> temp(nodes);
     for( int i=0; i<nodes; i++ )
@@ -102,8 +82,6 @@ double Population::Qinit( Configf& configf ) const
     return atof(buffer.c_str());
   }
   else {
-    // this assumes the stimulus has a mean component specified
-    // otherwise it would bark and exit
     string temp = configf.find( label("Population ",index+1)+"*Mean:");
     return atof( temp.c_str() );
   }
