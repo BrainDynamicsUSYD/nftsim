@@ -15,8 +15,9 @@ class Stencil
 protected:
   int nodes;
   int longside;
+  int shortside;
   string boundary;
-  vector<double> m;
+  double* m;
 
   mutable int ptr;
 public:

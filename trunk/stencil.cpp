@@ -4,17 +4,19 @@ using std::endl;
 #include"stencil.h"
 
 Stencil::Stencil( int nodes, int longside, const string& boundary )
-  : nodes(nodes), longside(longside), boundary(boundary),
-    m( (nodes/longside+2)*(longside+2) ), ptr(0)
+  : nodes(nodes), longside(longside), shortside(nodes/longside),
+    boundary(boundary), ptr(0)
 {
   if( boundary != "Torus" && boundary != "Sphere" ) {
     cerr<<"Stencil boundary must be Torus or Sphere."<<endl;
     exit(EXIT_FAILURE);
   }
+  m = new double[ (shortside+2)*(longside+2) ];
 }
 
 Stencil::~Stencil(void)
 {
+  delete[] m;
 }
 
 const vector<double>& Stencil::operator= ( const vector<double>& field )
@@ -22,6 +24,39 @@ const vector<double>& Stencil::operator= ( const vector<double>& field )
   if( boundary == "Torus" )
   {
     // copy centre square
+    const double* __restrict__ p1 = &field[0];
+    double* __restrict__ p2 = &m[3+longside];
+    for( int i=0; i<shortside; i++ ) {
+      for( int j=0; j<longside; j++ )
+        *p2++ = *p1++;
+      p2 += 2;
+    }
+
+    // copy top row from bottom row
+    p1 = &field[longside*(shortside-1)];
+    p2 = &m[1];
+    for( int i=0; i<longside; i++ )
+      *p2++ = *p1++;
+
+    // copy bottom row from top row
+    p1 = &field[0];
+    p2 = &m[(longside+2)*(shortside+1) +1];
+    for( int i=0; i<longside; i++ )
+      *p2++ = *p1++;
+
+    // copy left edge from right edge
+    p1 = &field[longside -1];
+    p2 = &m[longside +2];
+    for( int i=0; i<shortside; i++, p1+=longside, p2+=longside+2 )
+      *p2 = *p1;
+
+    // copy right edge from left edge
+    p1 = &field[0];
+    p2 = &m[2*longside +3];
+    for( int i=0; i<shortside; i++, p1+=longside, p2+=longside+2 )
+      *p2 = *p1;
+
+    /*// copy centre square
     for( int j=0; j< nodes/longside; j++ )
       for( int i=0; i<longside; i++ )
         m[(j+1)*(longside+2)+i+1] = field[j*longside+i];
@@ -40,7 +75,7 @@ const vector<double>& Stencil::operator= ( const vector<double>& field )
 
     // copy top edge into bottom boundary
     for( int i=0; i<longside; i++ )
-      m[(nodes/longside+1)*(longside+2)+1+i] = field[i];
+      m[(nodes/longside+1)*(longside+2)+1+i] = field[i];*/
 
     // copy 4 corners
     m[0] = field[nodes-1];
@@ -58,7 +93,7 @@ void Stencil::operator++ (int i) const
   ptr++;
   if( ( ptr%(longside+2)==longside+1 ) )
     ptr += 2;
-  if( ptr == (longside+1)*(nodes/longside+2)+1 )
+  if( ptr == (longside+1)*(shortside+2)+1 )
     set(0);
 }
 
@@ -82,12 +117,12 @@ int Stencil::get(void) const
   return x+y*longside;
 }
 
-double Stencil::nw(void) const { return m[ ptr-longside-2 -1]; }
-double Stencil::n (void) const { return m[ ptr-longside-2   ]; }
-double Stencil::ne(void) const { return m[ ptr-longside-2 +1]; }
-double Stencil:: w(void) const { return m[ ptr            -1]; }
-double Stencil:: c(void) const { return m[ ptr              ]; }
-double Stencil:: e(void) const { return m[ ptr            +1]; }
-double Stencil::sw(void) const { return m[ ptr+longside+2 -1]; }
-double Stencil::s (void) const { return m[ ptr+longside+2   ]; }
-double Stencil::se(void) const { return m[ ptr+longside+2 +1]; }
+double Stencil::nw(void) const { return m[ ptr-longside-2-1]; }
+double Stencil::n (void) const { return m[ ptr-longside-2  ]; }
+double Stencil::ne(void) const { return m[ ptr-longside-2+1]; }
+double Stencil:: w(void) const { return m[ ptr           -1]; }
+double Stencil:: c(void) const { return m[ ptr             ]; }
+double Stencil:: e(void) const { return m[ ptr           +1]; }
+double Stencil::sw(void) const { return m[ ptr+longside+2-1]; }
+double Stencil::s (void) const { return m[ ptr+longside+2  ]; }
+double Stencil::se(void) const { return m[ ptr+longside+2+1]; }

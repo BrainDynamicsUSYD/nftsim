@@ -2,7 +2,6 @@
 #define WAVE_H
 
 #include"propag.h"
-//#include"tstencil.h"
 #include"stencil.h"
 
 class Wave : public Propag
@@ -14,13 +13,9 @@ protected:
   void restart( Restartf& restartf );
   void dump( Dumpf& dumpf ) const;
 
-  Stencil* oldp[2]; // stencil to past phi, oldp[0]==most recent
-  vector<double> oldpval[2]; // keyring of past phi
-  Stencil* oldQ[2]; // stencil to past Q, oldQ[0]==most recent
-  vector<double> oldQval[2]; // keyring of past Q
+  Stencil* oldp[2]; // keyring stencil to past phi, oldp[key]==most recent
+  Stencil* oldQ[2]; // keyring stencil to past Q, oldQ[key]==most recent
   int key;
-
-  string topology; // topology of brain region
 
   // variables that's initialized once only
   double deltax; // spatial length of a node
