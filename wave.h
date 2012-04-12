@@ -2,7 +2,7 @@
 #define WAVE_H
 
 #include"propag.h"
-#include"tstencil.h"
+//#include"tstencil.h"
 #include"stencil.h"
 
 class Wave : public Propag

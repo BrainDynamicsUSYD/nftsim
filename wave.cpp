@@ -1,6 +1,7 @@
 #include<cmath>
 #include"wave.h"
 #include <iostream>
+using std::cerr;
 using std::endl;
 
 void Wave::init( Configf& configf )
@@ -22,8 +23,13 @@ void Wave::init( Configf& configf )
   oldpval[1].resize(nodes,p[0]);
   oldQval[0].resize(nodes,Q);
   oldQval[1].resize(nodes,Q);
-  
-  if( topology == "Torus" ) {
+
+  oldp[0] = new Stencil(nodes,longside,topology); *oldp[0] = oldpval[0];
+  oldp[1] = new Stencil(nodes,longside,topology); *oldp[1] = oldpval[1];
+  oldQ[0] = new Stencil(nodes,longside,topology); *oldQ[0] = oldQval[0];
+  oldQ[1] = new Stencil(nodes,longside,topology); *oldQ[1] = oldQval[0];
+
+  /*if( topology == "Torus" ) {
     oldp[0] = new TStencil(nodes,longside); oldp[0]->assign(&oldpval[0]);
     oldp[1] = new TStencil(nodes,longside); oldp[1]->assign(&oldpval[1]);
     oldQ[0] = new TStencil(nodes,longside); oldQ[0]->assign(&oldQval[0]);
@@ -35,7 +41,7 @@ void Wave::init( Configf& configf )
     oldp[1] = new Stencil(nodes,longside,bath); oldp[1]->assign(&oldpval[1]);
     oldQ[0] = new Stencil(nodes,longside,bath); oldQ[0]->assign(&oldQval[0]);
     oldQ[1] = new Stencil(nodes,longside,bath); oldQ[1]->assign(&oldQval[0]);
-  }
+  }*/
 
   dt2on12 = deltat*deltat/12.;
   dfact = dt2on12*gamma*gamma;
@@ -47,7 +53,7 @@ void Wave::init( Configf& configf )
   exp2 = exp(-2.*deltat*gamma);
 
   if( gamma*range*deltat/deltax >1.41 ) {
-    std::cerr<<"Wave equation does not fulfill the Courant condition."<<endl;
+    cerr<<"Wave equation does not fulfill the Courant condition."<<endl;
     exit(EXIT_FAILURE);
   }
 }
@@ -89,6 +95,11 @@ void Wave::step(void)
   oldpval[0] = p;
   oldQval[1] = oldQval[0];
   oldQval[0] = prepop.Q(tau);
+
+  *oldp[0] = oldpval[0];
+  *oldp[1] = oldpval[1];
+  *oldQ[0] = oldQval[0];
+  *oldQ[1] = oldQval[1];
 
   /*key = !key;
   oldpval[key] = p;
