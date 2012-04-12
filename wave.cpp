@@ -1,8 +1,8 @@
-#include<cmath>
-#include"wave.h"
 #include <iostream>
 using std::cerr;
 using std::endl;
+#include<cmath>
+#include"wave.h"
 
 void Wave::init( Configf& configf )
 {
@@ -19,29 +19,10 @@ void Wave::init( Configf& configf )
   configf.param("Range",range);
   configf.param("gamma",gamma);
 
-  oldpval[0].resize(nodes,p[0]);
-  oldpval[1].resize(nodes,p[0]);
-  oldQval[0].resize(nodes,Q);
-  oldQval[1].resize(nodes,Q);
-
-  oldp[0] = new Stencil(nodes,longside,topology); *oldp[0] = oldpval[0];
-  oldp[1] = new Stencil(nodes,longside,topology); *oldp[1] = oldpval[1];
-  oldQ[0] = new Stencil(nodes,longside,topology); *oldQ[0] = oldQval[0];
-  oldQ[1] = new Stencil(nodes,longside,topology); *oldQ[1] = oldQval[0];
-
-  /*if( topology == "Torus" ) {
-    oldp[0] = new TStencil(nodes,longside); oldp[0]->assign(&oldpval[0]);
-    oldp[1] = new TStencil(nodes,longside); oldp[1]->assign(&oldpval[1]);
-    oldQ[0] = new TStencil(nodes,longside); oldQ[0]->assign(&oldQval[0]);
-    oldQ[1] = new TStencil(nodes,longside); oldQ[1]->assign(&oldQval[0]);
-  }
-  else {
-    double bath = atof( topology.substr( topology.find(" ") ).c_str() );
-    oldp[0] = new Stencil(nodes,longside,bath); oldp[0]->assign(&oldpval[0]);
-    oldp[1] = new Stencil(nodes,longside,bath); oldp[1]->assign(&oldpval[1]);
-    oldQ[0] = new Stencil(nodes,longside,bath); oldQ[0]->assign(&oldQval[0]);
-    oldQ[1] = new Stencil(nodes,longside,bath); oldQ[1]->assign(&oldQval[0]);
-  }*/
+  *oldp[0] = vector<double>(nodes,p[0]);
+  *oldp[1] = vector<double>(nodes,p[0]);
+  *oldQ[0] = vector<double>(nodes,Q);
+  *oldQ[1] = vector<double>(nodes,Q);
 
   dt2on12 = deltat*deltat/12.;
   dfact = dt2on12*gamma*gamma;
@@ -69,8 +50,12 @@ void Wave::dump( Dumpf& dumpf ) const
 Wave::Wave( int nodes, double deltat, int index, Population& prepop,
         Population& postpop, int longside, string topology )
     : Propag(nodes,deltat,index,prepop,postpop,longside,topology),
-        key(0), topology(topology)
+        key(0)
 {
+  oldp[0] = new Stencil(nodes,longside,topology);
+  oldp[1] = new Stencil(nodes,longside,topology);
+  oldQ[0] = new Stencil(nodes,longside,topology);
+  oldQ[1] = new Stencil(nodes,longside,topology);
 }
 
 Wave::~Wave(void)
@@ -83,29 +68,15 @@ void Wave::step(void)
 {
   for( int i=0; i<nodes; i++,
           (*oldp[0])++, (*oldQ[0])++, (*oldp[1])++, (*oldQ[1])++ ) {
-    sump     = oldp[0]->n()  +oldp[0]->s()  +oldp[0]->w()  +oldp[0]->e();
-    diagsump = oldp[0]->nw() +oldp[0]->ne() +oldp[0]->sw() +oldp[0]->se();
-    sumQ     = oldQ[0]->n()  +oldQ[0]->s()  +oldQ[0]->w()  +oldQ[0]->e();
-    diagsumQ = oldQ[0]->nw() +oldQ[0]->ne() +oldQ[0]->sw() +oldQ[0]->se();
-    drive = dfact*( tenminus3p2*exp1*oldQ[0]->c() +prepop.Q(tau)[i] +exp2*oldQ[1]->c() +exp1*.5*p2*(sumQ+.5*diagsumQ) );
-    p[i] = twominus3p2*exp1*oldp[0]->c() +exp1*.5*p2*(sump+.5*diagsump) -exp2*oldp[1]->c() +drive;
+    sump    =oldp[key]->n()  +oldp[key]->s()  +oldp[key]->w()  +oldp[key]->e();
+    diagsump=oldp[key]->nw() +oldp[key]->ne() +oldp[key]->sw() +oldp[key]->se();
+    sumQ    =oldQ[key]->n()  +oldQ[key]->s()  +oldQ[key]->w()  +oldQ[key]->e();
+    diagsumQ=oldQ[key]->nw() +oldQ[key]->ne() +oldQ[key]->sw() +oldQ[key]->se();
+    drive = dfact*( tenminus3p2*exp1*oldQ[key]->c() +prepop.Q(tau)[i] +exp2*oldQ[!key]->c() +exp1*.5*p2*(sumQ+.5*diagsumQ) );
+    p[i] = twominus3p2*exp1*oldp[key]->c() +exp1*.5*p2*(sump+.5*diagsump) -exp2*oldp[!key]->c() +drive;
   }
 
-  oldpval[1] = oldpval[0];
-  oldpval[0] = p;
-  oldQval[1] = oldQval[0];
-  oldQval[0] = prepop.Q(tau);
-
-  *oldp[0] = oldpval[0];
-  *oldp[1] = oldpval[1];
-  *oldQ[0] = oldQval[0];
-  *oldQ[1] = oldQval[1];
-
-  /*key = !key;
-  oldpval[key] = p;
-  oldp[0]->assign(&oldpval[key]);  // just updated value
-  oldp[1]->assign(&oldpval[!key]); // one timestep back
-  oldpval[key] = prepop.Q(tau);
-  oldQ[0]->assign(&oldQval[key]);
-  oldQ[1]->assign(&oldQval[!key]);*/
+  key = !key;
+  *oldp[key] = p;
+  *oldQ[key] = prepop.Q(tau);
 }
