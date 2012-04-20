@@ -53,8 +53,10 @@ function data = nf_extract(nf,traces,t,nodes)
     
     % And assemble the output
     data = [];
+    
     for j = 1:length(outputs)
-        data = [data nf.data{outputs(j)}(start:stop,nodes)];
+        [~,node_index] = ismember(nodes,nf.nodes{j});
+        data = [data nf.data{outputs(j)}(start:stop,node_index)];
     end
     
     
