@@ -83,6 +83,47 @@ const vector<double>& Stencil::operator= ( const vector<double>& field )
     m[(longside+2)*(nodes/longside+1)] = field[longside-1];
     m[(longside+2)*(nodes/longside+2)-1] = field[0];
   }
+  else if( boundary == "Sphere" )
+  {
+    // copy centre square
+    const double* __restrict__ p1 = &field[0];
+    double* __restrict__ p2 = &m[3+longside];
+    for( int i=0; i<shortside; i++ ) {
+      for( int j=0; j<longside; j++ )
+        *p2++ = *p1++;
+      p2 += 2;
+    }
+
+    // copy top row from bottom row
+    p1 = &field[longside*(shortside-1)];
+    p2 = &m[longside+1];
+    for( int i=0; i<longside; i++ )
+      *p2-- = *p1++;
+
+    // copy bottom row from top row
+    p1 = &field[longside-1];
+    p2 = &m[(longside+2)*(shortside+1) +1];
+    for( int i=0; i<longside; i++ )
+      *p2++ = *p1--;
+
+    // copy left edge from right edge
+    p1 = &field[longside -1];
+    p2 = &m[longside +2];
+    for( int i=0; i<shortside; i++, p1+=longside, p2+=longside+2 )
+      *p2 = *p1;
+
+    // copy right edge from left edge
+    p1 = &field[0];
+    p2 = &m[2*longside +3];
+    for( int i=0; i<shortside; i++, p1+=longside, p2+=longside+2 )
+      *p2 = *p1;
+
+    // copy 4 corners NEEDS TO MODIFY SOMEWHERE!!
+    m[0] = field[nodes-1];
+    m[longside+1] = field[nodes-longside];
+    m[(longside+2)*(nodes/longside+1)] = field[longside-1];
+    m[(longside+2)*(nodes/longside+2)-1] = field[0];
+  }
 
   set(0);
   return field;

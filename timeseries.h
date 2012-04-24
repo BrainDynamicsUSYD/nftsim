@@ -15,6 +15,7 @@ class Timeseries : public NF
 
   string mode; // Number representing mode of timeseries
   double t; // time in seconds
+  double tend; // time to end stimulus
   Random *random; //Pointer to Random number generator object
   std::vector<Timeseries*> sarray; // Array of stimuli when mode==0
 

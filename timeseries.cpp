@@ -9,6 +9,8 @@ void Timeseries::init( Configf& configf )
   seed=-98716872;
   configf.param("Mode",mode);//configf>>mode;
   configf.param("Onset",t); t = -t;
+  if( !configf.optional("End",tend) )
+    tend = 9999999;
   if( mode=="Composite" ) {
     // take in stimulus transition times and specifications of each stimulus
     int nStim; configf.param("Number of Stimuli",nStim);
@@ -149,6 +151,7 @@ Timeseries::~Timeseries(){
 void Timeseries::step(void)
 {
   t += deltat;
+  tend -= deltat;
 }
 
 void Timeseries::fire( vector<double>& Q ) const
@@ -161,7 +164,7 @@ void Timeseries::fire( vector<double>& Q ) const
     }
   }
   else if( mode=="Const" ) { // constant noise
-    if( t<0 ) return;
+    if( t<0 || tend<0 ) return;
     for( int i=0; i<nodes; i++ )
       Q[i] += mean;
   }
@@ -192,7 +195,7 @@ void Timeseries::fire( vector<double>& Q ) const
       Q[i] += amp*deviate1 + mean;
   }
   else if( mode=="Pulse" ) { // periodic pulse pattern
-    if( t<0 ) return;
+    if( t<0 || tend<0 ) return;
     if( fmod(t,tperiod)<pdur ) {
       int width = sqrt(nodes);
       if( deltax==0 )

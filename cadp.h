@@ -8,9 +8,9 @@ class CaDP : public Couple
   CaDP();
   CaDP(CaDP&);
 
-  double sig( double x, double beta ) const;
-  double x(double Ca) const; // potentiation rate
-  double y(double Ca) const; // depression rate
+  inline double sig( double x, double beta ) const;
+  inline double x(double Ca) const; // potentiation rate
+  inline double y(double Ca) const; // depression rate
 
   vector<double> binding; // glutamate binding
 
@@ -24,6 +24,7 @@ class CaDP : public Couple
   double tCa; // time-scale of calcium influx/cascade
 protected:
   vector<double> Ca;
+  vector<double> nhu; // transient coupling strength
   double dth; // calcium threshold to depression
   double pth; // calcium threshold to potentiation
 
