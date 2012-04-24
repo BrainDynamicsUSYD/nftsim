@@ -8,22 +8,24 @@ double CaDP::sig( double x, double beta ) const
 
 double CaDP::x(double Ca) const
 {
-  return th +ltp*sig(Ca-pth,2e7);
-  //return th +(ltp-ltd)*sig(Ca-.66e-6,2e7) +ltd/1e-6*Ca;
+  return th +ltp*sig(Ca-pth,4e7);
 }
 
 double CaDP::y(double Ca) const
 {
-  return th +ltd*sig(Ca-dth,2e7) -ltd*sig(Ca-pth,2e7);
+  return th +ltd*sig(Ca-dth,4e7) -ltd*sig(Ca-pth,4e7);
 }
 
 void CaDP::init( Configf& configf )
 {
   Couple::init(configf); // initialize nu and excite()
+  nhu = n;
   configf.param("nu_max",max);
+  configf.param("LTD",dth);
+  configf.param("LTP",pth);
   configf.param("Threshold",th);
-  configf.param("LTD",ltd);
-  configf.param("LTP",ltp);
+  configf.param("x",ltp);
+  configf.param("y",ltd);
   configf.param("B",B);
   if( !configf.optional("tCa",tCa) )
     tCa = 50e-3;
@@ -35,20 +37,12 @@ void CaDP::restart( Restartf& restartf )
 
 void CaDP::dump( Dumpf& dumpf ) const
 {
-  /*dumpf<<"Nu: "<<nu[0]<<" ";
-  dumpf<<"Nu_max: "<<max<<" ";
-  dumpf<<"Threshold"<<th<<" ";
-  dumpf<<"LTD: "<<ltd<<" ";
-  dumpf<<"LTP: "<<ltp<<" ";
-  dumpf<<"B: "<<B<<" ";*/
 }
 
 CaDP::CaDP( int nodes, double deltat, int index, const vector<double>& glu,
         const Population& prepop, const Population& postpop )
   : Couple(nodes,deltat,index,glu,prepop,postpop), binding(nodes,0), Ca(nodes,0)
 {
-  dth = .45e-6;
-  pth = .66e-6;
 }
 
 CaDP::~CaDP(void)
@@ -67,12 +61,19 @@ void CaDP::step(void)
       Ca[i] = 0;
     else
       Ca[i] += dCa;
-    double dnu = deltat*(
-            x(Ca[i])*(max-n[i]) -y(Ca[i])*n[i] );
-    if( pos*( n[i]+dnu ) < 0 )
+    double dnhu = deltat*( x(Ca[i])*(max-nhu[i]) -y(Ca[i])*nhu[i] );
+    if( pos*( nhu[i]+dnhu ) < 0 )
+      nhu[i] = 0;
+    else
+      nhu[i] += dnhu;
+    /*static double p = 0;
+    double dp = deltat*( .01*(nhu[i]-n[i]) -2/1*p );
+    p += dp; double dn = p*deltat; // delayed, long term plasticity*/
+    double dn = dnhu; // "instantaneous" plasticity
+    if( pos*( n[i]+dn ) < 0 )
       n[i] = 0;
     else
-      n[i] += dnu;
+      n[i] += dn;
   }
 }
 
@@ -80,6 +81,7 @@ vector<Output*> CaDP::output(void) const
 {
   vector<Output*> temp;
   temp.push_back( new Output( label("Couple.",index+1)+".nu", nu() ) );
+  temp.push_back( new Output( label("Couple.",index+1)+".nu_hat", nhu ) );
   temp.push_back( new Output( label("Couple.",index+1)+".Ca", Ca ) );
   temp.push_back( new Output( label("Couple.",index+1)+".B", binding ) );
   return temp;
