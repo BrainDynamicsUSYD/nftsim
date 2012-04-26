@@ -5,6 +5,7 @@
 using std::vector;
 #include"output.h"
 #include"tau.h"
+#include"burst.h"
 #include"qresponse.h"
 #include"timeseries.h"
 #include"propag.h"
@@ -36,7 +37,7 @@ public:
   double Qinit( Configf& configf ) const;
   const vector<double>& V(void) const;
   void add2Dendrite( int index,
-          const Propag& prepropag, const Couple& precouple );
+          const Propag& prepropag, const Couple& precouple, Configf& configf );
   void growHistory( const Tau& tau );
   virtual vector<Output*> output(void) const;
 };

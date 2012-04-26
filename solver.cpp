@@ -244,7 +244,8 @@ void Solver::init( Configf& configf )
 
   // glutamte dynamics
   glu.resize(nodes,0); dglu.resize(nodes,0);
-  configf.param("Lambda",Lambda); configf.param("tGlu",tGlu);
+  configf.param("fast Lambda",fLambda); configf.param("fast Glu",tfGlu);
+  configf.param("slow Lambda",sLambda); configf.param("slow Glu",tsGlu);
 
   // read in connection matrix
   configf.next("Connection matrix"); cnt.init(configf);
@@ -298,7 +299,7 @@ void Solver::init( Configf& configf )
   for( int i=0; i<cnt.npop; i++ )
     for( int j=0; j<cnt.ncnt; j++ )
       if( cnt.post[j] == i )
-        pops[i]->add2Dendrite( j, *propags[j], *couples[j] );
+        pops[i]->add2Dendrite( j, *propags[j], *couples[j], configf );
 
   // read couples parameters
   configf.go2("Couple 1");
@@ -342,14 +343,16 @@ void Solver::solve(void)
 void Solver::step(void)
 {
   // glutamte dynamics
+  static double p = 0;
   for( int j=0; j<nodes; j++ )
     dglu[j] = 0;//double ddglu = 0; double ts = 200e-3; double td = 200e-3;
   for( size_t i=0; i<couples.size(); i++ )
     if( couples[i]->excite() )
       for( int j=0; j<nodes; j++ )
-        dglu[j] += Lambda*propags[i]->phi()[j]*deltat;
+        dglu[j] += fLambda*propags[i]->phi()[j]*deltat;
+  p = sLambda/fLambda*dglu[0] - p/tfGlu*deltat;
   for( int j=0; j<nodes; j++ ) {
-    dglu[j] -= glu[j]/tGlu*deltat;
+    dglu[j] -= glu[j]/tsGlu*deltat -p;
     glu[j] += dglu[j];
     if( glu[j]<0 ) glu[j] = 0;
     /*double p1 = ddglu;

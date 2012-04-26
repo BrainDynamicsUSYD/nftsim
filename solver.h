@@ -23,8 +23,10 @@ class Solver : public NF
 
   int steps; // number of integration steps to perform
 
-  double Lambda; // glutamate concentration per action potential
-  double tGlu;   // decay time scale of glutamate
+  double fLambda; // glutamate concentration per action potential
+  double sLambda; // glutamate concentration per action potential
+  double tfGlu;   // fast time scale of glutamate
+  double tsGlu;   // slow time scale of glutamate
   vector<double> glu; // glutamate concentration in synaptic cleft
   vector<double> dglu; // Delta glutamate concentration from last timestep
 

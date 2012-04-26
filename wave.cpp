@@ -9,8 +9,8 @@ void Wave::init( Configf& configf )
   string buffer("Steady");
   configf.optional("phi",buffer);
   double Q = prepop.Qinit(configf);
-  configf.param("Deltax",deltax);
   configf.param("Tau",tau); prepop.growHistory(tau);
+  configf.param("Deltax",deltax);
   if( buffer != "Steady" )
     p.resize(nodes,atof(buffer.c_str()));
   else
