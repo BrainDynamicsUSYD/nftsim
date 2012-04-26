@@ -39,8 +39,12 @@ void Timeseries::init( Configf& configf )
   else if( mode=="Pulse" ) { // periodic pulse pattern
     configf.param("Amplitude",amp);
     configf.param("Width",pdur);
-    if( !configf.optional("Rep Rate",tperiod) )
-      tperiod = 99999999; // if repetition period not specified, do just one pulse
+    if( !configf.optional("Rep Rate",tperiod) ) {
+      if( configf.optional("Frequency",tperiod) )
+        tperiod = 1/tperiod;
+      else // if repetition period or frequency not specified, do just one pulse
+        tperiod = 99999999;
+    }
     if( !configf.optional("Radius",deltax) )
       deltax = 0;
   }
@@ -263,7 +267,7 @@ void Timeseries::fire( vector<double>& Q ) const
       else if( xspread<t && t<xspread+yspread )
         for( int i=0; i<nodes; i++ )
           Q[i] += ycent*sin(3.141592654*(t-xspread)/yspread);
-      if( xspread/2+tpeak<t && t<=xspread/2+tpeak+4e-3 )
+      if( xspread/2+tpeak<t && t<=xspread/2+tpeak+5e-4 )
         for( int i=0; i<nodes; i++ )
           Q[i] += amp;
     }

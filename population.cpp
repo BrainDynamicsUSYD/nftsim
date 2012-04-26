@@ -106,9 +106,14 @@ void Population::add2Dendrite( int index,
     exit(EXIT_FAILURE);
   }
 
-  if( !qresponse )
-    qresponse = new QResponse(nodes,deltat,index);
-  qresponse->add2Dendrite( index, prepropag, precouple );
+  if( !qresponse ) {
+    string temp(configf.find( label("Population: ",index+1)+"*Firing:" ));
+    if( temp == "Bursting" )
+      qresponse = new BurstResponse(nodes,deltat,index);
+    else
+      qresponse = new QResponse(nodes,deltat,index);
+    qresponse->add2Dendrite( index, prepropag, precouple );
+  }
 }
 
 void Population::growHistory( const Tau& tau )

@@ -24,18 +24,18 @@ class QResponse : public NF
   Array<Dendrite> dendrites; // array of dendrites
   vector<double> v; // soma potential for the population
 protected:
-  void init( Configf& inputf );
-  void restart( Restartf& restartf );
-  void dump( Dumpf& dumpf ) const;
+  virtual void init( Configf& inputf );
+  virtual void restart( Restartf& restartf );
+  virtual void dump( Dumpf& dumpf ) const;
 public: 
   QResponse( int nodes, double deltat, int index );
   virtual ~QResponse(void);
-  void step(void);
+  virtual void step(void);
   void add2Dendrite( int index,
           const Propag& prepropag, const Couple& precouple );
 
-  void fire( vector<double>& Q ) const;
-  const vector<double>& V(void) const;
+  virtual void fire( vector<double>& Q ) const;
+  virtual const vector<double>& V(void) const;
 };
 
 #endif

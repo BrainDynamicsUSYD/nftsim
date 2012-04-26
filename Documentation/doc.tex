@@ -125,7 +125,7 @@ simply list the above table entries into the argument list:
 ./Launch Configs/cortex.conf 'Propag 1' 'Propag 2' gamma 10 20 30 'Couple 1' nu 1 2 3
 \end{lstlisting}
 
-In terms of syntactic restriction, each row in the table can have an arbitary number of objects, but only one parameter; every row must have the same number of runs.
+In terms of syntactic restriction, each row in the table can have an arbitary number of objects, but only one parameter; every row must have the same number of runs.\footnote{Tips: the UNIX \type{seq} program allows shortening parameter value listing from \type{10 20 30 40 50 60} into \type{`seq 10 10 60`}, e.g. \type{Launch Configs/cortex.conf 'Propag 1' gamma `seq 10 10 60`}.}
 
 \item Switches are accepted for choosing options. To turn on the switches, put them in the argument list to the launcher script. The following switches are accepted:
 	\begin{description}
@@ -863,6 +863,5 @@ You can then freely modify the code in the branch with the benefit of version co
 \begin{enumerate}
 \item check numerical entry of connection matrix
 \item restart mode is crippled; rewrite the whole thing.
-\item alternative stencil geometry?
 \end{enumerate}
 \end{document}
