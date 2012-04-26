@@ -12,8 +12,8 @@ void Harmonic::init( Configf& configf )
   oldp.resize(nodes,Q);
   oldQ.resize(nodes,Q);
   dpdt.resize(nodes,0.);
-  double temp; configf.optional("Deltax",temp); // for compatibility with Wave
   configf.param("Tau",tau); prepop.growHistory(tau);
+  double temp; configf.optional("Deltax",temp); // for compatibility with Wave
   configf.optional("Range",temp);
   configf.param("gamma",gamma);
   twoongamma = 2./gamma;

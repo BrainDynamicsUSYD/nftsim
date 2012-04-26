@@ -98,7 +98,7 @@ const vector<double>& Population::V(void) const
 }
 
 void Population::add2Dendrite( int index,
-    const Propag& prepropag, const Couple& precouple )
+    const Propag& prepropag, const Couple& precouple, Configf& configf )
 {
   if( settled ) {
     std::cerr<<"Population is already settled, no more dendrites can be added!"
@@ -107,7 +107,7 @@ void Population::add2Dendrite( int index,
   }
 
   if( !qresponse ) {
-    string temp(configf.find( label("Population: ",index+1)+"*Firing:" ));
+    string temp(configf.find( label("Population ",index+1)+"*Firing:" ));
     if( temp == "Bursting" )
       qresponse = new BurstResponse(nodes,deltat,index);
     else
