@@ -2,6 +2,7 @@
 #define BURST_H
 
 #include"qresponse.h"
+#include"output.h"
 
 class BurstResponse : public QResponse
 {
@@ -18,6 +19,7 @@ public:
 
   void fire( vector<double>& Q ) const;
   const vector<double>& V(void) const;
+  vector<Output*> output(void) const;
 };
 
 #endif
