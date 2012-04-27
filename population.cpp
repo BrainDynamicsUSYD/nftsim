@@ -108,12 +108,12 @@ void Population::add2Dendrite( int index,
 
   if( !qresponse ) {
     string temp(configf.find( label("Population ",index+1)+"*Firing:" ));
-    if( temp == "Bursting" )
-      qresponse = new BurstResponse(nodes,deltat,index);
-    else
-      qresponse = new QResponse(nodes,deltat,index);
-    qresponse->add2Dendrite( index, prepropag, precouple );
+    //if( temp == "Bursting" )
+      //qresponse = new BurstResponse(nodes,deltat,index);
+    //else
+      qresponse = new QResponse(nodes,deltat,this->index);
   }
+  qresponse->add2Dendrite( index, prepropag, precouple );
 }
 
 void Population::growHistory( const Tau& tau )
@@ -130,6 +130,6 @@ void Population::growHistory( const Tau& tau )
 
 vector<Output*> Population::output(void) const
 {
-  Output* temp = new Output( label("Pop.",index+1)+".V", V() );
-  return vector<Output*>(1,temp);
+  if(qresponse) return qresponse->output();
+  else return timeseries->output();
 }

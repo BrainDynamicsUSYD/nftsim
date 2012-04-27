@@ -5,8 +5,8 @@
 using std::vector;
 #include"output.h"
 #include"tau.h"
-#include"burst.h"
 #include"qresponse.h"
+//#include"burst.h"
 #include"timeseries.h"
 #include"propag.h"
 #include"couple.h"

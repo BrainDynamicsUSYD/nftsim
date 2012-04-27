@@ -70,131 +70,8 @@ void Solver::CntMat::dump( Dumpf& dumpf ) const
   dumpf << endl << endl;
 }
 
-void Solver::Outputs::init( Configf& configf )
-{
-  // read in nodes to output
-  configf.next("Node");
-  if( configf.find("Node:") == "All" ) // beware of this slightly hackish line
-    for( int i=0; i<nodes; i++ )
-      Output::node.push_back(i);
-  else {
-    vector<double> temp = configf.numbers();
-    for( size_t i=0; i<temp.size(); i++ )
-      if( temp[i] > nodes ) {
-        std::cerr<<"Trying to plot node number "<<temp[i]
-            <<", which is bigger than the highest node index."<<endl;
-        exit(EXIT_FAILURE);
-      }
-      else
-        Output::node.push_back( temp[i]-1 );
-  }
-
-  // read in time to start of output
-  double tempf;
-  if( !configf.optional("Start",tempf) )
-    start = 0;
-  else {
-    if( remainder(tempf,deltat) >deltat ) {
-      std::cerr<<"Value of output start time not divisible by Deltat."<<endl;
-      exit(EXIT_FAILURE);
-    }
-    else
-      start = tempf/deltat;
-  }
-  t = 0;
-
-  // read in output interval
-  if( !configf.optional("Interval",tempf) )
-    interval = 1;
-  else {
-    if( remainder(tempf,deltat) >deltat ) {
-      std::cerr<<"Value of output interval not divisible by Deltat."<<endl;
-      exit(EXIT_FAILURE);
-    }
-    else
-      interval = tempf/deltat+.5;
-  }
-
-  // read in populations to output
-  configf.next("Population");
-  vector<double> temp = configf.numbers();
-  for( size_t i=0; i<temp.size(); i++ ) {
-    if( temp[i] > npop ) {
-      std::cerr<<"Trying to print population "<<temp[i]
-          <<", which is an invalid population."<<endl;
-      exit(EXIT_FAILURE);
-    }
-    m.add( pops[temp[i]-1]->output() );
-  }
-
-  // read in propags to output
-  configf.next("Propag");
-  temp = configf.numbers();
-  for( size_t i=0; i<temp.size(); i++ ) {
-    if( temp[i] > ncnt ) {
-      std::cerr<<"Trying to print propagator "<<temp[i]
-          <<", which is an invalid propagator."<<endl;
-      exit(EXIT_FAILURE);
-    }
-    m.add( propags[temp[i]-1]->output() );
-  }
-
-  // read in couples to output
-  configf.next("Couple");
-  temp = configf.numbers();
-  for( size_t i=0; i<temp.size(); i++ ) {
-    if( temp[i] > ncnt ) {
-      std::cerr<<"Trying to print couple "<<temp[i]
-          <<", which is an invalid couple."<<endl;
-      exit(EXIT_FAILURE);
-    }
-    m.add( couples[temp[i]-1]->output() );
-  }
-
-  // write out first row
-  Output::dumpf<<space<<"Time"<<space<<space<<septor;
-  for( size_t i=0; i<m.size(); i++ ) {
-    for( size_t j=0; j<Output::node.size(); j++ )
-      Output::dumpf<<space<<space<<m[i]->fieldname();
-    Output::dumpf<<space<<space<<septor;
-  }
-  // write out second row
-  Output::dumpf<<endl<<space<<space<<space<<" "<<septor;
-  for( size_t i=0; i<m.size(); i++ ) {
-    for( size_t j=0; j<Output::node.size(); j++ )
-      Output::dumpf<<space<<space<<setw<<Output::node[j]+1;
-    Output::dumpf<<space<<space<<septor;
-  }
-  Output::dumpf<<endl;
-
-}
-
-void Solver::Outputs::step(void)
-{
-  if( start )
-    start--;
-  else {
-    t++;
-    if( t%interval==0 ) {
-      Output::dumpf<<double(t)*deltat<<space<<space<<septor;
-      m.step();
-      Output::dumpf<<endl;
-    }
-  }
-}
-
-void Solver::Outputs::dump( Dumpf& dumpf ) const
-{
-}
-
-Solver::Outputs::Outputs(
-    Array<Population>& pops, Array<Propag>& propags, Array<Couple>& couples )
-  : pops(pops), propags(propags), couples(couples)
-{
-}
-
 Solver::Solver( Dumpf* dumpf )
-    : NF(0,0,0), dumpf(dumpf), outputs(pops,propags,couples)
+    : NF(0,0,0), dumpf(dumpf)
 {
 }
 
@@ -317,9 +194,101 @@ void Solver::init( Configf& configf )
     configf.param( label("Population ",i+1), *pops[i] );
 
   // initialize outputs
-  outputs.nodes = nodes; outputs.deltat = deltat;
-  outputs.npop = cnt.npop; outputs.ncnt = cnt.ncnt;
-  configf.go2("Output"); configf.next("Output"); outputs.init(configf);
+  configf.go2("Output"); configf.next("Output");
+
+  // read in nodes to output
+  configf.next("Node");
+  if( configf.find("Node:") == "All" ) // beware of this slightly hackish line
+    for( int i=0; i<nodes; i++ )
+      Output::node.push_back(i);
+  else {
+    vector<double> temp = configf.numbers();
+    for( size_t i=0; i<temp.size(); i++ )
+      if( temp[i] > nodes ) {
+        std::cerr<<"Trying to plot node number "<<temp[i]
+            <<", which is bigger than the highest node index."<<endl;
+        exit(EXIT_FAILURE);
+      }
+      else
+        Output::node.push_back( temp[i]-1 );
+  }
+
+  // read in time to start of output
+  if( !configf.optional("Start",tempf) )
+    outputstart = 0;
+  else {
+    if( remainder(tempf,deltat) >deltat ) {
+      std::cerr<<"Value of output start time not divisible by Deltat."<<endl;
+      exit(EXIT_FAILURE);
+    }
+    else
+      outputstart = tempf/deltat;
+  }
+  t = 0;
+
+  // read in output interval
+  if( !configf.optional("Interval",tempf) )
+    outputinterval = 1;
+  else {
+    if( remainder(tempf,deltat) >deltat ) {
+      std::cerr<<"Value of output interval not divisible by Deltat."<<endl;
+      exit(EXIT_FAILURE);
+    }
+    else
+      outputinterval = tempf/deltat+.5;
+  }
+
+  // read in populations to output
+  configf.next("Population");
+  vector<double> temp = configf.numbers();
+  for( size_t i=0; i<temp.size(); i++ ) {
+    if( temp[i] > cnt.npop ) {
+      std::cerr<<"Trying to print population "<<temp[i]
+          <<", which is an invalid population."<<endl;
+      exit(EXIT_FAILURE);
+    }
+    outputs.add( pops[temp[i]-1]->output() );
+  }
+
+  // read in propags to output
+  configf.next("Propag");
+  temp = configf.numbers();
+  for( size_t i=0; i<temp.size(); i++ ) {
+    if( temp[i] > cnt.ncnt ) {
+      std::cerr<<"Trying to print propagator "<<temp[i]
+          <<", which is an invalid propagator."<<endl;
+      exit(EXIT_FAILURE);
+    }
+    outputs.add( propags[temp[i]-1]->output() );
+  }
+
+  // read in couples to output
+  configf.next("Couple");
+  temp = configf.numbers();
+  for( size_t i=0; i<temp.size(); i++ ) {
+    if( temp[i] > cnt.ncnt ) {
+      std::cerr<<"Trying to print couple "<<temp[i]
+          <<", which is an invalid couple."<<endl;
+      exit(EXIT_FAILURE);
+    }
+    outputs.add( couples[temp[i]-1]->output() );
+  }
+
+  // write out first row
+  Output::dumpf<<space<<"Time"<<space<<space<<septor;
+  for( size_t i=0; i<outputs.size(); i++ ) {
+    for( size_t j=0; j<Output::node.size(); j++ )
+      Output::dumpf<<space<<space<<outputs[i]->fieldname();
+    Output::dumpf<<space<<space<<septor;
+  }
+  // write out second row
+  Output::dumpf<<endl<<space<<space<<space<<" "<<septor;
+  for( size_t i=0; i<outputs.size(); i++ ) {
+    for( size_t j=0; j<Output::node.size(); j++ )
+      Output::dumpf<<space<<space<<setw<<Output::node[j]+1;
+    Output::dumpf<<space<<space<<septor;
+  }
+  Output::dumpf<<endl;
 }
 
 void Solver::restart( Restartf& restartf )
@@ -328,10 +297,6 @@ void Solver::restart( Restartf& restartf )
 
 void Solver::dump( Dumpf& dumpf ) const
 {
-  dumpf << pops;
-  dumpf << propags;
-  dumpf << couples;
-  outputs.dump(dumpf);
 }
 
 void Solver::solve(void)
@@ -371,5 +336,16 @@ void Solver::step(void)
   couples.step();
   pops.step();
   propags.step();
-  outputs.step();
+
+  // output routine
+  if( outputstart )
+    outputstart--;
+  else {
+    t++;
+    if( t%outputinterval==0 ) {
+      Output::dumpf<<double(t)*deltat<<space<<space<<septor;
+      outputs.step();
+      Output::dumpf<<endl;
+    }
+  }
 }

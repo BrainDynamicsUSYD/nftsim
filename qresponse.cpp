@@ -12,7 +12,8 @@ void QResponse::init( Configf& configf )
     configf.param("Gradient",gradient);
     configf.param("Intercept",intercept);
   }
-  configf>>dendrites;
+  for( size_t i=0; i<dendrites.size(); i++ )
+    configf>>*dendrites[i];
 }
 
 void QResponse::restart( Restartf& inputf )
@@ -68,4 +69,14 @@ void QResponse::fire( vector<double>& Q ) const
 const vector<double>& QResponse::V(void) const
 {
   return v;
+}
+
+vector<Output*> QResponse::output(void) const
+{
+  vector<Output*> temp;
+  temp.push_back( new Output( label("Pop.",index+1)+".V", v ) );
+  for( size_t i=0; i<dendrites.size(); i++ ){
+    temp.push_back( dendrites[i]->output()[0] );
+  }
+  return temp;
 }

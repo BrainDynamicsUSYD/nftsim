@@ -50,6 +50,7 @@ public:
   virtual ~Dendrite(void);
   void step(void);
   const vector<double>& V(void) const;
+  vector<Output*> output(void) const;
 };
 
 #endif
