@@ -36,6 +36,7 @@ public:
 
   virtual void fire( vector<double>& Q ) const;
   virtual const vector<double>& V(void) const;
+  virtual vector<Output*> output(void) const;
 };
 
 #endif

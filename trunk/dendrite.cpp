@@ -92,3 +92,10 @@ const vector<double>& Dendrite::V(void) const
 {
   return v;
 }
+
+vector<Output*> Dendrite::output(void) const
+{
+  vector<Output*> temp;
+  temp.push_back( new Output( label("Dendrite.",index+1)+".V", v ) );
+  return temp;
+}

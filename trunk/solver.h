@@ -42,27 +42,10 @@ class Solver : public NF
     void dump( Dumpf& dumpf ) const;
   } cnt;
 
-  struct Outputs
-  {
-    Array<Population>& pops;
-    Array<Propag>& propags;
-    Array<Couple>& couples;
-
-    int nodes;
-    int npop;
-    int ncnt;
-    double deltat;
-    
-    int t;
-    Array<Output> m;
-    int start; // time to start of output
-    int interval; // output interval
-
-    void init( Configf& configf );
-    void step(void);
-    void dump( Dumpf& dumpf ) const;
-    Outputs( Array<Population>& pops, Array<Propag>& propags, Array<Couple>& couples );
-  } outputs;
+  Array<Output> outputs;
+  int t;
+  int outputstart;
+  int outputinterval;
 
   Array<Population> pops;
   Array<Propag> propags;

@@ -19,7 +19,6 @@ public:
 
   void fire( vector<double>& Q ) const;
   const vector<double>& V(void) const;
-  vector<Output*> output(void) const;
 };
 
 #endif

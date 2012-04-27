@@ -5,24 +5,16 @@
 using std::string;
 #include<vector>
 using std::vector;
-#include"nf.h"
+#include"dumpf.h"
 
-class Output: public NF
+class Output
 {
-  Output(const Output& other); // No copy constructor
-  Output(); // No default constructor
-  Output& operator=(const Configf& other); // No assignment operator
-  string name; // name of field
+  const string name; // name of field
   const vector<double>& field; // field to output
-protected:
-  virtual void init( Configf& configf );
-  virtual void restart( Restartf& restartf );
-  virtual void dump( Dumpf& dumpf ) const;
 public: 
   Output( const string& name, const vector<double>& field );
-  virtual ~Output(void);
-  virtual void step(void);
   const string& fieldname(void) const; // returns name
+  void step(void) const; // output field values
 
   static vector<int> node; // vector of nodes to output
   static Dumpf dumpf; // file to dump

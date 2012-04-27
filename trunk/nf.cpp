@@ -25,6 +25,11 @@ NF::NF( int nodes, double deltat, int index )
 {
 }
 
+vector<Output*> NF::output(void) const
+{
+  return vector<Output*>();
+}
+
 NF::~NF(void)
 {
 }

@@ -7,16 +7,11 @@ using std::string;
 using std::vector;
 #include<iostream>
 using std::endl;
-#include"nf.h"
 
 template<class T>
-class Array : public NF
+class Array
 {
   Array(Array&);   // no copy constructor allowed
-protected:
-  virtual void init( Configf& configf );
-  virtual void restart( Restartf& restartf );
-  virtual void dump( Dumpf& dumpf ) const;
 
   vector<T*> m;
 public:
@@ -46,27 +41,6 @@ void Array<T>::add( vector<T*> t )
 }
 
 template<class T>
-void Array<T>::init( Configf& configf )
-{
-  for( size_t i=0; i<m.size(); i++ )
-    configf>>*m[i];
-}
-
-template<class T>
-void Array<T>::restart( Restartf& restartf )
-{
-  for( size_t i=0; i<m.size(); i++ )
-    restartf>>*m[i];
-}
-
-template<class T>
-void Array<T>::dump( Dumpf& dumpf ) const
-{
-  for( size_t i=0; i<m.size(); i++ )
-    dumpf<<*m[i];
-}
-
-template<class T>
 bool Array<T>::empty(void) const
 {
   return m.empty();
@@ -81,7 +55,6 @@ void Array<T>::step(void)
 
 template<class T>
 Array<T>::Array(void)
-    : NF(0,0,0)
 {
 }
 
