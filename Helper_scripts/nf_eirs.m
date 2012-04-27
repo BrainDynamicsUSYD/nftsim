@@ -1,4 +1,4 @@
-function varargout = nf_eirs(p,file_id,nonlinear,grid_edge)
+function varargout = nf_eirs(p,file_id,nonlinear,int_time,grid_edge)
     % Run NeuroField on an EIRS point struct
     % [nf,f,P] = nf_eirs(p,file_id,linearize,grid_size)
     % - Accepts a point struct as input
@@ -13,10 +13,14 @@ function varargout = nf_eirs(p,file_id,nonlinear,grid_edge)
     % WARNING- THIS FUNCTION ASSUMES 'neurofield' IS ON THE SHELL PATH
     % WARNING- Depends on nf_read, nf_extract, pwelch_spectrum, and optionally 
     
-    if nargin < 4 || isempty(grid_edge)
+    if nargin < 5 || isempty(grid_edge)
         grid_edge = 3;
     end
 
+    if nargin < 4 || isempty(int_time)
+        int_time = 30; % Total integration time (s)
+    end
+    
     if nargin < 3 || isempty(nonlinear)
         nonlinear = [1 1 1 1];
     else
@@ -33,7 +37,6 @@ function varargout = nf_eirs(p,file_id,nonlinear,grid_edge)
 	
 	% Initialize numerical solver parameters
     deltat = 1e-4;
-    int_time = 30; % Total integration time (s)
 	deltax= 0.0035;
 	% CFL condition
 	v = p.gammae*p.re; % Axonal velocity
