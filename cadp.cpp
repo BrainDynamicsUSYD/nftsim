@@ -66,10 +66,10 @@ void CaDP::step(void)
       nhu[i] = 0;
     else
       nhu[i] += dnhu;
-    /*static double p = 0;
+    static double p = 0;
     double dp = deltat*( .01*(nhu[i]-n[i]) -2/1*p );
-    p += dp; double dn = p*deltat; // delayed, long term plasticity*/
-    double dn = dnhu; // "instantaneous" plasticity
+    p += dp; double dn = p*deltat; // delayed, long term plasticity
+    //double dn = dnhu; // "instantaneous" plasticity
     if( pos*( n[i]+dn ) < 0 )
       n[i] = 0;
     else

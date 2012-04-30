@@ -21,12 +21,13 @@ class QResponse : public NF
   double gradient;
   double intercept;
 
-  Array<Dendrite> dendrites; // array of dendrites
-  vector<double> v; // soma potential for the population
 protected:
   virtual void init( Configf& inputf );
   virtual void restart( Restartf& restartf );
   virtual void dump( Dumpf& dumpf ) const;
+
+  Array<Dendrite> dendrites; // array of dendrites
+  vector<double> v; // soma potential for the population
 public: 
   QResponse( int nodes, double deltat, int index );
   virtual ~QResponse(void);

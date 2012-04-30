@@ -44,15 +44,9 @@ BurstResponse::~BurstResponse(void)
 
 void BurstResponse::step(void)
 {
-  // happens once per timestep. calculates V by summing soma potentials
-    dendrites.step();
-  for( int i=0; i<nodes; i++ )
-    v[i] = 0;
-  for( size_t i=0; i<dendrites.size(); i++ )
-    for( int j=0; j<nodes; j++ )
-      v[j] += dendrites[i]->V()[j];
-  // also perform an rk4 step to update the current variables
-  this->rk4();
+  // happens once per timestep
+  QResponse::step(); // sum soma potential
+  //this->rk4(); // also perform an rk4 step to update the current variables
 }
 
 void BurstResponse::fire( vector<double>& Q ) const
@@ -69,11 +63,11 @@ const vector<double>& BurstResponse::V(void) const
 
 vector<Output*> BurstResponse::output(void) const
 {
-  // write stuff into an output file
+  // write a field into an output file
   // see cadp.cpp
   vector<Output*> temp;
-  temp.push_back( new Output( label("Burst.",index+1)+".ic", ic ) ); // ic not defined yet
-  return vector<Output*>(1,temp);
+  //temp.push_back( new Output( label("Burst.",index+1)+".ic", ic ) ); // ic not defined yet
+  return temp;
 }
 
 rk4(double t,double* y, float timestep, double* V, double Qmax, double sigma) {
