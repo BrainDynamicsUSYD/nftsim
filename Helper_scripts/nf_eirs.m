@@ -1,6 +1,6 @@
 function varargout = nf_eirs(p,file_id,nonlinear,int_time,grid_edge)
     % Run NeuroField on an EIRS point struct
-    % [nf,f,P] = nf_eirs(p,file_id,linearize,grid_size)
+    % [nf,f,P] = nf_eirs(p,file_id,nonlinear,int_time,grid_edge)
     % - Accepts a point struct as input
     % - file_id optionally specifies the number for neurofield_*.conf/output
     % - nonlinear is a 3 element vector that equals 1 to enable nonlinearity
@@ -157,7 +157,7 @@ function varargout = nf_eirs(p,file_id,nonlinear,int_time,grid_edge)
     set(gca,'XLim',[1 45]);
     
     try
-        [f_a,P_a] = analytic_spectrum(p,1);
+        [f_a,P_a] = analytic_spectrum(p,0);
         % And renormalize it
         P_a = interp1(f_a,P_a,f,'pchip','extrap');
         P_a = P_a * (P_a\P);
