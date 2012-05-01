@@ -1,24 +1,28 @@
 #include"burst.h"
 
-void BurstResponse::init( Configf& inputf )
+void BurstResponse::init( Configf& configf )
 {
-  if( configf.optional("Theta",theta) )) {
-	  configf.param(("Sigma",sigma);
-	  configf.param("Qmax",Q_max);
-  }
-  configf>>dendrites;
-}// read config file- see qresponse.init()
- // initialize any other private variables (i.e. current)
-Ia
-Ib
-Ic
-Taux
-Tauh
-Ax
-Mu
-Xtilda
-Htilda
-
+    configf.param("Theta",theta);
+    configf.param("Sigma",sigma);
+    configf.param("Qmax",Q_max);
+    configf>>dendrites;
+ // read config file- see qresponse.init()
+ // initialize any other private variables (i.e. current) 
+ // using variables from Robinson, Wu, Kim 07
+    Ia=-2.6; //A m^-2
+    Ib=1.2; // A m^-2
+    Ic=0.197; // A m^-2
+    taux=0.015; // 15ms 
+    tauh=0.056; // 56ms
+    Ax=0.26; // for tauR=2.1ms
+    Mu=3.1; // mu=-Itheta/theta S m^-2
+    initXtilde=0.0;
+    initHtilde=0.0;
+    y[0]=initXtilde;
+    y[1]=initHtilde;
+    h=deltat;
+    h2=deltat/2;
+    h6=deltat/6;
 }
 
 void BurstResponse::restart( Restartf& restartf )
@@ -39,21 +43,25 @@ BurstResponse::BurstResponse( int nodes, double deltat, int index )
 
 BurstResponse::~BurstResponse(void)
 {
-  // leave empty
 }
 
 void BurstResponse::step(void)
 {
   // happens once per timestep
   QResponse::step(); // sum soma potential
-  //this->rk4(); // also perform an rk4 step to update the current variables
+  rk4(); // update dynamic variables in y
+  //itheta=Ic-3*ib*y[1]+(Ib-Ia)*y[0];? 
+  theta = (3*Ib*y[1]+(Ib-Ia)*y[0])/Mu; // use updated y to calculate theta
+
 }
 
 void BurstResponse::fire( vector<double>& Q ) const
 {
   if(theta)
 	  for( int i=0; i<nodes; i++ )
-	    Q[i]=Q_max/(1.0F+ exp( -(v[i]-theta)/sigma ) ) // map voltage into firing rate
+	    Q[i]=Q_max/(1.0F+ exp( -(v[i]-theta)/sigma ) ); // map voltage into
+			// firing rate 1.0F is constant literal
+			// uses updated theta from step()
 }
 
 const vector<double>& BurstResponse::V(void) const
@@ -66,37 +74,36 @@ vector<Output*> BurstResponse::output(void) const
   // write a field into an output file
   // see cadp.cpp
   vector<Output*> temp;
-  //temp.push_back( new Output( label("Burst.",index+1)+".ic", ic ) ); // ic not defined yet
+  // Something like this- check with Felix how to do it properly (throws error)
+  temp.push_back( new Output( label("Burst.",index+1)+".Htilde", y[0] ) ); 
+  temp.push_back( new Output( label("Burst.",index+1)+".Xtilde", y[1] ) ); 
   return temp;
 }
 
-rk4(double t,double* y, float timestep, double* V, double Qmax, double sigma) {
-	// Write an rk4 function here
-	double yt[2];
-	double dyt[2];
-	double dym[2];
-	double h=timestep;
-	double h2=timestep/2;
-	double h6=timestep/6;
+void BurstResponse::rk4() {
 
-	rkderivs(t,y,dydt,V,Qmax,sigma);
-	for(int i=0; i<2; i++) yt[i]=y[i]+h2*dydt[i];
-	rkderivs(t+h2,yt,dyt,V,Qmax,sigma);
-	for(int i=0; i<2; i++) yt[i]=y[i]+h2*dyt[i];
-	rkderivs(t+h2,yt,dym,V,Qmax,sigma);
-	for(int i=0; i<2; i++) {yt[i]=y[i]+h*dym[i]; dym[i]+=dyt[i];}
-	rkderivs(t+h,yt,dyt,V,Qmax,sigma);
-	for(int i=0; i<2;; i++) y[i]=y[i]+h6*(dydt[i]+dyt[i]+2*dym[i]);
+	rkderivs(y,k1);
+	for(int i=0; i<2; i++) 
+	    yt[i]=y[i]+h2*k1[i];
+	rkderivs(yt,k2);
+	for(int i=0; i<2; i++) 
+	    yt[i]=y[i]+h2*k2[i];
+	rkderivs(yt,k3);
+	for(int i=0; i<2; i++)
+	    yt[i]=y[i]+h*k3[i];
+	rkderivs(yt,k4);
+	for(int i=0; i<2; i++) 
+	    y[i]=y[i]+h6*(k1[i] + 2*k2[i] + 2*k3[i] + k4[i]);
 }
 
-void rkderivs(double steptime, double* y, double* dydt, double* V, double Qmax,
-		double sigma){
+void BurstResponse::rkderivs(double* yt,double* dydt){
 	//function returns the derivatives for modulated threshold eqns
-	//y[0] is Htilda , y[1] is Xtilda
-
-	double thetatemp=(Ic-3*Ib*y[1]+(Ib-Ia)*y[0])/mu;
-	double Qfiring=Qmax/(1+exp(-(V[1]-thetatemp)/sigma));
+	//y[0] is Htilde , y[1] is Xtilde
+	double thetatemp=(Ic-3*Ib*y[1]+(Ib-Ia)*y[0])/Mu;
+	double Qfiring=Q_max/(1+exp(-(v[1]-thetatemp)/sigma));
 	double xinfinity;
+	
+	
 	if((Qfiring*Ax)>0) {xinfinity =Ax*Qfiring;}
 	else {xinfinity=0;}
 	dydt[0]=(3*y[1]-y[0])/tauh; // Htilde DE
