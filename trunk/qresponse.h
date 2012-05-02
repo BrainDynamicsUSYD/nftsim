@@ -15,17 +15,18 @@ class QResponse : public NF
   QResponse(QResponse& ); // no copy constructor
   QResponse(void);      // no copy constructor
 
-  double theta;
-  double sigma;
-  double Q_max;
-  double gradient;
-  double intercept;
 
 protected:
   virtual void init( Configf& inputf );
   virtual void restart( Restartf& restartf );
   virtual void dump( Dumpf& dumpf ) const;
 
+  double theta;
+  double sigma;
+  double Q_max;
+  double gradient;
+  double intercept;
+  
   Array<Dendrite> dendrites; // array of dendrites
   vector<double> v; // soma potential for the population
 public: 
