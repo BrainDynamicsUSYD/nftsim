@@ -44,6 +44,9 @@ void Timeseries::init( Configf& configf )
         tperiod = 1/tperiod;
       else // if repetition period or frequency not specified, do just one pulse
         tperiod = 99999999;
+      if( !configf.optional("Number of Pulses",xspread) )
+        xspread = -2;
+      xspread += 1;
     }
     if( !configf.optional("Radius",deltax) )
       deltax = 0;
@@ -156,6 +159,9 @@ void Timeseries::step(void)
 {
   t += deltat;
   tend -= deltat;
+  double p = fmod(t,tperiod);
+  if( mode=="Pulse" && t>0 && p<deltat )
+    if( xspread>0 ) xspread--;
 }
 
 void Timeseries::fire( vector<double>& Q ) const
@@ -200,7 +206,7 @@ void Timeseries::fire( vector<double>& Q ) const
   }
   else if( mode=="Pulse" ) { // periodic pulse pattern
     if( t<0 || tend<0 ) return;
-    if( fmod(t,tperiod)<pdur ) {
+    if( fmod(t,tperiod)<pdur && xspread!=0 ) {
       int width = sqrt(nodes);
       if( deltax==0 )
         for( int i=0; i<nodes; i++ )

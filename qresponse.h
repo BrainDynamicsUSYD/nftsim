@@ -15,7 +15,6 @@ class QResponse : public NF
   QResponse(QResponse& ); // no copy constructor
   QResponse(void);      // no copy constructor
 
-
 protected:
   virtual void init( Configf& inputf );
   virtual void restart( Restartf& restartf );
