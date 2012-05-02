@@ -27,6 +27,7 @@ protected:
   vector<double> nhu; // transient coupling strength
   double dth; // calcium threshold to depression
   double pth; // calcium threshold to potentiation
+  vector<double> g; // gain for the NMDA receptor
 
   virtual void init( Configf& configf );
   virtual void restart( Restartf& restartf );

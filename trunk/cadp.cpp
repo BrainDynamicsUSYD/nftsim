@@ -41,7 +41,8 @@ void CaDP::dump( Dumpf& dumpf ) const
 
 CaDP::CaDP( int nodes, double deltat, int index, const vector<double>& glu,
         const Population& prepop, const Population& postpop )
-  : Couple(nodes,deltat,index,glu,prepop,postpop), binding(nodes,0), Ca(nodes,0)
+  : Couple(nodes,deltat,index,glu,prepop,postpop),
+    binding(nodes,0), Ca(nodes,0), g(nodes,2e-3)
 {
 }
 
@@ -54,7 +55,7 @@ void CaDP::step(void)
   const vector<double>& V = postpop.V();
   for( int i=0; i<nodes; i++ ) {
     binding[i] = sig( glu[i] -200e-6, B );
-    double dCa = deltat*(2e-3*binding[i])
+    double dCa = deltat*(g[i]*binding[i])
       *(195e-3-V[i])*sig( V[i]-45.5e-3,62 )
       -Ca[i]/tCa*deltat;
     if( Ca[i]+dCa < 0 )
