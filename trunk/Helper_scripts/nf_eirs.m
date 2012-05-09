@@ -54,7 +54,10 @@ function varargout = nf_eirs(p,file_id,nonlinear,int_time,grid_edge)
     fprintf(fid,'EIRS model, automatically generated with nf_eirs.m\n');
     fprintf(fid,'Time: %f Deltat: %f\n',int_time,deltat);
     fprintf(fid,'Nodes: %i\n',grid_edge^2);
-    fprintf(fid,'Glutamate dynamics - Lambda: 0 tGlu: 0\n');
+    fprintf(fid,'Glutamate dynamics - fast Lambda: 0 fast Glu: 0\n');
+    fprintf(fid,'                     slow Lambda: 0 slow Glu: 0\n');
+                     
+
     fprintf(fid,'\n');
             
     fprintf(fid,'    Connection matrix:\n');
@@ -90,15 +93,15 @@ function varargout = nf_eirs(p,file_id,nonlinear,int_time,grid_edge)
     fprintf(fid,'Stimulus: Mode: White - Onset: 0 Amplitude: %f Mean: 1\n',noiseamp);
     fprintf(fid,'\n');
     
-    fprintf(fid,'Propag 1: Wave - Deltax: %f Tau: %f Range: %f gamma: %f\n',deltax,0,p.re,p.gammae);
+    fprintf(fid,'Propag 1: Wave - Tau: %f Deltax: %f Range: %f gamma: %f\n',0,deltax,p.re,p.gammae);
     fprintf(fid,'Propag 2: Map - Tau: %f\n',0);   
     fprintf(fid,'Propag 3: Map - Tau: %f\n',p.taues);   
-    fprintf(fid,'Propag 4: Wave - Deltax: %f Tau: %f Range: %f gamma: %f\n',deltax,0,p.re,p.gammae);
+    fprintf(fid,'Propag 4: Wave - Tau: %f Deltax: %f Range: %f gamma: %f\n',0,deltax,p.re,p.gammae);
     fprintf(fid,'Propag 5:  Map - Tau: %f\n',0);  
     fprintf(fid,'Propag 6:  Map - Tau: %f\n',p.tause); 
-    fprintf(fid,'Propag 7: Wave - Deltax: %f Tau: %f Range: %f gamma: %f\n',deltax,p.tause,p.re,p.gammae);
+    fprintf(fid,'Propag 7: Wave - Tau: %f Deltax: %f Range: %f gamma: %f\n',p.tause,deltax,p.re,p.gammae);
     fprintf(fid,'Propag 8:  Map - Tau: %f\n',0);  
-    fprintf(fid,'Propag 9: Wave - Deltax: %f Tau: %f Range: %f gamma: %f\n',deltax,p.tause,p.re,p.gammae);
+    fprintf(fid,'Propag 9: Wave - Tau: %f Deltax: %f Range: %f gamma: %f\n',p.tause,deltax,p.re,p.gammae);
     fprintf(fid,'Propag 10: Map - Tau: %f\n',0);  
     fprintf(fid,'Propag 11: Map - Tau: %f\n',0);   
     fprintf(fid,'Couple 1:  Map - nu: %f\n',p.nus(1)); % ee
@@ -157,10 +160,10 @@ function varargout = nf_eirs(p,file_id,nonlinear,int_time,grid_edge)
     set(gca,'XLim',[1 45]);
     
     try
-        [f_a,P_a] = analytic_spectrum(p,0);
+        [f_a,P_a] = analytic_spectrum(p,1);
         % And renormalize it
         P_a = interp1(f_a,P_a,f,'pchip','extrap');
-        P_a = P_a * (P_a\P);
+        %P_a = P_a * (P_a\P);
         hold on
         loglog(f,P_a,'r--');
         legend('neurofield','Analytic');
