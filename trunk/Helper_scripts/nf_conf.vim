@@ -16,25 +16,23 @@ syn match number '\<\d[[:digit:]]*[eE][\-+]\=\d\+\>'
 " Floating point like number with E and decimal point (+,-)
 syn match number '\<[-+]\=\d[[:digit:]]*\.\d*[eE][\-+]\=\d\+\>'
 syn match number '\<\d[[:digit:]]*\.\d*[eE][\-+]\=\d\+\>'
-" A "Special" number
-syn keyword number Steady All Torus Nonperiodic
 
-syn keyword key Connection matrix Population Stimulus Population Firing Dendrite Propag Couple Output nextgroup=index skipwhite skipnl skipempty
+syn keyword constant Steady All Torus Nonperiodic
+
+syn keyword type Connection matrix Population Stimulus Population Firing Dendrite Propag Couple Output nextgroup=index skipwhite skipnl skipempty
 syn match index '\d\+' contained
 
-syn keyword choose Composite Const White CoherentWhite Pulse Sine Gaussian Ramp GaussPulse PAS Sigmoid Linear Bursting Map Wave Harmonic CaDP BCM Q V phi Tau nu
+syn keyword statement Composite Const White CoherentWhite Pulse Sine Gaussian Ramp GaussPulse PAS Sigmoid Linear Bursting Map Wave Harmonic CaDP BCM Q V phi Tau nu
 
-syn keyword header Time Deltat Nodes Topology Bath Glutamate dynamics
+syn keyword preproc Time Deltat Nodes Topology Bath Glutamate dynamics
 
 syn keyword cntmatc From To nextgroup=cntmati skipwhite skipnl skipempty
 syn match cntmati '\d\+' contained
 
+syn region error start="\%^" end="$"
+
 "hi def link object Type
-hi def link key Type
 hi def link index Type
-hi def link choose Statement
-hi def link header PreProc
-hi def link number Constant
 hi def link cntmatc PreProc
 hi def link cntmati PreProc
 

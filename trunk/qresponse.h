@@ -16,7 +16,7 @@ class QResponse : public NF
   QResponse(void);      // no copy constructor
 
 protected:
-  virtual void init( Configf& inputf );
+  virtual void init( Configf& configf );
   virtual void restart( Restartf& restartf );
   virtual void dump( Dumpf& dumpf ) const;
 
@@ -32,7 +32,7 @@ public:
   QResponse( int nodes, double deltat, int index );
   virtual ~QResponse(void);
   virtual void step(void);
-  void add2Dendrite( int index,
+  virtual void add2Dendrite( int index,
           const Propag& prepropag, const Couple& precouple );
 
   virtual void fire( vector<double>& Q ) const;

@@ -1,5 +1,5 @@
 #include<cmath>
-#include "cadp.h"
+#include"cadp.h"
 
 double CaDP::sig( double x, double beta ) const
 {
@@ -21,14 +21,21 @@ void CaDP::init( Configf& configf )
   Couple::init(configf); // initialize nu and excite()
   nhu = n;
   configf.param("nu_max",max);
-  configf.param("LTD",dth);
-  configf.param("LTP",pth);
-  configf.param("Threshold",th);
+  if( !configf.optional("LTD",dth) )
+    dth = .25e-6;
+  if( !configf.optional("LTP",pth) )
+    pth = .45e-6;
+  if( !configf.optional("Threshold",th) )
+    th = 1e-4;
   configf.param("x",ltp);
   configf.param("y",ltd);
   configf.param("B",B);
+  configf.param("glu_0",glu_0);
   if( !configf.optional("tCa",tCa) )
     tCa = 50e-3;
+  double gnmda; if( !configf.optional("gNMDA",gnmda) )
+    gnmda = 2e-3;
+  g.resize(nodes,gnmda);
 }
 
 void CaDP::restart( Restartf& restartf )
@@ -42,7 +49,7 @@ void CaDP::dump( Dumpf& dumpf ) const
 CaDP::CaDP( int nodes, double deltat, int index, const vector<double>& glu,
         const Population& prepop, const Population& postpop )
   : Couple(nodes,deltat,index,glu,prepop,postpop),
-    binding(nodes,0), Ca(nodes,0), g(nodes,2e-3)
+    binding(nodes,0), Ca(nodes,0)
 {
 }
 
@@ -54,7 +61,7 @@ void CaDP::step(void)
 {
   const vector<double>& V = postpop.V();
   for( int i=0; i<nodes; i++ ) {
-    binding[i] = sig( glu[i] -200e-6, B );
+    binding[i] = sig( glu[i] -glu_0, B );
     double dCa = deltat*(g[i]*binding[i])
       *(195e-3-V[i])*sig( V[i]-45.5e-3,62 )
       -Ca[i]/tCa*deltat;
@@ -70,7 +77,7 @@ void CaDP::step(void)
     static double p = 0;
     double dp = deltat*( .01*(nhu[i]-n[i]) -2/1*p );
     p += dp; double dn = p*deltat; // delayed, long term plasticity
-    //double dn = dnhu; // "instantaneous" plasticity
+    // double dn = dnhu; // "instantaneous" plasticity
     if( pos*( n[i]+dn ) < 0 )
       n[i] = 0;
     else

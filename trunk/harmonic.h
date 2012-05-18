@@ -4,18 +4,17 @@
 #include<vector>
 using std::vector;
 #include"propag.h"
-#include"stencil.h"
 
 class Harmonic : public Propag
 {
   Harmonic(); // no default constructor
   Harmonic(Harmonic&); // no copy constructor
+protected:
+  virtual void init( Configf& configf );
+  virtual void restart( Restartf& restartf );
+  virtual void dump( Dumpf& dumpf ) const;
 
   double gamma;  // damping coefficient
-protected:
-  void init( Configf& configf );
-  void restart( Restartf& restartf );
-  void dump( Dumpf& dumpf ) const;
 
   vector<double> oldp;
   vector<double> oldQ;

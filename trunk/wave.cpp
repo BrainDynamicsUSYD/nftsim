@@ -17,7 +17,10 @@ void Wave::init( Configf& configf )
     p.resize(nodes,Q);
 
   configf.param("Range",range);
-  configf.param("gamma",gamma);
+  if( !configf.optional("gamma",gamma) ) {
+    double temp; configf.param("velocity",temp);
+    gamma = temp/range;
+  }
 
   *oldp[0] = vector<double>(nodes,p[0]);
   *oldp[1] = vector<double>(nodes,p[0]);

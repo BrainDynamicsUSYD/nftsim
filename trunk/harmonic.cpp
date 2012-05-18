@@ -1,5 +1,5 @@
 #include<cmath>
-#include "harmonic.h"
+#include"harmonic.h"
 
 void Harmonic::init( Configf& configf )
 {
@@ -15,7 +15,10 @@ void Harmonic::init( Configf& configf )
   configf.param("Tau",tau); prepop.growHistory(tau);
   double temp; configf.optional("Deltax",temp); // for compatibility with Wave
   configf.optional("Range",temp);
-  configf.param("gamma",gamma);
+  if( !configf.optional("gamma",gamma) ) {
+    double velocity; configf.param("velocity",velocity);
+    gamma = velocity/temp;
+  }
   twoongamma = 2./gamma;
   expgamma = exp(-gamma*deltat);
 }

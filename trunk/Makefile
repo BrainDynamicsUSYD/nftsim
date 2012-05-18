@@ -34,7 +34,7 @@ doc: Documentation/doc.pdf
 
 clean:
 	echo Delete Release/ Documentation/doc
-	-rm -r Release Documentation/doc.{aux,log,pdf,out,toc} Documentation/x.log
+	-rm -r Release Documentation/doc.{aux,log,out,toc} Documentation/x.log
 
 .SILENT:
 

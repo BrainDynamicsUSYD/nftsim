@@ -15,6 +15,7 @@ class CaDP : public Couple
   vector<double> binding; // glutamate binding
 
   double B; // 1/stanard deviation of glutamate binding
+  double glu_0; // glutamte dose-response threshold
 
   double max; // maximum synaptic strength
   double th; // threshold time-scale of plasticity
