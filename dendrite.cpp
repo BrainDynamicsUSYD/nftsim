@@ -47,7 +47,7 @@ void Dendrite::dump( Dumpf& dumpf ) const
 
 Dendrite::Dendrite( int nodes, double deltat, int index,
     const Propag& prepropag, const Couple& precouple )
-  : NF(nodes,deltat,index), v(nodes), dvdt(nodes,0), oldnp(nodes),
+  : NF(nodes,deltat,index), v(nodes), dvdt(nodes,0), np(nodes), oldnp(nodes),
     prepropag(prepropag), precouple(precouple)
 {
 }
@@ -59,8 +59,6 @@ Dendrite::~Dendrite()
 void Dendrite::step(void)
 {
   // assume that alpha, beta are constant and nu*phi is linear for the time step
-
-  vector<double> np(nodes);
   for( int i=0; i<nodes; i++ )
     np[i] = precouple.nu()[i]*prepropag.phi()[i];
 

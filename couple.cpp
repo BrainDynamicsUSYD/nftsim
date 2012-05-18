@@ -31,7 +31,7 @@ void Couple::step(void)
 
 vector<Output*> Couple::output(void) const
 {
-  Output* temp = new Output( label("Couple",index+1)+".nu", n );
+  Output* temp = new Output( label("Couple.",index+1)+".nu", n );
   return vector<Output*>(1,temp);
 }
 
@@ -42,5 +42,5 @@ const vector<double>& Couple::nu(void) const
 
 bool Couple::excite(void) const
 {
-  return pos;
+  return pos==1;
 }

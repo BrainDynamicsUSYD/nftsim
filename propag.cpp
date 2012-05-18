@@ -3,6 +3,10 @@
 void Propag::init( Configf& configf )
 {
   double Q = prepop.Qinit(configf);
+  string buffer("Steady");
+  configf.optional("phi",buffer);
+  if( buffer != "Steady" )
+    Q = atof(buffer.c_str());
   p.resize(nodes,Q);
   configf.param("Tau",tau);
   prepop.growHistory(tau);

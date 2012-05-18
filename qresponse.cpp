@@ -16,7 +16,7 @@ void QResponse::init( Configf& configf )
     configf>>*dendrites[i];
 }
 
-void QResponse::restart( Restartf& inputf )
+void QResponse::restart( Restartf& configf )
 {
 }
 

@@ -44,10 +44,10 @@ void Timeseries::init( Configf& configf )
         tperiod = 1/tperiod;
       else // if repetition period or frequency not specified, do just one pulse
         tperiod = 99999999;
-      if( !configf.optional("Number of Pulses",xspread) )
-        xspread = -2;
-      xspread += 1;
     }
+    if( !configf.optional("Number of Pulses",xspread) )
+      xspread = -2;
+    xspread += 1;
     if( !configf.optional("Radius",deltax) )
       deltax = 0;
   }
@@ -73,6 +73,12 @@ void Timeseries::init( Configf& configf )
     configf.param("Amplitude",amp);
     configf.param("Pulse Duration",pdur);
     configf.param("Time at peak",tpeak);
+  }
+  else if( mode=="MNS" ) { // median nerve stimulation
+    configf.param("N20 width",xspread);
+    configf.param("N20 height",xcent);
+    configf.param("P25 width",yspread);
+    configf.param("P25 height",ycent);
   }
   else if( mode=="PAS" ) { // paired associative stimulation
     configf.param("N20 width",xspread);
@@ -264,7 +270,15 @@ void Timeseries::fire( vector<double>& Q ) const
           (exp(-0.5*pow((t-tpeak), 2) / (pdur*pdur)));
     }
   }
-  else if( mode=="PAS" ) { // median nerve stimulation
+  else if( mode=="MNS" ) { // median nerve stimulation
+    if( 0<t && t<=xspread )
+      for( int i=0; i<nodes; i++ )
+        Q[i] += -xcent*sin(3.141592654*t/xspread);
+    else if( xspread<t && t<xspread+yspread )
+      for( int i=0; i<nodes; i++ )
+        Q[i] += ycent*sin(3.141592654*(t-xspread)/yspread);
+  }
+  else if( mode=="PAS" ) { // paired associative stimulation
     int width = sqrt(nodes);
     if( deltax==0 ) {
       if( 0<t && t<=xspread )

@@ -16,13 +16,6 @@ class Dendrite : public NF
   Dendrite(void); // default constructor
   Dendrite(Dendrite& ); // no copy constructor
 
-  vector<double> v;
-  vector<double> dvdt;
-  vector<double> oldnp;
-
-  const Propag& prepropag;
-  const Couple& precouple;
-
   double alpha;
   double beta;
 
@@ -41,16 +34,24 @@ class Dendrite : public NF
   double C2expb;
   double C1dtplusC2;
 protected:
-  void init( Configf& configf );
-  void restart( Restartf& restartf );
-  void dump( Dumpf& dumpf ) const;
+  vector<double> v;
+  vector<double> dvdt;
+  vector<double> np;
+  vector<double> oldnp;
+
+  const Propag& prepropag;
+  const Couple& precouple;
+
+  virtual void init( Configf& configf );
+  virtual void restart( Restartf& restartf );
+  virtual void dump( Dumpf& dumpf ) const;
 public: 
   Dendrite( int nodes, double deltat, int index,
       const Propag& prepropag, const Couple& precouple );
   virtual ~Dendrite(void);
-  void step(void);
-  const vector<double>& V(void) const;
-  vector<Output*> output(void) const;
+  virtual void step(void);
+  virtual const vector<double>& V(void) const;
+  virtual vector<Output*> output(void) const;
 };
 
 #endif

@@ -8,8 +8,7 @@ using std::string;
 void BCM::init( Configf& configf )
 {
   CaDP::init(configf);
-  if( !configf.optional("gain",gain) )
-    gain = 3e-1;
+  configf.param("gain",gain);
 }
 
 BCM::BCM( int nodes, double deltat, int index, const vector<double>& glu,
