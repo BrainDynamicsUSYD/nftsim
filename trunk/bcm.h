@@ -13,7 +13,7 @@ protected:
   virtual void init( Configf& configf );
 public:
   BCM( int nodes, double deltat, int index, const vector<double>& glu,
-          const Population& prepop, const Population& postpop );
+          const Propag& prepropag, const Population& postpop );
   virtual ~BCM(void);
   virtual void step(void);
   virtual vector<Output*> output(void) const;

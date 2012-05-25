@@ -3,10 +3,12 @@
 
 #include"array.h"
 #include"population.h"
+#include"propag.h"
 #include"output.h"
 #include"configf.h"
 #include"nf.h"
 
+class Propag;
 class Population;
 
 class Couple : public NF
@@ -19,13 +21,13 @@ protected:
   virtual void dump( Dumpf& dumpf ) const; 
 
   const vector<double>& glu;
-  const Population& prepop;
+  const Propag& prepropag;
   const Population& postpop;
   vector<double> n;
   int pos;
 public: 
   Couple( int nodes, double deltat, int index, const vector<double>& glu,
-      const Population& prepop, const Population& postpop );
+      const Propag& prepropag, const Population& postpop );
   virtual ~Couple(void);
   virtual void step(void);
   virtual vector<Output*> output(void) const; 

@@ -47,8 +47,8 @@ void CaDP::dump( Dumpf& dumpf ) const
 }
 
 CaDP::CaDP( int nodes, double deltat, int index, const vector<double>& glu,
-        const Population& prepop, const Population& postpop )
-  : Couple(nodes,deltat,index,glu,prepop,postpop),
+        const Propag& prepropag, const Population& postpop )
+  : Couple(nodes,deltat,index,glu,prepropag,postpop),
     binding(nodes,0), Ca(nodes,0)
 {
 }

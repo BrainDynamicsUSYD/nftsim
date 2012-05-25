@@ -35,7 +35,7 @@ protected:
   virtual void dump( Dumpf& dumpf ) const;
 public: 
   CaDP( int nodes, double deltat, int index, const vector<double>& glu,
-          const Population& prepop, const Population& postpop );
+          const Propag& prepropag, const Population& postpop );
   virtual ~CaDP(void);
   virtual void step(void);
   virtual vector<Output*> output(void) const;

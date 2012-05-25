@@ -16,8 +16,8 @@ void Couple::dump( Dumpf& dumpf ) const
 }
 
 Couple::Couple( int nodes, double deltat, int index, const vector<double>& glu,
-        const Population& prepop, const Population& postpop )
-    : NF(nodes,deltat,index), glu(glu), prepop(prepop), postpop(postpop)
+        const Propag& prepropag, const Population& postpop )
+    : NF(nodes,deltat,index), glu(glu), prepropag(prepropag), postpop(postpop)
 {
 }
 
