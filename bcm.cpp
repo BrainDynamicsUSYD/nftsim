@@ -12,8 +12,8 @@ void BCM::init( Configf& configf )
 }
 
 BCM::BCM( int nodes, double deltat, int index, const vector<double>& glu,
-          const Population& prepop, const Population& postpop )
-    : CaDP( nodes, deltat, index, glu, prepop, postpop )
+          const Propag& prepropag, const Population& postpop )
+    : CaDP( nodes, deltat, index, glu, prepropag, postpop )
 {
 }
 

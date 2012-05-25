@@ -23,7 +23,7 @@ void Propag::dump( Dumpf& dumpf ) const
 Propag::Propag( int nodes, double deltat, int index, Population& prepop,
         Population& postpop, int longside, string topology )
     : NF(nodes,deltat,index), prepop(prepop), postpop(postpop),
-         tau(nodes,deltat,index), longside(longside)
+         tau(nodes,deltat,index), longside(longside), p(nodes)
 {
 }
 

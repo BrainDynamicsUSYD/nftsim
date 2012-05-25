@@ -8,7 +8,7 @@ void Harmonic::init( Configf& configf )
   configf.optional("phi",buffer);
   if( buffer != "Steady" )
     Q = atof(buffer.c_str());
-  p.resize(nodes,Q);
+  p.clear(); p.resize(nodes,Q);
   oldp.resize(nodes,Q);
   oldQ.resize(nodes,Q);
   dpdt.resize(nodes,0.);
