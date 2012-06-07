@@ -11,10 +11,14 @@ void Wave::init( Configf& configf )
   double Q = prepop.Qinit(configf);
   configf.param("Tau",tau); prepop.growHistory(tau);
   configf.param("Deltax",deltax);
-  if( buffer != "Steady" )
+  if( buffer != "Steady" ) {
+    p.clear();
     p.resize(nodes,atof(buffer.c_str()));
-  else
+  }
+  else {
+    p.clear();
     p.resize(nodes,Q);
+  }
 
   configf.param("Range",range);
   if( !configf.optional("gamma",gamma) ) {
