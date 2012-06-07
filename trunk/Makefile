@@ -4,10 +4,8 @@
 #COMP = CC
 
 # generic compile command, used in yossarian
-COMP = g++ -g -lm -Wall
-
-# compile command using gcc
-#COMP = g++ -g -msse2 -ftree-vectorize -ftree-vectorizer-verbose=5 -lm -Wall
+#COMP = g++ -g -lm -Wall  # Debugging
+COMP = g++ -lm -Wall -Ofast # Performance
 
 # compile command on intel
 #COMP = /usr/physics/intel/cce/bin/icc -p -g -Drestrict=__restrict__ -vec-report1 -O2 -lm
