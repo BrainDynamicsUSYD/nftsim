@@ -1,8 +1,10 @@
 #include "propag.h"
+#include<iostream>
 
 void Propag::init( Configf& configf )
 {
   double Q = prepop.Qinit(configf);
+std::cout<<index<<": "<<Q<<std::endl;
   string buffer("Steady");
   configf.optional("phi",buffer);
   if( buffer != "Steady" )
@@ -23,7 +25,7 @@ void Propag::dump( Dumpf& dumpf ) const
 Propag::Propag( int nodes, double deltat, int index, Population& prepop,
         Population& postpop, int longside, string topology )
     : NF(nodes,deltat,index), prepop(prepop), postpop(postpop),
-         tau(nodes,deltat,index), longside(longside), p(nodes)
+         tau(nodes,deltat,index), longside(longside) //, p(nodes)
 {
 }
 
