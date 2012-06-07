@@ -32,6 +32,7 @@ public:
       Population& postpop, int longside, string topology );
   virtual ~Propag(void);
   virtual void step(void); 
+  double phiinit( Configf& configf ) const;
   virtual const vector<double>& phi(void) const;
   virtual vector<Output*> output(void) const;
 };

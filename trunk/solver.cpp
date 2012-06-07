@@ -337,9 +337,9 @@ void Solver::step(void)
     */
   }
 
-  couples.step();
-  pops.step();
-  propags.step();
+  couples.pstep();
+  pops.pstep();
+  propags.pstep();
 
   // output routine
   if( outputstart )

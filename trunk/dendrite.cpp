@@ -7,7 +7,7 @@ using std::endl;
 void Dendrite::init( Configf& configf )
 {
   if( !configf.next( label("Dendrite ",index+1) )) {
-    std::cerr<<"Dendrite from population "<<index+1<<" not found."<<endl;
+    std::cerr<<"Dendrite "<<index+1<<" not found."<<endl;
     exit(EXIT_FAILURE);
   }
   string buffer("Steady");
