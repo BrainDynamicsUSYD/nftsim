@@ -17,5 +17,6 @@ const string& Output::fieldname(void) const
 void Output::step(void) const
 {
   for( size_t i=0; i<node.size(); i++ )
-    dumpf<<space<<field[node[i]]<<space<<space<<septor;
+    dumpf<<space<<field[node[i]]<<space<<space;
+  dumpf<<septor;
 }
