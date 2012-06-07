@@ -1,10 +1,8 @@
 #include "propag.h"
-#include<iostream>
 
 void Propag::init( Configf& configf )
 {
   double Q = prepop.Qinit(configf);
-std::cout<<index<<": "<<Q<<std::endl;
   string buffer("Steady");
   configf.optional("phi",buffer);
   if( buffer != "Steady" )
