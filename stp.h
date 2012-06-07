@@ -3,14 +3,16 @@
 
 #include"couple.h"
 
-class STP : public Couple
+class STP : public virtual Couple
 {
   STP();
   STP(STP&);
+
+  vector<double> oldphi;
 protected:
-  vector<double> Ca;
-  vector<double> glu;
-  vector<double> oldlngluonphi; // for calculating time derivative
+  double rate;
+  double nu_0;
+  double phi_r;
 
   virtual void init( Configf& configf );
   virtual void restart( Restartf& restartf );
@@ -20,7 +22,6 @@ public:
           const Propag& prepop, const Population& postpop );
   virtual ~STP(void);
   virtual void step(void);
-  virtual vector<Output*> output(void) const;
 };
 
 #endif

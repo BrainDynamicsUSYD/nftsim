@@ -36,6 +36,11 @@ void Propag::step(void)
   p = prepop.Q(tau);
 }
 
+double Propag::phiinit( Configf& configf ) const
+{
+  return prepop.Qinit(configf);
+}
+
 const vector<double>& Propag::phi(void) const
 {
   return p;

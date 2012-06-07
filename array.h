@@ -1,6 +1,7 @@
 #ifndef ARRAY_H
 #define ARRAY_H
 
+#include<omp.h>
 #include<string>
 using std::string;
 #include<vector>
@@ -16,6 +17,7 @@ class Array
   vector<T*> m;
 public:
   virtual void step(void);
+  virtual void pstep(void); // parallel for loop over elements::loop
 
   void add(T* t);
   void add(vector<T*> t);
@@ -49,6 +51,14 @@ bool Array<T>::empty(void) const
 template<class T>
 void Array<T>::step(void)
 {
+  for( size_t i=0; i<m.size(); i++ )
+    m[i]->step();
+}
+
+template<class T>
+void Array<T>::pstep(void)
+{
+  #pragma omp parallel for
   for( size_t i=0; i<m.size(); i++ )
     m[i]->step();
 }
