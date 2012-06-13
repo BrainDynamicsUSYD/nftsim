@@ -1,5 +1,5 @@
-function [f,P,filtered] = nf_spatial_filter(nf,traces)
-    % [f,P,vout] = nf_spatial_filter(nf,traces)
+function [f,P,Pold,filtered_nf] = nf_spatial_filter(nf,traces)
+    % [f,P,filtered_nf] = nf_spatial_filter(nf,traces)
     % Given a grid of voltages, applies a spatial filter   
     % Returns the power spectrum calculated from the centre node of the trace
     % And optionally the spatially smoothed matrix
@@ -50,16 +50,18 @@ function [f,P,filtered] = nf_spatial_filter(nf,traces)
     center_node = floor(size(v,1));
     vnew = decimate(detrend(output(center_node,center_node,:)),decimation_factor);
     vold = decimate(detrend(data(center_node,center_node,:)),decimation_factor);
-keyboard
-    [f,P] = pwelch_spectrum(v,1/nf.deltat/decimation_factor);
-    
+
+    [f,P] = pwelch_spectrum(vnew,1/nf.deltat/decimation_factor);
+    [f,Pold] = pwelch_spectrum(vold,1/nf.deltat/decimation_factor);
     filtered = reshape(shiftdim(output,2),[],2500);
+    filtered_nf = nf;
+    filtered_nf.data{1} = filtered;
     
-    %{
+    
     subplot(1,3,1)
-    surf(x,y,v);
+    surf(x,y,data(:,:,end));
     subplot(1,3,2)
     surf(Kx,Ky,k0filter);
     subplot(1,3,3)
-    surf(x,y,vout);
-    %}
+    surf(x,y,output(:,:,end));
+    
