@@ -121,7 +121,7 @@ void Solver::init( Configf& configf )
     }
 
   // glutamte dynamics
-  glu.resize(nodes,0); dglu.resize(nodes,0);
+  glu.resize(nodes,1e-4); dglu.resize(nodes,0);
   configf.param("fast Lambda",fLambda); configf.param("fast Glu",tfGlu);
   configf.param("slow Lambda",sLambda); configf.param("slow Glu",tsGlu);
 
@@ -312,34 +312,20 @@ void Solver::solve(void)
 void Solver::step(void)
 {
   // glutamte dynamics
-  static double p = 0;
   for( int j=0; j<nodes; j++ )
-    dglu[j] = 0;//double ddglu = 0; double ts = 200e-3; double td = 200e-3;
+    dglu[j] = 0;
   for( size_t i=0; i<couples.size(); i++ )
     if( couples[i]->excite() )
       for( int j=0; j<nodes; j++ )
         dglu[j] += fLambda*propags[i]->phi()[j]*deltat;
-  p = sLambda/fLambda*dglu[0] - p/tfGlu*deltat;
   for( int j=0; j<nodes; j++ ) {
-    dglu[j] -= glu[j]/tsGlu*deltat -p;
-    glu[j] += dglu[j];
+    glu[j] += dglu[j] -glu[j]/tsGlu*deltat;
     if( glu[j]<0 ) glu[j] = 0;
-    /*double p1 = ddglu;
-      double k1 = dglu[j];
-      double p2 = p1 -p1/2/ts -k1/2/td;
-      double k2 = dglu[j] +1/2*(dglu[j]+p1);
-      double p3 = p1 -p2/2/ts -k2/2/td;
-      double k3 = dglu[j] +1/2*(dglu[j]+p2);
-      double p4 = p1 -p3/ts -k3/td;
-      double k4 = dglu[j] +dglu[j]+p3;
-      dglu[j] += 1/6*(p1+2*p2+2*p3+p4);
-      glu[j] += 1/6*(k1+2*k2+2*k3+k4);
-    */
   }
 
-  couples.pstep();
-  pops.pstep();
-  propags.pstep();
+  couples.step();
+  pops.step();
+  propags.step();
 
   // output routine
   if( outputstart )
