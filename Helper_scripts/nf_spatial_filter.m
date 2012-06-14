@@ -1,5 +1,5 @@
-function [f,P,Pold,filtered_nf] = nf_spatial_filter(nf,traces)
-    % [f,P,filtered_nf] = nf_spatial_filter(nf,traces)
+function [f,Pnew,Pold,Pnewloop,filtered_nf] = nf_spatial_filter(nf,traces)
+    % [f,P,P_old,filtered_nf] = nf_spatial_filter(nf,traces)
     % Given a grid of voltages, applies a spatial filter   
     % Returns the power spectrum calculated from the centre node of the trace
     % And optionally the spatially smoothed matrix
@@ -13,17 +13,17 @@ function [f,P,Pold,filtered_nf] = nf_spatial_filter(nf,traces)
     Ly = 0.5;
     k0 = 10; % spatial filter constant (m^-1)
         
-    Fs_x = size(v,1)/Lx; % Pixels per metre
+    Fs_x = size(v,1)/Lx; % Pixels per *metre* OK
     Fs_y = size(v,2)/Ly;
     
-    dx = Lx/Fs_x; % Metres per pixel
-    dy = Ly/Fs_y;
+    dx = 1/Fs_x; % Metres per pixel
+    dy = 1/Fs_y;
     
     % Vectors for the distance in each direction
     x = dx*(0:size(v,1)-1);
     y = dy*(0:size(v,2)-1);
     
-    dFx = Fs_x/size(v,1); % cycles per cm increments
+    dFx = Fs_x/size(v,1); % cycles per metre
     dFy = Fs_y/size(v,2);
     
     % Now, construct frequency domain arrays
@@ -34,11 +34,44 @@ function [f,P,Pold,filtered_nf] = nf_spatial_filter(nf,traces)
     Kx = Fx*2*pi; % wavenumber
     Ky = Fy*2*pi;
     [Kx,Ky] = meshgrid(Kx,Ky);
+    k2_matrix = Kx.^2+Ky.^2;
     
+    kmax = 2; % k values to include
+    m_rows = -kmax:kmax; % The code will panic and fail if there are not an odd
+    n_cols = -kmax:kmax; % number of k values. This ensures the convolution is properly symmetric
 
-    k0filter = exp(-(Kx.^2+Ky.^2)/k0^2);
+    target_node = 12;%floor(size(v,1)/2);
+    decimation_factor = 2;%1/200/nf.deltat;
+    decimated_rate = 1/nf.deltat/decimation_factor;
+    vold = decimate(detrend(data(target_node,target_node,:)),decimation_factor);
+    [f,Pold] = pwelch_spectrum(vold,decimated_rate);
+    Pnew = zeros(size(Pold));
     
-    % Now we have the spatial filter. Go through and apply it
+    % Accumulate the power spectrum for each of the k values
+    count = 1;
+    for m = m_rows
+        for n = n_cols
+            fprintf('Computing %2i/%2i',count,length(m_rows)*length(n_cols));
+
+            k2 = (2*pi*m/Lx)^2 + (2*pi*n/Ly)^2;
+            output = zeros(size(data));
+            parfor j = 1:size(data,3)
+                vout = fftshift(fft2(data(:,:,j)));
+                vout(k2_matrix ~= k2) = 0; % Zero all other k components
+                vout = ifft2(ifftshift(vout));
+                output(:,:,j) = abs(vout);
+            end
+            
+            vnew = decimate(detrend(output(target_node,target_node+1,:)),decimation_factor);
+            [~,P] = pwelch_spectrum(vnew,decimated_rate);
+
+            Pnew = Pnew + P.*exp(-k2/k0^2);
+            fprintf('\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b');
+            count = count+1;
+        end
+    end
+    
+    k0filter = exp(-(Kx.^2+Ky.^2)/k0^2);
     parfor j = 1:size(data,3)
         vout = fftshift(fft2(data(:,:,j)));
         vout = vout.*k0filter;
@@ -46,22 +79,10 @@ function [f,P,Pold,filtered_nf] = nf_spatial_filter(nf,traces)
         output(:,:,j) = abs(vout);
     end
     
-    decimation_factor = 2;%1/200/nf.deltat;
-    center_node = floor(size(v,1));
-    vnew = decimate(detrend(output(center_node,center_node,:)),decimation_factor);
-    vold = decimate(detrend(data(center_node,center_node,:)),decimation_factor);
-
-    [f,P] = pwelch_spectrum(vnew,1/nf.deltat/decimation_factor);
-    [f,Pold] = pwelch_spectrum(vold,1/nf.deltat/decimation_factor);
-    filtered = reshape(shiftdim(output,2),[],2500);
+    vnew = decimate(detrend(output(target_node,target_node,:)),decimation_factor);
+    [f,Pnewloop] = pwelch_spectrum(vnew,1/nf.deltat/decimation_factor);
+    
+    
     filtered_nf = nf;
-    filtered_nf.data{1} = filtered;
-    
-    
-    subplot(1,3,1)
-    surf(x,y,data(:,:,end));
-    subplot(1,3,2)
-    surf(Kx,Ky,k0filter);
-    subplot(1,3,3)
-    surf(x,y,output(:,:,end));
-    
+    filtered_nf.data{1} = reshape(shiftdim(output,2),[],2500);
+
