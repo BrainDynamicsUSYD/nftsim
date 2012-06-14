@@ -3,7 +3,7 @@
 
 #include"couple.h"
 
-class CaDP : public Couple
+class CaDP : public virtual Couple
 {
   CaDP();
   CaDP(CaDP&);
