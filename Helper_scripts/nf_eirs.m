@@ -37,7 +37,9 @@ function varargout = nf_eirs(p,file_id,nonlinear,int_time,grid_edge)
 	
 	% Initialize numerical solver parameters
     deltat = 1e-4;
-	deltax= 0.0035;
+    Lx = 0.5; % Cortex linear dimension (metres)
+	deltax= Lx/grid_edge; % Assume square grid
+	
 	% CFL condition
 	v = p.gammae*p.re; % Axonal velocity
 	if deltat >= deltax/v % If the timestep is larger than the time required to propagate deltax
