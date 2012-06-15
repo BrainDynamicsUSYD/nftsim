@@ -1,4 +1,4 @@
-function [f,Pnew,Pold,Pnewloop,filtered_nf] = nf_spatial_filter(nf,traces)
+function [f,Pnew,Pold,filtered_nf] = nf_spatial_filter(nf,traces,p)
     % [f,P,P_old,filtered_nf] = nf_spatial_filter(nf,traces)
     % Given a grid of voltages, applies a spatial filter   
     % Returns the power spectrum calculated from the centre node of the trace
@@ -39,50 +39,40 @@ function [f,Pnew,Pold,Pnewloop,filtered_nf] = nf_spatial_filter(nf,traces)
     kmax = 2; % k values to include
     m_rows = -kmax:kmax; % The code will panic and fail if there are not an odd
     n_cols = -kmax:kmax; % number of k values. This ensures the convolution is properly symmetric
-
-    target_node = 12;%floor(size(v,1)/2);
-    decimation_factor = 2;%1/200/nf.deltat;
+    [center_x,center_y] = find(k2_matrix == 0) % Get the centre entry
+    
+    decimation_factor = 1;%1/200/nf.deltat;
     decimated_rate = 1/nf.deltat/decimation_factor;
-    vold = decimate(detrend(data(target_node,target_node,:)),decimation_factor);
+    vold = decimate(detrend(data(center_x,center_y,:)),decimation_factor);
     [f,Pold] = pwelch_spectrum(vold,decimated_rate);
     Pnew = zeros(size(Pold));
     
-    % Accumulate the power spectrum for each of the k values
-    count = 1;
-    for m = m_rows
-        for n = n_cols
-            fprintf('Computing %2i/%2i',count,length(m_rows)*length(n_cols));
-
-            k2 = (2*pi*m/Lx)^2 + (2*pi*n/Ly)^2;
-            output = zeros(size(data));
-            parfor j = 1:size(data,3)
-                vout = fftshift(fft2(data(:,:,j)));
-                vout(k2_matrix ~= k2) = 0; % Zero all other k components
-                vout = ifft2(ifftshift(vout));
-                output(:,:,j) = abs(vout);
-            end
-            
-            vnew = decimate(detrend(output(target_node,target_node+1,:)),decimation_factor);
-            [~,P] = pwelch_spectrum(vnew,decimated_rate);
-
-            Pnew = Pnew + P.*exp(-k2/k0^2);
-            fprintf('\b\b\b\b\b\b\b\b\b\b\b\b\b\b\b');
-            count = count+1;
-        end
-    end
-    
-    k0filter = exp(-(Kx.^2+Ky.^2)/k0^2);
+    % FFT to provide V(k,t) - I *think* this is correct? Or may be P(k,t)...
     parfor j = 1:size(data,3)
-        vout = fftshift(fft2(data(:,:,j)));
-        vout = vout.*k0filter;
-        vout = ifft2(ifftshift(vout));
-        output(:,:,j) = abs(vout);
+        output(:,:,j) = fftshift(fft2(data(:,:,j)));
     end
-    
-    vnew = decimate(detrend(output(target_node,target_node,:)),decimation_factor);
-    [f,Pnewloop] = pwelch_spectrum(vnew,1/nf.deltat/decimation_factor);
-    
+    output = output./2500;
+
+    for m = 0
+        for n = 0
+            v_temp = decimate(detrend(output(center_x+m,center_y+n,:)),decimation_factor);
+            [~,P] = pwelch_spectrum(v_temp,decimated_rate);
+            
+            k2 = (2*pi*m/Lx)^2 + (2*pi*n/Ly)^2;
+            Pnew = Pnew + P.*exp(-k2/k0^2);
+        end    
+    end    
     
     filtered_nf = nf;
     filtered_nf.data{1} = reshape(shiftdim(output,2),[],2500);
-
+    
+    close all
+    figure
+    loglog(f,Pnew,f,Pold)
+    
+    if nargin == 3
+        [f2,P2] = analytic_spectrum(p,1);
+        hold on
+        loglog(f2,P2,'r');
+        legend('Filtered','Original NF','Analytic');
+    end
