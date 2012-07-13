@@ -317,7 +317,7 @@ void Solver::step(void)
   for( size_t i=0; i<couples.size(); i++ )
     if( couples[i]->excite() )
       for( int j=0; j<nodes; j++ )
-        dglu[j] += fLambda*propags[i]->phi()[j]*deltat;
+        dglu[j] += fLambda*(*propags[i])[j]*deltat;
   for( int j=0; j<nodes; j++ ) {
     glu[j] += dglu[j] -glu[j]/tsGlu*deltat;
     if( glu[j]<0 ) glu[j] = 0;

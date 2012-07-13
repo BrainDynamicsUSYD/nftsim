@@ -46,6 +46,11 @@ const vector<double>& Propag::phi(void) const
   return p;
 }
 
+double Propag::operator[]( int node ) const
+{
+  return p[node];
+}
+
 vector<Output*> Propag::output(void) const
 {
   vector<Output*> temp;

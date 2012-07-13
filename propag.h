@@ -34,6 +34,7 @@ public:
   virtual void step(void); 
   double phiinit( Configf& configf ) const;
   virtual const vector<double>& phi(void) const;
+  double operator[]( int node ) const;
   virtual vector<Output*> output(void) const;
 };
 

@@ -9,7 +9,8 @@ class STP : public virtual Couple
   STP(STP&);
 protected:
   double nu_0;
-  double rate;
+  double phi_r;
+  double kappa;
   double t_glu;
   vector<double> oldphi;
   vector<double> transmitter;

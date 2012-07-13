@@ -5,10 +5,10 @@ void STP::init( Configf& configf )
 {
   Couple::init(configf);
   if( !configf.optional("nu_0",nu_0) ) {
-    double phi = prepropag.phiinit(configf);
-    nu_0 = n[0]*phi/transmitter[0]; //n[0]-pos*rate*phi*(80-1.5*phi);
+    nu_0 = n[0]*prepropag.phiinit(configf)/transmitter[0];
   }
-  configf.param("Rate",rate);
+  configf.param("phi_r",phi_r);
+  configf.param("kappa",kappa);
   configf.param("t_glu",t_glu);
   for( size_t i=0; i<oldphi.size(); i++ )
     oldphi[i] = prepropag.phiinit(configf);
@@ -39,21 +39,26 @@ void STP::step(void)
   double dn; double dt;
   for( int i=0; i<nodes; i++ )
   {
-    double dXidphi = 1e-3*rate*exp(-rate*prepropag.phi()[i]); //rate*prepropag.phi()[i]*(20-prepropag.phi()[i]);
-    dt = dXidphi*( prepropag.phi()[i]-oldphi[i] ) -transmitter[i]/t_glu;
+    double bracket = pow( prepropag[i]/phi_r, kappa-1 );
+    double dXidphi = 1e-3*kappa/phi_r*bracket *pow(1+bracket*prepropag[i]/phi_r,-2);
+    //1e-3/4/20/pow(cosh((prepropag[i]-40)/2/20),2); //1e-3/sqrt(2*3.14)/10*exp(-.5*pow((prepropag[i]-35)/10,2)); //1e-3*rate*exp(-rate*prepropag[i]);
+    dt = dXidphi*( prepropag[i]-oldphi[i] ) -transmitter[i]/t_glu;
     if( transmitter[i]+dt <0 ) transmitter[i] = 0;
     else transmitter[i] += dt;
 
-    dn = nu_0 *log(prepropag.phi()[i]/oldphi[i])
-        *( dXidphi -transmitter[i]/prepropag.phi()[i] );
+    dn = nu_0 *log(prepropag[i]/oldphi[i])
+        *( dXidphi -transmitter[i]/prepropag[i] );
     if( pos*( n[i]+dn ) < 0 ) n[i] = 0;
     else n[i] += dn;
-    oldphi[i] = prepropag.phi()[i];
+    oldphi[i] = prepropag[i];
   }
-  /*for( int i=0; i<nodes; i++ ) {
-    n[i] = pos*rate*prepropag.phi()[i]*(80-1.5*prepropag.phi()[i])
-          +nu_0;
-    if( pos*n[i]<0 ) n[i] = 0;
+  /*double dn;
+  for( int i=0; i<nodes; i++ )
+  {
+    dn = nu_0*1e-3 *prepropag[i]/pow(20+prepropag[i],2) *log(prepropag[i]/oldphi[i]);
+    oldphi[i] = prepropag[i];
+    if( pos*( n[i]+dn ) < 0 ) n[i] = 0;
+    else n[i] += dn;
   }*/
 }
 
