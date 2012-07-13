@@ -76,6 +76,11 @@ const vector<double>& Population::Q( const Tau& tau) const
   }
 }
 
+const vector<double>& Population::operator()( const Tau& tau ) const
+{
+  return Q(tau);
+}
+
 double Population::Qinit( Configf& configf ) const
 {
   if( qresponse ) {
@@ -96,6 +101,11 @@ const vector<double>& Population::V(void) const
     std::cerr<<"Trying to access V of a stimulus population."<<endl;
     exit(EXIT_FAILURE);
   }
+}
+
+double Population::operator[]( int node ) const
+{
+  return V()[node];
 }
 
 void Population::add2Dendrite( int index,
