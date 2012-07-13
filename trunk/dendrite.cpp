@@ -15,7 +15,7 @@ void Dendrite::init( Configf& configf )
   if( buffer == "Steady" ) {
     v.resize(nodes);
     for( int i=0; i<nodes; i++ )
-      v[i] = prepropag.phi()[i]*precouple.nu()[i];
+      v[i] = prepropag[i]*precouple[i];
   }
   else
     v.resize(nodes,atof(buffer.c_str()));
@@ -60,7 +60,7 @@ void Dendrite::step(void)
 {
   // assume that alpha, beta are constant and nu*phi is linear for the time step
   for( int i=0; i<nodes; i++ )
-    np[i] = precouple.nu()[i]*prepropag.phi()[i];
+    np[i] = precouple[i]*prepropag[i];
 
   if(alpha!=beta)
 //#pragma omp parallel for private(adjustedPab,deltaPdeltat)

@@ -1,6 +1,4 @@
 #include <cmath>
-#include<iostream>
-using std::endl;
 #include "timeseries.h"
 
 void Timeseries::init( Configf& configf )

@@ -40,6 +40,11 @@ const vector<double>& Couple::nu(void) const
   return n;
 }
 
+const double Couple::operator[]( int node ) const
+{
+  return n[node];
+}
+
 bool Couple::excite(void) const
 {
   return pos==1;

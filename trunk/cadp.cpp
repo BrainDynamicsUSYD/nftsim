@@ -1,5 +1,6 @@
 #include<cmath>
 #include"cadp.h"
+#include"random.h"
 
 double CaDP::sig( double x, double beta ) const
 {
@@ -36,6 +37,19 @@ void CaDP::init( Configf& configf )
   double gnmda; if( !configf.optional("gNMDA",gnmda) )
     gnmda = 2e-3;
   g.resize(nodes,gnmda);
+
+  Random random(-98716872);
+  double deviate1, deviate2;
+  double amp = n[0]/10; double mean = 0;
+  for( int i=0; i<nodes-1; i+=2 ) {
+    random.gaussian(deviate1,deviate2);
+    n[i]   += amp*deviate1 +mean;
+    n[i+1] += amp*deviate2 +mean;
+  }
+  if(nodes%2) {
+    random.gaussian(deviate1,deviate2);
+    n[nodes-1] += amp*deviate1 +mean;
+  }
 }
 
 void CaDP::restart( Restartf& restartf )
@@ -74,10 +88,10 @@ void CaDP::step(void)
       nhu[i] = 0;
     else
       nhu[i] += dnhu;
-    static double p = 0;
-    double dp = deltat*( .01*(nhu[i]-n[i]) -2/1*p );
-    p += dp; double dn = p*deltat; // delayed, long term plasticity
-    // double dn = dnhu; // "instantaneous" plasticity
+    // static double p = 0;
+    // double dp = deltat*( .01*(nhu[i]-n[i]) -2/1*p );
+    // p += dp; double dn = p*deltat; // delayed, long term plasticity
+    double dn = dnhu; // "instantaneous" plasticity
     if( pos*( n[i]+dn ) < 0 )
       n[i] = 0;
     else
