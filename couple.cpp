@@ -42,7 +42,7 @@ const vector<double>& Couple::nu(void) const
 
 const double Couple::operator[]( int node ) const
 {
-  return n[node];
+  return nu()[node];
 }
 
 bool Couple::excite(void) const

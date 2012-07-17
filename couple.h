@@ -31,8 +31,8 @@ public:
   virtual ~Couple(void);
   virtual void step(void);
   virtual vector<Output*> output(void) const; 
-  const vector<double>& nu(void) const;
-  const double operator[]( int node ) const;
+  virtual const vector<double>& nu(void) const;
+  virtual const double operator[]( int node ) const;
   bool excite(void) const;
 };
 

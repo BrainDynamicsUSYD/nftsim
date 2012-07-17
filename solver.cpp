@@ -17,6 +17,7 @@ using std::stringstream;
 
 #include"couple.h"
 #include"cadp.h"
+#include"cark4.h"
 #include"bcm.h"
 #include"stp.h"
 
@@ -72,7 +73,7 @@ void Solver::CntMat::dump( Dumpf& dumpf ) const
 }
 
 Solver::Solver( Dumpf* dumpf )
-    : NF(0,0,0), dumpf(dumpf)
+    : NF(0,0,0), dumpf(dumpf), glu(nodes,deltat)
 {
 }
 
@@ -120,10 +121,8 @@ void Solver::init( Configf& configf )
       topology = ss.str();
     }
 
-  // glutamte dynamics
-  glu.resize(nodes,1e-4); dglu.resize(nodes,0);
-  configf.param("fast Lambda",fLambda); configf.param("fast Glu",tfGlu);
-  configf.param("slow Lambda",sLambda); configf.param("slow Glu",tsGlu);
+  // read in glutamate dynamics
+  glu.init(configf);
 
   // read in connection matrix
   configf.next("Connection matrix"); cnt.init(configf);
@@ -159,16 +158,16 @@ void Solver::init( Configf& configf )
     // PUT YOUR COUPLES HERE
     if(ctype=="Map")
       couples.add( new
-        Couple(nodes,deltat,i,glu, *propags[i], *pops[cnt.post[i]] ) );
+        Couple(nodes,deltat,i,glu[0], *propags[i], *pops[cnt.post[i]] ) );
     else if(ctype=="CaDP")
       couples.add( new
-        CaDP(nodes,deltat,i,glu, *propags[i], *pops[cnt.post[i]] ) );
+        CaRK4(nodes,deltat,i,glu[0], *propags[i], *pops[cnt.post[i]] ) );
     else if(ctype=="BCM")
       couples.add( new
-        BCM(nodes,deltat,i,glu, *propags[i], *pops[cnt.post[i]] ) );
+        BCM(nodes,deltat,i,glu[0], *propags[i], *pops[cnt.post[i]] ) );
     else if(ctype=="STP")
       couples.add( new
-        STP(nodes,deltat,i,glu, *propags[i], *pops[cnt.post[i]] ) );
+        STP(nodes,deltat,i,glu[0], *propags[i], *pops[cnt.post[i]] ) );
     else {
       std::cerr<<"Invalid couple type '"<<ctype<<"'."<<endl;
       exit(EXIT_FAILURE);
@@ -309,20 +308,37 @@ void Solver::solve(void)
     step();
 }
 
+void Solver::Glu::init( Configf& configf )
+{
+  configf.param("fast Lambda",fLambda); configf.param("fast Glu",tfGlu);
+  configf.param("slow Lambda",sLambda); configf.param("slow Glu",tsGlu);
+  nodes = atoi(configf.find("Nodes").c_str());
+  fields[0].resize(nodes,1e-4); fields[1].resize(nodes);
+  deltat = atof(configf.find("Deltat").c_str()); h6 = deltat/6.;
+}
+
+void Solver::Glu::rhs( const vector<double>& y, vector<double>& dydt )
+{
+  // y = { glu, excitatory phi }
+  // glu
+  dydt[0] = fLambda*y[1] -y[0]/tsGlu;
+  if( y[0]+dydt[0]*deltat <0 ) dydt[0] = -y[0];
+  // excitatory phi, leave alone
+  dydt[1] = 0;
+}
+
 void Solver::step(void)
 {
   // glutamte dynamics
   for( int j=0; j<nodes; j++ )
-    dglu[j] = 0;
+    glu[1][j] = 0; // reset excitatory phi
   for( size_t i=0; i<couples.size(); i++ )
     if( couples[i]->excite() )
       for( int j=0; j<nodes; j++ )
-        dglu[j] += fLambda*(*propags[i])[j]*deltat;
-  for( int j=0; j<nodes; j++ ) {
-    glu[j] += dglu[j] -glu[j]/tsGlu*deltat;
-    if( glu[j]<0 ) glu[j] = 0;
-  }
+        glu[1][j] += (*propags[i])[j]; // put in excitatory phi
+  glu.step();
 
+  // step through populations
   couples.step();
   pops.step();
   propags.step();

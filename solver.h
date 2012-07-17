@@ -8,6 +8,7 @@ using std::vector;
 #include"propag.h"
 #include"couple.h"
 #include"output.h"
+#include"de.h"
 #include"nf.h"
 
 class Propag;
@@ -23,12 +24,20 @@ class Solver : public NF
 
   int steps; // number of integration steps to perform
 
-  double fLambda; // glutamate concentration per action potential
-  double sLambda; // glutamate concentration per action potential
-  double tfGlu;   // fast time scale of glutamate
-  double tsGlu;   // slow time scale of glutamate
-  vector<double> glu; // glutamate concentration in synaptic cleft
-  vector<double> dglu; // Delta glutamate concentration from last timestep
+  // glutamate concentration in synaptic cleft
+  struct Glu : public RK4
+  {
+    double fLambda; // glutamate concentration per action potential
+    double sLambda; // glutamate concentration per action potential
+    double tfGlu;   // fast time scale of glutamate
+    double tsGlu;   // slow time scale of glutamate
+
+    Glu( int nodes, double deltat ) : RK4(2,nodes,deltat) {}
+    virtual ~Glu(void) {}
+    void init( Configf& configf );
+    void rhs( const vector<double>& y, vector<double>& dydt );
+  };
+  Glu glu;
 
   struct CntMat
   {

@@ -38,7 +38,7 @@ void CaDP::init( Configf& configf )
     gnmda = 2e-3;
   g.resize(nodes,gnmda);
 
-  Random random(-98716872);
+  /*Random random(-98716872);
   double deviate1, deviate2;
   double amp = n[0]/10; double mean = 0;
   for( int i=0; i<nodes-1; i+=2 ) {
@@ -49,7 +49,7 @@ void CaDP::init( Configf& configf )
   if(nodes%2) {
     random.gaussian(deviate1,deviate2);
     n[nodes-1] += amp*deviate1 +mean;
-  }
+  }*/
 }
 
 void CaDP::restart( Restartf& restartf )
@@ -102,6 +102,7 @@ void CaDP::step(void)
 vector<Output*> CaDP::output(void) const
 {
   vector<Output*> temp;
+  temp.push_back( new Output( label("Couple.",index+1)+".glu", glu ) );
   temp.push_back( new Output( label("Couple.",index+1)+".nu", nu() ) );
   temp.push_back( new Output( label("Couple.",index+1)+".nu_hat", nhu ) );
   temp.push_back( new Output( label("Couple.",index+1)+".Ca", Ca ) );
