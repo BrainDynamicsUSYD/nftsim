@@ -9,7 +9,7 @@ class CaDP : public virtual Couple
   CaDP();
   CaDP(CaDP&);
 
-  struct CaDE : public RK4
+  struct CaDE : public DE
   {
     double B; // 1/stanard deviation of glutamate binding
     double glu_0; // glutamte dose-response threshold
@@ -28,7 +28,7 @@ class CaDP : public virtual Couple
 
 	double pos; // sign of nu
 
-    CaDE( int nodes, double deltat ) : RK4(4,nodes,deltat) {}
+    CaDE( int nodes, double deltat ) : DE(nodes,deltat,4) {}
     virtual ~CaDE(void) {}
     void rhs( const vector<double>& y, vector<double>& dydt );
     inline double sig( double x, double beta ) const;
@@ -36,7 +36,8 @@ class CaDP : public virtual Couple
     inline double de(double Ca) const; // depression rate
   };
 protected:
-  CaDE rk4;
+  CaDE de;
+  RK4 rk4;
   virtual void init( Configf& configf );
   virtual void restart( Restartf& restartf );
   virtual void dump( Dumpf& dumpf ) const;

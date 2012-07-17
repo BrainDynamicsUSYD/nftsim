@@ -34,23 +34,23 @@ double CaDP::CaDE::de(double Ca) const
 void CaDP::init( Configf& configf )
 {
   double nuinit; configf.param("nu",nuinit);
-  rk4[3].clear(); rk4[3].resize(nodes,nuinit);
-  pos = rk4.pos = (nuinit>0)?1:-1;
-  configf.param("nu_max",rk4.max);
-  if( !configf.optional("LTD",rk4.dth) )
-    rk4.dth = .25e-6;
-  if( !configf.optional("LTP",rk4.pth) )
-    rk4.pth = .45e-6;
-  if( !configf.optional("Threshold",rk4.th) )
-    rk4.th = 1e-4;
-  configf.param("x",rk4.ltp);
-  configf.param("y",rk4.ltd);
-  configf.param("B",rk4.B);
-  configf.param("glu_0",rk4.glu_0);
-  if( !configf.optional("tCa",rk4.tCa) )
-    rk4.tCa = 50e-3;
-  if( !configf.optional("gNMDA",rk4.gnmda) )
-    rk4.gnmda = 2e-3;
+  de[3].clear(); de[3].resize(nodes,nuinit);
+  pos = de.pos = (nuinit>0)?1:-1;
+  configf.param("nu_max",de.max);
+  if( !configf.optional("LTD",de.dth) )
+    de.dth = .25e-6;
+  if( !configf.optional("LTP",de.pth) )
+    de.pth = .45e-6;
+  if( !configf.optional("Threshold",de.th) )
+    de.th = 1e-4;
+  configf.param("x",de.ltp);
+  configf.param("y",de.ltd);
+  configf.param("B",de.B);
+  configf.param("glu_0",de.glu_0);
+  if( !configf.optional("tCa",de.tCa) )
+    de.tCa = 50e-3;
+  if( !configf.optional("gNMDA",de.gnmda) )
+    de.gnmda = 2e-3;
 }
 
 void CaDP::restart( Restartf& restartf )
@@ -63,7 +63,8 @@ void CaDP::dump( Dumpf& dumpf ) const
 
 CaDP::CaDP( int nodes, double deltat, int index, const vector<double>& glu,
         const Propag& prepropag, const Population& postpop )
-  : Couple(nodes,deltat,index,glu,prepropag,postpop), rk4(nodes,deltat)
+  : Couple(nodes,deltat,index,glu,prepropag,postpop),
+    de(nodes,deltat), rk4(de)
 {
 }
 
@@ -74,23 +75,22 @@ CaDP::~CaDP(void)
 void CaDP::step(void)
 {
   for( int i=0; i<nodes; i++ ) {
-    rk4.fields[0][i] = rk4.sig( glu[i] -rk4.glu_0, rk4.B );
-    rk4.fields[1][i] = (195e-3-postpop[i])*rk4.sig( postpop[i]-45.5e-3,62 );
+    de[0][i] = de.sig( glu[i] -de.glu_0, de.B );
+    de[1][i] = (195e-3-postpop[i])*de.sig( postpop[i]-45.5e-3,62 );
   }
   rk4.step();
 }
 
 const vector<double>& CaDP::nu(void) const
 {
-  return rk4[3];
+  return de[3];
 }
 
 vector<Output*> CaDP::output(void) const
 {
   vector<Output*> temp;
-  temp.push_back( new Output( label("Couple.",index+1)+".glu", glu ) );
-  temp.push_back( new Output( label("Couple.",index+1)+".nu", rk4[3] ) );
-  temp.push_back( new Output( label("Couple.",index+1)+".Ca", rk4[2] ) );
-  temp.push_back( new Output( label("Couple.",index+1)+".B",  rk4[0] ) );
+  temp.push_back( new Output( label("Couple.",index+1)+".nu", de[3] ) );
+  temp.push_back( new Output( label("Couple.",index+1)+".Ca", de[2] ) );
+  temp.push_back( new Output( label("Couple.",index+1)+".B",  de[0] ) );
   return temp;
 }

@@ -8,7 +8,7 @@ class STP : public virtual Couple
 {
   STP();
   STP(STP&);
-  struct STPde : public RK4
+  struct STPde : public DE
   {
     double pos;
     double nu_0;
@@ -16,32 +16,13 @@ class STP : public virtual Couple
     double phi_r;
     double t_Xi;
     double Xi_max;
-    STPde( int nodes, double deltat ) : RK4(4,nodes,deltat) {}
+    STPde( int nodes, double deltat ) : DE(nodes,deltat,4) {}
     virtual ~STPde(void) {}
-    void rhs( const vector<double>& y, vector<double>& dydt ) {
-      // y == { phi, Xi, nu, oldphi }
-      // phi, leave alone
-      dydt[0] = 0;
-      // Xi
-      double dXidphi = Xi_max*kappa/phi_r*pow( y[0]/phi_r, kappa-1 )
-                *pow(1+pow( y[0]/phi_r, kappa ),-2);
-      dydt[1] = dXidphi*(y[0]-y[3])/deltat -y[0]/t_Xi;
-      if( y[0]+dydt[0]*deltat<0 ) dydt[0] = -y[0];
-      // nu
-      dydt[2] = nu_0 *log(y[0]/y[3]) *( dXidphi -y[1]/y[0] );
-      if( pos*(y[2]+dydt[2]*deltat)<0 ) dydt[2] = -y[2];
-      // oldphi, leave alone
-      dydt[3] = 0;
-    }
+    void rhs( const vector<double>& y, vector<double>& dydt );
   };
 protected:
-  double nu_0;
-  double phi_r;
-  double kappa;
-  double t_Xi;
-  //vector<double> oldphi;
-  //vector<double> transmitter;
-  STPde Xi_nu;
+  STPde de;
+  RK4 rk4;
 
   virtual void init( Configf& configf );
   virtual void restart( Restartf& restartf );

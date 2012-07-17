@@ -25,19 +25,20 @@ class Solver : public NF
   int steps; // number of integration steps to perform
 
   // glutamate concentration in synaptic cleft
-  struct Glu : public RK4
+  struct Glu : public DE
   {
     double fLambda; // glutamate concentration per action potential
     double sLambda; // glutamate concentration per action potential
     double tfGlu;   // fast time scale of glutamate
     double tsGlu;   // slow time scale of glutamate
 
-    Glu( int nodes, double deltat ) : RK4(2,nodes,deltat) {}
+    Glu( int nodes, double deltat ) : DE(nodes,deltat,2) {}
     virtual ~Glu(void) {}
     void init( Configf& configf );
     void rhs( const vector<double>& y, vector<double>& dydt );
   };
-  Glu glu;
+  Glu* glu;
+  RK4* glu_rk4;
 
   struct CntMat
   {
