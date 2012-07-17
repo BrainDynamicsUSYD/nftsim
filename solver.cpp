@@ -71,7 +71,7 @@ void Solver::CntMat::dump( Dumpf& dumpf ) const
 }
 
 Solver::Solver( Dumpf* dumpf )
-    : NF(0,0,0), dumpf(dumpf)
+    : NF(0,0,0), dumpf(dumpf), cnt(0,0,0)
 {
 }
 
@@ -125,7 +125,7 @@ void Solver::init( Configf& configf )
   glu->init(configf);
 
   // read in connection matrix
-  configf.next("Connection matrix"); cnt.init(configf);
+  configf.param("Connection matrix",cnt);
 
   // construct populations
   for( int i=0; i<cnt.npop; i++ )
@@ -195,7 +195,12 @@ void Solver::init( Configf& configf )
 
   // initialize outputs
   configf.go2("Output"); configf.next("Output");
+  initOutput(configf);
+}
 
+void Solver::initOutput( Configf& configf )
+{
+  double tempf;
   // read in nodes to output
   configf.next("Node");
   if( configf.find("Node:") == "All" ) // beware of this slightly hackish line

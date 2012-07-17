@@ -40,22 +40,29 @@ class Solver : public NF
   Glu* glu;
   RK4* glu_rk4;
 
-  struct CntMat
+  struct CntMat : public NF
   {
     int npop; // number of populations
     int ncnt; // number of connections
     vector< vector<double> > raw; // 2D vector of raw connection matrix
+
     vector<int> pre;  // presynaptic connection index for each population
     vector<int> post;  // postsynaptic connection index for each population
     vector<int> ndr;  // number of dendrites for each population
+
     void init( Configf& configf );
+    void restart( Restartf& restartf ) {}
     void dump( Dumpf& dumpf ) const;
+    CntMat( int nodes, double deltat, int index ) : NF(nodes,deltat,0) {}
+    ~CntMat(void) {}
+    void step(void) {}
   } cnt;
 
   Array<Output> outputs;
   int t;
   int outputstart;
   int outputinterval;
+  void initOutput( Configf& configf );
 
   Array<Population> pops;
   Array<Propag> propags;
