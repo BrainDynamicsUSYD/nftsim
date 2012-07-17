@@ -1,20 +1,50 @@
 #include<cmath>
 #include"stp.h"
 
+STP::STP( int nodes, double deltat, int index,
+    const vector<double>& glu, const Propag& prepropag,
+    const Population& postpop )
+    : Couple(nodes,deltat,index,glu,prepropag,postpop),
+      de(nodes,deltat), rk4(de)
+{
+  de[1].clear(); de[1].resize(nodes,1e-4);
+}
+
+STP::~STP(void)
+{
+}
+
+void STP::STPde::rhs( const vector<double>& y, vector<double>& dydt )
+{
+  // y == { phi, Xi, nu, oldphi }
+  // phi, leave alone
+  dydt[0] = 0;
+  // Xi
+  double dXidphi = Xi_max*kappa/phi_r*pow( y[0]/phi_r, kappa-1 )
+            *pow(1+pow( y[0]/phi_r, kappa ),-2);
+  dydt[1] = dXidphi*(y[0]-y[3])/deltat -y[0]/t_Xi;
+  if( y[0]+dydt[0]*deltat<0 ) dydt[0] = -y[0];
+  // nu
+  dydt[2] = nu_0 *log(y[0]/y[3]) *( dXidphi -y[1]/y[0] );
+  if( pos*(y[2]+dydt[2]*deltat)<0 ) dydt[2] = -y[2];
+  // oldphi, leave alone
+  dydt[3] = 0;
+}
+
 void STP::init( Configf& configf )
 {
   double nuinit; configf.param("nu",nuinit);
-  Xi_nu[2].clear(); Xi_nu[2].resize(nodes,nuinit);
-  pos = Xi_nu.pos = (nuinit>0)?1:-1;
-  if( !configf.optional("nu_0",nu_0) ) {
-    Xi_nu.nu_0 = nuinit*prepropag.phiinit(configf)/Xi_nu[1][0];
+  de[2].clear(); de[2].resize(nodes,nuinit);
+  pos = de.pos = (nuinit>0)?1:-1;
+  if( !configf.optional("nu_0",de.nu_0) ) {
+    de.nu_0 = nuinit*prepropag.phiinit(configf)/de[1][0];
   }
-  configf.param("phi_r",Xi_nu.phi_r);
-  configf.param("kappa",Xi_nu.kappa);
-  configf.param("t_Xi",Xi_nu.t_Xi);
-  configf.param("Xi_max",Xi_nu.t_Xi);
+  configf.param("phi_r",de.phi_r);
+  configf.param("kappa",de.kappa);
+  configf.param("t_Xi",de.t_Xi);
+  configf.param("Xi_max",de.t_Xi);
   for( int i=0; i<nodes; i++ )
-    Xi_nu[3][i] = prepropag.phiinit(configf);
+    de[3][i] = prepropag.phiinit(configf);
 }
 
 void STP::restart( Restartf& restartf )
@@ -25,25 +55,11 @@ void STP::dump( Dumpf& dumpf ) const
 {
 }
 
-STP::STP( int nodes, double deltat, int index,
-    const vector<double>& glu, const Propag& prepropag,
-    const Population& postpop )
-    : Couple(nodes,deltat,index,glu,prepropag,postpop),
-      Xi_nu(nodes,deltat)
-      //oldphi(nodes), transmitter(nodes,1e-4)
-{
-  Xi_nu[1].clear(); Xi_nu[1].resize(nodes,1e-4);
-}
-
-STP::~STP(void)
-{
-}
-
 void STP::step(void)
 {
-  Xi_nu[0] = prepropag.phi();
-  Xi_nu.step();
-  Xi_nu[3] = prepropag.phi();
+  de[0] = prepropag.phi();
+  rk4.step();
+  de[3] = prepropag.phi();
   /*double dn; double dt;
   for( int i=0; i<nodes; i++ )
   {
@@ -72,13 +88,13 @@ void STP::step(void)
 
 const vector<double>& STP::nu(void) const
 {
-  return Xi_nu[2];
+  return de[2];
 }
 
 vector<Output*> STP::output(void) const
 {
   vector<Output*> temp;
-  temp.push_back( new Output( label("Couple.",index+1)+".Xi",Xi_nu[1]) );
-  temp.push_back( new Output( label("Couple.",index+1)+".nu",Xi_nu[2]) );
+  temp.push_back( new Output( label("Couple.",index+1)+".Xi",de[1]) );
+  temp.push_back( new Output( label("Couple.",index+1)+".nu",de[2]) );
   return temp;
 }
