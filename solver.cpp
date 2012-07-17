@@ -17,7 +17,6 @@ using std::stringstream;
 
 #include"couple.h"
 #include"cadp.h"
-#include"cark4.h"
 #include"bcm.h"
 #include"stp.h"
 
@@ -161,7 +160,7 @@ void Solver::init( Configf& configf )
         Couple(nodes,deltat,i,glu[0], *propags[i], *pops[cnt.post[i]] ) );
     else if(ctype=="CaDP")
       couples.add( new
-        CaRK4(nodes,deltat,i,glu[0], *propags[i], *pops[cnt.post[i]] ) );
+        CaDP(nodes,deltat,i,glu[0], *propags[i], *pops[cnt.post[i]] ) );
     else if(ctype=="BCM")
       couples.add( new
         BCM(nodes,deltat,i,glu[0], *propags[i], *pops[cnt.post[i]] ) );
