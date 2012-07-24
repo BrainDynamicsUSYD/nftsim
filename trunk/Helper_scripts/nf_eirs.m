@@ -1,4 +1,4 @@
-function varargout = nf_eirs(p,file_id,nonlinear,int_time,grid_edge,grid_output,noise_multiplier)
+function varargout = nf_eirs(p,file_id,nonlinear,int_time,grid_edge,grid_output,fs)
     % Run NeuroField on an EIRS point struct
     % [nf,f,P] = nf_eirs(p,file_id,nonlinear,int_time,grid_edge,grid_output)
     % - Accepts a point struct as input
@@ -15,8 +15,8 @@ function varargout = nf_eirs(p,file_id,nonlinear,int_time,grid_edge,grid_output,
     % WARNING- THIS FUNCTION ASSUMES 'neurofield' IS ON THE SHELL PATH
     % WARNING- Depends on nf_read, nf_extract, pwelch_spectrum, and optionally 
     
-    if nargin < 7 || isempty(noise_multiplier)
-        noise_multiplier = 1;
+    if nargin < 7 || isempty(fs)
+        fs = 10000;
     end
     
     if nargin < 6 || isempty(grid_output)
@@ -46,7 +46,7 @@ function varargout = nf_eirs(p,file_id,nonlinear,int_time,grid_edge,grid_output,
 	end
 	
 	% Initialize numerical solver parameters
-    deltat = 1e-4;
+    deltat = 1/fs;
     Lx = 0.5; % Cortex linear dimension (metres)
 	deltax= Lx/grid_edge; % Assume square grid
 	%deltax = 0.0035;
@@ -63,9 +63,9 @@ function varargout = nf_eirs(p,file_id,nonlinear,int_time,grid_edge,grid_output,
     %noiseamp = noise_multiplier*sqrt(p.phin^2/deltat/2)
     %noiseamp = 0.7071
     %noiseamp = noise_multiplier*sqrt(grid_edge*grid_edge*p.phin^2/deltat/2/2/pi/2/pz
-    deltat
-    deltax
-    noiseamp = 0.01*sqrt(p.phin^2/deltat/deltax/deltax)
+    %deltat
+    %deltax
+    noiseamp = 0.01*sqrt(p.phin^2/deltat/deltax/deltax*4*pi^2)/2/pi;
     %return
     
     % WRITE THE FILE
@@ -138,7 +138,8 @@ function varargout = nf_eirs(p,file_id,nonlinear,int_time,grid_edge,grid_output,
     fprintf(fid,'\n');
 
     if grid_output
-        fprintf(fid,'Output: Node: All Start: 0 Interval: .004\n');
+        %fprintf(fid,'Output: Node: All Start: 0 Interval: .004\n');
+        fprintf(fid,'Output: Node: All Start: 0\n');
         fprintf(fid,'Population:\n');
         fprintf(fid,'Propag: 1\n');
         fprintf(fid,'Couple:\n');
@@ -179,7 +180,7 @@ function varargout = nf_eirs(p,file_id,nonlinear,int_time,grid_edge,grid_output,
         varargout{3} = P;
     end
     
-    %return
+    return
     
     if grid_output == 0 % If outputting only one node, include the time series
         data = nf_extract(nf,{'propag.1.phi','propag.2.phi','propag.10.phi','propag.8.phi'});
@@ -204,7 +205,7 @@ function varargout = nf_eirs(p,file_id,nonlinear,int_time,grid_edge,grid_output,
         set(gca,'XLim',[1 45]);
     else
         figure
-        [f,Pnew,Pold] = nf_spatial_filter(nf,'propag.1.phi',p);
+        [f,Pnew,Pold] = nf_spatial_filter(nf,p);
         loglog(f,Pnew,'b');
         xlabel('Frequency (Hz)');
         ylabel('Power (arbitrary)');
