@@ -157,19 +157,9 @@ function varargout = nf_eirs(p,file_id,nonlinear,int_time,grid_edge,grid_output,
     else
         fprintf(1,'Integration time: %d s sampled at %d Hz\nGrid size %dx%d, outputting node %d\nSimulating...',int_time,1/deltat,grid_edge,grid_edge,round((grid_edge^2 + grid_edge)/2));
     end
-        tic;
-    [status] = system(sprintf('neurofield -i neurofield_%i.conf -d neurofield_%i.dump -o neurofield_%i.output',file_id,file_id,file_id));
-    fprintf(1,'took %.3f seconds\n',toc);
     
-    if status ~= 0
-        error('An error occurred when running Neurofield');
-        return
-    end
-    
-    fprintf(1,'Parsing output...');
-    nf = nf_read(sprintf('neurofield_%i.output',file_id));
-    fprintf(1,'done!\n');
-    
+    nf = nf_run(sprintf('neurofield_%i',file_id));
+
     if nargout > 0
         varargout{1} = nf;
     end

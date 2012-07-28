@@ -13,11 +13,8 @@ function nf_movie( nf, field, normalize, fname )
     [data,side] = nf_grid(nf,field);
     [X,Y] = meshgrid(1:side,1:side);
 
-    datamean = zeros(1,nf.npoints);
-    for t = 1:nf.npoints
-        datamean(t) = mean(mean(data(:,:,t)));
-    end
-
+    datamean = mean(mean(data,1),2);
+    
     if nargin < 3 || isempty(normalize)
         normalize = 0;
     end
@@ -25,9 +22,7 @@ function nf_movie( nf, field, normalize, fname )
     plotdata = data;
     switch normalize
         case 1
-            for t = 1:nf.npoints
-                plotdata(:,:,t) = data(:,:,t) -mean(mean(data(:,:,t)));
-            end
+            plotdata = bsxfun(@minus,data,datamean);
         case 2
             for t = 1:nf.npoints
                 threshold = zeros(1,nf.npoints);
@@ -38,6 +33,7 @@ function nf_movie( nf, field, normalize, fname )
                 plotdata(:,:,t) = ( data(:,:,t)-threshold(t) )./norm(t);
             end
     end
+
     figure; h = surf( X, Y, plotdata(:,:,1) ); title('','Interpreter','none');
 
     if min(plotdata(:)) == max(plotdata(:)) && abs(min(plotdata(:)) - max(plotdata(:))) < 1e-10

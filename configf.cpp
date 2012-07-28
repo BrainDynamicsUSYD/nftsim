@@ -116,7 +116,7 @@ bool Configf::next( const string& Check, int delim )
   std::streampos sp = tellg();
   getline( buffer, filesize, delim );
   if( !good() ) {
-    std::cerr << "NeuroField cannot read configuration file." << endl;
+    std::cerr << "Error reading config file when looking for: " << Check << endl;
     exit(EXIT_FAILURE);
   }
   string param(buffer);
