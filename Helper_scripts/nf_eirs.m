@@ -66,6 +66,7 @@ function varargout = nf_eirs(p,file_id,nonlinear,int_time,grid_edge,grid_output,
     %deltat
     %deltax
     noiseamp = 0.01*sqrt(p.phin^2/deltat/deltax/deltax*4*pi^2)/2/pi;
+    noiseamp = sqrt(p.phin^2/deltat/deltax/deltax*4*pi^2/2)
     %return
     
     % WRITE THE FILE
@@ -92,6 +93,7 @@ function varargout = nf_eirs(p,file_id,nonlinear,int_time,grid_edge,grid_output,
     phivals = [p.phia(1) p.phia(1) p.phia(2) p.phia(3)];
     n_dendrites = [3 3 2 3]; % Number of dendrites on each population
     counter = 1;
+    
     for j = 1:4 % For each population
         fprintf(fid,'Population %d: %s\n',j,labels{j});
         fprintf(fid,'Q: %f\n',phivals(j));
@@ -102,6 +104,7 @@ function varargout = nf_eirs(p,file_id,nonlinear,int_time,grid_edge,grid_output,
         else
             fprintf(fid,'Firing: Sigmoid - Theta: %f Sigma: %f Qmax: %f\n',p.theta,p.sigma,p.qmax);
         end
+        
         for k = 1:n_dendrites(j)
             fprintf(fid,'Dendrite %d: alpha: %f beta: %f\n',counter,p.alpha,p.beta);
             counter = counter + 1;
@@ -113,6 +116,7 @@ function varargout = nf_eirs(p,file_id,nonlinear,int_time,grid_edge,grid_output,
     fprintf(fid,'Stimulus: Mode: White - Onset: 0 Amplitude: %f Mean: 1\n',noiseamp);
     fprintf(fid,'\n');
     
+    deltax = 0.1*deltax;
     fprintf(fid,'Propag 1: Wave - Tau: %f Deltax: %f Range: %f gamma: %f\n',0,deltax,p.re,p.gammae);
     fprintf(fid,'Propag 2: Map - Tau: %f\n',0);   
     fprintf(fid,'Propag 3: Map - Tau: %f\n',p.taues);   

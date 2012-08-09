@@ -17,24 +17,27 @@ function [f,P,V,fold,Pold] = nf_spatial_filter(nf,p)
     n_windows = 8; % like pwelch, 8 windows, 50% overlap
     frac_overlap = 0.5;
     window_vectors = get_window_vectors(size(data,3),n_windows,frac_overlap); 
-
+    %window_vectors = {}; window_vectors{1} = 1:size(data,3);
+    
     % Calculate the Fourier f and k values
     Lx = 0.5; % linear cortex dimension (m)
     Ly = 0.5;
+    %Lx = Lx/10;
+    %Ly = Ly/10;
     [f,Kx,Ky] = calculate_fft_components(data(:,:,window_vectors{1}),fs,Lx,Ly);
 
     k0 = 10; % spatial filter constant (m^-1)
     k2 = Kx.^2+Ky.^2; % Matrix of k-squared values
     k_filter = exp(-k2./(k0^2));
     
-    kmax = 0; % k values to include
-    [center_x,center_y] = find(k2 == 0) % Get the centre entry
+    kmax = 4; % k values to include
+    [center_x,center_y] = find(k2 == 0); % Get the centre entry
     [a,b] = meshgrid(1:size(k2,1),1:size(k2,2));
     k_mask = abs(a-center_x) <= kmax & abs(b-center_y) <= kmax;
     [fold,~,Pold] = rfft(squeeze(data(center_x,center_y,:)),fs);
-    
+
     P = zeros(size(f));
-    for j = 1:length(window_vectors)
+    parfor j = 1:length(window_vectors)
         P = P + get_3d_spectrum(data(:,:,window_vectors{j}),k_mask,k_filter,Lx,fs);
     end
     P = P/length(window_vectors);
@@ -44,7 +47,7 @@ function [f,P,V,fold,Pold] = nf_spatial_filter(nf,p)
     
     %P = P*100;
     %keyboard
-    return
+    %return
     
     %close all
     figure
@@ -52,7 +55,7 @@ function [f,P,V,fold,Pold] = nf_spatial_filter(nf,p)
     %loglog(f,P);
     xlabel('Frequency (Hz)');
     ylabel('Power (arbitrary)');
-    set(gca,'XLim',[1 45]);
+    %set(gca,'XLim',[1 45]);
         
     if nargin >= 2
         [f2,P2] = analytic_spectrum(p,1);
@@ -67,32 +70,32 @@ function P = get_3d_spectrum(data,k_mask,k_filter,Lx,fs)
     win(1,1,:) = hamming(size(data,3));
     %data = bsxfun(@times,data,win);
     output = fftshift(fftn(data));
+    %output = fft(data,[],3);
+    
+    %output = ifft(output,[],1);
+    %output = ifft(output,[],2);
+    
+
+    %output = output/size(data,3);
     output = output./numel(data);
     
-    % Convert to power, and filter
+    % Convert to power density
     output = abs(output).^2;
-    % Convert to energy
-    
-
-    output = output * Lx/(2*pi) * Lx/(2*pi) * size(data,3) / fs;
-    
-    %keyboard
-    
-    %output = output*0.001;
-    output = bsxfun(@times,output,k_mask);
-    %output = bsxfun(@times,output,k_filter);
-    
-    df = 1/(size(data,3)*fs);
+    df = fs/(size(data,3));
     dk = 2*pi/Lx;
-
-    %output = output;
-    %output = output / Lx*(2*pi) / Lx*(2*pi); % Summation over modes means we DO NOT need this correction factor
-    %output = output / (fs/size(data,3));
-
+    output = output / df / dk / dk;
+    output = output*dk*dk;
+    
+    % Apply spatial filtering
+    output = bsxfun(@times,output,k_mask);
+    output = bsxfun(@times,output,k_filter);
+    
+    
+    % Calculate power spectrum
     P = squeeze(sum(sum(output,1),2));
     P = ifftshift(P);
     P = 2*P(1:size(data,3)/2+1);
-    mean(P(:))
+
     %[P2,f2] = pwelch(data(11,11,:),[],[],[],200);
     %mean(P2)
     % Todo: exclude zero and nyquist frequency parts from this multiplication
