@@ -16,8 +16,8 @@ function [f,s,P] = rfft(y,fs,NFFT)
     if nargin < 3
         NFFT = 2^nextpow2(length(y)); % Next power of 2 from length of y
     end
-    
-    y = detrend(y,'constant'); % Remove constant offset and discontinuity at endpoints
+    NFFT = length(y);
+    %y = detrend(y,'constant'); % Remove constant offset and discontinuity at endpoints
     
     s = fft(y,NFFT)/(length(y)); % Correctly normalized Fourier components c_k
     %s = ifft(y,NFFT); % Correctly normalized Fourier components c_k with positive exponent in the FFT
