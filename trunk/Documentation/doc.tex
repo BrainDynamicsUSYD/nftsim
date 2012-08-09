@@ -613,8 +613,53 @@ or a shorthand to plot all fields and nodes is
 All these commands launches \type{gnuplot} plotting sessions.
 
 \subsubsection{Matlab}
+A number of Matlab functions are provided to make it easy to manipulate NeuroField data from within Matlab. The functions are generally self-documenting with comments at the start of the file.
 
-\pagebreak
+Essentially, an output file from NeuroField is read into a \type{nf} struct object in Matlab which simply contains all of the output from NeuroField in memory for easy access. Here is an example of a \type{nf} object:
+\begin{lstlisting}
+     fields: {'Propag.1.phi'  'Propag.3.phi'}
+      nodes: {[1]  [1]}
+       data: {[300000x1 double]  [300000x1 double]}
+       time: [300000x1 double]
+     deltat: 1.0000e-04
+    npoints: 300000
+\end{lstlisting}
+\begin{itemize}
+\item \type{fields} stores a record of which traces from NeuroField are present in the output file
+\item \type{nodes} is a cell with the same size as \type{fields}, and records for each field present, the number of the node in the output. 
+\item \type{data} is a matrix storing the actual values of the traces
+\item \type{time} is a vector of time values, so that you can plot any of the data traces directly again \type{nf.time}
+\item \type{deltat} stores the temporal sampling rate
+\item \type{npoints} stores the total number of points in the output. The total duration is \type{nf.deltat*nf.npoints} (or  \type{nf.time(end)})
+\end{itemize}
+
+There are two ways to create the \type{nf} object. You can read the output file directly after executing NeuroField elsewhere
+
+\begin{lstlisting}
+nf = nf_read('neurofield.output')
+\end{lstlisting}
+
+or you can use the \type{nf\_run} helper script to run the config file using NeuroField and automatically parse the output
+
+\begin{lstlisting}
+nf = nf_run('neurofield.conf')
+\end{lstlisting}
+
+Using \type{nf\_run} means you will need to add NeuroField to your shell search path.
+
+Several helper files are provided to manipulate the \type{nf} object. The three most important helpers are \type{nf\_extract} and \type{nf\_grid}. Often you want to extract a particular field from the \type{nf} object, for example, to examine the output from \type{Propag.3.phi}. To do this directly with the \type{nf} object, you would need to check the \type{fields} variable to find the index of the trace you wanted, and then extract it from the \type{data} field. In the previous example, \type{Propag.3.phi} is the second trace. These expressions are identical:
+\begin{lstlisting}
+trace = nf.data{2};
+trace = nf_extract(nf,'Propag.3.phi')
+\end{lstlisting}
+\type{nf\_extract} quickly becomes useful when there are many different fields. It is not case sensitive (so \type{propag.3.phi} works as well). You can also specify using additional arguments to extract only a portion of the time series, and also to select a subset of nodes. Finally, you can also provide multiple traces to concatenate them into a single matrix. For example,
+\begin{lstlisting}
+trace = nf_extract(nf,'propag.1.phi,propag.3.phi');
+\end{lstlisting}
+will create a 300000x2 matrix with both of the traces. 
+
+Finally, if you run NeuroField with multiple nodes, it typically solves the system of equations on a square grid. Therefore, if you have output for notes 1-400, this corresponds to a 20x20 grid. \type{nf\_grid} allows you to request a trace from the \type{nf} object and have it reshaped into a square grid. This lets you easily make surface plots of the data, or perform tasks that are spatially dependent. 
+
 \section{Developers guide}
 
 \type{NeuroField} is coded in \type{ANSI C++}. This guide assumes readers have basic knowledge of \type{C++}, including object oriented programming, usage of template, and standard template library (STL). %An \type{OpenMP} version of the code exists for running on multicore machines. It scales sublinearly.
