@@ -67,7 +67,7 @@ function [f,P,V,fold,Pold] = nf_spatial_filter(nf,p)
 
 function P = get_3d_spectrum(data,k_mask,k_filter,Lx,fs)
     %data = data - mean(data(:));
-    win(1,1,:) = hamming(size(data,3));
+    %win(1,1,:) = hamming(size(data,3));
     %data = bsxfun(@times,data,win);
     output = fftshift(fftn(data));
     %output = fft(data,[],3);
@@ -88,17 +88,13 @@ function P = get_3d_spectrum(data,k_mask,k_filter,Lx,fs)
     
     % Apply spatial filtering
     output = bsxfun(@times,output,k_mask);
-    output = bsxfun(@times,output,k_filter);
-    
+    %output = bsxfun(@times,output,k_filter);
     
     % Calculate power spectrum
     P = squeeze(sum(sum(output,1),2));
     P = ifftshift(P);
-    P = 2*P(1:size(data,3)/2+1);
-
-    %[P2,f2] = pwelch(data(11,11,:),[],[],[],200);
-    %mean(P2)
-    % Todo: exclude zero and nyquist frequency parts from this multiplication
+    P = P(1:size(data,3)/2+1);
+    P(2:size(data,3)/2) = 2*P(2:size(data,3)/2); % Double the frequency components at nonzero and non-Nyquist frequencies
 
 function V = get_smooth_V(data,k_mask,k_filter,center_x,center_y)
     data = data - mean(data(:));

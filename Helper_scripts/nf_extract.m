@@ -1,4 +1,4 @@
-function data = nf_extract(nf,traces,t,nodes)
+function [data,t2] = nf_extract(nf,traces,t,nodes)
     % output = nf_extract(nf,traces,t,nodes)
     % Given an nf object, return data from certain traces at particular times
     % nf - nf object
@@ -10,6 +10,10 @@ function data = nf_extract(nf,traces,t,nodes)
     % Romesh Abeysuriya 120322
     
     % If no nodes are provided, output all nodes
+    if ~strcmp(class(nf),'struct') || ~isfield(nf,'data')
+        error('The first argument to nf_extract must be an nf object');
+    end
+    
     if nargin < 4 || isempty(nodes)
         nodes = nf.nodes{1}; 
     elseif ~all(ismember(nodes,nf.nodes{1}))
@@ -20,6 +24,8 @@ function data = nf_extract(nf,traces,t,nodes)
     if nargin < 3 || isempty(t) 
         start = 1;
         stop = length(nf.time);
+    elseif t(1) == 0
+        error(sprintf('You cannot request t=0 because the first time specified is %f',nf.deltat));
     else
         % Find the start/stop times
         % These commands return an empty matrix if requested times are out of range
@@ -31,7 +37,7 @@ function data = nf_extract(nf,traces,t,nodes)
         end
         
         if isempty(start) || isempty(stop)
-            error('Requested time(s) are out of range');
+            error(sprintf('Requested time(s) are out of range. Times must be between %f and %f',nf.time(1),nf.time(end)));
         end
     end
     
@@ -58,5 +64,6 @@ function data = nf_extract(nf,traces,t,nodes)
         [~,node_index] = ismember(nodes,nf.nodes{j});
         data = [data nf.data{outputs(j)}(start:stop,node_index)];
     end
+    t2 = nf.time(start:stop);
     
     

@@ -65,8 +65,8 @@ function varargout = nf_eirs(p,file_id,nonlinear,int_time,grid_edge,grid_output,
     %noiseamp = noise_multiplier*sqrt(grid_edge*grid_edge*p.phin^2/deltat/2/2/pi/2/pz
     %deltat
     %deltax
-    noiseamp = 0.01*sqrt(p.phin^2/deltat/deltax/deltax*4*pi^2)/2/pi;
-    noiseamp = sqrt(p.phin^2/deltat/deltax/deltax*4*pi^2/2)
+    %noiseamp = 0.01*sqrt(p.phin^2/deltat/deltax/deltax*4*pi^2)/2/pi;
+    noiseamp = sqrt(4*pi^3*p.phin^2/deltat/deltax/deltax)
     %return
     
     % WRITE THE FILE
