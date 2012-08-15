@@ -24,9 +24,28 @@ function [data,t2] = nf_extract(nf,traces,t,nodes)
     if nargin < 3 || isempty(t) 
         start = 1;
         stop = length(nf.time);
-    elseif t(1) == 0
-        error(sprintf('You cannot request t=0 because the first time specified is %f',nf.deltat));
     else
+        % Check boundaries
+        if length(t) > 1
+
+            if t(1) > t(2)
+                fprintf('Start time larger than stop time- reversing order\n'); 
+                t = t([2,1]);
+            end
+            
+
+            if t(2) > nf.time(end)
+                fprintf('End time out of bounds- adjusting %.1fs to %.1fs\n',t(2),nf.time(end)); 
+                t(2) = nf.time(end);
+            end
+            
+        end
+        
+        if t(1) < nf.time(1)
+            fprintf('Start time out of bounds- adjusting %.1fs to %.1fs\n',t(1),nf.time(1)); 
+            t(1) = nf.time(1);
+        end
+
         % Find the start/stop times
         % These commands return an empty matrix if requested times are out of range
         start = find(nf.time<=t(1),1,'last'); 
@@ -37,7 +56,7 @@ function [data,t2] = nf_extract(nf,traces,t,nodes)
         end
         
         if isempty(start) || isempty(stop)
-            error(sprintf('Requested time(s) are out of range. Times must be between %f and %f',nf.time(1),nf.time(end)));
+            error('Could not find times');
         end
     end
     
