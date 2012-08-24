@@ -16,7 +16,10 @@ class STP : public virtual Couple
     double phi_r;
     double t_Xi;
     double Xi_max;
-    STPde( int nodes, double deltat ) : DE(nodes,deltat,4) {}
+    //vector<double> dXidphi;
+    //vector<double> Xionphi;
+    //vector<double> dphidt;
+    STPde( int nodes, double deltat ) : DE(nodes,deltat,5) {}
     virtual ~STPde(void) {}
     void rhs( const vector<double>& y, vector<double>& dydt );
   };

@@ -45,6 +45,25 @@ public:
   virtual void step(void) = 0;
 };
 
+class Euler : public Integrator
+{
+  Euler(void);
+  Euler(Euler&);
+  void operator=(Euler&);
+protected:
+  vector<double> dydt;
+public:
+  Euler( DE& de ) : Integrator(de), dydt(de.n) {}
+  virtual ~Euler(void) {}
+  virtual void step(void) {
+    for( int j=0; j<de.nodes; j++ ) {
+      de.rhs( de.variables[j], dydt );
+      for( int i=0; i<de.n; i++ )
+        de.variables[i][j] += dydt[i]*de.deltat;
+    }
+  }
+};
+
 class RK4 : public Integrator
 {
   RK4(void);
