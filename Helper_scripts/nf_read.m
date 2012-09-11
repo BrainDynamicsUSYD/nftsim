@@ -3,6 +3,11 @@ function nf = nf_read(fname);
     % Read a neurofield output file and return a neurofield output struct
     % for use with other helper scripts
     % Romesh Abeysuriya 120322
+    
+    if ~exist(fname,'file')
+        fname = [fname,'.output'];
+    end
+    
     fid = fopen(fname,'r'); % Open file for read access
     headers = fgetl(fid);
     nodes = fgetl(fid);

@@ -1,5 +1,7 @@
 #include <cmath>
 #include "timeseries.h"
+#include <iostream>
+//#define M_PI 3.14159265359
 
 void Timeseries::init( Configf& configf )
 {
@@ -22,11 +24,15 @@ void Timeseries::init( Configf& configf )
   else if( mode=="Const" ) { // constant noise
     configf.param("Mean",mean);
   }
-  else if( mode=="White" ) { // white noise
+  else if( mode=="White") { // white noise
     configf.optional("Ranseed",seed);
     configf.param("Amplitude",amp);
     random = new Random(seed);
     configf.param("Mean",mean);
+    
+    if(configf.optional("Deltax",deltax)) // If deltax is given, rescale amp
+        amp = sqrt(4*pow(M_PI,3)*pow(amp,2)/deltat/deltax/deltax);
+    
   }
   else if( mode=="CoherentWhite" ) { // spatially homogeneous white noise
     configf.optional("Ranseed",seed);
@@ -182,7 +188,7 @@ void Timeseries::fire( vector<double>& Q ) const
     for( int i=0; i<nodes; i++ )
       Q[i] += mean;
   }
-  else if( mode=="White" ) { // white noise
+  else if( mode=="White") { // white noise
     if( t<0 ) return;
     // For efficiency reasons random.gaussian random deviates are usually
     // calculated in pairs. This is the reason for slightly more complex
@@ -228,7 +234,7 @@ void Timeseries::fire( vector<double>& Q ) const
   else if( mode=="Sine" ) { // sinusoidal stimuli
     if( t<0 ) return;
     for( int i=0; i<nodes; i++ )
-      Q[i] += amp*sin(6.2831853F*freq*t);
+      Q[i] += amp*sin(2*M_PI*freq*t);
   }
   else if( mode=="Gaussian" ) { // spatial and temporal gaussian
     if( t<0 ) return;
@@ -238,7 +244,7 @@ void Timeseries::fire( vector<double>& Q ) const
     int size = 0;
     float arg = 0;	
     float temporal = 0;
-    temporal = (1 / (sqrt(6.2831853)*pdur)) * 
+    temporal = (1 / (sqrt(2*M_PI)*pdur)) * 
       (exp(-0.5*pow((t-tpeak), 2) / (pdur*pdur))); //3.1415926F
     size = (int) sqrt(nodes);
     // Do spatial Gausian here....
@@ -264,27 +270,27 @@ void Timeseries::fire( vector<double>& Q ) const
   else if( mode=="GaussPulse" ) { // gaussian pulse
     if( t<0 ) return;
     for( int i=0; i<nodes; i++ ) {
-      Q[i] += amp * (1 / (sqrt(6.2831853)*pdur)) *
+      Q[i] += amp * (1 / (sqrt(2*M_PI)*pdur)) *
           (exp(-0.5*pow((t-tpeak), 2) / (pdur*pdur)));
     }
   }
   else if( mode=="MNS" ) { // median nerve stimulation
     if( 0<t && t<=xspread )
       for( int i=0; i<nodes; i++ )
-        Q[i] += -xcent*sin(3.141592654*t/xspread);
+        Q[i] += -xcent*sin(M_PI*t/xspread);
     else if( xspread<t && t<xspread+yspread )
       for( int i=0; i<nodes; i++ )
-        Q[i] += ycent*sin(3.141592654*(t-xspread)/yspread);
+        Q[i] += ycent*sin(M_PI*(t-xspread)/yspread);
   }
   else if( mode=="PAS" ) { // paired associative stimulation
     int width = sqrt(nodes);
     if( deltax==0 ) {
       if( 0<t && t<=xspread )
         for( int i=0; i<nodes; i++ )
-          Q[i] += -xcent*sin(3.141592654*t/xspread);
+          Q[i] += -xcent*sin(M_PI*t/xspread);
       else if( xspread<t && t<xspread+yspread )
         for( int i=0; i<nodes; i++ )
-          Q[i] += ycent*sin(3.141592654*(t-xspread)/yspread);
+          Q[i] += ycent*sin(M_PI*(t-xspread)/yspread);
       if( xspread/2+tpeak<t && t<=xspread/2+tpeak+5e-4 )
         for( int i=0; i<nodes; i++ )
           Q[i] += amp;
@@ -293,11 +299,11 @@ void Timeseries::fire( vector<double>& Q ) const
       if( 0<t && t<=xspread )
         for(int i=width/2-deltax; i<width/2+deltax; i++)
           for(int j=width/2-deltax; j<width/2+deltax; j++)
-            Q[i+j*width] += -xcent*sin(3.141592654*t/xspread);
+            Q[i+j*width] += -xcent*sin(M_PI*t/xspread);
       else if( xspread<t && t<xspread+yspread )
         for(int i=width/2-deltax; i<width/2+deltax; i++)
           for(int j=width/2-deltax; j<width/2+deltax; j++)
-            Q[i+j*width] += ycent*sin(3.141592654*(t-xspread)/yspread);
+            Q[i+j*width] += ycent*sin(M_PI*(t-xspread)/yspread);
       if( xspread/2+tpeak<t && t<=xspread/2+tpeak+4e-3 )
         for(int i=width/2-deltax+1; i<width/2+deltax; i++)
           for(int j=width/2-deltax+1; j<width/2+deltax; j++)
@@ -306,11 +312,11 @@ void Timeseries::fire( vector<double>& Q ) const
       if( 0<t && t<=xspread )
         for(int i=width/2-deltax+1; i<width/2+deltax; i++)
           for(int j=width/2-deltax+1; j<width/2+deltax; j++)
-            Q[i+j*width] += -xcent*sin(3.141592654*t/xspread);
+            Q[i+j*width] += -xcent*sin(M_PI*t/xspread);
       else if( xspread<t && t<xspread+yspread )
         for(int i=width/2-deltax+1; i<width/2+deltax; i++)
           for(int j=width/2-deltax+1; j<width/2+deltax; j++)
-            Q[i+j*width] += ycent*sin(3.141592654*(t-xspread)/yspread);
+            Q[i+j*width] += ycent*sin(M_PI*(t-xspread)/yspread);
       if( xspread/2+tpeak<t && t<=xspread/2+tpeak+4e-3 )
         for(int i=width/2-deltax+1; i<width/2+deltax; i++)
           for(int j=width/2-deltax+1; j<width/2+deltax; j++)

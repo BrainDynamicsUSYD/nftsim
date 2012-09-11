@@ -20,7 +20,7 @@ function varargout = nf_eirs(p,file_id,nonlinear,int_time,grid_edge,grid_output,
     end
     
     if nargin < 6 || isempty(grid_output)
-        grid_output = 0;
+        grid_output = 1;
     end
     
     if nargin < 5 || isempty(grid_edge)
@@ -113,10 +113,11 @@ function varargout = nf_eirs(p,file_id,nonlinear,int_time,grid_edge,grid_output,
     end
 
     fprintf(fid,'Population 5: Stimulation\n');
-    fprintf(fid,'Stimulus: Mode: White - Onset: 0 Amplitude: %f Mean: 1\n',noiseamp);
+    %fprintf(fid,'Stimulus: Mode: White - Onset: 0 Amplitude: %f Mean: 1\n',noiseamp);
+    fprintf(fid,'Stimulus: Mode: White - Onset: 0 Amplitude: %f Mean: 1 Deltax: %f\n',p.phin,deltax);
+    
     fprintf(fid,'\n');
     
-    deltax = 0.1*deltax;
     fprintf(fid,'Propag 1: Wave - Tau: %f Deltax: %f Range: %f gamma: %f\n',0,deltax,p.re,p.gammae);
     fprintf(fid,'Propag 2: Map - Tau: %f\n',0);   
     fprintf(fid,'Propag 3: Map - Tau: %f\n',p.taues);   
@@ -145,7 +146,7 @@ function varargout = nf_eirs(p,file_id,nonlinear,int_time,grid_edge,grid_output,
         %fprintf(fid,'Output: Node: All Start: 0 Interval: .004\n');
         fprintf(fid,'Output: Node: All Start: 0\n');
         fprintf(fid,'Population:\n');
-        fprintf(fid,'Propag: 1\n');
+        fprintf(fid,'Propag: 1 3\n');
         fprintf(fid,'Couple:\n');
     else
         fprintf(fid,'Output: Node: %d\n',round((grid_edge^2 + grid_edge)/2));
@@ -164,20 +165,8 @@ function varargout = nf_eirs(p,file_id,nonlinear,int_time,grid_edge,grid_output,
     
     nf = nf_run(sprintf('neurofield_%i',file_id));
 
-    if nargout > 0
-        varargout{1} = nf;
-    end
-    if nargout > 1
-        varargout{2} = f;
-    end
-    if nargout > 2
-        varargout{3} = P;
-    end
-    
-    return
-    
     if grid_output == 0 % If outputting only one node, include the time series
-        data = nf_extract(nf,{'propag.1.phi','propag.2.phi','propag.10.phi','propag.8.phi'});
+        data = nf_extract(nf,'propag.1.phi,propag.2.phi,propag.10.phi,propag.8.phi');
 	    % Plot the time series
 	    figure
 	    subplot(1,2,1);
@@ -199,8 +188,8 @@ function varargout = nf_eirs(p,file_id,nonlinear,int_time,grid_edge,grid_output,
         set(gca,'XLim',[1 45]);
     else
         figure
-        [f,Pnew,Pold] = nf_spatial_filter(nf,p);
-        loglog(f,Pnew,'b');
+        [f,P] = nf_spatial_spectrum(nf,'propag.1.phi',4,8,1); % kmax=4, 8 segments, spatial filtering=1
+        loglog(f,P,'b');
         xlabel('Frequency (Hz)');
         ylabel('Power (arbitrary)');
         title(sprintf('X: %.3f Y: %.3f Z: %.3f',p.xyz(1),p.xyz(2),p.xyz(3)));
@@ -226,4 +215,15 @@ function varargout = nf_eirs(p,file_id,nonlinear,int_time,grid_edge,grid_output,
     if grid_output == 0
         set(gcf,'Position',get(gcf,'Position')+[-1 0 1 0].*get(gcf,'Position')); % Double the horizontal size of the figure
     end
+    
+    if nargout > 0
+        varargout{1} = nf;
+    end
+    if nargout > 1
+        varargout{2} = f;
+    end
+    if nargout > 2
+        varargout{3} = P;
+    end
+    
 
