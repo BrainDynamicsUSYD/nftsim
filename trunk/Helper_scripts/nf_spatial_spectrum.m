@@ -1,113 +1,102 @@
-function [f,P,V,fold,Pold] = nf_spatial_filter(nf,p)
-    % [f,P,V,P_old,filtered_nf] = nf_spatial_filter(nf,traces)
+function [f,P] = nf_spatial_spectrum(nf,p,kmax,n_windows,spatial_filter)
+    % [f,P] = nf_spatial_spectrum(nf,p,kmax,n_windows,spatial_filter)
     % Given a grid of voltages, applies a spatial filter   
     % Returns the spatially summed spectrum
-    % And a time series from the centre node 
-    % Method from http://www.mathworks.com/matlabcentral/answers/13896-fftshift-of-an-image
+    %  nf - nf object
+    %  p - trace to use  
+    % ALTERNATE USAGE
+    %  nf -> a 3D matrix of values
+    %  p - sampling rate
+    % 
+    % kmax is the number of k-values to use. This should match with whatever 
+    %       kmax is set to in the analytic summation
+    % n_windows is how many segments to average the time series over
+    %       this gives extra spectral clarity at the expense of lower frequency resolution
+    % spatial_filter - set to 1 to enable the usual exponential k filter
+    %
+    % Note that the spatial filter is meaningless if the spatial size Lx is set incorrectly
     
     % First, work out the sampling rate in pixels per metre
     if strcmp(class(nf),'struct')
-        data = nf_grid(nf,'propag.1.phi');
+        if nargin < 2 || isempty(p)
+            p = 'propag.1.phi'; % Try the phi propagator first
+        end
+        data = nf_grid(nf,p);
         fs = 1/nf.deltat;
     else
         data = nf;
         fs = p;
     end
-        
-    n_windows = 8; % like pwelch, 8 windows, 50% overlap
+    
+    if nargin < 5 || isempty(spatial_filter)
+        spatial_filter = 0; % Don't spatially filter by default
+    end
+    
+    if nargin < 4 || isempty(n_windows)
+        n_windows = 1; % Don't perform any windowing at all
+    end
+    
+    if nargin < 3 || isempty(kmax)
+        kmax = []; % Include all spatial frequencies
+    end
+    
+    % Calculate the temporal windows
     frac_overlap = 0.5;
     window_vectors = get_window_vectors(size(data,3),n_windows,frac_overlap); 
-    %window_vectors = {}; window_vectors{1} = 1:size(data,3);
-    
+
     % Calculate the Fourier f and k values
     Lx = 0.5; % linear cortex dimension (m)
     Ly = 0.5;
-    %Lx = Lx/10;
-    %Ly = Ly/10;
     [f,Kx,Ky] = calculate_fft_components(data(:,:,window_vectors{1}),fs,Lx,Ly);
-
-    k0 = 10; % spatial filter constant (m^-1)
     k2 = Kx.^2+Ky.^2; % Matrix of k-squared values
-    k_filter = exp(-k2./(k0^2));
     
-    kmax = 4; % k values to include
-    [center_x,center_y] = find(k2 == 0); % Get the centre entry
-    [a,b] = meshgrid(1:size(k2,1),1:size(k2,2));
-    k_mask = abs(a-center_x) <= kmax & abs(b-center_y) <= kmax;
-    [fold,~,Pold] = rfft(squeeze(data(center_x,center_y,:)),fs);
+    if isempty(kmax)
+        k_mask = ones(size(k2));
+    else
+        [center_x,center_y] = find(k2 == 0); % Get the centre entry
+        [a,b] = meshgrid(1:size(k2,1),1:size(k2,2));
+        k_mask = abs(a-center_x) <= kmax & abs(b-center_y) <= kmax;
+    end
+    
+    if spatial_filter
+        % Calculate the value of k^2 at each grid node for spatial filtering
+        k0 = 10; % spatial filter constant (m^-1)
+        k_filter = exp(-k2./(k0^2));
+    else
+        k_filter = ones(size(k2));
+    end
 
     P = zeros(size(f));
-    parfor j = 1:length(window_vectors)
+    for j = 1:length(window_vectors)
         P = P + get_3d_spectrum(data(:,:,window_vectors{j}),k_mask,k_filter,Lx,fs);
     end
     P = P/length(window_vectors);
-    
-    %V = get_smooth_V(data,k_mask,k_filter,center_x,center_y);
-    V = [];
-    
-    %P = P*100;
-    %keyboard
-    %return
-    
-    %close all
-    figure
-    loglog(f,P,fold,Pold)
-    %loglog(f,P);
-    xlabel('Frequency (Hz)');
-    ylabel('Power (arbitrary)');
-    %set(gca,'XLim',[1 45]);
-        
-    if nargin >= 2
-        [f2,P2] = analytic_spectrum(p,1);
-        hold on
-        loglog(f2,P2,'r');
-        legend('Filtered','Original NF','Analytic');
-        title(sprintf('X: %.3f Y: %.3f Z: %.3f',p.xyz(1),p.xyz(2),p.xyz(3)));
-    end
-
+   
 function P = get_3d_spectrum(data,k_mask,k_filter,Lx,fs)
-    %data = data - mean(data(:));
+    %data = data-mean(data(:));
     %win(1,1,:) = hamming(size(data,3));
     %data = bsxfun(@times,data,win);
     output = fftshift(fftn(data));
-    %output = fft(data,[],3);
-    
-    %output = ifft(output,[],1);
-    %output = ifft(output,[],2);
-    
-
-    %output = output/size(data,3);
     output = output./numel(data);
     
     % Convert to power density
     output = abs(output).^2;
     df = fs/(size(data,3));
     dk = 2*pi/Lx;
-    output = output / df / dk / dk;
-    output = output*dk*dk;
+    
+    %output = output / df / dk / dk; % Get power density in all 3 dimensions
+    %output = output*dk*dk; % Since we are summing over k, multiply by dk
+    output = output / df; % Take a shortcut and omit converting to density in the spatial direction
     
     % Apply spatial filtering
     output = bsxfun(@times,output,k_mask);
-    %output = bsxfun(@times,output,k_filter);
+    output = bsxfun(@times,output,k_filter);
     
     % Calculate power spectrum
-    P = squeeze(sum(sum(output,1),2));
+    P = squeeze(sum(sum(output,1),2)); % A sum is OK here because we have multiplied by dk (so don't need trapz)
     P = ifftshift(P);
     P = P(1:size(data,3)/2+1);
     P(2:size(data,3)/2) = 2*P(2:size(data,3)/2); % Double the frequency components at nonzero and non-Nyquist frequencies
-
-function V = get_smooth_V(data,k_mask,k_filter,center_x,center_y)
-    data = data - mean(data(:));
-    win(1,1,:) = hamming(size(data,3));
-    data = bsxfun(@times,data,win);
-    output = fftshift(fftn(data));
-    output = output./numel(data);
-    
-    output = bsxfun(@times,output,k_mask);
-    %output = bsxfun(@times,output,k_filter);
-    
-    output = ifftn(ifftshift(output));
-    V = squeeze(output(center_x,center_y,:));
 
 function [f,Kx,Ky] = calculate_fft_components(v,fs,Lx,Ly)
     % Given the 3D matrix of phi, the temporal sampling rate, and the grid dimensions

@@ -26,6 +26,7 @@ class Timeseries : public NF
   double tperiod; // Period of between pulse repetitions
   double mean; //Mean timeseries
   double deltax; //Grid spacing for 2D timeseries
+  double noise_deltax;
   double xcent; //x coordinate of Gaussian centre
   double ycent; //y coordinate of Gaussian centre
   double xspread; //Spread of Gaussian in x direction

@@ -5,9 +5,12 @@ function nf = nf_run(fname)
     % - read fname.conf
     % - output fname.dump and fname.output
     % - parse fname.output and return an NF struct
+    % 
+    % If the user specifies fname = 'fname.conf' the '.conf' will be removed
     % Requires 'neurofield' to be on the path
     
     tic;
+    fname = strrep(fname,'.conf','');
     fprintf(1,'Executing NeuroField: %s.conf...',fname);
     [status] = system(sprintf('neurofield -i %s.conf -d %s.dump -o %s.output',fname,fname,fname));
     if status ~= 0
