@@ -1,4 +1,4 @@
-function varargout = nf_eirs(p,file_id,nonlinear,int_time,grid_edge,grid_output,fs)
+function varargout = nf_eirs(p,file_id,nonlinear,int_time,grid_edge,fs)
     % Run NeuroField on an EIRS point struct
     % [nf,f,P] = nf_eirs(p,file_id,nonlinear,int_time,grid_edge,grid_output)
     % - Accepts a point struct as input
@@ -13,18 +13,24 @@ function varargout = nf_eirs(p,file_id,nonlinear,int_time,grid_edge,grid_output,
     %
     % WARNING- THIS FUNCTION ASSUMES SAME ALPHA AND BETA FOR ALL CONNECTIONS
     % WARNING- THIS FUNCTION ASSUMES 'neurofield' IS ON THE SHELL PATH
-    % WARNING- Depends on nf_read, nf_extract, pwelch_spectrum, and optionally 
+    % WARNING- Depends on nf_read, nf_extract, and nf_grid 
+    %
+    % Defaults are- 20x20 grid for 0.5m x 0.5m cortex
+    %               for 30s at 10000Hz with nonlinearity
+    % 
+    % PLOTTING BEHAVIOUR
+    % If no output arguments are specified >>nf_eirs() then nothing will be
+    % produced. The end result is to produce a NeuroField output file
+    % If nf = nf_eirs() then nf_read will be called but no plot produced
+    % If [nf,f,P] = nf_eirs() then nf_spatial_spectrum will also be called
+    % and a plot produced
     
-    if nargin < 7 || isempty(fs)
+    if nargin < 6 || isempty(fs)
         fs = 10000;
     end
     
-    if nargin < 6 || isempty(grid_output)
-        grid_output = 1;
-    end
-    
     if nargin < 5 || isempty(grid_edge)
-        grid_edge = 12;
+        grid_edge = 20;
     end
 
     if nargin < 4 || isempty(int_time)
@@ -47,9 +53,8 @@ function varargout = nf_eirs(p,file_id,nonlinear,int_time,grid_edge,grid_output,
 	
 	% Initialize numerical solver parameters
     deltat = 1/fs;
-    Lx = 0.5; % Cortex linear dimension (metres)
+    Lx = 0.5; % Cortex linear dimension (meters)
 	deltax= Lx/grid_edge; % Assume square grid
-	%deltax = 0.0035;
 	
 	% CFL condition
 	v = p.gammae*p.re; % Axonal velocity
@@ -57,18 +62,44 @@ function varargout = nf_eirs(p,file_id,nonlinear,int_time,grid_edge,grid_output,
 		fprintf(2,'Modifying deltat to satisfy CFL stability condition\n')
 		deltat = deltax/v * 0.9;
 		fprintf(1,'Deltat = %f\n',deltat);
-	end
-	
+    end
     
-    %noiseamp = noise_multiplier*sqrt(p.phin^2/deltat/2)
-    %noiseamp = 0.7071
-    %noiseamp = noise_multiplier*sqrt(grid_edge*grid_edge*p.phin^2/deltat/2/2/pi/2/pz
-    %deltat
-    %deltax
-    %noiseamp = 0.01*sqrt(p.phin^2/deltat/deltax/deltax*4*pi^2)/2/pi;
-    noiseamp = sqrt(4*pi^3*p.phin^2/deltat/deltax/deltax)
-    %return
+    % Write the file
+    write_nf(file_id,p,int_time,deltat,deltax,grid_edge,nonlinear);
+
+    if nargout > 0
+        varargout{1} = nf_run(sprintf('neurofield_%i',file_id));
+    else
+        nf_run(sprintf('neurofield_%i',file_id));
+    end
     
+    if nargout > 1
+        [f,P] = nf_spatial_spectrum(varargout{1},'propag.1.phi',4,8,1); % kmax=4, 8 segments, spatial filtering=1
+        varargout{2} = f;
+        varargout{3} = P;
+        figure
+        loglog(f,P,'b');
+        xlabel('Frequency (Hz)');
+        ylabel('Power (arbitrary)');
+        title(sprintf('X: %.3f Y: %.3f Z: %.3f',p.xyz(1),p.xyz(2),p.xyz(3)));
+        set(gca,'XLim',[1 45]);
+
+        try
+            [f_a,P_a] = analytic_spectrum(p,1);
+            P_a = interp1(f_a,P_a,f,'pchip','extrap');
+            hold on
+            loglog(f,P_a,'r--');
+            if grid_output
+                legend('Spatially filtered','Analytic');
+            else
+                legend('neurofield','Analytic');
+            end
+            hold off
+        end
+    end
+end
+
+function write_nf(file_id,p,int_time,deltat,deltax,grid_edge,nonlinear)
     % WRITE THE FILE
     fid = fopen(sprintf('neurofield_%i.conf',file_id),'w');
     
@@ -78,7 +109,6 @@ function varargout = nf_eirs(p,file_id,nonlinear,int_time,grid_edge,grid_output,
     fprintf(fid,'Glutamate dynamics - fast Lambda: 0 fast Glu: 0\n');
     fprintf(fid,'                     slow Lambda: 0 slow Glu: 0\n');
                      
-
     fprintf(fid,'\n');
             
     fprintf(fid,'    Connection matrix:\n');
@@ -113,7 +143,6 @@ function varargout = nf_eirs(p,file_id,nonlinear,int_time,grid_edge,grid_output,
     end
 
     fprintf(fid,'Population 5: Stimulation\n');
-    %fprintf(fid,'Stimulus: Mode: White - Onset: 0 Amplitude: %f Mean: 1\n',noiseamp);
     fprintf(fid,'Stimulus: Mode: White - Onset: 0 Amplitude: %f Mean: 1 Deltax: %f\n',p.phin,deltax);
     
     fprintf(fid,'\n');
@@ -142,88 +171,12 @@ function varargout = nf_eirs(p,file_id,nonlinear,int_time,grid_edge,grid_output,
     fprintf(fid,'Couple 11: Map - nu: %f\n',p.nus(6)); % sn
     fprintf(fid,'\n');
 
-    if grid_output
-        %fprintf(fid,'Output: Node: All Start: 0 Interval: .004\n');
-        fprintf(fid,'Output: Node: All Start: 0\n');
-        fprintf(fid,'Population:\n');
-        fprintf(fid,'Propag: 1 3\n');
-        fprintf(fid,'Couple:\n');
-    else
-        fprintf(fid,'Output: Node: %d\n',round((grid_edge^2 + grid_edge)/2));
-        fprintf(fid,'Population:\n');
-        fprintf(fid,'Propag: 1 2 10 8\n');
-        fprintf(fid,'Couple:\n');
-    end
-    
+    fprintf(fid,'Output: Node: All Start: 0\n');
+    fprintf(fid,'Population:\n');
+    fprintf(fid,'Propag: 1 3\n');
+    fprintf(fid,'Couple:\n');
+
     fclose(fid);
     
-    if grid_output
-        fprintf(1,'Integration time: %d s sampled at %d Hz\nGrid size %dx%d, outputting all nodes\nSimulating...',int_time,1/deltat,grid_edge,grid_edge);
-    else
-        fprintf(1,'Integration time: %d s sampled at %d Hz\nGrid size %dx%d, outputting node %d\nSimulating...',int_time,1/deltat,grid_edge,grid_edge,round((grid_edge^2 + grid_edge)/2));
-    end
-    
-    nf = nf_run(sprintf('neurofield_%i',file_id));
-
-    if grid_output == 0 % If outputting only one node, include the time series
-        data = nf_extract(nf,'propag.1.phi,propag.2.phi,propag.10.phi,propag.8.phi');
-	    % Plot the time series
-	    figure
-	    subplot(1,2,1);
-	    plot(nf.time,data);
-	    legend('Excitatory','Inhibitory','Reticular','Relay')
-        title('Neurofield time series')
-        xlabel('Time (s)');
-        ylabel('Phi (s^{-1})');
-    
-        % Get the power spectrum from a single node
-        decimation_factor = 1;
-        v = decimate(detrend(data(:,1)),decimation_factor);
-        [f,P] = pwelch_spectrum(v,1/nf.deltat/decimation_factor);
-        subplot(1,2,2);
-        loglog(f,P,'b');
-        xlabel('Frequency (Hz)');
-        ylabel('Power (arbitrary)');
-        title(sprintf('X: %.3f Y: %.3f Z: %.3f',p.xyz(1),p.xyz(2),p.xyz(3)));
-        set(gca,'XLim',[1 45]);
-    else
-        figure
-        [f,P] = nf_spatial_spectrum(nf,'propag.1.phi',4,8,1); % kmax=4, 8 segments, spatial filtering=1
-        loglog(f,P,'b');
-        xlabel('Frequency (Hz)');
-        ylabel('Power (arbitrary)');
-        title(sprintf('X: %.3f Y: %.3f Z: %.3f',p.xyz(1),p.xyz(2),p.xyz(3)));
-        set(gca,'XLim',[1 45]);
-        %hold on
-        %loglog(f,Pold,'g');
-        %hold off
-    end
-    
-    try
-        [f_a,P_a] = analytic_spectrum(p,1);
-        P_a = interp1(f_a,P_a,f,'pchip','extrap');
-        hold on
-        loglog(f,P_a,'r--');
-        if grid_output
-            legend('Spatially filtered','Analytic');
-        else
-            legend('neurofield','Analytic');
-        end
-        hold off
-    end
-    
-    if grid_output == 0
-        set(gcf,'Position',get(gcf,'Position')+[-1 0 1 0].*get(gcf,'Position')); % Double the horizontal size of the figure
-    end
-    
-    if nargout > 0
-        varargout{1} = nf;
-    end
-    if nargout > 1
-        varargout{2} = f;
-    end
-    if nargout > 2
-        varargout{3} = P;
-    end
-    
-
+    fprintf(1,'Integration time: %d s sampled at %d Hz\nGrid size %dx%d, outputting all nodes\nSimulating...',int_time,1/deltat,grid_edge,grid_edge);
+end

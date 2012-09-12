@@ -15,6 +15,8 @@ function [f,P] = nf_spatial_spectrum(nf,p,kmax,n_windows,spatial_filter)
     % spatial_filter - set to 1 to enable the usual exponential k filter
     %
     % Note that the spatial filter is meaningless if the spatial size Lx is set incorrectly
+    % SPECIAL USAGE- If only 1 NF argument is provided, then assume 8
+    % windows, kmax=4 and spatial filtering
     
     % First, work out the sampling rate in pixels per metre
     if strcmp(class(nf),'struct')
@@ -28,16 +30,22 @@ function [f,P] = nf_spatial_spectrum(nf,p,kmax,n_windows,spatial_filter)
         fs = p;
     end
     
-    if nargin < 5 || isempty(spatial_filter)
-        spatial_filter = 0; % Don't spatially filter by default
-    end
-    
-    if nargin < 4 || isempty(n_windows)
-        n_windows = 1; % Don't perform any windowing at all
-    end
-    
-    if nargin < 3 || isempty(kmax)
-        kmax = []; % Include all spatial frequencies
+    if nargin == 1
+        spatial_filter = 1;
+        n_windows = 8;
+        kmax = 4;
+    else
+        if nargin < 5 || isempty(spatial_filter)
+            spatial_filter = 0; % Don't spatially filter by default
+        end
+
+        if nargin < 4 || isempty(n_windows)
+            n_windows = 1; % Don't perform any windowing at all
+        end
+
+        if nargin < 3 || isempty(kmax)
+            kmax = []; % Include all spatial frequencies
+        end
     end
     
     % Calculate the temporal windows

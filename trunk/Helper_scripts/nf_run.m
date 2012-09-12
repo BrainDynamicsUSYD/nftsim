@@ -14,10 +14,12 @@ function nf = nf_run(fname)
     fprintf(1,'Executing NeuroField: %s.conf...',fname);
     [status] = system(sprintf('neurofield -i %s.conf -d %s.dump -o %s.output',fname,fname,fname));
     if status ~= 0
-        error('An error occurred when running Neurofield');
+        error('An error occurred when running Neurofield. Make sure ''neurofield'' is on your path');
     end
     fprintf(1,'took %.3f seconds\n',toc);
     
-    fprintf(1,'Parsing output...');
-    nf = nf_read(sprintf('%s.output',fname));   
-    fprintf(1,'done!\n');
+    if nargout > 0
+        fprintf(1,'Parsing output...');
+        nf = nf_read(sprintf('%s.output',fname));   
+        fprintf(1,'done!\n');
+    end
