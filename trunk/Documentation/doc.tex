@@ -34,22 +34,24 @@ breakatwhitespace=tru,	% sets if automatic breaks should only happen at whitespa
 }
 \newcommand{\type}[1]{ {\small\small\tt #1} }
 
+\newcommand{\NF}[0]{ \type{NeuroField}}
+
 \begin{document}
 
 \maketitle
-\abstract{\type{NeuroField} is a computer program (accompanied with helper scripts) that solves the neural field model of Robinson et al. This document is a reference of \type{NeuroField} for both users and developers.}
+\abstract{\NF is a computer program (accompanied with helper scripts) that solves the neural field model of Robinson et al. This document is a reference of \NF for both users and developers.}
 \tableofcontents
 
 \pagebreak
 \section{Users guide}
 
-\type{NeuroField}, written by Peter Drysdale with contributions from James Roberts, Felix Fung and Romesh Abeysuriya, is a \type{C++} program (accompanied with helper scripts) that solves the neural field model of Robinson et al.:
+\NF, written by Peter Drysdale with contributions from James Roberts, Felix Fung and Romesh Abeysuriya, is a \type{C++} program (accompanied with helper scripts) that solves the neural field model of Robinson et al.:
 \begin{align*}
 	D_{ab}V_{ab}(\mathbf{r},t) &= \nu_{ab}\phi_{ab}(\mathbf{r},t),\\
 			Q_a(\mathbf{r},t) &= S_a \big[\sum_b V_{ab}(\mathbf{r},t) \big],\\
 	\mathcal{D}_{ab}\phi_{ab}(\mathbf{r},t) &= Q_b(\mathbf{r},t-\tau_{ab}).
 \end{align*}
-\type{NeuroField} generalizes the neural field theory by allowing users to:
+\NF generalizes the neural field theory by allowing users to:
 \begin{enumerate}
 	\item Specify an arbitrary number of populations and connections between populations;
 	\item Specify the parameters for any objects, including populations, dendritic responses, firing responses, propagators, synapses, and stimulus pattern;
@@ -58,7 +60,7 @@ breakatwhitespace=tru,	% sets if automatic breaks should only happen at whitespa
 	\item Use different firing responses, i.e. change \(S_a\).
 \end{enumerate}
 
-This users guide covers the obtaining and setting up (Sec.~\ref{sec:obtain}), configuring (Sec.~\ref{sec:config}) and launching of \type{NeuroField} (Sec.~\ref{sec:launch}).
+This users guide covers the obtaining and setting up (Sec.~\ref{sec:obtain}), configuring (Sec.~\ref{sec:config}) and launching of \NF (Sec.~\ref{sec:launch}).
 
 Within this documentation, specific terminology as appeared in the computer is in \type{typwriter font}. Commands are denoted as
 \begin{lstlisting}
@@ -68,14 +70,14 @@ Command to put in computer
 \subsection{Obtaining and setting up NeuroField}
 \label{sec:obtain}
 
-The code for \type{NeuroField} is managed by a version control system called \type{subversion}, which provides a single place to obtain the latest copy of the code, as well as storing the entire history of the program. To access the repository, contact Romesh Abeysuriya (\url{r.abeysuriya@physics.usyd.edu.au}) or Sue Yang (\url{xue.yang@sydney.edu.au}).
+The code for \NF is managed by a version control system called \type{subversion}, which provides a single place to obtain the latest copy of the code, as well as storing the entire history of the program. To access the repository, contact Romesh Abeysuriya (\url{r.abeysuriya@physics.usyd.edu.au}) or Sue Yang (\url{xue.yang@sydney.edu.au}).
 
-To set up the latest version of \type{NeuroField} in the current directory within the School of Physics, execute
+To set up the latest version of \NF in the current directory within the School of Physics, execute
 \begin{lstlisting}
 svn co http://silliac.physics.usyd.edu.au:18080/svn/neurofield/trunk neurofield --username=<your SVN username>
 \end{lstlisting}
 
-You can also use these steps to obtain a copy of \type{NeuroField} from a computer which is not connected to the School of Physics network (eg. personal laptops at home). You will require a version of \type{SVN} higher than 1.6. However, you will need to have your IP address/network domain registered for remote access, please contact Sebastian Juraszek to request this (ideally by logging a helpdesk request at \url{http://physics.usyd.edu.au/itsupport} - only available within the School of Physics). 
+You can also use these steps to obtain a copy of \NF from a computer which is not connected to the School of Physics network (eg. personal laptops at home). You will require a version of \type{SVN} higher than 1.6. However, you may need to have your IP address/network domain registered for remote access. If you are unable to access the repository remotely, please contact Sebastian Juraszek to request this (ideally by logging a helpdesk request at \url{http://physics.usyd.edu.au/itsupport} - only available within the School of Physics). 
 
 \subsection{Directory layout}
 
@@ -83,20 +85,20 @@ The canonical directory is \type{neurofield/trunk}. Within this directory, the u
 
 \begin{tabular}{l p{12cm}}
 \type{*.h, *.cpp}& C++ source code.\\
-\type{Configs/}& Stores configuration files for \type{NeuroField}.\\
+\type{Configs/}& Stores configuration files for \NF.\\
 \type{Documentation/}& \type{Documentation/doc.tex} is the \LaTeX\ file for generating this document. Running \type{make doc} produces this document in \type{pdf} format, and \type{make clean} removes all the files \LaTeX\ produced (excluding \type{doc.pdf} and \type{doc.tex}).\\
 \type{Helper\_scripts/}& Stores helper scripts, including plotting routines and other post-processing of data procedures.\\
-\type{Launch}& A launcher script that handles compilation and launching of \type{NeuroField}, capable of automating parameter sweeps and submitting jobs in \type{yossarian}.\\
+\type{Launch}& A launcher script that handles compilation and launching of \NF, capable of automating parameter sweeps and submitting jobs in \type{yossarian}.\\
 \type{Output/}& When using the launcher script to sweep over parameters, the launcher script produces this directory, which stores all output files \type{neurofield.*} in independent subdirectories.\\
-\type{Release/}& All compiled files, including the object files and the \type{NeuroField} executable is stored here. This directory will be deleted by \type{make clean}, so user data should not be stored here.\\
+\type{Release/}& All compiled files, including the object files and the \NF executable is stored here. This directory will be deleted by \type{make clean}, so user data should not be stored here.\\
 \type{Test/}& Directory for unit testing and is irrelevant for users.\\
-\type{neurofield.*}& Output files generated by \type{NeuroField}.
+\type{neurofield.*}& Output files generated by \NF.
 \end{tabular}
 
 \subsection{Launching NeuroField}
 \label{sec:launch}
 
-The \type{Launch} script is used to compile and launch the \type{NeuroField} program. Users are encouraged to use this script rather than calling the \type{NeuroField} executable directly. To launch \type{NeuroField}, do:
+The \type{Launch} script is used to compile and launch the \NF program. Users are encouraged to use this script rather than calling the \NF executable directly. To launch \NF, do:
 
 \begin{enumerate}
 
@@ -110,9 +112,9 @@ For example,
 \begin{lstlisting}
 ./Launch Configs/cortex.conf
 \end{lstlisting}
-The output will be stored in the current directory.\footnote{Tips for \type{vi} users: you can launch \type{NeuroField} in \type{vi} with \type{:!./Launch \% [optional params]} }
+The output will be stored in the current directory.\footnote{Tips for \type{vi} users: you can launch \NF in \type{vi} with \type{:!./Launch \% [optional params]} }
 
-\item To ease parameter exploration, the launcher script is capable of doing parameter sweeps. The launcher script supports sweeping over an arbitrary number of objects, parameters and runs. For example, if the user wants to launch \type{NeuroField} 3 times, with parameters varying according to the following table,
+\item To ease parameter exploration, the launcher script is capable of doing parameter sweeps. The launcher script supports sweeping over an arbitrary number of objects, parameters and runs. For example, if the user wants to launch \NF 3 times, with parameters varying according to the following table,
 
 \begin{tabular}{l l r r r}
 Object(s)&Parameter&1\textsuperscript{st} run&2\textsuperscript{nd} run&3\textsuperscript{rd} run\\
@@ -130,12 +132,12 @@ In terms of syntactic restriction, each row in the table can have an arbitary nu
 
 \item Switches are accepted for choosing options. To turn on the switches, put them in the argument list to the launcher script. The following switches are accepted:
 	\begin{description}
-	\item[\type{--restart}] run \type{NeuroField} in restart mode.
+	\item[\type{--restart}] run \NF in restart mode.
 	\item[\type{-d}] specify an alternative dump file name.
 	\item[\type{-i}] specify an configuration file name.
 	\item[\type{-o}] specify an output dump file name.
 	\item[\type{-s}] specify silent mode, so that no dump files are generated. This switch supercedes the \type{-d} switch.
-	\item[\type{-v}] specify verbose mode, so that \type{NeuroField} outputs every timestep.
+	\item[\type{-v}] specify verbose mode, so that \NF outputs every timestep.
 	\item[\type{-h}] prints out a list of these switches.
 	\end{description}
 
@@ -162,13 +164,13 @@ which produces \type{./Document\-ation.pdf}. \type{make clean} deletes the files
 %\begin{lstlisting}
 %make
 %\end{lstlisting}
-%The \type{NeuroField} executable and object files are produced in \type{./Release/}.
+%The \NF executable and object files are produced in \type{./Release/}.
 
 %The \type{./Release/NeuroField} executable runs in one of two modes, initial run mode and restart mode.
 
-%(1) In inital run mode \type{NeuroField} takes input from an \type{neurofield.conf} file initializes the simulation and then takes specified number of integration steps writing out a \type{neurofield.output} file and a \type{neurofield.dump} file for restarting.  The input filename can be changed on the command line by using the switch \type{-i newinputfilename}. Similarly the name of the output filename which defaults to \type{neurofield.output} can be changed via the switch \type{-o newoutputfilename}. The dump file which defaults to \type{neurofiled.dump} can be changed via \type{-d newdumpfilename}.
+%(1) In inital run mode \NF takes input from an \type{neurofield.conf} file initializes the simulation and then takes specified number of integration steps writing out a \type{neurofield.output} file and a \type{neurofield.dump} file for restarting.  The input filename can be changed on the command line by using the switch \type{-i newinputfilename}. Similarly the name of the output filename which defaults to \type{neurofield.output} can be changed via the switch \type{-o newoutputfilename}. The dump file which defaults to \type{neurofiled.dump} can be changed via \type{-d newdumpfilename}.
 
-%(2) The code dumps sufficient data about parameter values to restart. In restart mode the simulation will continue where it left off. Restart mode is accessed by running the code with command \type{Neurofield restart} rather than the usual \type{Neurofield} command on the command line. In order to run the code in restart mode it is necessary to take the \type{neurofield.dump} file which was produced from the run which will be restarted to be renamed as the new \type{neurofield.conf} file. The new \type{neurofield.conf} file should also be changed to reflect the new number of timesteps etc.  Note:- A restarting \type{neurofield.conf} file has different content to an initial run \type{neurofield.conf} and can only be used in restart mode.
+%(2) The code dumps sufficient data about parameter values to restart. In restart mode the simulation will continue where it left off. Restart mode is accessed by running the code with command \type{Neurofield restart} rather than the usual \NF command on the command line. In order to run the code in restart mode it is necessary to take the \type{neurofield.dump} file which was produced from the run which will be restarted to be renamed as the new \type{neurofield.conf} file. The new \type{neurofield.conf} file should also be changed to reflect the new number of timesteps etc.  Note:- A restarting \type{neurofield.conf} file has different content to an initial run \type{neurofield.conf} and can only be used in restart mode.
 
 %A brief description is given by
 %\begin{lstlisting}
@@ -178,7 +180,7 @@ which produces \type{./Document\-ation.pdf}. \type{make clean} deletes the files
 \subsection{Writing a configuration file}
 \label{sec:config}
 
-\type{NeuroField} allows an arbitrary number of populations and connections between them, with all objects taking arbitrary parameter values. These are all configured via a configuration file. This section documents the specifications of configuration files, where we use \type{Configs/cortex.conf} as an illustrative example.
+\NF allows an arbitrary number of populations and connections between them, with all objects taking arbitrary parameter values. These are all configured via a configuration file. This section documents the specifications of configuration files, where we use \type{Configs/cortex.conf} as an illustrative example.
 
 To write a configuration file, a user can follow these steps:
 \begin{enumerate}
@@ -299,8 +301,8 @@ In general, the entries in configuration file follow the following rules:
 
 \begin{enumerate}
 	\item Each entry generally follows a \type{Pamameter: value} pattern.
-	\item Most parameters are essential. Failure to provide these parameters would result in \type{NeuroField} terminating with an error message. A minority of the parameters are optional.
-	\item The ordering of the parameters are important. Wrong parameter ordering results in \type{NeuroField} terminating with an error message.
+	\item Most parameters are essential. Failure to provide these parameters would result in \NF terminating with an error message. A minority of the parameters are optional.
+	\item The ordering of the parameters are important. Wrong parameter ordering results in \NF terminating with an error message.
 	\item With the exception of keywords, the configuration file is white-space independent, e.g., there can be either no spaces, many spaces, or new lines between the colon of \type{Integration steps: 10000} and 10000, but you cannot have two spaces between \type{Integration} and \type{steps}. For consistency and readability, users are encouraged to follow the existing white space scheme when reasonable.
 	\item Tip for \type{vi} users: \type{./helper\_scripts/neurofield.vim} implements syntax highlighting for configuration files in \type{vi}. See comments within for installation instructions.
 \end{enumerate}
@@ -313,7 +315,7 @@ In general, the entries in configuration file follow the following rules:
 \begin{lstlisting}
 Purely cortical model with excitatory and inhibitory neurons
 \end{lstlisting}
-Any text before the entry, \type{Integration steps:}, is disregarded by \type{NeuroField} and serves as comment.
+Any text before the entry, \type{Integration steps:}, is disregarded by \NF and serves as comment.
 \item
 \begin{lstlisting}
 Time: 10 Deltat: .0001 
@@ -363,14 +365,14 @@ This section contains population information sections. There are two types of ne
 
 \item[Stimulus populations]\ \\
 
-\type{NeuroField} identifies stimulus populations as populations which have no dendrites, i.e., the row for that population contains no nonzero elements.  Each stimulus population information section is as follows.
+\NF identifies stimulus populations as populations which have no dendrites, i.e., the row for that population contains no nonzero elements.  Each stimulus population information section is as follows.
 \begin{itemize}
 	\item \begin{lstlisting}
 Population 1: Stimulation
 	\end{lstlisting}
 	The identifier \type{Population 1} is required for cross-checking.
 
-	The descriptor \type{Stimulation} is not parsed by \type{NeuroField}, but it is strongly recommended for human referencing.
+	The descriptor \type{Stimulation} is not parsed by \NF, but it is strongly recommended for human referencing.
 	\item
 	\begin{lstlisting}
 Stimulus: Mode: Const - Onset: 0.0002
@@ -389,9 +391,16 @@ Mode: Const - Amplitude: 20 Width: 0.02 Repetition: 1
 	White noise stimulus pattern (spatially uncorrelated), where Ranseed
 is an optional parameter for the random number generator's initial seed defaulting to -98716872:
 	\begin{lstlisting}
-Mode: White - Ranseed:-98716872 Amplitude: 20
+Mode: White - Ranseed:-98716872 Amplitude: 20 Mean: 1
 	\end{lstlisting}
 
+    One issue with white noise is that the power spectrum of white noise depends on both the temporal sampling rate and the grid size. For a thorough discussion of this phenomenon, see \type{noise.pdf} in the \NF documentation. Therefore, if you change the sampling rate, the number of nodes, or \type{Deltax} then the power spectrum will change in amplitude. If you know what amplitude the noise should have in Fourier space e.g. $\phi_n(\omega) = 1 \times 10^{-5}$ then specifying \type{Deltax} in the stimulus population will tell \NF that the amplitude has been specified in Fourier space, and it will be rescaled accordingly. In this representation, the mean of the distribution corresponds to the zero-frequency component of the noise. 
+    
+	\begin{lstlisting}
+Mode: White - Amplitude: 0.00001 Mean: 1 Deltax: 0.025
+	\end{lstlisting}
+	
+	
 	A ``special" stimulus pattern is the composite pattern. At onset (encouraged to be set to zero), it superimposes an arbitrary number of stimuli:
 	\begin{lstlisting}
 Stimulus: Mode: Composite - Onset: 0 Number of Stimuli: 2
@@ -411,7 +420,7 @@ Population 3: Excitory neurons
 	\end{lstlisting}
 	The identifier \type{Population 3} is required for cross-checking.
 	
-	The descriptor \type{Excitatory neurons} is not parsed by \type{NeuroField}, but it is strongly recommended for human referencing.
+	The descriptor \type{Excitatory neurons} is not parsed by \NF, but it is strongly recommended for human referencing.
 	\item
 	\begin{lstlisting}
 Q: 8.87145
@@ -436,7 +445,7 @@ Dendrite 1: V: Steady alpha: 83 beta: 769
 	\end{lstlisting}
 	The identifier \type{Dendrite 1}, where 1 is the presynaptic connection index, is required for cross-checking. Users should find that these indices are simply ordered as 1, 2, 3, 4, ...
 	
-	\type{V} is the initial depolarization contribution from presynaptic activity. It can be a numerical value with units of V, or set at \type{Steady}, so that \type{NeuroField} calculates the initial value by \(V_{ab}=\nu_{ab}\phi_{ab}\).
+	\type{V} is the initial depolarization contribution from presynaptic activity. It can be a numerical value with units of V, or set at \type{Steady}, so that \NF calculates the initial value by \(V_{ab}=\nu_{ab}\phi_{ab}\).
 
 	\type{alpha} and \type{beta} are the parameters for the depolarization response.
 	\end{itemize}
@@ -548,7 +557,7 @@ CaDP - nu: .4086e-4 Nu_max: .1e-3 Threshold: 1e-4 LTD: 5e-2 LTP: 8e-2 B: 2e4 N: 
 \subsubsection{Output data}
 \label{sec:output}
 
-\type{NeuroField} can output a time series for arbitrary fields on any particular nodes, into an output file named \type{neurofield.output} by default. A user chooses which objects to output, and on which nodes to output on. The object then outputs the field(s). For example, populations output $V_a$, propagators output $\phi_{ab}$, and couples output $\nu_{ab}$, and they may output additional fields if appropriate.
+\NF can output a time series for arbitrary fields on any particular nodes, into an output file named \type{neurofield.output} by default. A user chooses which objects to output, and on which nodes to output on. The object then outputs the field(s). For example, populations output $V_a$, propagators output $\phi_{ab}$, and couples output $\nu_{ab}$, and they may output additional fields if appropriate.
 
 An example output is
 \begin{lstlisting}
@@ -569,7 +578,7 @@ Output: Node: 1 Start: 0 Interval: .0002
 
 	\type{Start} is the time in seconds to start outputting. If this is not given, then output starts at time 0.
 
-	\type{Interval} is the time interval in seconds between each output. If this is not given, then \type{NeuroField} outputs every timestep.
+	\type{Interval} is the time interval in seconds between each output. If this is not given, then \NF outputs every timestep.
 
 \item
 	\begin{lstlisting}
@@ -583,13 +592,13 @@ Couple: 2
 
 \subsection{Postprocessing}
 
-\type{NeuroField} produces 3 files:
+\NF produces 3 files:
 
 \begin{tabular}{l p{11.5cm}}
 \type{neurofield.conf}& When using the launcher script, this file is created to store the running configuration file.\\
-\type{neurofield.dump}& \type{NeuroField} dumps data here when it terminates. This file can be used in restart mode to continue simulation. Creation of this file can be suppressed by a \type{-s} switch.\\
+\type{neurofield.dump}& \NF dumps data here when it terminates. This file can be used in restart mode to continue simulation. Creation of this file can be suppressed by a \type{-s} switch.\\
 \type{neurofield.output}& The result of the simulation is stored here for postprocessing.\\
-\type{neurofield.pbs}& If \type{NeuroField} is run in \type{yossarian}, then this file stores the output of the queueing system.
+\type{neurofield.pbs}& If \NF is run in \type{yossarian}, then this file stores the output of the queueing system.
 \end{tabular}
 
 When the launcher script runs with only one set of parameters, all output files are also in the present working directory. However, if the launcher script sweeps over parameters, each parameter set has its own subdirectory inside \type{Output/}, and each set of \type{neurofield.*} files are stored in its subdirectory.
@@ -662,9 +671,9 @@ Finally, if you run NeuroField with multiple nodes, it typically solves the syst
 
 \section{Developers guide}
 
-\type{NeuroField} is coded in \type{ANSI C++}. This guide assumes readers have basic knowledge of \type{C++}, including object oriented programming, usage of template, and standard template library (STL). %An \type{OpenMP} version of the code exists for running on multicore machines. It scales sublinearly.
+\NF is coded in \type{ANSI C++}. This guide assumes readers have basic knowledge of \type{C++}, including object oriented programming, usage of template, and standard template library (STL). %An \type{OpenMP} version of the code exists for running on multicore machines. It scales sublinearly.
 
-\type{NeuroField} solves each equation within the Robinson et al. model with an object:
+\NF solves each equation within the Robinson et al. model with an object:
 \begin{align*}
 	D_{ab}V_{ab}(\mathbf{r},t) &= \nu_{ab}\phi_{ab}(\mathbf{r},t), & \mathrm{Dendrite}\\
 					  Q_a(\mathbf{r},t) &= S_a \big[\sum_b V_{ab}(\mathbf{r},t) \big], & \mathrm{QResponse}\\
@@ -742,7 +751,7 @@ Within the C++ source files, developers should stick to this conventions for con
 	\node[below of=propag,node distance=3em](tau){\type{Tau} $\ni \tau_{ab}$};
 	\draw(propag)--(tau);
 \end{tikzpicture}
-\caption{Schematic of the main class structures in \type{NeuroField}. Each line indicates that the bottom class is a member of the top class. The \type{a} $\ni b$ symbol indicates that the dynamical field $b(\mathbf{r},t)$ is a member of the class \type{a}. Inheritance structures are NOT illustrated.}
+\caption{Schematic of the main class structures in \NF. Each line indicates that the bottom class is a member of the top class. The \type{a} $\ni b$ symbol indicates that the dynamical field $b(\mathbf{r},t)$ is a member of the class \type{a}. Inheritance structures are NOT illustrated.}
 \label{fig:class}\end{center}\end{figure}
 
 %\begin{figure}[h!]\begin{center}\includegraphics[scale=.8]{class.pdf}\caption{}\end{center}\end{figure}
@@ -808,7 +817,7 @@ where \type{Object} and \type{field} should be appropriately named.
 
 \subsection{Writing a new class}
 
-In extending \type{NeuroField} it is likely new classes needs to be written. When doing this, it would be useful to keep in mind:
+In extending \NF it is likely new classes needs to be written. When doing this, it would be useful to keep in mind:
 \begin{enumerate}
 	\item When appropriate, the default constructor, copy constructor, and \type{operator=} should be made inaccessible by declaring them to be private.
 	\item If the configuration file is used, the \type{NF} class \textbf{MUST} be inherited.
