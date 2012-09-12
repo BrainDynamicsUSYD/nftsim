@@ -1,0 +1,1483 @@
+#LyX 2.0 created this file. For more info see http://www.lyx.org/
+\lyxformat 413
+\begin_document
+\begin_header
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman default
+\font_sans default
+\font_typewriter default
+\font_default_family sfdefault
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100
+\font_tt_scale 100
+
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_amsmath 1
+\use_esint 1
+\use_mhchem 1
+\use_mathdots 1
+\cite_engine basic
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\use_refstyle 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 3cm
+\topmargin 3cm
+\rightmargin 3cm
+\bottommargin 3cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\quotes_language english
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Standard
+Romesh Abeysuriya 7/8/12
+\end_layout
+
+\begin_layout Section
+Noise and Neurofield
+\end_layout
+
+\begin_layout Standard
+Correctly calculating the noise amplitude for NeuroField is critical when
+ comparing the power spectrum in NeuroField to analytic predictions.
+ In the analytic work, we work almost exclusively in Fourier space, and
+ use white noise with
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\phi_{n}(k,\omega)=C
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+where 
+\begin_inset Formula $C$
+\end_inset
+
+ is some value for the noise.
+ The zero frequency, spatially uniform component 
+\begin_inset Formula $\phi_{n}([0,0],0)=1$
+\end_inset
+
+ is typically used when solving the steady state equation.
+ The product 
+\begin_inset Formula $\nu_{sn}\phi_{n}$
+\end_inset
+
+ determines the amplitude of noise going into the system.
+ With 
+\begin_inset Formula $\nu_{sn}$
+\end_inset
+
+ on the order of mV, we find 
+\begin_inset Formula $\phi_{n}(k,\omega)$
+\end_inset
+
+ in the range of 
+\begin_inset Formula $1\times10^{-3}-1\times10^{-2}$
+\end_inset
+
+s
+\begin_inset Formula $^{-1}$
+\end_inset
+
+ for physiologically realistic power spectra (based on comparing spindle
+ harmonic amplitude in experimental data with the analytic nonlinear spectrum).
+\end_layout
+
+\begin_layout Standard
+In NeuroField, white noise is drawn from a Gaussian distribution at each
+ node, at each point in time.
+ There is a relationship between the mean and standard deviation of the
+ Gaussian distribution used in NeuroField, and between 
+\begin_inset Formula $\phi_{n}^{(0)}$
+\end_inset
+
+ and 
+\begin_inset Formula $\phi_{n}(k,\omega)$
+\end_inset
+
+ in the analytics.
+ The mean of the Gaussian distribution equals 
+\begin_inset Formula $\phi_{n}^{(0)}$
+\end_inset
+
+.
+ These notes are concerned with the other components 
+\begin_inset Formula $\phi_{n}(k,\omega)$
+\end_inset
+
+ which are related to the standard deviation of the NeuroField Gaussian
+ distribution.
+ 
+\end_layout
+
+\begin_layout Standard
+The two central issues to deal with are firstly correctly normalizing the
+ power spectrum, and secondly determining the correct noise amplitude in
+ the time domain.
+\end_layout
+
+\begin_layout Subsection
+1D FFT Normalization
+\end_layout
+
+\begin_layout Standard
+Correctly normalizing the output of the FFT routine in Matlab is critical
+ to determining the correct noise amplitude.
+ Correct normalization comes from Parseval's theorem which is essentially
+ a statement of conservation of energy.
+ For a 1D discrete signal 
+\begin_inset Formula $x(n)$
+\end_inset
+
+ with 
+\begin_inset Formula $N$
+\end_inset
+
+ elements , if the Fourier components 
+\begin_inset Formula $c_{k}$
+\end_inset
+
+ are defined
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+c_{k}=\frac{1}{N}\sum_{k=0}^{N}x(n)e^{-2\pi ikn/N}
+\]
+
+\end_inset
+
+then Parseval's theorem for a discrete, periodic signal (which is the case
+ when using a numerical FFT routine) refers to power: 
+\begin_inset Formula 
+\[
+\frac{1}{N}\sum_{n}|x(n)|^{2}=\sum_{k}|c_{k}|^{2}
+\]
+
+\end_inset
+
+with units [V
+\begin_inset Formula $^{2}$
+\end_inset
+
+].
+ Physically, the LHS of this equation is the mean of the signal squared,
+ which is the expectation value of the power.
+ The summation of the RHS is the power in the Fourier domain.
+ In Matlab, the built-in FFT function does not include the factor of 
+\begin_inset Formula $1/N$
+\end_inset
+
+ when calculating 
+\begin_inset Formula $c_{k}$
+\end_inset
+
+ and therefore this normalization is achieved by dividing by the output
+ of the FFT function by 
+\begin_inset Formula $N$
+\end_inset
+
+ 
+\begin_inset Formula 
+\[
+c_{k}=\frac{\textrm{FFT}(x)}{N}
+\]
+
+\end_inset
+
+The sum of the Fourier components as written above is a measure of the energy
+ per period contained in the signal.
+ The energy per period can be calculated from the power spectral density
+ (which is predicted analytically in the model) by integrating over frequency.
+ The power spectral density is therefore calculated from the Fourier components
+ by dividing them by the spectral bin size 
+\begin_inset Formula $\Delta f$
+\end_inset
+
+, which scales the power spectrum so that the integral provides the correct
+ energy.
+ 
+\end_layout
+
+\begin_layout Standard
+A simple test of this is the FFT of a sine wave.
+ Suppose time series is defined by
+\begin_inset Formula 
+\[
+x(t)=3\sin(10\times2\pi t)
+\]
+
+\end_inset
+
+which has an amplitude of 
+\begin_inset Formula $3$
+\end_inset
+
+V and a frequency of 
+\begin_inset Formula $10$
+\end_inset
+
+ Hz, with duration 
+\begin_inset Formula $T$
+\end_inset
+
+ and sampled at a rate 
+\begin_inset Formula $f_{s}$
+\end_inset
+
+.
+ The power per period is given by the average value of 
+\begin_inset Formula $|x(t)|^{2}$
+\end_inset
+
+over an integer number of cycles and is 4.5V
+\begin_inset Formula $^{2}$
+\end_inset
+
+.
+ Now, we expect that there should only be non-zero Fourier components at
+ 
+\begin_inset Formula $\pm10$
+\end_inset
+
+Hz, so we can deduce that these two components must each have a magnitude
+ of 1.5 V s so that 
+\begin_inset Formula $\sum|c_{k}|^{2}=4.5$
+\end_inset
+
+.
+ Finally, dividing the components by
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\Delta f=\frac{1}{T}
+\]
+
+\end_inset
+
+provides the power spectral density function (which we refer to as the power
+ spectrum)
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+P(f)=\frac{|c_{k}|^{2}}{\Delta f}
+\]
+
+\end_inset
+
+with units [V
+\begin_inset Formula $^{2}$
+\end_inset
+
+s], which when integrated from the range of frequencies 
+\begin_inset Formula $-f_{s}/2$
+\end_inset
+
+ to 
+\begin_inset Formula $f_{s}/2$
+\end_inset
+
+ has the correct energy of 4.5V
+\begin_inset Formula $^{2}$
+\end_inset
+
+.
+ This result is independent of the sampling rate 
+\begin_inset Formula $f_{s}$
+\end_inset
+
+, although this was numerically verified with 
+\begin_inset Formula $f_{s}=500$
+\end_inset
+
+ Hz.
+ The power spectrum includes the factor 
+\begin_inset Formula $1/\Delta f$
+\end_inset
+
+ so that energy is obtained by integration of 
+\begin_inset Formula $P(f)$
+\end_inset
+
+ rather than summation of 
+\begin_inset Formula $|c_{k}|^{2}$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+
+\shape italic
+\color red
+The end result of all this is that the output from Matlab's FFT function
+ needs to be scaled by a factor 
+\begin_inset Formula $1/N$
+\end_inset
+
+ in order to correctly calculate the Fourier components.
+ After this, no additional scaling factors are required to calculate the
+ power spectral density, only the frequency bin size which is uniquely defined
+ by the sampling rate and the number of samples.
+\end_layout
+
+\begin_layout Subsubsection
+1D noise and sampling rate
+\end_layout
+
+\begin_layout Standard
+We now consider the relationship between standard deviation and 
+\begin_inset Formula $\phi_{n}(\omega)$
+\end_inset
+
+, in one dimension.
+ The quantity that we require setting is the spectral power density 
+\begin_inset Formula $\phi_{n}^{2}(\omega)$
+\end_inset
+
+ which is the term that appears in the transfer function used to calculate
+ the power spectrum
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+P=\int\frac{d^{2}k}{(2\pi)^{2}}|T_{en}(\omega)|^{2}|\phi_{n}(\omega)|^{2}
+\]
+
+\end_inset
+
+
+\shape italic
+\color red
+A critical step in the following derivation is considering 
+\begin_inset Formula $|\phi_{n}^{2}(\omega)|$
+\end_inset
+
+ to be the power spectral density of the white noise.
+ 
+\end_layout
+
+\begin_layout Standard
+Analytically, the Fourier transform of a stationary random process does
+ not exist, so we obtain the power spectral density of the white noise using
+ the Wiener–Khinchin theorem which states that the power spectral density
+ of a stationary random process is equal to the Fourier transform of its
+ autocorrelation function.
+ However, this formulation assumes that the FFT has been defined
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+c_{k}=\sum_{k=0}^{N}x(n)e^{-2\pi ikn}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The autocorrelation of the signal 
+\begin_inset Formula $x(t)$
+\end_inset
+
+ is given by
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+r(\tau)=E[x(t)x^{*}(t-\tau)]
+\]
+
+\end_inset
+
+For real valued 
+\begin_inset Formula $x(t)$
+\end_inset
+
+ the complex conjugate 
+\begin_inset Formula $x^{*}(t)$
+\end_inset
+
+ is simply 
+\begin_inset Formula $x(t)$
+\end_inset
+
+ and white noise generated from a Gaussian distribution with standard deviation
+ 
+\begin_inset Formula $\sigma$
+\end_inset
+
+ can be defined by its autocorrelation function which is
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+r(\tau)=\begin{cases}
+\sigma^{2} & \tau=0\\
+0 & \tau\neq0
+\end{cases}
+\]
+
+\end_inset
+
+The autocorrelation is thus a delta function at the origin, and therefore
+ power spectral density will have a value 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+P(f)=\sigma^{2}
+\]
+
+\end_inset
+
+over all frequencies.
+ This theoretical result is of limited utility however, because it considers
+ the ideal case where there is no sampling, infinite bandwidth, and the
+ power spectrum has infinite energy when integrated over all frequencies.
+ We can consider the discrete case using Parseval's theorem, from which
+ we know that the sum of the discrete Fourier components 
+\begin_inset Formula $c_{k}$
+\end_inset
+
+ must equal the expectation value of the original function in the time domain.
+ For white noise, the expectation value is is 
+\begin_inset Formula $\sigma^{2}.$
+\end_inset
+
+ We therefore have the equality
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\sigma^{2}=\int_{-f_{s}/2}^{f_{s}/2}P(f)df
+\]
+
+\end_inset
+
+But because white noise has the same power spectral density for all 
+\begin_inset Formula $f$
+\end_inset
+
+, we obtain
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+P(f)=\phi_{n}^{2}(f)=\phi_{n,f}^{2}
+\]
+
+\end_inset
+
+the additional subscript 
+\begin_inset Formula $f$
+\end_inset
+
+ emphasising the difference between the constant-valued 
+\begin_inset Formula $\phi_{n}^{2}(\omega)$
+\end_inset
+
+ and 
+\begin_inset Formula $\phi_{n,f}^{2}(f)$
+\end_inset
+
+ which differ by a factor of 
+\begin_inset Formula $2\pi$
+\end_inset
+
+.
+ Note that the reason these must differ by a factor of 
+\begin_inset Formula $2\pi$
+\end_inset
+
+ is because the total energy in the power spectrum integrated over frequency
+ or angular frequency must be the same 
+\begin_inset Formula $\int P(\omega)d\omega=\int P(f)df$
+\end_inset
+
+.
+ 
+\shape italic
+\color red
+We are taking 
+\begin_inset Formula $\phi_{n,f}^{2}$
+\end_inset
+
+ to be the hypothetical constant value of 
+\begin_inset Formula $P(f)$
+\end_inset
+
+ that satisfies Parseval's theorem, which we then solve for, consistent
+ with the earlier claim that 
+\begin_inset Formula $|\phi_{n}^{2}(\omega)|$
+\end_inset
+
+ is the power spectral density of the noise.
+
+\shape default
+\color inherit
+ We thus obtain
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\sigma^{2} & =\int_{-f_{s}/2}^{f_{s}/2}\phi_{n,f}^{2}df\\
+ & =\sum_{N}\phi_{n,f}^{2}\Delta f\\
+ & =N\phi_{n,f}^{2}\Delta f\\
+ & =\phi_{n,f}^{2}f_{s}
+\end{align*}
+
+\end_inset
+
+with
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\Delta f=\frac{f_{s}}{N}
+\]
+
+\end_inset
+
+Thus, for a particular choice of standard deviation, the resulting power
+ spectral density depends on the sampling rate, such that the power (mean
+ squared voltage) of the noise is conserved.
+ This dependence arises because the bandwidth of the noise depends on the
+ sampling rate.
+ 
+\end_layout
+
+\begin_layout Standard
+Finally, we need to compute the value of 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\phi_{n,f}^{2}$
+\end_inset
+
+ 
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+based on 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\phi_{n}(\omega)$
+\end_inset
+
+.
+ 
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+When a plot of the power spectrum is made in Matlab, dividing by the transfer
+ function gives a constant value for the noise.
+ This constant value is 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\phi_{n}^{2}(\omega)$
+\end_inset
+
+
+\family default
+\series default
+\shape default
+\size default
+\emph default
+\bar default
+\strikeout default
+\uuline default
+\uwave default
+\noun default
+\color inherit
+ in the analytic solution.
+ This can be converted to 
+\begin_inset Formula $\phi_{n}^{2}(f)$
+\end_inset
+
+ by multiplying by 
+\begin_inset Formula $2\pi$
+\end_inset
+
+ (because 
+\begin_inset Formula $df=\frac{d\omega}{2\pi}$
+\end_inset
+
+).
+ Also, this value corresponds to the single sided power spectral density.
+ In NeuroField, we require the full power spectrum including negative frequency
+ components.
+ Therefore, the value of 
+\begin_inset Formula $\phi_{n}^{2}(f)$
+\end_inset
+
+ must be halved because each frequency component is doubled for the single
+ sided spectrum.
+ Thus, 
+\family roman
+\series medium
+\shape up
+\size normal
+\emph off
+\bar no
+\strikeout off
+\uuline off
+\uwave off
+\noun off
+\color none
+
+\begin_inset Formula $\phi_{n,f}^{2}=\pi\phi_{n}^{2}(\omega)$
+\end_inset
+
+ .
+ 
+\end_layout
+
+\begin_layout Standard
+Therefore, once we have chosen 
+\begin_inset Formula $\phi_{n}^{2}(\omega)$
+\end_inset
+
+ we are able to calculate the appropriate noise amplitude in NeuroField
+ using the relation
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\sigma & =\sqrt{f_{s}\pi\phi_{n}^{2}(\omega)}\\
+ & =\sqrt{\frac{\pi\phi_{n}^{2}(\omega)}{\Delta t}}
+\end{align*}
+
+\end_inset
+
+From this relation, we can see that
+\end_layout
+
+\begin_layout Itemize
+For the same sampling rate, increasing 
+\begin_inset Formula $\sigma$
+\end_inset
+
+ corresponds to increasing 
+\begin_inset Formula $\phi_{n}^{2}(\omega)$
+\end_inset
+
+ (as expected).
+\end_layout
+
+\begin_layout Itemize
+For the same value of 
+\begin_inset Formula $\sigma$
+\end_inset
+
+, if the sampling rate is increased, the corresponding value of 
+\begin_inset Formula $\phi_{n}^{2}(\omega)$
+\end_inset
+
+ is smaller.
+ This means that the power spectral density will be smaller, although the
+ total power will be the same, because there will be a larger bandwidth
+ in the Fourier transform.
+\end_layout
+
+\begin_layout Itemize
+Similarly, if the sampling rate is decreased, the corresponding value of
+ 
+\begin_inset Formula $\phi_{n}^{2}(\omega)$
+\end_inset
+
+ will be larger, and the power spectral density will have larger values
+ at each frequency bin.
+\end_layout
+
+\begin_layout Subsubsection
+Cortex only network
+\end_layout
+
+\begin_layout Standard
+Consider a network consisting of
+\end_layout
+
+\begin_layout Itemize
+Excitatory population of neurons with a wave propagator, 
+\begin_inset Formula $\gamma=116$
+\end_inset
+
+, 
+\begin_inset Formula $r_{e}=0.0086,$
+\end_inset
+
+ and dimensions 50 x 50cm 
+\end_layout
+
+\begin_layout Itemize
+An inhibitory population of neurons for which the local inhibition approximation
+ applies
+\end_layout
+
+\begin_layout Itemize
+A population of stimulus neurons directly connected to both cortical populations
+\end_layout
+
+\begin_layout Standard
+Connectivities are the same as in the EIRS model (
+\begin_inset Formula $\nu_{ee}>0,$
+\end_inset
+
+
+\begin_inset Formula $\nu_{ei}<0$
+\end_inset
+
+, matched to 
+\begin_inset Formula $\nu_{ie}$
+\end_inset
+
+and 
+\begin_inset Formula $\nu_{ii}$
+\end_inset
+
+ by the random connectivity assumption) and with 
+\begin_inset Formula $\alpha=83$
+\end_inset
+
+s
+\begin_inset Formula $^{-1}$
+\end_inset
+
+ and 
+\begin_inset Formula $\beta=770$
+\end_inset
+
+s
+\begin_inset Formula $^{-1}$
+\end_inset
+
+.
+ The steady state voltage is given by solutions to
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+V_{e}-(\nu_{ee}+\nu_{ei})S(V_{e})-\nu_{en}\phi_{n}^{(0)}=0
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and the power spectrum is calculated as in the EIRS case but with cortical
+ transfer function
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+T_{en}(k,\omega)=\frac{LG_{en}}{\left[\left(1-\frac{i\omega}{\gamma_{e}}\right)+k^{2}r_{e}^{2}\right]\left(1-LG_{ei}\right)-LG_{ee}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+L=\left(1-\frac{i\omega}{\alpha}\right)^{-1}\left(1-\frac{i\omega}{\beta}\right)^{-1}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+In the 1D case, 
+\begin_inset Formula $k=0$
+\end_inset
+
+ and we only use the single, spatially uniform mode.
+ The power spectrum is given by
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+P(\omega)=|T_{en}(0,\omega)|^{2}|\phi_{n}(\omega)|^{2}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+For 
+\begin_inset Formula $\phi_{n}(\omega)=1\times10^{-2}$
+\end_inset
+
+s
+\begin_inset Formula $^{-1}$
+\end_inset
+
+ we can calculate the corresponding standard deviation for the noise in
+ NeuroField using the previously derived correspondance.
+ At a sampling rate of 10000 Hz, we find
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\sigma=\sqrt{f_{s}\pi\phi_{n}^{2}(\omega)}=1.7725
+\]
+
+\end_inset
+
+Alternatively, if we sample at 1000 Hz, we find
+\begin_inset Formula 
+\[
+\sigma=\sqrt{f_{s}\pi\phi_{n}^{2}(\omega)}=0.5605
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The figure below compares the power spectrum calculated analytically with
+ 
+\begin_inset Formula $\phi_{n}(\omega)=1\times10^{-2}$
+\end_inset
+
+s
+\begin_inset Formula $^{-1}$
+\end_inset
+
+ compared with NeuroField using the above noise amplitud and sampling rates.
+ In this cortical network, the parameter values used were 
+\begin_inset Formula $\nu_{ee}=1$
+\end_inset
+
+ mVs, 
+\begin_inset Formula $\nu_{ei}=-1.5$
+\end_inset
+
+ mVs, and 
+\begin_inset Formula $\nu_{en}=1$
+\end_inset
+
+ mVs.
+ The FFT has been taken using only the scaling factors arising from Parseval's
+ theorem, and the results both predict the same power spectral density.
+ This verifies the method of calculating the noise amplitude from 
+\begin_inset Formula $\phi_{n}(\omega)$
+\end_inset
+
+ is correct in the 1D case.
+ A 15 point moving average smoothing has been used to reduce noise in the
+ spectrum.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename cortical_comparison.eps
+	lyxscale 20
+	width 80text%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection
+2D and 3D FFT normalization
+\end_layout
+
+\begin_layout Standard
+We now consider the generalization of FFT normalization into the 2D and
+ 3D cases, in the simple case of 2D and 3D sinusoids defined by
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+A(x,y)=3\sin(10\times2\pi x+5\times2\pi y)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+A(x,y,z)=3\sin(10\times2\pi x+5\times2\pi y+20\times2\pi z)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Note that the power in these signals is each still 4.5V
+\begin_inset Formula $^{2}$
+\end_inset
+
+, the mean value of the signal squared over the grid.
+ Consider the coordinates in each direction to be 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+x,y,z=0:0.002:0.9980
+\]
+
+\end_inset
+
+which corresponds to 
+\begin_inset Formula $T=1$
+\end_inset
+
+ s,
+\begin_inset Formula $N=500$
+\end_inset
+
+, 
+\begin_inset Formula $f_{s}=500$
+\end_inset
+
+ Hz.
+ Suppose we label the number of points in each direction of the grid as
+ 
+\begin_inset Formula $M,N,P$
+\end_inset
+
+ so that the 2D case has 
+\begin_inset Formula $M\times N$
+\end_inset
+
+ points, and the 3D case has 
+\begin_inset Formula $M\times N\times P$
+\end_inset
+
+ points (with 
+\begin_inset Formula $M,N,P=500$
+\end_inset
+
+ in this case).
+ To satisfy Parseval's theorem, we need to divide the Fourier components
+ by the number of points in the transform.
+ This provides
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\frac{1}{MN} & \sum_{m}\sum_{n}|A_{mn}|^{2}=\sum_{m}\sum_{n}|c_{mn}|^{2}=4.5\textrm{V}^{2}\\
+\frac{1}{MNP} & \sum_{m}\sum_{n}\sum_{p}|A_{mnp}|^{2}=\sum_{m}\sum_{n}\sum_{p}|c_{mnp}|^{2}=4.5\textrm{V}^{2}
+\end{align*}
+
+\end_inset
+
+which is a simple extension of the discrete form of Parseval's theorem used
+ in the 1D case- the mean squared power in the spatial and temporal domain
+ is equal to the sum of the squared magnitude of the Fourier components
+ in the Fourier domain, and the Fourier components are calculated in Matlab
+ by dividing by the total number of points in the transform.
+ 
+\end_layout
+
+\begin_layout Standard
+Now, the frequency resolution is given by 
+\begin_inset Formula $1/T$
+\end_inset
+
+ which in this case is 
+\begin_inset Formula $1$
+\end_inset
+
+ Hz.
+ As there is a single sine wave in the original signal, there will be only
+ two nonzero Fourier components, which have magnitude 
+\begin_inset Formula $1.5$
+\end_inset
+
+ V s for the same reason as discussed in the 1D case.
+ Similarly, if we examine the grid of Fourier components, the zero frequency
+ component corresponds to the first row and column of the matrix.
+ Therefore in Matlab, if we represent the matrix of Fourier components as
+ 
+\begin_inset Formula $S$
+\end_inset
+
+, the nonzero components are located at 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+|S_{2D}(1+5,1+10)| & =1.5\\
+|S_{3D}(1+5,1+10,1+21)| & =1.5
+\end{align*}
+
+\end_inset
+
+Interestingly, note that the 
+\begin_inset Formula $X$
+\end_inset
+
+ and 
+\begin_inset Formula $Y$
+\end_inset
+
+ coordinates are swapped- the rows of the matrix correspond to 
+\begin_inset Formula $Y$
+\end_inset
+
+ and the columns correspond to 
+\begin_inset Formula $X$
+\end_inset
+
+.
+ The conversion from Fourier components to power spectral density progresses
+ in exactly the same way as in 1D.
+ Because integration requires multiplying the power spectral density by
+ the bin size and summing, the power spectral density is retrived from the
+ Fourier components by dividing by the bin size.
+ The bin size can be specified in angular units or in regular units, as
+ long as a consistent choice is made for the variable being integrated over.
+ If the integration is performed immediately, and the power spectral density
+ is not explicitly examined, then it is sufficient to simply sum the Fourier
+ components.
+ 
+\end_layout
+
+\begin_layout Standard
+
+\shape italic
+\color red
+The end result is that Parseval's theorem is satisfied in Matlab as a direct
+ generalization of the 1D case.
+ The same as in 1D, the Fourier components need to be divided by the number
+ of points in the Fourier transform.
+ Similarly, to convert from Fourier components to power spectral density,
+ it is necessary to divide by the size of the bin in whichever dimension
+ integration will be performed in order to recover the correct power.
+\end_layout
+
+\begin_layout Subsubsection
+3D noise and sampling rate 
+\end_layout
+
+\begin_layout Standard
+The same problem exists when considering spatial sampling.
+ The size of the cortex is assumed to be 50 x 50cm, which is discretized
+ in NeuroField when solving the wave equation for propagation of 
+\begin_inset Formula $\phi_{e}$
+\end_inset
+
+ in the cortex.
+ NeuroField allows the user to pick the number of nodes in each direction
+ along the grid, subject to the constraints
+\end_layout
+
+\begin_layout Itemize
+CFL condition must be met, where 
+\begin_inset Formula $\Delta t<\frac{\Delta x}{v}$
+\end_inset
+
+ to ensure that the timestep is small enough to propagate waves with velocity
+ 
+\begin_inset Formula $v$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Formula $\Delta x<\frac{r_{e}}{2}$
+\end_inset
+
+ which ensures that the spatial discretization is small enough relative
+ to the axon length
+\end_layout
+
+\begin_layout Standard
+However, an additional effect is that the noise amplitude depends on the
+ number of nodes.
+ As shown in the figure below, as the number of nodes increases, the effective
+ amount of noise 
+\begin_inset Formula $\phi_{n}(k,\omega)$
+\end_inset
+
+ decreases, in the same way that 
+\begin_inset Formula $\phi_{n}^{2}(\omega)$
+\end_inset
+
+ decreased as the sampling rate increased for the same standard deviation
+ of noise in NeuroField.
+ This is in fact exactly the same scenario, because when the physical size
+ of the cortex is fixed, changing the number of nodes alters the spatial
+ sampling frequency (samples per meter).
+ The challenge is therefore to relate 
+\begin_inset Formula $\phi_{n}^{2}(k,\omega)$
+\end_inset
+
+ to the temporal sampling rate, and the number of nodes.
+ 
+\end_layout
+
+\begin_layout Standard
+We can proceed with the 3D case in exactly the same way as was used in the
+ 1D case.
+ We start with Parseval's theorem, noting that the mean squared power of
+ the noise in 3D is still 
+\begin_inset Formula $\sigma^{2}$
+\end_inset
+
+, the same as in the 1D case.
+ Parseval's theorem states
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\sigma^{2}=\int_{f}\int_{k_{x}}\int_{k_{y}}P(f,k_{x},k_{y})\, df\, dk_{x}\, dk_{y}
+\]
+
+\end_inset
+
+and supposing 
+\begin_inset Formula $\phi_{n,f}^{2}$
+\end_inset
+
+ is the hypothetical constant value of 
+\begin_inset Formula $P(f,k_{x},k_{y}),$
+\end_inset
+
+converting this into a sum as from before gives us
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\sigma^{2} & =\sum_{M,N,P}\phi_{n,f}^{2}\Delta f\Delta k_{x}\Delta k_{y}\\
+ & =MNP\phi_{n,f}^{2}\frac{1}{P\Delta T}\frac{2\pi}{M\Delta x}\frac{2\pi}{N\Delta y}\\
+ & =\frac{4\pi^{2}\phi_{n,f}^{2}}{\Delta T\Delta x\Delta y}
+\end{align*}
+
+\end_inset
+
+where the angular wave number bin size is given by multiplying the wave
+ number bin size by 
+\begin_inset Formula $2\pi$
+\end_inset
+
+ as
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\Delta k=\frac{2\pi}{L_{x}}=\frac{2\pi}{M\Delta x}
+\]
+
+\end_inset
+
+which is directly analogous to computing the frequency bin size.
+ Once again we need to perform the conversion from 
+\begin_inset Formula $\phi_{n}^{2}(k,\omega)$
+\end_inset
+
+ to 
+\begin_inset Formula $\phi_{n,f}^{2}$
+\end_inset
+
+ but notice that again, we accumulate a single factor of 
+\begin_inset Formula $2\pi$
+\end_inset
+
+ because we have bins 
+\begin_inset Formula $\Delta f$
+\end_inset
+
+ and 
+\begin_inset Formula $\Delta k$
+\end_inset
+
+ (and so we only need to convert from 
+\begin_inset Formula $f$
+\end_inset
+
+ to 
+\begin_inset Formula $\omega,$
+\end_inset
+
+ with 
+\begin_inset Formula $k$
+\end_inset
+
+ remaining unchanged).
+ We also only consider the single sided spectrum in the temporal frequency
+ direction- we retain all of the wave number components separately and sum
+ over all of them when computing the power spectral density 
+\begin_inset Formula $P(f)$
+\end_inset
+
+.
+ Therefore we retain the relationship 
+\begin_inset Formula $\phi_{n,f}^{2}=\pi\phi_{n}^{2}(\omega)$
+\end_inset
+
+.
+ Finally then, we obtain
+\end_layout
+
+\begin_layout Subsection*
+\begin_inset Formula 
+\[
+\sigma=\sqrt{\frac{4\pi^{3}\phi_{n}^{2}(\omega)}{\Delta T\Delta x\Delta y}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection
+Cortex only network (3D)
+\end_layout
+
+\begin_layout Standard
+We now consider the same cortical-only network, only now allowing for spatial
+ variation.
+ This was achieved by running NeuroField with 400 nodes, such that 
+\begin_inset Formula $\Delta x=0.025$
+\end_inset
+
+m.
+ For a noise amplitude of 
+\begin_inset Formula $\phi_{n}(k,\omega)=3\times10^{-5}$
+\end_inset
+
+ the above formula provides 
+\begin_inset Formula $\sigma=1.3364$
+\end_inset
+
+.
+ Numerical integration was performed using NeuroField in exactly the same
+ way as the 1D case, and the power spectral density was evaluted consistent
+ with the scalings required by Parseval's theorem (dividing by total number
+ of elements, dividing by the frequency bin size, summing over angular wavenumbe
+r so no division by 
+\begin_inset Formula $\Delta k$
+\end_inset
+
+ was required).
+ 
+\end_layout
+
+\begin_layout Standard
+When different spatial modes are considered, the formula for the analytic
+ power spectrum includes a summation over the spatial modes
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+P(\omega) & =\int\int dk^{2}|T_{en}(k,\omega)|^{2}|\phi_{n}(\omega)|^{2}\\
+ & =\sum_{m,n}|T_{en}(k_{m,n},\omega)|^{2}|\phi_{n}(\omega)|^{2}\Delta k^{2}
+\end{align*}
+
+\end_inset
+
+Note that the transfer function only depends on the value of 
+\begin_inset Formula $k_{mn}^{2}$
+\end_inset
+
+ (which appears in the denominator of 
+\begin_inset Formula $T_{en}$
+\end_inset
+
+) and the values of 
+\begin_inset Formula $k_{mn}^{2}$
+\end_inset
+
+ are given by
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+k_{mn}^{2}=\left(\frac{2\pi m}{L_{x}}\right)^{2}+\left(\frac{2\pi n}{L_{y}}\right)^{2}
+\]
+
+\end_inset
+
+The numerical result was compared to the analytic result for two different
+ numbers of spatial modes- first considering spatial modes up to 
+\begin_inset Formula $|m,n|=2$
+\end_inset
+
+ and second considering modes up to 
+\begin_inset Formula $|m,n|=4$
+\end_inset
+
+.
+ This corresponds to having 25 and 81 terms respectively in the sum for
+ 
+\begin_inset Formula $P(\omega)$
+\end_inset
+
+.
+ The figure below compares the analytic result and the numerical result,
+ with no additional scaling factors.
+ The results agree well in terms of both shape and total power, and furthermore
+ both approaches predict the same changes to the power spectrum when the
+ number of wave modes included changes.
+ This result verifies that the method of calculating the noise amplitude
+ from 
+\begin_inset Formula $\phi_{n}(k,\omega)$
+\end_inset
+
+ is valid in the 3D case with both spatial and temporal variations.
+ 
+\end_layout
+
+\begin_layout Standard
+Interestingly, it is worth noting that moving average smoothing was not
+ required to produce these results- summation over several different modes
+ also has the effect of reducing noise in the spectrum.
+ Segmenting the data in the time direction and averaging multiple segments
+ together (directly analogous to the 1D case) provides a further reduction
+ in noise at the expense of frequency resolution, without the arbitrary
+ nature of a moving average.
+ 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Graphics
+	filename cortical_comparison_3d.eps
+	lyxscale 20
+	width 80text%
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
