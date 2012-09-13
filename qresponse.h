@@ -20,12 +20,12 @@ protected:
   virtual void restart( Restartf& restartf );
   virtual void dump( Dumpf& dumpf ) const;
 
+  string mode;
   double theta;
   double sigma;
   double Q_max;
-  double gradient;
-  double intercept;
-  
+  double a,b,c;
+
   Array<Dendrite> dendrites; // array of dendrites
   vector<double> v; // soma potential for the population
 public: 

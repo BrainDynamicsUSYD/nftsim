@@ -1,9 +1,12 @@
-function varargout = nf_eirs(p,file_id,nonlinear,int_time,grid_edge,fs)
+function varargout = nf_eirs(p,file_id,firemode,int_time,grid_edge,fs)
     % Run NeuroField on an EIRS point struct
-    % [nf,f,P] = nf_eirs(p,file_id,nonlinear,int_time,grid_edge,grid_output)
+    % [nf,f,P] = nf_eirs(p,file_id,firemode,int_time,grid_edge,grid_output)
     % - Accepts a point struct as input
     % - file_id optionally specifies the number for neurofield_*.conf/output
-    % - nonlinear is a 3 element vector that equals 1 to enable nonlinearity
+    % - firemode is a 3 element vector that equals
+    %   - 0 for fully nonlinear
+    %   - 1 for linear
+    %   - 2 for quadratic
     %   e.g. [0 0 1] will only use a sigmoid population response in relay nuclei
     %   System is fully nonlinear by default 
     % - grid_edge: specify edge size of the grid (in number of nodes). Center node is automatically outputted
@@ -37,10 +40,10 @@ function varargout = nf_eirs(p,file_id,nonlinear,int_time,grid_edge,fs)
         int_time = 30; % Total integration time (s)
     end
     
-    if nargin < 3 || isempty(nonlinear)
-        nonlinear = [1 1 1 1];
+    if nargin < 3 || isempty(firemode)
+        firemode = [0 0 0];
     else
-        nonlinear = [nonlinear(1) nonlinear(1) nonlinear(2:3)]; % Add an entry for inhibitory
+        firemode = [firemode(1) firemode(1) firemode(2:3)]; % Add an entry for inhibitory
     end
     
     if nargin < 2 || isempty(file_id)
@@ -65,7 +68,7 @@ function varargout = nf_eirs(p,file_id,nonlinear,int_time,grid_edge,fs)
     end
     
     % Write the file
-    write_nf(file_id,p,int_time,deltat,deltax,grid_edge,nonlinear);
+    write_nf(file_id,p,int_time,deltat,deltax,grid_edge,firemode);
 
     if nargout > 0
         varargout{1} = nf_run(sprintf('neurofield_%i',file_id));
@@ -99,7 +102,7 @@ function varargout = nf_eirs(p,file_id,nonlinear,int_time,grid_edge,fs)
     end
 end
 
-function write_nf(file_id,p,int_time,deltat,deltax,grid_edge,nonlinear)
+function write_nf(file_id,p,int_time,deltat,deltax,grid_edge,firemode)
     % WRITE THE FILE
     fid = fopen(sprintf('neurofield_%i.conf',file_id),'w');
     
@@ -124,15 +127,25 @@ function write_nf(file_id,p,int_time,deltat,deltax,grid_edge,nonlinear)
     n_dendrites = [3 3 2 3]; % Number of dendrites on each population
     counter = 1;
     
+
     for j = 1:4 % For each population
         fprintf(fid,'Population %d: %s\n',j,labels{j});
         fprintf(fid,'Q: %f\n',phivals(j));
-        if nonlinear(j) == 0 % If population has been linearized
-        	gradient = phivals(j).*(1-phivals(j)/p.qmax)/p.sigma;
-            intercept = phivals(j)-gradient*sinv(phivals(j),p);
-            fprintf(fid,'Firing: Linear - Gradient: %f Intercept: %f\n',gradient,intercept);
+        if firemode(j) == 1 % If population has been linearized
+            v0 = sinv(phivals(j),p);
+            a = rho1(phivals(j),p);
+            b = phivals(j) - a*v0;
+            fprintf(fid,'Firing: Mode: Linear - a: %f b: %f\n',a,b);
+            fprintf(1,'Linear %s\n',labels{j});
+        elseif firemode(j) == 2 % If population has been quadraticized
+            v0 = sinv(phivals(j),p);
+            a = rho2(phivals(j),p)/2;
+            b = rho1(phivals(j),p) - 2*a*v0;
+            c = phivals(j) - rho1(phivals(j),p)*v0 + a*v0.^2;
+            fprintf(fid,'Firing: Mode: Quadratic - a: %f b: %f c: %f\n',a,b,c);
+            fprintf(1,'Quadratic %s\n',labels{j});
         else
-            fprintf(fid,'Firing: Sigmoid - Theta: %f Sigma: %f Qmax: %f\n',p.theta,p.sigma,p.qmax);
+            fprintf(fid,'Firing: Mode: Sigmoid - Theta: %f Sigma: %f Qmax: %f\n',p.theta,p.sigma,p.qmax);
         end
         
         for k = 1:n_dendrites(j)
@@ -172,7 +185,7 @@ function write_nf(file_id,p,int_time,deltat,deltax,grid_edge,nonlinear)
     fprintf(fid,'\n');
 
     fprintf(fid,'Output: Node: All Start: 0\n');
-    fprintf(fid,'Population:\n');
+    fprintf(fid,'Population: 4\n');
     fprintf(fid,'Propag: 1 3\n');
     fprintf(fid,'Couple:\n');
 

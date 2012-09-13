@@ -1,17 +1,26 @@
 #include<cmath>
 #include"qresponse.h"
+
 using std::endl;
 
 void QResponse::init( Configf& configf )
 {
-  if( configf.optional("Theta",theta) ) {
+  configf.param("Mode",mode);//configf>>mode; 
+  if( mode == "Sigmoid" ) {
+    configf.param("Theta",theta);
     configf.param("Sigma",sigma);
     configf.param("Qmax",Q_max);
   }
-  else {
-    configf.param("Gradient",gradient);
-    configf.param("Intercept",intercept);
+  else if( mode == "Linear") { // Equation is q = av + b;
+    configf.param("a",a);
+    configf.param("b",b);
   }
+  else if( mode == "Quadratic") { // Equation is q = av^2 + b^v + c;
+    configf.param("a",a);
+    configf.param("b",b);
+    configf.param("c",c);
+  }
+  
   for( size_t i=0; i<dendrites.size(); i++ )
     configf>>*dendrites[i];
 }
@@ -58,12 +67,15 @@ void QResponse::add2Dendrite( int index,
 
 void QResponse::fire( vector<double>& Q ) const
 {
-  if(theta)
+  if(mode == "Sigmoid")
     for( int i=0; i<nodes; i++ )
       Q[i] = Q_max/( 1.0F+ exp( -(v[i]-theta)/sigma ) );
-  else
+  else if (mode == "Linear")
     for( int i=0; i<nodes; i++ )
-      Q[i] = v[i]*gradient +intercept;
+      Q[i] = v[i]*a +b;
+  else if (mode == "Quadratic")
+    for( int i=0; i<nodes; i++ )
+      Q[i] = v[i]*v[i]*a + v[i]*b +c;
 }
 
 const vector<double>& QResponse::V(void) const
