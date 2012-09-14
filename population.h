@@ -3,6 +3,7 @@
 
 #include"array.h"
 using std::vector;
+
 #include"output.h"
 #include"tau.h"
 #include"qresponse.h"
@@ -41,7 +42,7 @@ public:
   void add2Dendrite( int index,
           const Propag& prepropag, const Couple& precouple, Configf& configf );
   void growHistory( const Tau& tau );
-  virtual vector<Output*> output(void) const;
+  virtual vector<Output*> output(int req_index) const;
 };
 
 #endif

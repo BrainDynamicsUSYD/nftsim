@@ -1,6 +1,8 @@
 #ifndef QRESPONSE_H
 #define QRESPONSE_H
 
+#include<string>
+using std::string;
 #include"array.h"
 #include"dendrite.h"
 #include"configf.h"
@@ -37,7 +39,7 @@ public:
 
   virtual void fire( vector<double>& Q ) const;
   virtual const vector<double>& V(void) const;
-  virtual vector<Output*> output(void) const;
+  virtual vector<Output*> output(int req_index) const;
 };
 
 #endif

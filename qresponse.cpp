@@ -1,6 +1,6 @@
 #include<cmath>
 #include"qresponse.h"
-
+#include<iostream>
 using std::endl;
 
 void QResponse::init( Configf& configf )
@@ -83,12 +83,16 @@ const vector<double>& QResponse::V(void) const
   return v;
 }
 
-vector<Output*> QResponse::output(void) const
+vector<Output*> QResponse::output(int req_index) const
 {
-  vector<Output*> temp;
-  temp.push_back( new Output( label("Pop.",index+1)+".V", v ) );
-  for( size_t i=0; i<dendrites.size(); i++ ){
-    temp.push_back( dendrites[i]->output()[0] );
-  }
+  vector<Output*> temp,temp2;
+  if(req_index == 0)
+    temp.push_back( new Output( label("Pop.",index+1)+".V", v ) );
+  else
+      for( size_t i=0; i<dendrites.size(); i++ ){
+        temp2 = dendrites[i]->output(req_index);
+        temp.insert(temp.end(), temp2.begin(), temp2.end());
+      }
+      
   return temp;
 }
