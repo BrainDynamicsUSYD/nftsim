@@ -1,4 +1,5 @@
 #include<iostream>
+
 using std::endl;
 #include"population.h"
 #include"burst.h"
@@ -139,8 +140,8 @@ void Population::growHistory( const Tau& tau )
     qhistory.resize( tau.max+1 );
 }
 
-vector<Output*> Population::output(void) const
+vector<Output*> Population::output(int req_index) const
 {
-  if(qresponse) return qresponse->output();
+  if(qresponse) return qresponse->output(req_index);
   else return timeseries->output();
 }

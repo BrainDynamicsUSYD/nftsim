@@ -290,6 +290,7 @@ Couple 6: Map  - nu:-0.0018
 
 Output: Node: 1
 Population: 
+Dendrite:
 Propag: 2
 Couple: 
 	\end{lstlisting}
@@ -583,10 +584,12 @@ Output: Node: 1 Start: 0 Interval: .0002
 \item
 	\begin{lstlisting}
 Population: 3
+Dendrite:
 Propag: 2
 Couple: 2
 	\end{lstlisting}
-	Specify an arbitrary number of objects to output.
+	Specify objects to output. For \type{Population}, \type{Propag} and \type{Couple}, if you request a nonexistant trace an error will be raised. For \type{Dendrite}, if you request a nonexistant dendrite, there will be no output for this dendrite, and no error or warning is raised. 
+	It is also worth noting that traces will be written in the order that they are specified. For example, if you write \type{Population: 3 1} then the columns in the output file will be arranged in this order. 
 
 \end{itemize}
 

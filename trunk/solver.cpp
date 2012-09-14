@@ -252,7 +252,17 @@ void Solver::initOutput( Configf& configf )
           <<", which is an invalid population."<<endl;
       exit(EXIT_FAILURE);
     }
-    outputs.add( pops[temp[i]-1]->output() );
+    outputs.add( pops[temp[i]-1]->output(0) );
+  }
+  
+  // read in dendrites to output 
+  configf.next("Dendrite");
+  temp = configf.numbers();
+  for( size_t i=0; i<temp.size(); i++ ) {
+    // Todo: Validate the dendrite number against the total number of dendrites
+    for(int j = 0; j < cnt.npop;j++){
+        outputs.add( pops[j]->output(temp[i]) );
+    }
   }
 
   // read in propags to output
@@ -266,7 +276,7 @@ void Solver::initOutput( Configf& configf )
     }
     outputs.add( propags[temp[i]-1]->output() );
   }
-
+  
   // read in couples to output
   configf.next("Couple");
   temp = configf.numbers();
@@ -278,7 +288,7 @@ void Solver::initOutput( Configf& configf )
     }
     outputs.add( couples[temp[i]-1]->output() );
   }
-
+    
   // write out first row
   Output::dumpf<<space<<"Time"<<space<<space<<septor;
   for( size_t i=0; i<outputs.size(); i++ ) {

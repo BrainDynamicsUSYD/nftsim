@@ -186,8 +186,9 @@ function write_nf(file_id,p,int_time,deltat,deltax,grid_edge,firemode)
 
     fprintf(fid,'Output: Node: All Start: 0\n');
     fprintf(fid,'Population: 4\n');
-    fprintf(fid,'Propag: 1 3\n');
-    fprintf(fid,'Couple:\n');
+    fprintf(fid,'Dendrite:  \n');
+    fprintf(fid,'Propag: 1 \n');
+    fprintf(fid,'Couple:  \n');
 
     fclose(fid);
     
