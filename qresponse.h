@@ -26,7 +26,7 @@ protected:
   double theta;
   double sigma;
   double Q_max;
-  double a,b,c;
+  double a,b,c,d;
 
   Array<Dendrite> dendrites; // array of dendrites
   vector<double> v; // soma potential for the population

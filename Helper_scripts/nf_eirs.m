@@ -144,6 +144,18 @@ function write_nf(file_id,p,int_time,deltat,deltax,grid_edge,firemode)
             c = phivals(j) - rho1(phivals(j),p)*v0 + a*v0.^2;
             fprintf(fid,'Firing: Mode: Quadratic - a: %f b: %f c: %f\n',a,b,c);
             fprintf(1,'Quadratic %s\n',labels{j});
+        elseif firemode(j) == 3 % Cubic population
+            v0 = sinv(phivals(j),p);
+            rho3 = @(Q,p) 6*Q^2*rho1(Q,p)/p.sigma^2/p.qmax^2 - 6*Q*rho1(Q,p)/p.sigma^2/p.qmax + rho1(Q,p)/p.sigma^2;
+            r3 = rho3(phivals(j),p);
+            r2 = rho2(phivals(j),p);
+            r1 = rho1(phivals(j),p);
+            d =  - (r3*v0^3)/6 + (r2*v0^2)/2 - r1*v0 + phivals(j);
+            c =  (r3*v0^2)/2 - r2*v0 + r1;
+            b = r2/2 - (r3*v0)/2;
+            a = r3/6;
+            fprintf(fid,'Firing: Mode: Cubic - a: %f b: %f c: %f d: %f\n',a,b,c,d);
+            fprintf(1,'Cubic %s\n',labels{j});
         else
             fprintf(fid,'Firing: Mode: Sigmoid - Theta: %f Sigma: %f Qmax: %f\n',p.theta,p.sigma,p.qmax);
         end
