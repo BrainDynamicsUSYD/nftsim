@@ -20,7 +20,12 @@ void QResponse::init( Configf& configf )
     configf.param("b",b);
     configf.param("c",c);
   }
-  
+  else if( mode == "Cubic") { // Equation is q = av^2 + b^v + c;
+    configf.param("a",a);
+    configf.param("b",b);
+    configf.param("c",c);
+    configf.param("d",d);
+  }
   for( size_t i=0; i<dendrites.size(); i++ )
     configf>>*dendrites[i];
 }
@@ -76,6 +81,10 @@ void QResponse::fire( vector<double>& Q ) const
   else if (mode == "Quadratic")
     for( int i=0; i<nodes; i++ )
       Q[i] = v[i]*v[i]*a + v[i]*b +c;
+  else if (mode == "Cubic"){
+    for( int i=0; i<nodes; i++ )
+      Q[i] = v[i]*v[i]*v[i]*a + v[i]*v[i]*b + v[i]*c +d;
+    }
 }
 
 const vector<double>& QResponse::V(void) const
