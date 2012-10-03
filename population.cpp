@@ -1,8 +1,12 @@
+<<<<<<< .mine
+=======
 #include<iostream>
 
 using std::endl;
+>>>>>>> .r231
 #include"population.h"
 #include"burst.h"
+#include"fs.h"
 
 void Population::init( Configf& configf )
 {
@@ -37,7 +41,7 @@ void Population::dump( Dumpf& dumpf ) const
 
 Population::Population( int nodes, double deltat, int index )
     : NF(nodes,deltat,index),
-	qkey(0), qresponse(0), timeseries(0), settled(false)
+    qresponse(0), timeseries(0), qkey(0), settled(false)
 {
 }
 
@@ -65,7 +69,6 @@ void Population::step(void)
 
 const vector<double>& Population::Q( const Tau& tau) const
 {
-	std::cout.precision(14);
   if( tau.m.size() == 1 ) // homogeneous tau
     return qhistory[(qkey-tau.m[0]+qhistory.size())%qhistory.size()];
   else { // tau.m.size() == nodes, inhomogeneous tau
@@ -122,6 +125,8 @@ void Population::add2Dendrite( int index,
     string temp(configf.find( label("Population ",this->index+1)+"*Firing:" ));
     if( temp == "Bursting" )
       qresponse = new BurstResponse(nodes,deltat,this->index);
+    if( temp == "FS" )
+      qresponse = new FS(nodes,deltat,this->index);
     else
       qresponse = new QResponse(nodes,deltat,this->index);
   }
