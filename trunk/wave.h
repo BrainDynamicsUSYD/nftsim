@@ -4,7 +4,7 @@
 #include"propag.h"
 #include"stencil.h"
 
-class Wave : public Propag
+class Wave : public virtual Propag
 {
   Wave(); // no default constructor
   Wave(Wave&); // no copy constructor

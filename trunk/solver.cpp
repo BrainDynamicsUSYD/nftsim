@@ -8,12 +8,14 @@ using std::stringstream;
 
 #include"solver.h"
 #include"population.h"
+#include"single.h"
 #include"array.h"
 #include"configf.h"
 
 #include"propag.h"
 #include"wave.h"
 #include"harmonic.h"
+#include"cmap.h"
 
 #include"couple.h"
 #include"cadp.h"
@@ -128,8 +130,16 @@ void Solver::init( Configf& configf )
   configf.param("Connection matrix",cnt);
 
   // construct populations
-  for( int i=0; i<cnt.npop; i++ )
-    pops.add( new Population(nodes,deltat,i) );
+  for( int i=0; i<cnt.npop; i++ ) /*{
+    bool neuralpop = false; // marker of neural or Betz population
+    for( int j=0; j<cnt.ncnt; j++ )
+      if( cnt.pre[j] == i )
+        neuralpop = true; // a Betz cell is one without postsynaptic connections
+    if( neuralpop ) // neural population includes stimulus populations too*/
+      pops.add( new Population(nodes,deltat,i) );
+    /*else // Betz cell
+      pops.add( new Single(nodes,deltat,i) );
+  }*/
 
   for( int i=0; i<cnt.ncnt; i++ ) {
     string ptype = configf.find( label("Propag ",i+1) +":" );
@@ -148,6 +158,10 @@ void Solver::init( Configf& configf )
     else if(ptype=="Harmonic")
       propags.add( new
         Harmonic(nodes,deltat,i, *pops[cnt.pre[i]], *pops[cnt.post[i]], longside, topology));
+    else if(ptype=="CMAP")
+      propags.add( new
+        CMap(nodes,deltat,i, *pops[cnt.pre[i]], *pops[cnt.post[i]],
+          longside,topology ) );
     else {
       std::cerr<<"Invalid propagator type '"<<ptype<<"'."<<endl;
       exit(EXIT_FAILURE);

@@ -21,27 +21,27 @@ class Population : public NF
 {
   Population(void); // no default constructor
   Population(Population& ); // no copy constructor
-  vector< vector<double> > qhistory; // keyring of Q
-  int qkey; // index to the present q in qhistory
   QResponse* qresponse; // qresponse for neural population
   Timeseries* timeseries; // timeseries for stimulus
-  bool settled; // if true, forbids add2Dendrite and growHistory
 protected:
-  void init( Configf& inputf );
-  void restart( Restartf& restartf );
-  void dump( Dumpf& dumpf ) const;
+  int qkey; // index to the present q in qhistory
+  vector< vector<double> > qhistory; // keyring of Q
+  bool settled; // if true, forbids add2Dendrite and growHistory
+  virtual void init( Configf& configf );
+  virtual void restart( Restartf& restartf );
+  virtual void dump( Dumpf& dumpf ) const;
 public:
   Population( int nodes, double deltat, int index );
   virtual ~Population();
-  void step(void);
-  const vector<double>& Q( const Tau& tau = Tau() ) const;
+  virtual void step(void);
+  virtual const vector<double>& Q( const Tau& tau = Tau() ) const;
   const vector<double>& operator()( const Tau& tau = Tau() ) const;
   double Qinit( Configf& configf ) const;
   const vector<double>& V(void) const;
   double operator[]( int node ) const;
-  void add2Dendrite( int index,
+  virtual void add2Dendrite( int index,
           const Propag& prepropag, const Couple& precouple, Configf& configf );
-  void growHistory( const Tau& tau );
+  virtual void growHistory( const Tau& tau );
   virtual vector<Output*> output(int req_index) const;
 };
 

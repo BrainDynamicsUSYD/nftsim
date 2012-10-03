@@ -16,9 +16,7 @@ class STP : public virtual Couple
     double phi_r;
     double t_Xi;
     double Xi_max;
-    //vector<double> dXidphi;
-    //vector<double> Xionphi;
-    //vector<double> dphidt;
+    bool undersaturate;
     STPde( int nodes, double deltat ) : DE(nodes,deltat,5) {}
     virtual ~STPde(void) {}
     void rhs( const vector<double>& y, vector<double>& dydt );

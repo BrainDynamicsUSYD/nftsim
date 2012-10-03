@@ -21,6 +21,12 @@ public:
   void step(void);
 
   friend class Population;
+  //friend class Tau;
+  operator int() const;
+  bool operator> ( const Tau& tau ) const;
+  bool operator< ( const Tau& tau ) const;
+  Tau& operator+= ( const Tau& tau );
+  Tau& operator-= ( const Tau& tau );
 };
 
 #endif

@@ -5,7 +5,7 @@
 using std::vector;
 #include"propag.h"
 
-class Harmonic : public Propag
+class Harmonic : public virtual Propag
 {
   Harmonic(); // no default constructor
   Harmonic(Harmonic&); // no copy constructor
