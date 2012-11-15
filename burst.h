@@ -40,7 +40,7 @@ public:
 								//virtual= needs redef in derived classes
   void step(void);
   void fire( vector<double>& Q ) const;
-  vector<Output*> output(void) const; //vector of Output ptrs filled by
+  void output( Output& output ) const; //vector of Output ptrs filled by
 };
 
 #endif

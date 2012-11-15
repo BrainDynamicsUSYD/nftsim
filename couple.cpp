@@ -29,10 +29,9 @@ void Couple::step(void)
 {
 }
 
-vector<Output*> Couple::output(void) const
+void Couple::output( Output& output ) const
 {
-  Output* temp = new Output( label("Couple.",index+1)+".nu", n );
-  return vector<Output*>(1,temp);
+  output("Couple",index+1,"nu",n);
 }
 
 const vector<double>& Couple::nu(void) const

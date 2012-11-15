@@ -47,7 +47,7 @@ public:
   virtual ~CaDP(void);
   virtual void step(void);
   virtual const vector<double>& nu(void) const;
-  virtual vector<Output*> output(void) const;
+  virtual void output( Output& output ) const;
 };
 
 #endif

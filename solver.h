@@ -58,7 +58,7 @@ class Solver : public NF
     void step(void) {}
   } cnt;
 
-  Array<Output> outputs;
+  Array<Outlet> outputs;
   int t;
   int outputstart;
   int outputinterval;

@@ -91,10 +91,8 @@ const vector<double>& Dendrite::V(void) const
   return v;
 }
 
-vector<Output*> Dendrite::output(int req_index) const
+void Dendrite::output( int index, Output& output ) const
 {
-  vector<Output*> temp;
-  if(req_index == index+1)
-    temp.push_back( new Output( label("Dendrite.",index+1)+".V", v ) );
-  return temp;
+  if( this->index == index )
+    output("Dendrite",index+1,"V",v);
 }

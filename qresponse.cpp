@@ -92,16 +92,20 @@ const vector<double>& QResponse::V(void) const
   return v;
 }
 
-vector<Output*> QResponse::output(int req_index) const
+void QResponse::output( Output& output ) const
 {
-  vector<Output*> temp,temp2;
-  if(req_index == 0)
+  output("Pop",index+1,"V",v);
+  /*if(req_index == 0)
     temp.push_back( new Output( label("Pop.",index+1)+".V", v ) );
   else
       for( size_t i=0; i<dendrites.size(); i++ ){
         temp2 = dendrites[i]->output(req_index);
         temp.insert(temp.end(), temp2.begin(), temp2.end());
-      }
-      
-  return temp;
+      }*/
+}
+
+void QResponse::outputDendrite( int index, Output& output ) const
+{
+  for( size_t i=0; i<dendrites.size(); i++ )
+    dendrites[i]->output(index,output);
 }

@@ -86,11 +86,10 @@ const vector<double>& CaDP::nu(void) const
   return de[3];
 }
 
-vector<Output*> CaDP::output(void) const
+void CaDP::output( Output& output ) const
 {
-  vector<Output*> temp;
-  temp.push_back( new Output( label("Couple.",index+1)+".nu", de[3] ) );
-  temp.push_back( new Output( label("Couple.",index+1)+".Ca", de[2] ) );
-  temp.push_back( new Output( label("Couple.",index+1)+".B",  de[0] ) );
-  return temp;
+  output.prefix("Couple",index+1);
+  output("nu",de[3]);
+  output("Ca",de[2]);
+  output("B", de[0]);
 }

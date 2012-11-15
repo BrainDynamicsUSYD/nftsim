@@ -51,9 +51,7 @@ double Propag::operator[]( int node ) const
   return p[node];
 }
 
-vector<Output*> Propag::output(void) const
+void Propag::output( Output& output ) const
 {
-  vector<Output*> temp;
-  temp.push_back( new Output( label("Propag.",index+1)+".phi", p ) );
-  return temp;
+  output("Propag",index+1,"phi",p);
 }
