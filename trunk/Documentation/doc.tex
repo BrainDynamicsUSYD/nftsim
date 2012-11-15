@@ -67,7 +67,7 @@ Within this documentation, specific terminology as appeared in the computer is i
 Command to put in computer
 \end{lstlisting}
 
-\subsection{Obtaining and setting up NeuroField}
+\subsection{Obtaining and setting up \NF}
 \label{sec:obtain}
 
 The code for \NF is managed by a version control system called \type{subversion}, which provides a single place to obtain the latest copy of the code, as well as storing the entire history of the program. To access the repository, contact Romesh Abeysuriya (\url{r.abeysuriya@physics.usyd.edu.au}) or Sue Yang (\url{xue.yang@sydney.edu.au}).
@@ -558,39 +558,30 @@ CaDP - nu: .4086e-4 Nu_max: .1e-3 Threshold: 1e-4 LTD: 5e-2 LTP: 8e-2 B: 2e4 N: 
 \subsubsection{Output data}
 \label{sec:output}
 
-\NF can output a time series for arbitrary fields on any particular nodes, into an output file named \type{neurofield.output} by default. A user chooses which objects to output, and on which nodes to output on. The object then outputs the field(s). For example, populations output $V_a$, propagators output $\phi_{ab}$, and couples output $\nu_{ab}$, and they may output additional fields if appropriate.
+\NF outputs field quantities with respect to nodes and time. By default, the output file is \type{neurofield.output}, which can be changed by launching the program with the \type{-o} switch.
 
-An example output is
-\begin{lstlisting}
-                Time  |          Propag.2.phi
-                      |                     0
-1.00000000000000e-04  |  8.87145000000000e+00
-\end{lstlisting}
-
-Each column is a time series with its name indicated in the first line. The first column is always time, and in this example, the second column is \type{Propag.2.phi}, indicating that it is $\phi_{ee}$ (when checked against connection matrix). The delimiter \type{|} indicates that the two columns are different fields, rather than different nodes of the same field. The node number is indicated in the second line.
-
-To specify output in the configuration file, we start by 
 \begin{itemize}
-	\item
-	\begin{lstlisting}
-Output: Node: 1 Start: 0 Interval: .0002
-	\end{lstlisting}
-	We first specify which nodes to output. \type{Node: All} is a shorthand to output all nodes.
+	\item \begin{lstlisting}
+Output:
+		\end{lstlisting}
+Begin with the \type{Output} declaration.
+\item \begin{lstlisting}
+Node: 1 2
+\end{lstlisting}
+Enumerate all nodes to be outputted. If outputting all nodes, use shorthand \type{All}.
+\item \begin{lstlisting}
+Start: 0 Interval: 1e-3
+\end{lstlisting}
+Optional parameters for the time to start output, and optional parameter for time interval between outputs.
 
-	\type{Start} is the time in seconds to start outputting. If this is not given, then output starts at time 0.
-
-	\type{Interval} is the time interval in seconds between each output. If this is not given, then \NF outputs every timestep.
-
-\item
-	\begin{lstlisting}
-Population: 3
+If undefined, defaults, to 0 and \type{deltat}, respectively.
+\item \begin{lstlisting}
+Population: 2.V
 Dendrite:
-Propag: 2
-Couple: 2
-	\end{lstlisting}
-	Specify objects to output. For \type{Population}, \type{Propag} and \type{Couple}, if you request a nonexistant trace an error will be raised. For \type{Dendrite}, if you request a nonexistant dendrite, there will be no output for this dendrite, and no error or warning is raised. 
-	It is also worth noting that traces will be written in the order that they are specified. For example, if you write \type{Population: 3 1} then the columns in the output file will be arranged in this order. 
-
+Propag: 1 2.phi
+Couple: 3.nu
+\end{lstlisting}
+Specifying desired objects and fields to output. Enter the appropriate object indices after the labels. For each entry, a field name may be appended after the index with a \type{.}, so that only that field of the object is outputted. If no field name is specified for that entry, then all fields of that object is outputted.
 \end{itemize}
 
 \subsection{Postprocessing}
@@ -605,6 +596,17 @@ Couple: 2
 \end{tabular}
 
 When the launcher script runs with only one set of parameters, all output files are also in the present working directory. However, if the launcher script sweeps over parameters, each parameter set has its own subdirectory inside \type{Output/}, and each set of \type{neurofield.*} files are stored in its subdirectory.
+
+Example content in \type{neurofield.output} is
+\begin{lstlisting}
+                Time  |          Propag.2.phi
+                      |                     0
+1.00000000000000e-04  |  8.87145000000000e+00
+\end{lstlisting}
+
+Each column is a time series with its name indicated in the first line. The first column is always time, and in this example, the second column is \type{Propag.2.phi}, indicating that it is $\phi_{ee}$ (when checked against connection matrix). The delimiter \type{|} indicates that the two columns are different fields, rather than different nodes of the same field. The node number is indicated in the second line.
+
+It is also worth noting that traces will be written in the order that they are specified. For example, if you write \type{Population: 3 1} then the columns in the output file will be arranged in this order. 
 
 \subsubsection{Quickplot}
 
@@ -625,9 +627,9 @@ or a shorthand to plot all fields and nodes is
 All these commands launches \type{gnuplot} plotting sessions.
 
 \subsubsection{Matlab}
-A number of Matlab functions are provided to make it easy to manipulate NeuroField data from within Matlab. The functions are generally self-documenting with comments at the start of the file.
+A number of Matlab functions are provided to make it easy to manipulate \NF data from within Matlab. The functions are generally self-documenting with comments at the start of the file.
 
-Essentially, an output file from NeuroField is read into a \type{nf} struct object in Matlab which simply contains all of the output from NeuroField in memory for easy access. Here is an example of a \type{nf} object:
+Essentially, an output file from \NF is read into a \type{nf} struct object in Matlab which simply contains all of the output from \NF in memory for easy access. Here is an example of a \type{nf} object:
 \begin{lstlisting}
      fields: {'Propag.1.phi'  'Propag.3.phi'}
       nodes: {[1]  [1]}
@@ -637,7 +639,7 @@ Essentially, an output file from NeuroField is read into a \type{nf} struct obje
     npoints: 300000
 \end{lstlisting}
 \begin{itemize}
-\item \type{fields} stores a record of which traces from NeuroField are present in the output file
+\item \type{fields} stores a record of which traces from \NF are present in the output file
 \item \type{nodes} is a cell with the same size as \type{fields}, and records for each field present, the number of the node in the output. 
 \item \type{data} is a matrix storing the actual values of the traces
 \item \type{time} is a vector of time values, so that you can plot any of the data traces directly again \type{nf.time}
@@ -645,19 +647,19 @@ Essentially, an output file from NeuroField is read into a \type{nf} struct obje
 \item \type{npoints} stores the total number of points in the output. The total duration is \type{nf.deltat*nf.npoints} (or  \type{nf.time(end)})
 \end{itemize}
 
-There are two ways to create the \type{nf} object. You can read the output file directly after executing NeuroField elsewhere
+There are two ways to create the \type{nf} object. You can read the output file directly after executing \NF elsewhere
 
 \begin{lstlisting}
 nf = nf_read('neurofield.output')
 \end{lstlisting}
 
-or you can use the \type{nf\_run} helper script to run the config file using NeuroField and automatically parse the output
+or you can use the \type{nf\_run} helper script to run the config file using \NF and automatically parse the output
 
 \begin{lstlisting}
 nf = nf_run('neurofield.conf')
 \end{lstlisting}
 
-Using \type{nf\_run} means you will need to add NeuroField to your shell search path.
+Using \type{nf\_run} means you will need to add \NF to your shell search path.
 
 Several helper files are provided to manipulate the \type{nf} object. The three most important helpers are \type{nf\_extract} and \type{nf\_grid}. Often you want to extract a particular field from the \type{nf} object, for example, to examine the output from \type{Propag.3.phi}. To do this directly with the \type{nf} object, you would need to check the \type{fields} variable to find the index of the trace you wanted, and then extract it from the \type{data} field. In the previous example, \type{Propag.3.phi} is the second trace. These expressions are identical:
 \begin{lstlisting}
@@ -670,7 +672,7 @@ trace = nf_extract(nf,'propag.1.phi,propag.3.phi');
 \end{lstlisting}
 will create a 300000x2 matrix with both of the traces. 
 
-Finally, if you run NeuroField with multiple nodes, it typically solves the system of equations on a square grid. Therefore, if you have output for notes 1-400, this corresponds to a 20x20 grid. \type{nf\_grid} allows you to request a trace from the \type{nf} object and have it reshaped into a square grid. This lets you easily make surface plots of the data, or perform tasks that are spatially dependent. 
+Finally, if you run \NF with multiple nodes, it typically solves the system of equations on a square grid. Therefore, if you have output for notes 1-400, this corresponds to a 20x20 grid. \type{nf\_grid} allows you to request a trace from the \type{nf} object and have it reshaped into a square grid. This lets you easily make surface plots of the data, or perform tasks that are spatially dependent. 
 
 \section{Developers guide}
 
