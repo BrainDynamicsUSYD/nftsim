@@ -35,7 +35,7 @@ public:
   double phiinit( Configf& configf ) const;
   virtual const vector<double>& phi(void) const;
   double operator[]( int node ) const;
-  virtual vector<Output*> output(void) const;
+  virtual void output( Output& output ) const;
 };
 
 #endif

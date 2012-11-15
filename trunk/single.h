@@ -31,7 +31,7 @@ public:
   void add2Dendrite( int index, const Propag& prepropag, const Couple& precouple, Configf& configf );
   double Qinit( Configf& configf ) const;
   const vector<double>& V(void) const;
-  vector<Output*> output(void) const;
+  void output( Output& output ) const;
 };
 
 #endif

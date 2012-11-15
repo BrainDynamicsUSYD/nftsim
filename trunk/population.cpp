@@ -1,9 +1,6 @@
-<<<<<<< .mine
-=======
 #include<iostream>
-
+using std::cerr;
 using std::endl;
->>>>>>> .r231
 #include"population.h"
 #include"burst.h"
 #include"fs.h"
@@ -102,7 +99,7 @@ const vector<double>& Population::V(void) const
   if( qresponse )
     return qresponse->V();
   else {
-    std::cerr<<"Trying to access V of a stimulus population."<<endl;
+    cerr<<"Trying to access V of a stimulus population."<<endl;
     exit(EXIT_FAILURE);
   }
 }
@@ -116,7 +113,7 @@ void Population::add2Dendrite( int index,
     const Propag& prepropag, const Couple& precouple, Configf& configf )
 {
   if( settled ) {
-    std::cerr<<"Population is already settled, no more dendrites can be added!"
+    cerr<<"Population is already settled, no more dendrites can be added!"
         <<endl;
     exit(EXIT_FAILURE);
   }
@@ -136,7 +133,7 @@ void Population::add2Dendrite( int index,
 void Population::growHistory( const Tau& tau )
 {
   if( settled ) {
-    std::cerr<<"Population is already settled, cannot resize firing history!"
+    cerr<<"Population is already settled, cannot resize firing history!"
         <<endl;
     exit(EXIT_FAILURE);
   }
@@ -145,8 +142,13 @@ void Population::growHistory( const Tau& tau )
     qhistory.resize( tau.max+1 );
 }
 
-vector<Output*> Population::output(int req_index) const
+void Population::output( Output& output ) const
 {
-  if(qresponse) return qresponse->output(req_index);
-  else return timeseries->output();
+  if(qresponse) return qresponse->output(output);
+  else return timeseries->output(output);
+}
+
+void Population::outputDendrite( int index, Output& output ) const
+{
+  if(qresponse) return qresponse->outputDendrite(index,output);
 }

@@ -762,7 +762,7 @@ Within the C++ source files, developers should stick to this conventions for con
 \subsection{Class NF}
 \label{sec:nf}
 
-\textbf{ALL} classes that requires the configuration file should derive from the \type{NF} object. This abstract base class contains 3 member variables, and 4 interface methods:
+\textbf{ALL} classes that requires the configuration file should derive from the \type{NF} object. This abstract base class contains 3 member variables, and 5 interface methods:
 
 \begin{tabular}{l p{10cm}}
 Variable\\[6pt]
@@ -774,6 +774,7 @@ Methods\\[6pt]
  \type{dump(Dumpf\& dumpf) const}&When the program terminates, all objects dump information into a dump file (\type{dumpf}) for later restart. \type{Dumpf} is an \type{ofstream}.\\
 \type{restart(Restartf\& restartf)}&Restarts the object in restart mode, \emph{in addition} to \type{init()}. The developer should have dumped all relevant information in dump, then reads it here.\\
 \type{step(void)}&At each timestep, this function is called.\\
+\type{output(Output\& output) const}&Specifies which fields to output.\\
 \end{tabular}
 
 All \type{NF} classes automatically handles the \type{ofstream::<<} and \type{ifstream::>>} operators.
@@ -808,13 +809,27 @@ Input via the configuration file is implemented in the \type{init()} function, v
 
 In restart mode, \type{init()} is called, followed by \type{restart()}. \type{Restartf} is identical to \type{Configf}.
 
-There are two modes of output. One is outputting the solution in \type{Population::output(), \type{Propag::output()}}, and \type{Couple::output()}, and the other is the dumping of data for restart implemented in \type{dump()}.
+There are two modes of output. One is outputting the solution in \type{Population::output(), \type{Dendrite::output()}, \type{Propag::output()}}, and \type{Couple::output()}, and the other is the dumping of data for restart implemented in \type{dump()}.
 
-To output solutions, return a vector of pointers to \type{new Output}, specifying the name and field of the solution. The name must be of the format
+To output field solutions, overload \type{NF::output()} to write
 \begin{lstlisting}
-label("Object.",index+1)+".field"
+output.prefix("Object Name",index+1);
+output("field1",field1);
+output("field2",field2);
+output("field3",field3);
+subobject1.output(output);
+subobject2.output(output);
 \end{lstlisting}
-where \type{Object} and \type{field} should be appropriately named.
+or for a single output field,
+\begin{lstlisting}
+output("Object Name",index+1,"field1",field1);
+\end{lstlisting}
+
+%To output solutions, return a vector of pointers to \type{new Output}, specifying the name and field of the solution. The name must be of the format
+%\begin{lstlisting}
+%label("Object.",index+1)+".field"
+%\end{lstlisting}
+%where \type{Object} and \type{field} should be appropriately named.
 
 \type{dumpf()} provides a \type{Dumpf} object, which is essentially an \type{ofstream}. Dump all data here, so that it can be read in \type{restart()}.
 

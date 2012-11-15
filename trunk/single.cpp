@@ -90,11 +90,10 @@ const vector<double>& Single::V(void) const
   return de[1];
 }
 
-vector<Output*> Single::output(void) const
+void Single::output( Output& output ) const
 {
-  vector<Output*> temp;
-  temp.push_back( new Output( label("Pop.",index+1)+".V", V() ) );
-  temp.push_back( new Output( label("Pop.",index+1)+".W", de[2] ) );
-  temp.push_back( new Output( label("Pop.",index+1)+".I", de[0] ) );
-  return temp;
+  output.prefix("Pop",index+1);
+  output("V",V());
+  output("W",de[2]);
+  output("I",de[0]);
 }

@@ -1,3 +1,6 @@
+#include <iostream>
+using std::cerr;
+#include <sstream>
 #include<cstdlib>
 #include<string>
 using std::string;
@@ -23,7 +26,7 @@ Configf::Configf( const char* filename )
   : std::ifstream(filename)
 {
   if( !*this ) {
-    std::cerr << "Unable to open configuration file." << endl;
+    cerr << "Unable to open configuration file." << endl;
     exit(EXIT_FAILURE);
   }
   int sp = tellg(); // store current file position
@@ -51,6 +54,24 @@ vector<double> Configf::numbers(void)
   return ret;
 }
 
+vector<string> Configf::arb( const string& delim )
+{
+  string temp; vector<string> ret_value;
+  while( temp!=delim && *this ) {
+    *this >> temp;
+    ret_value.push_back(temp);
+    if( bad() ) {
+      cerr<<"Error reading configuration file while reading arbitrary strings."
+          <<endl;
+      exit(EXIT_FAILURE);
+    }
+  }
+  ret_value.pop_back();
+  for( size_t i=0; i<delim.size(); i++ )
+    unget();
+  return ret_value;
+}
+
 string Configf::find( const string& Check )
 {
   /* 
@@ -66,7 +87,7 @@ string Configf::find( const string& Check )
   */
 
   if( Check.empty() ) {
-    std::cerr << "Attempted to use Configf::Find searching for an empty string"
+    cerr << "Attempted to use Configf::Find searching for an empty string"
             << endl;
     exit(EXIT_FAILURE);
   }
@@ -78,7 +99,7 @@ string Configf::find( const string& Check )
   size_t wildcard_pos = Check.find('*');
   size_t match = file_content.find(Check.substr(0,wildcard_pos));
   if( match == string::npos) {
-    std::cerr << "Failed to find '" << Check.substr(0,wildcard_pos) << "' which was the first part of the search term '" << Check << "'" << endl;
+    cerr << "Failed to find '" << Check.substr(0,wildcard_pos) << "' which was the first part of the search term '" << Check << "'" << endl;
     exit(EXIT_FAILURE);
   }
   
@@ -88,7 +109,7 @@ string Configf::find( const string& Check )
       if( match == string::npos) {
         seekg(sp);
         return string("");
-    /*std::cerr << "Failed to find '" << Check.substr(wildcard_pos+1,Check.length()) << "' which was the second part of the search term '" << Check << "'" << endl;
+    /*cerr << "Failed to find '" << Check.substr(wildcard_pos+1,Check.length()) << "' which was the second part of the search term '" << Check << "'" << endl;
         exit(EXIT_FAILURE);*/
       }
     match += Check.substr(wildcard_pos+1,Check.length()).length();
@@ -110,13 +131,13 @@ string Configf::find( const string& Check )
 bool Configf::next( const string& Check, int delim )
 {
   if( Check.empty() ) {
-    std::cerr << "Configf validating an empty string." << endl;
+    cerr << "Configf validating an empty string." << endl;
     exit(EXIT_FAILURE);
   }
   std::streampos sp = tellg();
   getline( buffer, filesize, delim );
   if( !good() ) {
-    std::cerr << "Error reading config file when looking for: " << Check << endl;
+    cerr << "Error reading config file when looking for: " << Check << endl;
     exit(EXIT_FAILURE);
   }
   string param(buffer);
@@ -132,13 +153,13 @@ void Configf::go2( const string& keyword )
 {
   seekg(0,std::ios::beg);
   if( keyword.empty() ) {
-    std::cerr << "Searching for an empty string in configuration file." << endl;
+    cerr << "Searching for an empty string in configuration file." << endl;
     exit(EXIT_FAILURE);
   }
   read(buffer,filesize);
   string file_content(buffer);
   if( file_content.find(keyword) == string::npos ) {
-    std::cerr<<"Configuration reading error: keyword "<<keyword<<"not found."
+    cerr<<"Configuration reading error: keyword "<<keyword<<"not found."
         <<endl;
     exit(EXIT_FAILURE);
   }

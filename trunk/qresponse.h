@@ -39,7 +39,8 @@ public:
 
   virtual void fire( vector<double>& Q ) const;
   virtual const vector<double>& V(void) const;
-  virtual vector<Output*> output(int req_index) const;
+  virtual void output( Output& output ) const;
+  virtual void outputDendrite( int index, Output& output ) const;
 };
 
 #endif

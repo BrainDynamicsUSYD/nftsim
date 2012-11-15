@@ -25,9 +25,8 @@ NF::NF( int nodes, double deltat, int index )
 {
 }
 
-vector<Output*> NF::output(void) const
+void NF::output( Output& output ) const
 {
-  return vector<Output*>();
 }
 
 NF::~NF(void)

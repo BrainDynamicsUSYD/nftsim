@@ -70,16 +70,14 @@ void BurstResponse::step(void)
 
 }
 
-vector<Output*> BurstResponse::output(void) const
+void BurstResponse::output( Output& output ) const
 {
   // write a field into an output file
   // see cadp.cpp
-  vector<Output*> temp;
-  // Something like this- check with Felix how to do it properly (throws error)
-  temp.push_back( new Output( label("Burst.",index+1)+".Htilde", htilde ) ); 
-  temp.push_back( new Output( label("Burst.",index+1)+".Xtilde", xtilde ) ); 
-  temp.push_back( new Output( label("Burst.",index+1)+".modtheta", modtheta ) ); 
-  return temp;
+  output.prefix("Burst",index+1);
+  output("Htilde",htilde);
+  output("Xtilde",xtilde);
+  output("modtheta",modtheta);
 }
 
 void BurstResponse::fire( vector<double>& Q ) const

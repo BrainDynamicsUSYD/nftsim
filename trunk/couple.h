@@ -30,7 +30,7 @@ public:
       const Propag& prepropag, const Population& postpop );
   virtual ~Couple(void);
   virtual void step(void);
-  virtual vector<Output*> output(void) const; 
+  virtual void output( Output& output ) const; 
   virtual const vector<double>& nu(void) const;
   virtual const double operator[]( int node ) const;
   bool excite(void) const;

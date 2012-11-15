@@ -61,12 +61,11 @@ void FS::fire( vector<double>& Q ) const
   }
 }
 
-vector<Output*> FS::output(void) const
+void FS::output( Output& output ) const
 {
-  vector<Output*> temp;
-  temp.push_back( new Output( label("Pop.",index+1)+".V", V() ) );
-  temp.push_back( new Output( label("Pop.",index+1)+".H", de[1] ) );
-  temp.push_back( new Output( label("Pop.",index+1)+".Q", de[0] ) );
-  temp.push_back( new Output( label("Pop.",index+1)+".I_theta", I_theta ) );
-  return temp;
+  output.prefix("Pop",index+1);
+  output("V",V());
+  output("H",de[1]);
+  output("Q",de[0]);
+  output("I_theta",I_theta);
 }

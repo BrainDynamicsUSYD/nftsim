@@ -42,7 +42,8 @@ public:
   virtual void add2Dendrite( int index,
           const Propag& prepropag, const Couple& precouple, Configf& configf );
   virtual void growHistory( const Tau& tau );
-  virtual vector<Output*> output(int req_index) const;
+  virtual void output( Output& output ) const;
+  virtual void outputDendrite( int index, Output& output ) const;
 };
 
 #endif

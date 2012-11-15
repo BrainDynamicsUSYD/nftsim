@@ -35,6 +35,8 @@ public:
   template<class T> bool optional( const string& param, T& ret, int delim=':' );
   // Read & return an arbitrary array of doubles
   vector<double> numbers(void);
+  // Return all whitespace separated strings before delimiting string
+  vector<string> arb( const string& delim );
   // Find the next "Check", then returns the next input entry as string
   string find( const string& Check );
 

@@ -111,14 +111,13 @@ const vector<double>& STP::nu(void) const
   return de[2];
 }
 
-vector<Output*> STP::output(void) const
+void STP::output( Output& output) const
 {
-  vector<Output*> temp;
-  //temp.push_back( new Output( label("Couple.",index+1)+".Ca",de[4]) );
-  temp.push_back( new Output( label("Couple.",index+1)+".Xi",de[1]) );
-  temp.push_back( new Output( label("Couple.",index+1)+".nu",de[2]) );
-  //temp.push_back( new Output( label("Couple.",index+1)+".dXidphi",de.dXidphi) );
-  //temp.push_back( new Output( label("Couple.",index+1)+".Xionphi",de.Xionphi) );
-  //temp.push_back( new Output( label("Couple.",index+1)+".dphidt",de.dphidt) );
-  return temp;
+  output.prefix("Couple",index+1);
+  //output("Ca",de[4]);
+  output("Xi",de[1]);
+  output("nu",de[2]);
+  //output("dXidphi",de.dXidphi);
+  //output("Xionphi",de.Xionphi);
+  //output("dphidt",de.dphidt);
 }

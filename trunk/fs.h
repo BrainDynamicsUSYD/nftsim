@@ -35,7 +35,7 @@ public:
   virtual ~FS(void);
   virtual void step(void);
   virtual void fire( vector<double>& Q ) const;
-  virtual vector<Output*> output(void) const;
+  virtual void output( Output& output ) const;
 };
 
 #endif

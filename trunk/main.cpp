@@ -74,12 +74,12 @@ int main(int argc, char* argv[])
     for( int i=1; i<argc-1; i++)
       if( strcmp(argv[i],"-o") == 0 )
         ioutarg = i + 1;
-  Output::dumpf.open(string(ioutarg?argv[ioutarg]:"neurofield.output"));
+  Outlet::dumpf.open(string(ioutarg?argv[ioutarg]:"neurofield.output"));
 
   if( argc>1 )
     for( int i=1; i<=argc-1; i++)
       if( strcmp(argv[i],"-v")==0 || strcmp(argv[i],"--verbose")==0 )
-        Output::dumpf.verbose();
+        Outlet::dumpf.verbose();
 
   // construct, initialize and solve the neural field theory
   Solver neurofield(dumpf); *inputf>>neurofield;
