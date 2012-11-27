@@ -2,6 +2,8 @@
 
 void BurstResponse::init( Configf& configf )
 {
+    string noob;
+    configf.param("Mode",noob);
     configf.param("Sigma",sigma);
     configf.param("Qmax",Q_max);
     double hinit; configf.param("Htilde",hinit);
