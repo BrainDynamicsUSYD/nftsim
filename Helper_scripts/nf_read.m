@@ -17,8 +17,8 @@ function nf = nf_read(fname);
 
     format_string = '%f'; % Read the time
     for j = 2:length(nf.nodes) % And any others
-        format_string = sprintf('%s | %s',format_string,repmat('%f ',1,length(nf.nodes{j})));
-    end
+        format_string = sprintf('%s | %s',format_string,repmat('%f ',1,length(nf.nodes{j}))); % repmat tiles array of '%f'
+    end 
     format_string = sprintf('%s |',format_string);
     data = textscan(fid,format_string,'CollectOutput',1);
     data = data{1};

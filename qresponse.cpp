@@ -26,6 +26,9 @@ void QResponse::init( Configf& configf )
     configf.param("c",c);
     configf.param("d",d);
   }
+  else if( mode == "Bursting") {
+    
+  }
   for( size_t i=0; i<dendrites.size(); i++ )
     configf>>*dendrites[i];
 }

@@ -40,7 +40,8 @@ public:
 								//virtual= needs redef in derived classes
   void step(void);
   void fire( vector<double>& Q ) const;
-  void output( Output& output ) const; //vector of Output ptrs filled by
+  virtual void output( Output& output ) const; //vector of Output ptrs filled by
+  virtual void outputDendrite( int index, Output& output) const;
 };
 
 #endif

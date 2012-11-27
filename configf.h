@@ -15,7 +15,7 @@ using std::vector;
 #include<cstdlib>
 using std::endl;
 
-class Configf : protected std::ifstream
+class Configf : protected std::ifstream // derived class 
 {
   Configf(const Configf& other); // No copy constructor
   Configf(); // No default constructor
@@ -24,7 +24,7 @@ class Configf : protected std::ifstream
   char* buffer;
   size_t filesize;
 public: 
-  Configf( const char* filename );
+  Configf( const char* filename ); // const ptr to filename for ifstream
   virtual ~Configf(void);
 
   // Looks for the next parameter called "param" and stores it in T
@@ -51,7 +51,7 @@ public:
 string label( const string& prefix, int index );
 
 // Restartf does nothing new
-class Restartf : public Configf
+class Restartf : public Configf // derived from Configf also a ifstream
 {
   Restartf(const Restartf&);
   Restartf();
