@@ -70,16 +70,22 @@ void BurstResponse::step(void)
 
 }
 
-void BurstResponse::output( Output& output ) const
+void BurstResponse::output(Output& output) const
 {
   // write a field into an output file
   // see cadp.cpp
-  output.prefix("Burst",index+1);
-  output("Htilde",htilde);
-  output("Xtilde",xtilde);
+  // Something like this- check with Felix how to do it properly (throws error)
+  output.prefix("Population",index+1);
+  output("HTilde",htilde);
+  output("XTilde",xtilde);
   output("modtheta",modtheta);
+  output("V",v);
 }
 
+void BurstResponse::outputDendrite(int index, Output& output) const
+{
+       // if(qresponse) return qresponse->outputDendrite(index,output);
+}
 void BurstResponse::fire( vector<double>& Q ) const
 {
     for(int i=0; i<nodes; i++ )

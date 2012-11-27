@@ -40,7 +40,8 @@ int main(int argc, char* argv[])
       if( strcmp(argv[i],"-i") == 0 )
         iconfarg = i + 1;
   const char* confname = iconfarg?argv[iconfarg]:"neurofield.conf";
-
+  //conditional operator condition? if_true:if_false
+  
   // initialize inputf, the stream of the configuration file
   Configf* inputf = 0;
   if(restart) {

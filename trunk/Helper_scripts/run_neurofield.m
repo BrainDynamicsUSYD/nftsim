@@ -155,7 +155,7 @@ function [f_arr,P_arr,t,y] = run_neurofield(p,file_id)
 
     fprintf(1,'Executing NF...');
     tic;
-	[status] = system(sprintf('/home/ffung/neurofield/tags/drysdale/Release/NeuroField -i neurofield_%i.conf -d neurofield_%i.dump -o neurofield_%i.output',file_id,file_id,file_id));
+	[status] = system(sprintf('/home/xzhao/neurofield/trunk/Release/NeuroField -i neurofield_%i.conf -d neurofield_%i.dump -o neurofield_%i.output',file_id,file_id,file_id));
     fprintf(1,'took %.3f seconds\n',toc);
     
     if status ~= 0
@@ -164,7 +164,7 @@ function [f_arr,P_arr,t,y] = run_neurofield(p,file_id)
     end
     	
 	% Code copied directly from readoutput2() (James)
-	fid=fopen(sprintf('neurofield_%i.output',file_id));
+	fid=fopen(sprintf('neurofield_%i.output',file_id));x
 
 	temp=fgetl(fid);
 	if temp(1)=='S',
