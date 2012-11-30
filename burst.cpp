@@ -2,12 +2,19 @@
 
 void BurstResponse::init( Configf& configf )
 {
-    string noob;
-    configf.param("Mode",noob);
+    string noob; configf.param("Mode",noob);
     configf.param("Sigma",sigma);
     configf.param("Qmax",Q_max);
     double hinit; configf.param("Htilde",hinit);
     double xinit; configf.param("Xtilde",xinit);
+    configf.param("ia",ia);
+    configf.param("ib",ib);
+    configf.param("ic",ic);
+    configf.param("taux",taux);
+    configf.param("tauh",tauh);
+    configf.param("ax",ax);
+    configf.param("mu",mu);
+
     for(size_t i = 0; i<dendrites.size();i++)
         configf>>*dendrites[i];
  // read config file- see qresponse.init()
@@ -45,14 +52,13 @@ void BurstResponse::dump( Dumpf& dumpf ) const
 BurstResponse::BurstResponse( int nodes, double deltat, int index )
 	: QResponse(nodes,deltat,index), xtemp(nodes), htemp(nodes)
 {
-    ia=-2.6; //A m^-2
-    ib=1.2; // A m^-2
-    ic=0.197; // A m^-2
-    taux=0.015; // 15ms 
-    tauh=0.056; // 56ms
-    ax=0.26; // for tauR=2.1ms
-    mu=3.1; // mu=-Itheta/theta S m^-2
-    
+    //ia=-2.6; //A m^-2
+    //ib=1.2; // A m^-2
+    //ic=0.197; // A m^-2
+    //taux=0.015; // 15ms 
+    //tauh=0.056; // 56ms
+    //ax=0.26; // for tauR=2.1ms
+    //mu=3.1; // mu=-Itheta/theta S m^-2
     h=deltat;
     h2=deltat/2;
     h6=deltat/6;
