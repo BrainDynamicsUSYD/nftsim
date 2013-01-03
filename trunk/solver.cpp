@@ -20,6 +20,7 @@ using std::stringstream;
 
 #include"couple.h"
 #include"cadp.h"
+#include"fcap.h"
 #include"stp.h"
 
 #include"output.h"
@@ -177,6 +178,9 @@ void Solver::init( Configf& configf )
     else if(ctype=="CaDP")
       couples.add( new
         CaDP(nodes,deltat,i,(*glu)[0], *propags[i], *pops[cnt.post[i]] ) );
+    else if(ctype=="fCaP")
+      couples.add( new
+        fCaP(nodes,deltat,i,(*glu)[0], *propags[i], *pops[cnt.post[i]] ) );
     else if(ctype=="STP")
       couples.add( new
         STP(nodes,deltat,i,(*glu)[0], *propags[i], *pops[cnt.post[i]] ) );

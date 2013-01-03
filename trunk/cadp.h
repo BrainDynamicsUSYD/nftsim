@@ -1,14 +1,14 @@
-#ifndef CARK4_H
-#define CARK4_H
+#ifndef CADP_H
+#define CADP_H
 
 #include"couple.h"
 #include"de.h"
 
-class CaDP : public virtual Couple
+class CaDP : public Couple
 {
   CaDP();
   CaDP(CaDP&);
-
+protected:
   struct CaDE : public DE
   {
     double B; // 1/stanard deviation of glutamate binding
@@ -26,16 +26,15 @@ class CaDP : public virtual Couple
 
     double gnmda; // gain for NMDA receptor
 
-	double pos; // sign of nu
+    double pos; // sign of nu
 
     CaDE( int nodes, double deltat ) : DE(nodes,deltat,4) {}
     virtual ~CaDE(void) {}
-    void rhs( const vector<double>& y, vector<double>& dydt );
+    virtual void rhs( const vector<double>& y, vector<double>& dydt );
     inline double sig( double x, double beta ) const;
     inline double po(double Ca) const; // potentiation rate
     inline double de(double Ca) const; // depression rate
   };
-protected:
   CaDE de;
   RK4 rk4;
   virtual void init( Configf& configf );
