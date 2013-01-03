@@ -52,7 +52,7 @@ Dendrite::Dendrite( int nodes, double deltat, int index,
 {
 }
 
-Dendrite::~Dendrite()
+Dendrite::~Dendrite(void)
 {
 }
 

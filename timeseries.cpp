@@ -5,8 +5,8 @@
 
 void Timeseries::init( Configf& configf )
 {
-  random=0; // Set pointer to null in case random is not created
-  seed=-98716872;
+  random = 0; // Set pointer to null in case random is not created
+  seed = -98716872;
   configf.param("Mode",mode);//configf>>mode;
   configf.param("Onset",t); t = -t;
   if( !configf.optional("End",tend) )
@@ -92,6 +92,11 @@ void Timeseries::init( Configf& configf )
     configf.param("TMS",amp);
     configf.param("ISI",tpeak);
     configf.param("Radius",deltax);
+  }
+  else if( mode=="Burst" ) { // theta-burst protocol or similar
+    configf.param("Amplitude",amp);
+    std::cerr<<"not done yet"<<std::endl;
+    exit(EXIT_FAILURE);
   }
 }
 
