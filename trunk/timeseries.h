@@ -5,44 +5,70 @@
 using std::string;
 #include<vector>
 using std::vector;
-#include"random.h"
+#include<cmath>
 #include"nf.h"
 
 class Timeseries : public NF
 {
-  Timeseries(Timeseries& ) ; // No copy contructor
-  Timeseries(void) ; // No default contructor
+  Timeseries(Timeseries&);
+  Timeseries(void);
 
-  string mode; // Number representing mode of timeseries
-  double t; // time in seconds
-  double tend; // time to end stimulus
-  Random *random; //Pointer to Random number generator object
-  std::vector<Timeseries*> sarray; // Array of stimuli when mode==0
-
-  double tpeak; // Time to peak
-  double amp; // Amplitude of timeseries
-  double freq; // Frequency of sine timeseries
-  double pdur; // Pulse duration of timeseries
-  double tperiod; // Period of between pulse repetitions
-  double mean; //Mean timeseries
-  double deltax; //Grid spacing for 2D timeseries
-  double noise_deltax;
-  double xcent; //x coordinate of Gaussian centre
-  double ycent; //y coordinate of Gaussian centre
-  double xspread; //Spread of Gaussian in x direction
-  double yspread; //Spread of Gaussian in y direction
-  double stepheight; // Step height in JC's ramped input
-  double stepwidth; // Step width in JC's ramped input
-  int seed; // seed for random number generator
-
+  vector<Timeseries*> series;
 protected:
   void init( Configf& configf );
-  void restart( Restartf& restartf );
-  void dump( Dumpf& dumpf ) const;
-public: 
+  void restart( Restartf& restartf ) {}
+  void dump( Dumpf& dumpf ) const {}
+  double t;
+  double cease;
+public:
   Timeseries( int nodes, double deltat, int index );
-  virtual ~Timeseries();
+  virtual ~Timeseries(void);
   void step(void);
+  virtual void fire( vector<double>& Q ) const;
+};
+
+struct Const : public Timeseries
+{
+  double mean;
+  Const(int nodes,double deltat,int index) : Timeseries(nodes,deltat,index) {}
+  void init( Configf& configf );
+  void fire( vector<double>& Q ) const;
+};
+
+struct Pulse : public Timeseries
+{
+  double amp, width, period, pulses;
+  Pulse(int nodes,double deltat,int index) : Timeseries(nodes,deltat,index) {}
+  void init( Configf& configf );
+  void fire( vector<double>& Q ) const;
+};
+
+#include"random.h"
+struct White : public Timeseries
+{
+  double seed, amp, mean;
+  Random* random;
+  White(int nodes,double deltat,int index) : Timeseries(nodes,deltat,index) {}
+  virtual ~White(void) { delete random; }
+  void init( Configf& configf );
+  void fire( vector<double>& Q ) const;
+};
+
+struct WhiteCoherent : public Timeseries
+{
+  double seed, amp, mean;
+  Random* random;
+  WhiteCoherent(int nodes,double deltat,int index) : Timeseries(nodes,deltat,index) {}
+  virtual ~WhiteCoherent(void) { delete random; }
+  void init( Configf& configf );
+  void fire( vector<double>& Q ) const;
+};
+
+struct PAS : public Timeseries
+{
+  double n20w, n20h, p25w, p25h, tmsw, tmsh, isi;
+  PAS(int nodes,double deltat,int index) : Timeseries(nodes,deltat,index) {}
+  void init( Configf& configf );
   void fire( vector<double>& Q ) const;
 };
 

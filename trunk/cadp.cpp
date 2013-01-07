@@ -12,7 +12,7 @@ void CaDP::CaDE::rhs( const vector<double>& y, vector<double>& dydt )
   dydt[2] = gnmda*y[0]*y[1] -y[2]/tCa;
   if( y[2]+dydt[2]*deltat < 0 ) dydt[2] = -y[2];
   // nu
-  dydt[3] = po(y[2])*(max-y[3]) -de(y[2])*y[3];
+  dydt[3] = pot(y[2])*(max-y[3]) -dep(y[2])*y[3];
   if( pos*(y[3]+dydt[3]*deltat) < 0 ) dydt[3] = -y[3];
 }
 
@@ -21,12 +21,12 @@ double CaDP::CaDE::sig( double x, double beta ) const
   return 1/(1+exp(-beta*x));
 }
 
-double CaDP::CaDE::po(double Ca) const
+double CaDP::CaDE::pot(double Ca) const
 {
   return th +ltp*sig(Ca-pth,4e7);
 }
 
-double CaDP::CaDE::de(double Ca) const
+double CaDP::CaDE::dep(double Ca) const
 {
   return th +ltd*sig(Ca-dth,4e7) -ltd*sig(Ca-pth,4e7);
 }

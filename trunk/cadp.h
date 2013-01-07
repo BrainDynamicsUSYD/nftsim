@@ -32,8 +32,8 @@ protected:
     virtual ~CaDE(void) {}
     virtual void rhs( const vector<double>& y, vector<double>& dydt );
     inline double sig( double x, double beta ) const;
-    inline double po(double Ca) const; // potentiation rate
-    inline double de(double Ca) const; // depression rate
+    inline double pot(double Ca) const; // potentiation rate
+    inline double dep(double Ca) const; // depression rate
   };
   CaDE de;
   RK4 rk4;
