@@ -12,12 +12,12 @@ class Timeseries : public NF
 {
   Timeseries(Timeseries&);
   Timeseries(void);
-
-  vector<Timeseries*> series;
 protected:
   void init( Configf& configf );
   void restart( Restartf& restartf ) {}
   void dump( Dumpf& dumpf ) const {}
+
+  vector<Timeseries*> series;
   double t;
   double cease;
 public:
@@ -66,7 +66,7 @@ struct WhiteCoherent : public Timeseries
 
 struct PAS : public Timeseries
 {
-  double n20w, n20h, p25w, p25h, tmsw, tmsh, isi;
+  double n20w, n20h, p25w, p25h, tmsw, tmsh, t_mns, isi;
   PAS(int nodes,double deltat,int index) : Timeseries(nodes,deltat,index) {}
   void init( Configf& configf );
   void fire( vector<double>& Q ) const;
