@@ -119,7 +119,7 @@ void Population::add2Dendrite( int index,
   }
 
   if( !qresponse ) {
-    string temp(configf.find( label("Population ",this->index+1)+"*Mode:" ));
+    string temp(configf.find( label("Population ",this->index+1)+"*Firing:" ));
     if( temp == "Bursting" )
       qresponse = new BurstResponse(nodes,deltat,this->index);
     else if( temp == "FS" )

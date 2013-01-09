@@ -5,7 +5,7 @@ using std::endl;
 
 void QResponse::init( Configf& configf )
 {
-  configf.param("Mode",mode);//configf>>mode; 
+  vector<string> temp = configf.arb("-"); mode = temp[0];
   if( mode == "Sigmoid" ) {
     configf.param("Theta",theta);
     configf.param("Sigma",sigma);

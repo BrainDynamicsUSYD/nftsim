@@ -9,24 +9,26 @@ void Timeseries::init( Configf& configf )
   for( int i=0; i<superimpose; i++ ) {
     vector<string> mode = configf.arb("-");
     configf.optional("Onset",t); t = -t;
-    configf.optional("Cease",cease);
+    if( !configf.optional("Duration",cease) )
+      if( configf.optional("Cease",cease) )
+        cease += t;
     // PUT YOUR TIMEFUNCTION HERE
     if( mode[0]=="Const" )
       series.push_back( new Const(nodes,deltat,index) );
     else if( mode[0]=="Pulse" )
       series.push_back( new Pulse(nodes,deltat,index) );
     else if( mode[0]=="White" )
-      series.push_back( new White(index,nodes,deltat) );
+      series.push_back( new White(nodes,deltat,index) );
     else if( mode[0]=="WhiteCoherent" )
-      series.push_back( new WhiteCoherent(index,nodes,deltat) );
+      series.push_back( new WhiteCoherent(nodes,deltat,index) );
     else if( mode[0]=="PAS" )
-      series.push_back( new PAS(index,nodes,deltat) );
+      series.push_back( new PAS(nodes,deltat,index) );
 	else {
       cerr<<"Stimulus mode "<<mode[0].c_str()<<" not found"<<endl;
       exit(EXIT_FAILURE);
     }
     // END PUT YOUR TIMEFUNCTION HERE
-    series[i]->t = t; series[i]->cease = cease+t;
+    series[i]->t = t; series[i]->cease = cease;
     series[i]->init(configf);
   }
 
@@ -136,29 +138,38 @@ void WhiteCoherent::fire( vector<double>& Q ) const
 
 void PAS::init( Configf& configf )
 {
-  // N20 width: 2.5e-3 N20 height: 5 P25 width: 3.5e-3 P25 height: 5
-  // TMS width: .5e-3 TMS height: 3 ISI: 10e-3
+  // ISI: 10e-3
+  // N20 width: 2.5e-3 N20 height: 5
+  // P25 width: 3.5e-3 P25 height: 5
+  // TMS width: 0.5e-3 TMS height: 3
+  configf.param("ISI",isi);
   configf.param("N20 width", n20w);
   configf.param("N20 height",n20h);
   configf.param("P25 width", p25w);
   configf.param("P25 height",p25h);
   configf.param("TMS width", tmsw);
   configf.param("TMS height",tmsh);
-  configf.param("ISI",isi);
+  if( isi<0 ) {
+    t -= isi;
+    t_mns = -isi;
+  }
+  else {
+    t_mns = 0;
+  }
 }
 
 void PAS::fire( vector<double>& Q ) const
 {
   // MNS
-  if( t<n20w )
+  if( t_mns<=t && t<t_mns+n20w )
     for( int i=0; i<nodes; i++ )
-      Q[i] = -n20h*sin(3.14159*t/n20w);
-  else if( t<n20w+p25w )
+      Q[i] = -n20h*sin(3.14159*(t-t_mns)/n20w);
+  else if( t_mns+n20w<=t && t<t_mns+n20w+p25w )
     for( int i=0; i<nodes; i++ )
-      Q[i] =  p25h*sin(3.14159*t/p25w);
+      Q[i] =  p25h*sin(3.14159*(t-t_mns-n20w)/p25w);
 
   // TMS
-  if( n20w/2+isi<=t && t<n20w/2+isi+tmsw )
+  if( t_mns+n20w/2+isi<=t && t<t_mns+n20w/2+isi+tmsw )
     for( int i=0; i<nodes; i++ )
-      Q[i] = tmsh;
+      Q[i] += tmsh;
 }
