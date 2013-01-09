@@ -10,6 +10,7 @@ class fCaP : public CaDP
   fCaP();
   fCaP(fCaP&);
 protected:
+  vector< deque<double> > local; // local history of drive, used for averaging
   vector< deque<double> > drive; // == old dnudt in CaDP
   vector<double> oldnu; // to calculate old dnudt
   double alpha; // fractional integration order

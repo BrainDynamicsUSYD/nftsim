@@ -31,7 +31,7 @@ void fCaP::dump( Dumpf& dumpf ) const
 
 fCaP::fCaP( int nodes, double deltat, int index, const vector<double>& glu,
           const Propag& prepropag, const Population& postpop )
-    : CaDP(nodes,deltat,index,glu,prepropag,postpop), drive(nodes)
+    : CaDP(nodes,deltat,index,glu,prepropag,postpop), local(nodes), drive(nodes)
 {
 }
 
@@ -45,7 +45,16 @@ void fCaP::step(void)
 
   for( int i=0; i<nodes; i++ ) {
     // drive = history of eta(Omega-nu), most recent history at front
-    drive[i].push_front( (de[3][i]-oldnu[i])/deltat );
+    // store only local averaged drives to reduce computation
+    local[i].push_back( (de[3][i]-oldnu[i])/deltat );
+    if( local[i].size() == 10 ) {
+      double temp=0;
+      for( size_t j=0; j<local[i].size(); j++ )
+        temp += local[i][j];
+      drive[i].push_front(temp);
+      local[i].clear();
+    }
+
     de[3][i] = 0;
     for( size_t tau=1; tau<drive[i].size(); tau++ )
       de[3][i] += drive[i][tau]*pow(tau*deltat,alpha-1);
