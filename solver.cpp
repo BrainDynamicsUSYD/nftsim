@@ -408,8 +408,8 @@ void Solver::solve(void)
 
 void Solver::Glu::init( Configf& configf )
 {
-  configf.param("fast Lambda",fLambda); configf.param("fast Glu",tfGlu);
-  configf.param("slow Lambda",sLambda); configf.param("slow Glu",tsGlu);
+  configf.optional("fast Lambda",fLambda); configf.optional("fast Glu",tfGlu);
+  configf.optional("slow Lambda",sLambda); configf.optional("slow Glu",tsGlu);
   variables[0].resize(nodes,1e-4); variables[1].resize(nodes);
 }
 
@@ -426,13 +426,15 @@ void Solver::Glu::rhs( const vector<double>& y, vector<double>& dydt )
 void Solver::step(void)
 {
   // glutamte dynamics
-  for( int j=0; j<nodes; j++ )
-    (*glu)[1][j] = 0; // reset excitatory phi
-  for( size_t i=0; i<couples.size(); i++ )
-    if( couples[i]->excite() )
-      for( int j=0; j<nodes; j++ )
-        (*glu)[1][j] += (*propags[i])[j]; // put in excitatory phi
-  glu_rk4->step();
+  if( glu->fLambda != 0 ) {
+    for( int j=0; j<nodes; j++ )
+      (*glu)[1][j] = 0; // reset excitatory phi
+    for( size_t i=0; i<couples.size(); i++ )
+      if( couples[i]->excite() )
+        for( int j=0; j<nodes; j++ )
+          (*glu)[1][j] += (*propags[i])[j]; // put in excitatory phi
+    glu_rk4->step();
+  }
 
   // step through populations
   couples.step();
