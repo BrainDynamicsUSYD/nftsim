@@ -46,7 +46,7 @@ struct Pulse : public Timeseries
 #include"random.h"
 struct White : public Timeseries
 {
-  double seed, amp, mean;
+  double seed, amp, mean,deltax;
   Random* random;
   White(int nodes,double deltat,int index) : Timeseries(nodes,deltat,index) {}
   virtual ~White(void) { delete random; }
@@ -63,16 +63,6 @@ struct WhiteCoherent : public Timeseries
   void init( Configf& configf );
   void fire( vector<double>& Q ) const;
 };
-
-struct WhiteFourier : public White
-{
-  double /*seed, amp, mean,*/deltax;
-  //Random* random;
-  WhiteFourier(int nodes,double deltat,int index) : White(nodes,deltat,index) {}
-  virtual ~WhiteFourier(void) {}
-  void init( Configf& configf );
-};
-
 
 struct PAS : public Timeseries
 {
