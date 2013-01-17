@@ -1,5 +1,5 @@
-function [f,P] = nf_spatial_spectrum(nf,p,kmax,n_windows,spatial_filter)
-    % [f,P] = nf_spatial_spectrum(nf,p,kmax,n_windows,spatial_filter)
+function [f,P,V] = nf_spatial_spectrum(nf,p,kmax,n_windows,spatial_filter)
+    % [f,P,t,V] = nf_spatial_spectrum(nf,p,kmax,n_windows,spatial_filter)
     % Given a grid of voltages, applies a spatial filter   
     % Returns the spatially summed spectrum
     %  nf - nf object
@@ -14,9 +14,6 @@ function [f,P] = nf_spatial_spectrum(nf,p,kmax,n_windows,spatial_filter)
     %       this gives extra spectral clarity at the expense of lower frequency resolution
     % spatial_filter - set to 1 to enable the usual exponential k filter
     %
-    % Note that the spatial filter is meaningless if the spatial size Lx is set incorrectly
-    % SPECIAL USAGE- If only 1 NF argument is provided, then assume 8
-    % windows, kmax=4 and spatial filtering
     
     % First, work out the sampling rate in pixels per metre
     if strcmp(class(nf),'struct')
@@ -29,24 +26,22 @@ function [f,P] = nf_spatial_spectrum(nf,p,kmax,n_windows,spatial_filter)
         data = nf;
         fs = p;
     end
-    
-    if nargin == 1
-        spatial_filter = 1;
-        n_windows = 8;
-        kmax = 4;
-    else
-        if nargin < 5 || isempty(spatial_filter)
-            spatial_filter = 0; % Don't spatially filter by default
-        end
 
-        if nargin < 4 || isempty(n_windows)
-            n_windows = 1; % Don't perform any windowing at all
-        end
-
-        if nargin < 3 || isempty(kmax)
-            kmax = []; % Include all spatial frequencies
-        end
+    if mod(size(data,1),2) || mod(size(data,2),2)
+        error('In order to have a zero frequency component, you need an even number of grid edge nodes');
     end
+    if nargin < 5 || isempty(spatial_filter)
+        spatial_filter = 1; % Spatially filter by default
+    end
+
+    if nargin < 4 || isempty(n_windows)
+        n_windows = 8; % 8 windows by default
+    end
+
+    if nargin < 3 || isempty(kmax)
+        kmax = 4; % Limit to 4 k values in each direction
+    end
+
     
     % Calculate the temporal windows
     frac_overlap = 0.5;
@@ -57,7 +52,6 @@ function [f,P] = nf_spatial_spectrum(nf,p,kmax,n_windows,spatial_filter)
     Ly = 0.5;
     [f,Kx,Ky] = calculate_fft_components(data(:,:,window_vectors{1}),fs,Lx,Ly);
     k2 = Kx.^2+Ky.^2; % Matrix of k-squared values
-    
     if isempty(kmax)
         k_mask = ones(size(k2));
     else
@@ -79,7 +73,11 @@ function [f,P] = nf_spatial_spectrum(nf,p,kmax,n_windows,spatial_filter)
         P = P + get_3d_spectrum(data(:,:,window_vectors{j}),k_mask,k_filter,Lx,fs);
     end
     P = P/length(window_vectors);
-   
+    
+    if nargout > 2
+        V = get_filtered_timeseries(data,k_filter,k_mask,k2);
+    end
+    
 function P = get_3d_spectrum(data,k_mask,k_filter,Lx,fs)
     %data = data-mean(data(:));
     %win(1,1,:) = hamming(size(data,3));
@@ -133,9 +131,17 @@ function [f,Kx,Ky] = calculate_fft_components(v,fs,Lx,Ly)
     [Kx,Ky] = meshgrid(Kx,Ky);
     f = fs/2*linspace(0,1,size(v,3)/2+1)';
 
+function V = get_filtered_timeseries(data,k_filter,k_mask,k2);
+    output = fftshift(fftn(data));
+    %output = bsxfun(@times,output,k_mask);
+    output = bsxfun(@times,output,k_filter);
+    output = ifftn(fftshift(output));
+    [a,b] = find(k2==0);
+    V = squeeze(output(a,b,:));
+    
 function window_vectors = get_window_vectors(l_sample,n_windows,frac_overlap)
     % Return a cell array with indices for each window
-    % Sample is calculated from n windows overlapping by frac_overlap
+    % Sample is calculated from n w[indows overlapping by frac_overlap
     % pwelch uses n_windows = 8, frac_overlap = 0.5 by default
     window_length = l_sample/((1+(n_windows-1)*(1-frac_overlap)));
     % And reduce the window length to a multiple of 2

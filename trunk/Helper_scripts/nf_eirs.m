@@ -1,6 +1,6 @@
-function varargout = nf_eirs(p,file_id,firemode,int_time,grid_edge,fs)
+function varargout = nf_eirs(p,file_id,firemode,int_time,grid_edge,fs,waves)
     % Run NeuroField on an EIRS point struct
-    % [nf,f,P] = nf_eirs(p,file_id,firemode,int_time,grid_edge,grid_output)
+    % [nf,f,P,V] = nf_eirs(p,file_id,firemode,int_time,grid_edge,grid_output)
     % - Accepts a point struct as input
     % - file_id optionally specifies the number for neurofield_*.conf/output
     % - firemode is a 3 element vector that equals
@@ -27,21 +27,28 @@ function varargout = nf_eirs(p,file_id,firemode,int_time,grid_edge,fs)
     % If nf = nf_eirs() then nf_read will be called but no plot produced
     % If [nf,f,P] = nf_eirs() then nf_spatial_spectrum will also be called
     % and a plot produced
+    if nargin < 7 || isempty(waves)
+        waves = 0; % waves = 1 for wave propagators in stimulus and relay nuclei
+    end
     
     if nargin < 6 || isempty(fs)
         fs = 10000;
     end
     
     if nargin < 5 || isempty(grid_edge)
-        grid_edge = 20;
+        grid_edge = 12;
+    else
+        if mod(grid_edge,2)
+            error('The number of grid edge nodes should be even to correctly align the FFT components')
+        end
     end
 
     if nargin < 4 || isempty(int_time)
-        int_time = 30; % Total integration time (s)
+        int_time = 15; % Total integration time (s)
     end
     
     if nargin < 3 || isempty(firemode)
-        firemode = [0 0 0];
+        firemode = [0 0 0 0];
     else
         firemode = [firemode(1) firemode(1) firemode(2:3)]; % Add an entry for inhibitory
     end
@@ -51,8 +58,8 @@ function varargout = nf_eirs(p,file_id,firemode,int_time,grid_edge,fs)
     end
     
     if size(p.nus,1) ~= 1 || size(p.phia,1) ~= 1
-		error('Input point must have exactly one set of nuab and phia')
-	end
+        error('Input point must have exactly one set of nuab and phia')
+    end
 	
 	% Initialize numerical solver parameters
     deltat = 1/fs;
@@ -61,14 +68,14 @@ function varargout = nf_eirs(p,file_id,firemode,int_time,grid_edge,fs)
 	
 	% CFL condition
 	v = p.gammae*p.re; % Axonal velocity
-	if deltat >= deltax/v % If the timestep is larger than the time required to propagate deltax
-		fprintf(2,'Modifying deltat to satisfy CFL stability condition\n')
-		deltat = deltax/v * 0.9;
-		fprintf(1,'Deltat = %f\n',deltat);
+    if deltat >= deltax/v % If the timestep is larger than the time required to propagate deltax
+        fprintf(2,'Modifying deltat to satisfy CFL stability condition\n');
+        deltat = deltax/v * 0.9;
+        fprintf(1,'Deltat = %f\n',deltat);
     end
     
     % Write the file
-    write_nf(file_id,p,int_time,deltat,deltax,grid_edge,firemode);
+    write_nf(file_id,p,int_time,deltat,deltax,grid_edge,firemode,waves);
 
     if nargout > 0
         varargout{1} = nf_run(sprintf('neurofield_%i',file_id));
@@ -76,33 +83,39 @@ function varargout = nf_eirs(p,file_id,firemode,int_time,grid_edge,fs)
         nf_run(sprintf('neurofield_%i',file_id));
     end
     
-    if nargout > 1
-        [f,P] = nf_spatial_spectrum(varargout{1},'propag.1.phi',4,8,1); % kmax=4, 8 segments, spatial filtering=1
+    if nargout > 3
+        [f,P,V] = nf_spatial_spectrum(varargout{1},'propag.1.phi',999,8,1); % kmax=4, 8 segments, spatial filtering=1
+        varargout{4} = V;
+    elseif nargout > 1
+        [f,P] = nf_spatial_spectrum(varargout{1},'propag.1.phi',999,8,1); % kmax=4, 8 segments, spatial filtering=1
+    end
+    
+    if nargout > 1    
         varargout{2} = f;
         varargout{3} = P;
         figure
         loglog(f,P,'b');
         xlabel('Frequency (Hz)');
         ylabel('Power (arbitrary)');
-        title(sprintf('X: %.3f Y: %.3f Z: %.3f',p.xyz(1),p.xyz(2),p.xyz(3)));
+        try
+            title(sprintf('X: %.3f Y: %.3f Z: %.3f',p.xyz(1),p.xyz(2),p.xyz(3)));
+        end
         set(gca,'XLim',[1 45]);
 
         try
-            [f_a,P_a] = analytic_spectrum(p,1);
+            [f_a,P_a] = analytic_spectrum(p,any(firemode==0));
             P_a = interp1(f_a,P_a,f,'pchip','extrap');
             hold on
             loglog(f,P_a,'r--');
-            if grid_output
-                legend('Spatially filtered','Analytic');
-            else
-                legend('neurofield','Analytic');
-            end
+            legend('NeuroField','Analytic');
             hold off
+        catch
+            kdb
         end
     end
 end
 
-function write_nf(file_id,p,int_time,deltat,deltax,grid_edge,firemode)
+function write_nf(file_id,p,int_time,deltat,deltax,grid_edge,firemode,waves)
     % WRITE THE FILE
     fid = fopen(sprintf('neurofield_%i.conf',file_id),'w');
     
@@ -135,14 +148,14 @@ function write_nf(file_id,p,int_time,deltat,deltax,grid_edge,firemode)
             v0 = sinv(phivals(j),p);
             a = rho1(phivals(j),p);
             b = phivals(j) - a*v0;
-            fprintf(fid,'Firing: Mode: Linear - a: %f b: %f\n',a,b);
+            fprintf(fid,'Firing: Linear - a: %f b: %f\n',a,b);
             fprintf(1,'Linear %s\n',labels{j});
         elseif firemode(j) == 2 % If population has been quadraticized
             v0 = sinv(phivals(j),p);
             a = rho2(phivals(j),p)/2;
             b = rho1(phivals(j),p) - 2*a*v0;
             c = phivals(j) - rho1(phivals(j),p)*v0 + a*v0.^2;
-            fprintf(fid,'Firing: Mode: Quadratic - a: %f b: %f c: %f\n',a,b,c);
+            fprintf(fid,'Firing: Quadratic - a: %f b: %f c: %f\n',a,b,c);
             fprintf(1,'Quadratic %s\n',labels{j});
         elseif firemode(j) == 3 % Cubic population
             v0 = sinv(phivals(j),p);
@@ -154,10 +167,10 @@ function write_nf(file_id,p,int_time,deltat,deltax,grid_edge,firemode)
             c =  (r3*v0^2)/2 - r2*v0 + r1;
             b = r2/2 - (r3*v0)/2;
             a = r3/6;
-            fprintf(fid,'Firing: Mode: Cubic - a: %f b: %f c: %f d: %f\n',a,b,c,d);
+            fprintf(fid,'Firing: Cubic - a: %f b: %f c: %f d: %f\n',a,b,c,d);
             fprintf(1,'Cubic %s\n',labels{j});
         else
-            fprintf(fid,'Firing: Mode: Sigmoid - Theta: %f Sigma: %f Qmax: %f\n',p.theta,p.sigma,p.qmax);
+            fprintf(fid,'Firing: Sigmoid - Theta: %f Sigma: %f Qmax: %f\n',p.theta,p.sigma,p.qmax);
         end
         
         for k = 1:n_dendrites(j)
@@ -168,21 +181,36 @@ function write_nf(file_id,p,int_time,deltat,deltax,grid_edge,firemode)
     end
 
     fprintf(fid,'Population 5: Stimulation\n');
-    fprintf(fid,'Stimulus: Mode: White - Onset: 0 Amplitude: %f Mean: 1 Deltax: %f\n',p.phin,deltax);
+    fprintf(fid,'Stimulus: WhiteFourier - Onset: 0 phin: %f steady: 1 Deltax: %f\n',p.phin,deltax);
     
     fprintf(fid,'\n');
+    if waves
+        fprintf(1,'Wave propagators in stimulus and relay\n');
+        fprintf(fid,'Propag 1: Wave - Tau: %f Deltax: %f Range: %f gamma: %f\n',0,deltax,p.re,p.gammae); %e CX
+        fprintf(fid,'Propag 2: Map - Tau: %f\n',0);   %i CX
+        fprintf(fid,'Propag 3: Wave - Tau: %f Deltax: %f Range: %f gamma: %f\n',p.taues,deltax,p.rs,p.gammas); % relay
+        fprintf(fid,'Propag 4: Wave - Tau: %f Deltax: %f Range: %f gamma: %f\n',0,deltax,p.re,p.gammae);%e CX
+        fprintf(fid,'Propag 5:  Map - Tau: %f\n',0); %i CX 
+        fprintf(fid,'Propag 6: Wave - Tau: %f Deltax: %f Range: %f gamma: %f\n',p.taues,deltax,p.rs,p.gammas); % relay
+        fprintf(fid,'Propag 7: Wave - Tau: %f Deltax: %f Range: %f gamma: %f\n',p.tause,deltax,p.re,p.gammae);%e CX
+        fprintf(fid,'Propag 8: Wave - Tau: %f Deltax: %f Range: %f gamma: %f\n',0,deltax,p.rs,p.gammas); % relay
+        fprintf(fid,'Propag 9: Wave - Tau: %f Deltax: %f Range: %f gamma: %f\n',p.tause,deltax,p.re,p.gammae);%e CX
+        fprintf(fid,'Propag 10: Map - Tau: %f\n',0);  % nRT
+        fprintf(fid,'Propag 11: Wave - Tau: %f Deltax: %f Range: %f gamma: %f\n',0,deltax,p.rn,p.gamman);   % STIM
+    else
+        fprintf(fid,'Propag 1: Wave - Tau: %f Deltax: %f Range: %f gamma: %f\n',0,deltax,p.re,p.gammae);
+        fprintf(fid,'Propag 2: Map - Tau: %f\n',0);   
+        fprintf(fid,'Propag 3: Map - Tau: %f\n',p.taues);   
+        fprintf(fid,'Propag 4: Wave - Tau: %f Deltax: %f Range: %f gamma: %f\n',0,deltax,p.re,p.gammae);
+        fprintf(fid,'Propag 5:  Map - Tau: %f\n',0);  
+        fprintf(fid,'Propag 6:  Map - Tau: %f\n',p.tause); 
+        fprintf(fid,'Propag 7: Wave - Tau: %f Deltax: %f Range: %f gamma: %f\n',p.tause,deltax,p.re,p.gammae);
+        fprintf(fid,'Propag 8:  Map - Tau: %f\n',0);  
+        fprintf(fid,'Propag 9: Wave - Tau: %f Deltax: %f Range: %f gamma: %f\n',p.tause,deltax,p.re,p.gammae);
+        fprintf(fid,'Propag 10: Map - Tau: %f\n',0);  
+        fprintf(fid,'Propag 11: Map - Tau: %f\n',0);
+    end
     
-    fprintf(fid,'Propag 1: Wave - Tau: %f Deltax: %f Range: %f gamma: %f\n',0,deltax,p.re,p.gammae);
-    fprintf(fid,'Propag 2: Map - Tau: %f\n',0);   
-    fprintf(fid,'Propag 3: Map - Tau: %f\n',p.taues);   
-    fprintf(fid,'Propag 4: Wave - Tau: %f Deltax: %f Range: %f gamma: %f\n',0,deltax,p.re,p.gammae);
-    fprintf(fid,'Propag 5:  Map - Tau: %f\n',0);  
-    fprintf(fid,'Propag 6:  Map - Tau: %f\n',p.tause); 
-    fprintf(fid,'Propag 7: Wave - Tau: %f Deltax: %f Range: %f gamma: %f\n',p.tause,deltax,p.re,p.gammae);
-    fprintf(fid,'Propag 8:  Map - Tau: %f\n',0);  
-    fprintf(fid,'Propag 9: Wave - Tau: %f Deltax: %f Range: %f gamma: %f\n',p.tause,deltax,p.re,p.gammae);
-    fprintf(fid,'Propag 10: Map - Tau: %f\n',0);  
-    fprintf(fid,'Propag 11: Map - Tau: %f\n',0);   
     fprintf(fid,'Couple 1:  Map - nu: %f\n',p.nus(1)); % ee
     fprintf(fid,'Couple 2:  Map - nu: %f\n',p.nus(2)); % ei
     fprintf(fid,'Couple 3:  Map - nu: %f\n',p.nus(3)); % es

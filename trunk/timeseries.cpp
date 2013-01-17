@@ -21,6 +21,8 @@ void Timeseries::init( Configf& configf )
       series.push_back( new White(nodes,deltat,index) );
     else if( mode[0]=="WhiteCoherent" )
       series.push_back( new WhiteCoherent(nodes,deltat,index) );
+    else if( mode[0]=="WhiteFourier" )
+      series.push_back( new WhiteFourier(nodes,deltat,index) );
     else if( mode[0]=="PAS" )
       series.push_back( new PAS(nodes,deltat,index) );
 	else {
@@ -134,6 +136,17 @@ void WhiteCoherent::fire( vector<double>& Q ) const
   random->gaussian(deviate1,deviate2);
   for( int i=0; i<nodes; i++ )
     Q[i] = amp*deviate1 +mean;
+}
+
+void WhiteFourier::init( Configf& configf )
+{
+  seed = -98715872;
+  configf.optional("Ranseed",seed);
+  random = new Random(seed);
+  configf.param("phin",amp);
+  configf.param("steady",mean);
+  configf.param("Deltax",deltax);
+  amp = sqrt(4*pow(M_PI,3)*pow(amp,2)/deltat/deltax/deltax);
 }
 
 void PAS::init( Configf& configf )
