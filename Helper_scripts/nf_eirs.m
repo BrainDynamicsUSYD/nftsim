@@ -181,7 +181,7 @@ function write_nf(file_id,p,int_time,deltat,deltax,grid_edge,firemode,waves)
     end
 
     fprintf(fid,'Population 5: Stimulation\n');
-    fprintf(fid,'Stimulus: WhiteFourier - Onset: 0 phin: %f steady: 1 Deltax: %f\n',p.phin,deltax);
+    fprintf(fid,'Stimulus: White - Onset: 0 Amplitude: %f Mean: 1 Deltax: %f\n',p.phin,deltax);
     
     fprintf(fid,'\n');
     if waves
@@ -225,7 +225,7 @@ function write_nf(file_id,p,int_time,deltat,deltax,grid_edge,firemode,waves)
     fprintf(fid,'\n');
 
     fprintf(fid,'Output: Node: All Start: 0\n');
-    fprintf(fid,'Population: \n');
+    fprintf(fid,'Population: 4\n');
     fprintf(fid,'Dendrite:  \n');
     fprintf(fid,'Propag: 1 \n');
     fprintf(fid,'Couple:  \n');

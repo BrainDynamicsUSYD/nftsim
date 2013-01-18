@@ -51,6 +51,7 @@ function [f,P,V] = nf_spatial_spectrum(nf,p,kmax,n_windows,spatial_filter)
     Lx = 0.5; % linear cortex dimension (m)
     Ly = 0.5;
     [f,Kx,Ky] = calculate_fft_components(data(:,:,window_vectors{1}),fs,Lx,Ly);
+    
     k2 = Kx.^2+Ky.^2; % Matrix of k-squared values
     if isempty(kmax)
         k_mask = ones(size(k2));
