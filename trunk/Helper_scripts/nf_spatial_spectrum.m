@@ -16,11 +16,17 @@ function [f,P,V] = nf_spatial_spectrum(nf,p,kmax,n_windows,spatial_filter)
     %
     
     % First, work out the sampling rate in pixels per metre
-    if strcmp(class(nf),'struct')
+    if isstruct(nf)
         if nargin < 2 || isempty(p)
-            p = 'propag.1.phi'; % Try the phi propagator first
+            if any(strfind([nf.fields{1:end}],'WaveFourier'))
+                data = nf_extract(nf,'WaveFourier.1.Real')+1i*nf_extract(nf,'WaveFourier.1.Real');
+            else
+                p = 'propag.1.phi'; % Try the phi propagator first
+                data = nf_grid(nf,p);
+            end
+        else
+            data = nf_grid(nf,p);
         end
-        data = nf_grid(nf,p);
         fs = 1/nf.deltat;
     else
         data = nf;
