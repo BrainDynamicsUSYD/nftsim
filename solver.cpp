@@ -15,8 +15,8 @@ using std::stringstream;
 
 #include"propag.h"
 #include"wave.h"
+#include"wave_fourier.h"
 #include"harmonic.h"
-#include"cmap.h"
 
 #include"couple.h"
 #include"cadp.h"
@@ -157,13 +157,17 @@ void Solver::init( Configf& configf )
       propags.add( new
         Wave(nodes,deltat,i, *pops[cnt.pre[i]], *pops[cnt.post[i]], longside, topology));
     }
+    else if(ptype=="WaveFourier") {
+      if( nodes==1 )
+      propags.add( new
+        Harmonic(nodes,deltat,i, *pops[cnt.pre[i]], *pops[cnt.post[i]], longside, topology));
+      else
+      propags.add( new
+        WaveFourier(nodes,deltat,i, *pops[cnt.pre[i]], *pops[cnt.post[i]], longside, topology));
+    }
     else if(ptype=="Harmonic")
       propags.add( new
         Harmonic(nodes,deltat,i, *pops[cnt.pre[i]], *pops[cnt.post[i]], longside, topology));
-    else if(ptype=="CMAP")
-      propags.add( new
-        CMap(nodes,deltat,i, *pops[cnt.pre[i]], *pops[cnt.post[i]],
-          longside,topology ) );
     else {
       cerr<<"Invalid propagator type '"<<ptype<<"'."<<endl;
       exit(EXIT_FAILURE);
@@ -378,16 +382,12 @@ void Solver::initOutput( Configf& configf )
   // write out first row
   Outlet::dumpf<<space<<"Time"<<space<<space<<septor;
   for( size_t i=0; i<outputs.size(); i++ ) {
-    for( size_t j=0; j<Outlet::node.size(); j++ )
-      Outlet::dumpf<<space<<space<<outputs[i]->fieldname();
-    Outlet::dumpf<<space<<space<<septor;
+    outputs[i]->writeName();
   }
   // write out second row
   Outlet::dumpf<<endl<<space<<space<<space<<" "<<septor;
   for( size_t i=0; i<outputs.size(); i++ ) {
-    for( size_t j=0; j<Outlet::node.size(); j++ )
-      Outlet::dumpf<<space<<space<<setw<<Outlet::node[j]+1;
-    Outlet::dumpf<<space<<space<<septor;
+    outputs[i]->writeNode();
   }
   Outlet::dumpf<<endl;
 }
