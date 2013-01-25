@@ -45,7 +45,7 @@ function [f,P,V] = nf_spatial_spectrum(nf,p,kmax,n_windows,spatial_filter)
     end
 
     if nargin < 3 || isempty(kmax)
-        kmax = 4; % Limit to 4 k values in each direction
+        kmax = 4; % Limit to 4 k values in each direction by default
     end
 
     

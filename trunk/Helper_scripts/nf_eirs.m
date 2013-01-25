@@ -122,8 +122,6 @@ function write_nf(file_id,p,int_time,deltat,deltax,grid_edge,firemode,waves)
     fprintf(fid,'EIRS model, automatically generated with nf_eirs.m\n');
     fprintf(fid,'Time: %f Deltat: %f\n',int_time,deltat);
     fprintf(fid,'Nodes: %i\n',grid_edge^2);
-    fprintf(fid,'Glutamate dynamics - fast Lambda: 0 fast Glu: 0\n');
-    fprintf(fid,'                     slow Lambda: 0 slow Glu: 0\n');
                      
     fprintf(fid,'\n');
             
