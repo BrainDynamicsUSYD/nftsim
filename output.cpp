@@ -78,7 +78,6 @@ bool Output::empty(void) const
 }
 
 Output::operator vector<Outlet*>(void) const
-//vector<Output*> Output::operator() (void) const;
 {
   return outputs;
 }

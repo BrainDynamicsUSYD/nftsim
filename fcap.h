@@ -10,27 +10,27 @@ class fCaP : public CaDP
   fCaP();
   fCaP(fCaP&);
 protected:
-  double alpha;
-  double t;
-  vector< deque<double> > local; // local history of drive, used for averaging
-  vector< deque<double> > drive; // == old dnudt in CaDP
-  vector<double> oldnu; // to calculate old dnudt
-  vector<double> init_nu; // initial condition(s)
-
   struct fCaDE : public CaDE
   {
-    vector< deque<double> > xhistory;
-    vector< deque<double> > xlocal;
-    vector< deque<double> > yhistory;
-    vector< deque<double> > ylocal;
-
-    fCaDE( int nodes, double deltat )
-        : CaDE(nodes,deltat), xhistory(nodes), xlocal(nodes),
-        yhistory(nodes), ylocal(nodes) {}
+    double alpha, beta;
+    double tau_x, tau_y;
+    vector< deque<double> > xhistory1st;
+    vector< deque<double> > xhistory2nd;
+    vector< deque<double> > yhistory1st;
+    vector< deque<double> > yhistory2nd;
+    virtual void init( Configf& configf );
+    fCaDE( int nodes, double deltat ) : CaDE(nodes,deltat),
+      xhistory1st(nodes), xhistory2nd(nodes),
+      yhistory1st(nodes), yhistory2nd(nodes) {}
     virtual ~fCaDE(void) {}
-    virtual void pot( vector<double>& Ca, vector<double>& x );
-    virtual void dep( vector<double>& Ca, vector<double>& y );
+    void pot(void);
+    void dep(void);
   };
+  /*double alpha;
+  vector< deque<double> > history1st; // == eta*( old dnudt in CaDP )
+  vector< deque<double> > history2nd; // == D^-alpha(history1st) -eta*nu
+  vector<double> oldnu; // to calculate old dnudt
+  double init_nu; // initial condition*/
 
   virtual void init( Configf& configf );
   virtual void restart( Restartf& restartf );
