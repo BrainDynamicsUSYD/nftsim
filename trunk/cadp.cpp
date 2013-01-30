@@ -23,48 +23,54 @@ double CaDP::CaDE::sig( double x, double beta ) const
   return 1/(1+exp(-beta*x));
 }
 
-void CaDP::CaDE::pot( vector<double>& Ca, vector<double>& x )
-{
-  for( int i=0; i<nodes; i++ )
-    x[i] = pot(Ca[i]);
-}
-
-double CaDP::CaDE::pot( double Ca ) const
+double CaDP::CaDE::_x(double Ca) const
 {
   return th +ltp*sig(Ca-pth,4e7);
 }
 
-void CaDP::CaDE::dep( vector<double>& Ca, vector<double>& y )
+void CaDP::CaDE::pot(void)
 {
   for( int i=0; i<nodes; i++ )
-    y[i] = dep(Ca[i]);
+    variables[4][i] = _x( variables[2][i] );
 }
 
-double CaDP::CaDE::dep( double Ca ) const
+double CaDP::CaDE::_y(double Ca) const
 {
   return th +ltd*sig(Ca-dth,4e7) -ltd*sig(Ca-pth,4e7);
 }
 
+void CaDP::CaDE::dep(void)
+{
+  for( int i=0; i<nodes; i++ )
+    variables[5][i] = _y( variables[2][i] );
+}
+
 void CaDP::init( Configf& configf )
 {
+  de->init(configf);
+  pos = de->pos;
+}
+
+void CaDP::CaDE::init( Configf& configf )
+{
   double nuinit; configf.param("nu",nuinit);
-  (*de)[3].clear(); (*de)[3].resize(nodes,nuinit);
-  pos = de->pos = (nuinit>0)?1:-1;
-  configf.param("nu_max",de->max);
-  if( !configf.optional("LTD",de->dth) )
-    de->dth = .25e-6;
-  if( !configf.optional("LTP",de->pth) )
-    de->pth = .45e-6;
-  if( !configf.optional("Threshold",de->th) )
-    de->th = 1e-4;
-  configf.param("x",de->ltp);
-  configf.param("y",de->ltd);
-  configf.param("B",de->B);
-  configf.param("glu_0",de->glu_0);
-  if( !configf.optional("tCa",de->tCa) )
-    de->tCa = 50e-3;
-  if( !configf.optional("gNMDA",de->gnmda) )
-    de->gnmda = 2e-3;
+  variables[3].clear(); variables[3].resize(nodes,nuinit);
+  pos = (nuinit>0)?1:-1;
+  configf.param("nu_max",max);
+  if( !configf.optional("LTD",dth) )
+    dth = .25e-6;
+  if( !configf.optional("LTP",pth) )
+    pth = .45e-6;
+  if( !configf.optional("Threshold",th) )
+    th = 1e-4;
+  configf.param("x",ltp);
+  configf.param("y",ltd);
+  configf.param("B",B);
+  configf.param("glu_0",glu_0);
+  if( !configf.optional("tCa",tCa) )
+    tCa = 50e-3;
+  if( !configf.optional("gNMDA",gnmda) )
+    gnmda = 2e-3;
 }
 
 void CaDP::restart( Restartf& restartf )
@@ -77,7 +83,7 @@ void CaDP::dump( Dumpf& dumpf ) const
 
 CaDP::CaDP( int nodes, double deltat, int index, const vector<double>& glu,
         const Propag& prepropag, const Population& postpop )
-  : Couple(nodes,deltat,index,glu,prepropag,postpop)
+    : Couple(nodes,deltat,index,glu,prepropag,postpop)
 {
   de = new CaDE(nodes,deltat);
   rk4 = new RK4(*de);
@@ -95,8 +101,7 @@ void CaDP::step(void)
     (*de)[0][i] = de->sig( glu[i] -de->glu_0, de->B );
     (*de)[1][i] = (195e-3-postpop[i])*de->sig( postpop[i]-45.5e-3,62 );
   }
-  de->pot( (*de)[2], (*de)[4] );
-  de->dep( (*de)[2], (*de)[5] );
+  de->pot(); de->dep();
   rk4->step();
 }
 

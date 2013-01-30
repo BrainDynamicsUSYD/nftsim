@@ -15,8 +15,10 @@ using std::stringstream;
 
 #include"propag.h"
 #include"wave.h"
-#include"wave_fourier.h"
 #include"harmonic.h"
+#ifdef WAVEFOURIER
+#include"wave_fourier.h"
+#endif
 
 #include"couple.h"
 #include"cadp.h"
@@ -157,6 +159,7 @@ void Solver::init( Configf& configf )
       propags.add( new
         Wave(nodes,deltat,i, *pops[cnt.pre[i]], *pops[cnt.post[i]], longside, topology));
     }
+    #ifdef WAVEFOURIER
     else if(ptype=="WaveFourier") {
       if( nodes==1 )
       propags.add( new
@@ -165,6 +168,7 @@ void Solver::init( Configf& configf )
       propags.add( new
         WaveFourier(nodes,deltat,i, *pops[cnt.pre[i]], *pops[cnt.post[i]], longside, topology));
     }
+    #endif
     else if(ptype=="Harmonic")
       propags.add( new
         Harmonic(nodes,deltat,i, *pops[cnt.pre[i]], *pops[cnt.post[i]], longside, topology));
@@ -355,30 +359,6 @@ void Solver::initOutput( Configf& configf )
     outputs.add(output);
   }
 
-  // read in propags to output
-  /*configf.next("Propag");
-  temp = configf.numbers();
-  for( size_t i=0; i<temp.size(); i++ ) {
-    if( temp[i] > cnt.ncnt ) {
-      cerr<<"Trying to print propagator "<<temp[i]
-          <<", which is an invalid propagator."<<endl;
-      exit(EXIT_FAILURE);
-    }
-    outputs.add( propags[temp[i]-1]->output() );
-  }
-  
-  // read in couples to output
-  configf.next("Couple");
-  temp = configf.numbers();
-  for( size_t i=0; i<temp.size(); i++ ) {
-    if( temp[i] > cnt.ncnt ) {
-      cerr<<"Trying to print couple "<<temp[i]
-          <<", which is an invalid couple."<<endl;
-      exit(EXIT_FAILURE);
-    }
-    outputs.add( couples[temp[i]-1]->output() );
-  }*/
-    
   // write out first row
   Outlet::dumpf<<space<<"Time"<<space<<space<<septor;
   for( size_t i=0; i<outputs.size(); i++ ) {

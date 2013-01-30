@@ -31,14 +31,16 @@ protected:
 
     double pos; // sign of nu
 
+    virtual void init( Configf& configf );
     CaDE( int nodes, double deltat ) : DE(nodes,deltat,6) {}
     virtual ~CaDE(void) {}
+
     virtual void rhs( const vector<double>& y, vector<double>& dydt );
-    virtual double sig( double x, double beta ) const;
-    virtual void pot( vector<double>& Ca, vector<double>& x );
-    virtual double pot( double Ca ) const;
-    virtual void dep( vector<double>& Ca, vector<double>& y );
-    virtual double dep( double Ca ) const;
+    inline double sig( double x, double beta ) const;
+    double _x( double Ca ) const; // potentiation rate
+    double _y( double Ca ) const; // depression rate
+    virtual void pot(void);
+    virtual void dep(void);
   };
   CaDE* de;
   RK4* rk4;
