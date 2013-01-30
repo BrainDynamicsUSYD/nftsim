@@ -57,8 +57,6 @@ void Population::step(void)
     qresponse->fire( qhistory[qkey] );
   }
   else { // stimulus population
-    for( int i=0; i<nodes; i++ )
-      qhistory[qkey][i] = 0; // reset Q for stimulus
     timeseries->step();
     timeseries->fire( qhistory[qkey] );
   }

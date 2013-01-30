@@ -49,6 +49,7 @@ void Timeseries::fire( vector<double>& Q ) const
 {
   static vector<double> temp;
   temp.clear(); temp.resize(nodes,0);
+  Q.clear(); Q.resize(nodes,0);
   for( size_t i=0; i<series.size(); i++ )
     if( series[i]->t>=0 && series[i]->t<series[i]->cease ) {
       series[i]->fire(temp);
