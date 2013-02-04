@@ -17,7 +17,7 @@ using std::stringstream;
 #include"wave.h"
 #include"harmonic.h"
 #ifdef WAVEFOURIER
-#include"wave_fourier.h"
+#include"wavefourier.h"
 #endif
 
 #include"couple.h"
@@ -433,4 +433,5 @@ void Solver::step(void)
     }
   }
 }
+
 
