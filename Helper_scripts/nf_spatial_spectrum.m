@@ -19,7 +19,9 @@ function [f,P,V] = nf_spatial_spectrum(nf,p,kmax,n_windows,spatial_filter)
     if isstruct(nf)
         if nargin < 2 || isempty(p)
             if any(strfind([nf.fields{1:end}],'WaveFourier'))
-                data = nf_extract(nf,'WaveFourier.1.Real')+1i*nf_extract(nf,'WaveFourier.1.Real');
+                [f,P] = nf_wavefourier_spectrum(nf);
+                V = [];
+                return
             else
                 p = 'propag.1.phi'; % Try the phi propagator first
                 data = nf_grid(nf,p);
@@ -89,24 +91,26 @@ function P = get_3d_spectrum(data,k_mask,k_filter,Lx,fs)
     %data = data-mean(data(:));
     %win(1,1,:) = hamming(size(data,3));
     %data = bsxfun(@times,data,win);
-    output = fftshift(fftn(data));
-    output = output./numel(data);
+    P = fftshift(fftn(data));
+    P = P./numel(data);
     
+    % Apply spatial filtering
+    %P = bsxfun(@times,P,k_mask);
+    P = bsxfun(@times,P,sqrt(k_filter));
+    keyboard
+    % Calculate power spectrum
+    P = squeeze(sum(sum(P,1),2)); % A sum is OK here because we have multiplied by dk (so don't need trapz)
+
     % Convert to power density
-    output = abs(output).^2;
+    P = abs(P).^2;
     df = fs/(size(data,3));
     dk = 2*pi/Lx;
     
-    %output = output / df / dk / dk; % Get power density in all 3 dimensions
-    %output = output*dk*dk; % Since we are summing over k, multiply by dk
-    output = output / df; % Take a shortcut and omit converting to density in the spatial direction
+    %P = P / df / dk / dk; % Get power density in all 3 dimensions
+    %P = P*dk*dk; % Since we are summing over k, multiply by dk
+    P = P / df; % Take a shortcut and omit converting to density in the spatial direction
     
-    % Apply spatial filtering
-    output = bsxfun(@times,output,k_mask);
-    output = bsxfun(@times,output,k_filter);
-    
-    % Calculate power spectrum
-    P = squeeze(sum(sum(output,1),2)); % A sum is OK here because we have multiplied by dk (so don't need trapz)
+
     P = ifftshift(P);
     P = P(1:size(data,3)/2+1);
     P(2:size(data,3)/2) = 2*P(2:size(data,3)/2); % Double the frequency components at nonzero and non-Nyquist frequencies
