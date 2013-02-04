@@ -59,3 +59,4 @@ WaveFourier::~WaveFourier(void)
 
 #endif
 
+
