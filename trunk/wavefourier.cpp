@@ -39,8 +39,8 @@ void WaveFourier::step(void)
   for(int i=0; i<nodes; i++)
     temp_sum += out[i];
 
-  realpart[0] = std::real(temp_sum);
-  imagpart[0] = std::imag(temp_sum);
+  realpart[0] = std::real(temp_sum)/nodes;
+  imagpart[0] = std::imag(temp_sum)/nodes;
 }
 
 
@@ -58,5 +58,6 @@ WaveFourier::~WaveFourier(void)
 }
 
 #endif
+
 
 
