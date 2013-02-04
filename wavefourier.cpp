@@ -1,4 +1,3 @@
-//#define WAVEFOURIER // to use this propag, uncomment this line
 #ifdef WAVEFOURIER
 
 #include<cmath>
@@ -59,3 +58,4 @@ WaveFourier::~WaveFourier(void)
 }
 
 #endif
+

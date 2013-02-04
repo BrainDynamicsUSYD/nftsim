@@ -18,7 +18,7 @@ OBJ = $(CPP:.cpp=.o)
 default: Release/NeuroField
 
 Release/NeuroField: $(addprefix Release/,$(OBJ))
-	$(COMP) $(addprefix Release/,$(OBJ)) -o $@ $(LIBS)
+	$(COMP) $(addprefix Release/,$(OBJ)) -o $@ $(#wavefourier LIBS)
 
 $(addprefix Release/,$(OBJ)): Release/%.o: %.cpp %.h
 	mkdir -p Release
@@ -41,3 +41,5 @@ clean:
 
 main.h:
 	touch main.h
+
+
