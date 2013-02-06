@@ -36,7 +36,7 @@ protected:
     virtual ~CaDE(void) {}
 
     virtual void rhs( const vector<double>& y, vector<double>& dydt );
-    inline double sig( double x, double beta ) const;
+    double sig( double x, double beta ) const;
     double _x( double Ca ) const; // potentiation rate
     double _y( double Ca ) const; // depression rate
     virtual void pot(void);
