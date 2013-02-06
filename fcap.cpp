@@ -8,52 +8,70 @@ void fCaP::fCaDE::init( Configf& configf )
 {
   CaDE::init(configf);
   configf.param("alpha",alpha);
-  configf.param("tau_x",tau_x);
+  configf.param("lambda_x",lambda_x);
+  configf.param("mu_x",mu_x);
   configf.param("beta",beta);
-  configf.param("tau_y",tau_y);
+  configf.param("lambda_y",lambda_y);
+  configf.param("mu_y",mu_y);
+  ltp = pow(ltp,alpha);
+  lambda_x = pow(lambda_x,alpha); lambda_x = pow(lambda_x,alpha);
+  ltd = pow(ltd,beta);
+  lambda_y = pow(lambda_y,beta);  lambda_y = pow(lambda_y,beta);
+  for( int i=0; i<nodes; i++ ) {
+    x1[i] = new FractionalIntegral(alpha,deltat);
+    y1[i] = new FractionalIntegral(beta,deltat);
+    x2[i] = new FractionalIntegral(alpha,deltat);
+    y2[i] = new FractionalIntegral(beta,deltat);
+  }
+}
+
+void fCaP::fCaDE::rhs( const vector<double>& y, vector<double>& dydt )
+{
+  CaDE::rhs(y,dydt); // keep old stuff
+  // y == { binding, H, Ca, nu, x, y }
+  // change nu
+  //double m = .6;
+  //dydt[3] = y[4]*(pow(max,m)-pow(y[3],m)) -y[5]*pow(y[3],m);
+  //dydt[3] = y[4]*pow(max-y[3],m) -y[5]*pow(y[3],m);
+  //if( pos*(y[3]+dydt[3]*deltat) < 0 ) dydt[3] = -y[3];
 }
 
 void fCaP::fCaDE::pot(void)
 {
-  /*for( int i=0; i<nodes; i++ ) {
+  //CaDE::pot();
+  for( int i=0; i<nodes; i++ ) {
     double& x = variables[4][i];
-    xhistory[i].push_front(
-      pow(_x(variables[2][i]),alpha) -x/pow(tau_x,alpha) );
-    x = 0;
-    for( size_t tau=1; tau<xhistory[i].size(); tau++ )
-      x += xhistory[i][tau]*pow(tau*deltat,alpha-1);
-    x *= deltat/tgamma(alpha);
-  }*/
+    x1[i]->newHistory( _x(variables[2][i]) -x );
+    x2[i]->newHistory( *x1[i]*lambda_x*mu_x -(lambda_x+mu_x)*x );
+    x = *x2[i];
+  }
 }
 
 void fCaP::fCaDE::dep(void)
 {
-  /*for( int i=0; i<nodes; i++ ) {
+  //CaDE::dep();
+  for( int i=0; i<nodes; i++ ) {
     double& y = variables[5][i];
-    yhistory[i].push_front(
-      pow(_y(variables[2][i]),beta) -y/pow(tau_y,beta) );
-    y = 0;
-    for( size_t tau=1; tau<yhistory[i].size(); tau++ )
-      y += yhistory[i][tau]*pow(tau*deltat,beta-1);
-    y *= deltat/tgamma(beta);
-  }*/
+    y1[i]->newHistory( _y(variables[2][i]) -y );
+    y2[i]->newHistory( *y1[i]*lambda_y*mu_y -(lambda_y+mu_y)*y );
+    y = *y2[i];
+  }
 }
 
 void fCaP::init( Configf& configf )
 {
   CaDP::init(configf);
-  /*oldnu = (*de)[3];
+  oldnu = (*de)[3];
   init_nu = (*de)[3][0];
 
-  configf.param("alpha",alpha);
-  if( alpha<=0 ) {
-    cerr<<"Fractional derivative order alpha of Couple "
-        <<index+1<<" must satisfy 0<=alpha"<<endl;
+  configf.param("zeta",zeta);
+  if( zeta<=0 ) {
+    cerr<<"Fractional derivative order zeta of Couple "
+        <<index+1<<" must satisfy 0<=zeta"<<endl;
     exit(EXIT_FAILURE);
   }
-
-  de->ltp = pow( de->ltp, alpha );
-  de->ltd = pow( de->ltd, alpha );*/
+  for( int i=0; i<nodes; i++ )
+    newnu[i] = new FractionalIntegral(zeta,deltat);
 }
 
 void fCaP::restart( Restartf& restartf )
@@ -66,8 +84,7 @@ void fCaP::dump( Dumpf& dumpf ) const
 
 fCaP::fCaP( int nodes, double deltat, int index, const vector<double>& glu,
           const Propag& prepropag, const Population& postpop )
-    : CaDP(nodes,deltat,index,glu,prepropag,postpop)//,
-    //history1st(nodes), history2nd(nodes)
+    : CaDP(nodes,deltat,index,glu,prepropag,postpop), newnu(nodes), oldnu(nodes)
 {
   delete de;
   delete rk4;
@@ -77,43 +94,31 @@ fCaP::fCaP( int nodes, double deltat, int index, const vector<double>& glu,
 
 fCaP::~fCaP(void)
 {
+  for( int i=0; i<nodes; i++ )
+    delete newnu[i];
 }
 
 void fCaP::step(void)
 {
   CaDP::step();
-
-  /*for( int i=0; i<nodes; i++ ) {
-    // drive = history of eta(Omega-nu), most recent history at front
-    history1st[i].push_front( ((*de)[3][i]-oldnu[i])/deltat );
-    (*de)[3][i] = 0;
-    for( size_t tau=1; tau<history1st[i].size(); tau++ )
-      (*de)[3][i] += history1st[i][tau]*pow(tau*deltat,alpha-1);
-    (*de)[3][i] *= deltat/tgamma(alpha);
-    (*de)[3][i] += init_nu;
+  for( int i=0; i<nodes; i++ ) {
+    newnu[i]->newHistory( ((*de)[3][i]-oldnu[i])/deltat );
+    (*de)[3][i] = *newnu[i] +init_nu;
     if( (*de)[3][i]*pos <0 ) (*de)[3][i] = 0;
     oldnu[i] = (*de)[3][i];
-  }*/
+  }
+}
 
-  /*for( int i=0; i<nodes; i++ ) {
-    double& nui = (*de)[3][i];
-    double eta = de->_x( (*de)[2][i] ) +de->_y( (*de)[2][i] );
+fCaP::FractionalIntegral::operator double() const
+{
+  double integral = 0;
+  for( size_t tau=1; tau<history.size(); tau++ )
+    integral += history[tau] *pow( tau*deltat, alpha-1 );
+  integral *= deltat/tgamma(alpha);
+  return integral;
+}
 
-    history1st[i].push_front( eta* ( nui-oldnu[i] )/deltat );
-    double etadrive = 0;
-    for( size_t tau=1; tau<history1st[i].size(); tau++ )
-      etadrive += history1st[i][tau] *pow(tau*deltat,1-alpha);
-    etadrive *= deltat/tgamma(alpha);
-
-    history2nd[i].push_front( etadrive -2*eta*nui );
-    nui = 0;
-    for( size_t tau=1; tau<history2nd[i].size(); tau++ )
-      nui += history2nd[i][tau] *pow(tau*deltat,alpha-1);
-    nui *= deltat/tgamma(alpha);
-    nui += init_nu;
-    if( nui*pos <0 ) nui = 0;
-
-    oldnu[i] = nui;
-  }*/
-
+void fCaP::FractionalIntegral::newHistory ( double newest_history )
+{
+  history.push_front( newest_history );
 }
