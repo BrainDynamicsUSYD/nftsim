@@ -243,10 +243,8 @@ To write a configuration file, a user can follow these steps:
 \begin{figure}\begin{center}
 	\begin{lstlisting}
 Purely cortical model with excitatory and inhibitory neurons
-Time: 10 Deltat: .0001 
+Time: 10 Deltat: 1e-4
 Nodes: 4
-Glutamate dynamics - fast Lambda: 3e-4 fast tGlu: 5e-3
-                     slow Lambda: 3e-4 slow tGlu: 5e-3
 
 Connection matrix:
 From: 1 2 3 4
@@ -256,10 +254,10 @@ To 3: 1 0 2 3
 To 4: 0 4 5 6
 
 Population 1: Stimulation
- Stimulus: Const - Onset: 0.0002 Mean: 5
+ Stimulus: Const - Onset: 0 Mean: 5
 
 Population 2: Stimulation
- Stimulus: Const - Onset: 0.0002 Mean: 5
+ Stimulus: Const - Onset: 0 Mean: 5
 
 Population 3: Excitatory neurons
  Q: 8.87145
@@ -281,6 +279,7 @@ Propag 3: Wave - Tau: 0 Deltax: 0.0035 Range: 0.08 gamma: 116
 Propag 4: Wave - Tau: 0 Deltax: 0.0035 Range: 0.08 gamma: 116
 Propag 5: Map  - Tau: 0
 Propag 6: Map  - Tau: 0
+
 Couple 1: Map  - nu: 0.00015
 Couple 2: Map  - nu: 0.00015
 Couple 3: Map  - nu: 0.0015
@@ -288,7 +287,8 @@ Couple 4: Map  - nu: 0.0015
 Couple 5: Map  - nu:-0.0018
 Couple 6: Map  - nu:-0.0018
 
-Output: Node: 1
+Output:
+Node: 1 Start: 0 Interval: 1e-3
 Population: 
 Dendrite:
 Propag: 2
@@ -376,21 +376,29 @@ Population 1: Stimulation
 	The descriptor \type{Stimulation} is not parsed by \NF, but it is strongly recommended for human referencing.
 	\item
 	\begin{lstlisting}
-Stimulus: Const - Onset: 0.0002
+Stimulus: Const - Onset: 0
 	\end{lstlisting}
 	The identifier \type{Stimulus} is required for cross-checking.
 
-	\type{Onset} specifies the time onset before the stimulus begins. Users should allow at least two timesteps for the transient state before onset.
+	This is followed by the type of stimulus, to be further elaborated below.
 
-	\type{Mode} specifies the stimulus mode, which includes, for example:
+	Optional parameter \type{Onset} specifies the time onset for the stimulus to begin. If unspecified, stimulus starts at time 0.
 
-	Pulse stimulus pattern:
+	Either \type{Cease} or \type{Duration} can be an optional parameter to specify the end time of the stimulus. If unspecified, stimulus ends at 1000 seconds.
+
+	Possible stimulus patterns:
+
+	\textbf{Constant}
 	\begin{lstlisting}
-Const - Amplitude: 20 Width: 0.02 Repetition: 1
+Const - Mean: 5
 	\end{lstlisting}
 
-	White noise stimulus pattern (spatially uncorrelated), where Ranseed
-is an optional parameter for the random number generator's initial seed defaulting to -98716872:
+	\textbf{Pulse}
+	\begin{lstlisting}
+Pulse - Amplitude: 1 Width: 2e-2 Frequency: 1 Pulses: 1
+	\end{lstlisting}
+
+	\textbf{White noise stimulus}
 	\begin{lstlisting}
 White - Ranseed:-98716872 Amplitude: 20 Mean: 1
 	\end{lstlisting}
@@ -401,13 +409,11 @@ White - Ranseed:-98716872 Amplitude: 20 Mean: 1
 White - Amplitude: 0.00001 Mean: 1 Deltax: 0.025
 	\end{lstlisting}
 	
-	
-	A ``special" stimulus pattern is the composite pattern. At onset (encouraged to be set to zero), it superimposes an arbitrary number of stimuli:
+	To superimpose 2 or more stimuli, begin with the keyword \type{Superimpose}, followed by the number of stimuli. Then list all the stimulus patterns and their parameters.
 	\begin{lstlisting}
-Stimulus: Composite - Onset: 0 Number of Stimuli: 2
- MNS - Onset: 0.5
-  N20 width: .01 N20 height: 7 P25 width: .01 P25 height: 18
- Pulse - Onset: 0.53 Amplitude: 18 Width: 4e-3
+Stimulus: Superimpose: 2
+ White - Amplitude: 1 Mean: 1
+ Pulse - Onset: 0.5 Width: 2e-2 Frequency 1 Pulses: 1
 	\end{lstlisting}
 
 	\end{itemize}
@@ -676,6 +682,7 @@ Finally, if you run \NF with multiple nodes, it typically solves the system of e
 
 One important task is computing the power spectrum as predicted by the linearized analytic equations. This can be achieved using \type{nf\_spatial\_spectrum} which takes in an \type{nf} object and computes the power spectrum integrated over $k$ taking into account volume conduction. 
 
+\pagebreak
 \section{Developers guide}
 
 \NF is coded in \type{ANSI C++}. This guide assumes readers have basic knowledge of \type{C++}, including object oriented programming, usage of template, and standard template library (STL). %An \type{OpenMP} version of the code exists for running on multicore machines. It scales sublinearly.
@@ -860,7 +867,11 @@ The \type{Propag} class provides a constant references to both presynaptic and p
 
 For finite differences integration, \type{Stencil} provides a 9-point stencil. To use, initialize it with a \type{vector<double>}, then access the Moore grid with \type{nw}, \type{n}, ... . Loop over the stencil with the operator \type{++}.
 
-To ``register" your propagator, look for the \type{//PUT YOUR PROPAGATORS HERE} section in \type{solver.cpp}.
+To ``register" your propagator, look for the
+\begin{lstlisting}
+// PUT YOUR PROPAGATORS HERE
+\end{lstlisting}
+section in \type{solver.cpp}.
 
 \subsubsection{Class Couple}
 \label{sec:newcouple}
@@ -871,11 +882,21 @@ To introduce synaptic plasticity, derive from this class.
 
 The \type{Couple} class provides a constant references to both presynaptic and postsynaptic populations. Glutamate concentration is also provided. \type{pos} is $+1$ or $-1$, depending on the sign of \(\nu_{ab}\).
 
-To ``register" your couple, look for the \type{//PUT YOUR COUPLES HERE} section in \type{solver.cpp}.
+To ``register" your couple, look for the
+\begin{lstlisting}
+// PUT YOUR COUPLES HERE
+\end{lstlisting}
+section in \type{solver.cpp}.
 
 \subsubsection{Stimulus}
 
-To implement new stimulus pattern, use class \type{Timeseries}. \type{Timeseries::fire()} modifies a reference to firing rate across nodes. Keep in mind that the modification should be using \type{+=} rather than \type{=}, so that stimuli may be composited.
+To implement new stimulus pattern, inherit from class \type{Timeseries}, where \type{init()} and \type{fire()} should be overloaded.
+
+To ``register" your stimulus, look for the
+\begin{lstlisting}
+// PUT YOUR TIMEFUNCTION HERE
+\end{lstlisting}
+section in \type{timeseries.cpp}.
 
 \subsection{Program flow}
 
