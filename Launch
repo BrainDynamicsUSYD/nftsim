@@ -18,7 +18,7 @@ if( $hostname =~ /^headnode.physics.usyd.edu.au/ ) {
 			print "Please enter job name: ";
 			$jobname = <STDIN>; 
 			print "Please enter estimated time of job (format HH:MM): ";
-			$walltime = <STDIN>;
+			$walltime = <STDIN>; chomp($walltime);
 			print "Please enter email address for notification: ";
 			$email = <STDIN>;
 			open PBS, ">pbs" or die $!;
@@ -28,7 +28,7 @@ if( $hostname =~ /^headnode.physics.usyd.edu.au/ ) {
 			print PBS "#PBS -j oe\n";
 			print PBS "#PBS -q batch\n";
 			print PBS "#PBS -l nodes=1:ppn=1\n";
-			print PBS "#PBS -l walltime=$walltime:00";
+			print PBS "#PBS -l walltime=$walltime:00\n";
 			print PBS "#PBS -m ea\n";
 			print PBS "#PBS -M $email";
 			print PBS "#PBS -V\n";

@@ -21,7 +21,7 @@ public:
     for( int i=0; i<n; i++ )
       variables[i].resize(nodes);
   }
-  ~DE(void) {}
+  virtual ~DE(void) {}
 
   virtual vector<double>& operator[] ( int index )
     { return variables[index]; }
