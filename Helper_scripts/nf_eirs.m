@@ -91,7 +91,7 @@ function varargout = nf_eirs(p,file_id,firemode,int_time,grid_edge,fs,waves,rans
     p.re = p.re/downscale;
 
     confname = sprintf('%s_%d',fprefix,file_id);
-    write_nf(confname);
+    write_nf();
 
     if nargout > 0
         varargout{1} = nf_run(confname);
@@ -132,7 +132,7 @@ function varargout = nf_eirs(p,file_id,firemode,int_time,grid_edge,fs,waves,rans
 
 
     function write_nf()
-        fid = fopen(confname,'w');
+        fid = fopen(sprintf('%s.conf',confname),'w');
         fprintf(fid,'EIRS model, automatically generated with nf_eirs.m\n');
         fprintf(fid,'Time: %f Deltat: %f\n',int_time,deltat);
         fprintf(fid,'Nodes: %i\n',grid_edge^2);
