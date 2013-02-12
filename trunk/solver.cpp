@@ -1,3 +1,4 @@
+#define WAVEFOURIER
 #include<cmath>
 #include<string>
 using std::string;
@@ -433,6 +434,7 @@ void Solver::step(void)
     }
   }
 }
+
 
 
 

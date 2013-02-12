@@ -1,3 +1,4 @@
+#define WAVEFOURIER
 #ifdef WAVEFOURIER
 
 #include<cmath>
@@ -58,6 +59,7 @@ WaveFourier::~WaveFourier(void)
 }
 
 #endif
+
 
 
 

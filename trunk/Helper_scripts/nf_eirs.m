@@ -1,4 +1,4 @@
-function varargout = nf_eirs(p,file_id,firemode,int_time,grid_edge,fs,waves)
+function varargout = nf_eirs(p,file_id,firemode,int_time,grid_edge,fs,waves,ranseed,fprefix)
     % Run NeuroField on an EIRS point struct
     % [nf,f,P,V] = nf_eirs(p,file_id,firemode,int_time,grid_edge,grid_output)
     % - Accepts a point struct as input
@@ -27,6 +27,14 @@ function varargout = nf_eirs(p,file_id,firemode,int_time,grid_edge,fs,waves)
     % If nf = nf_eirs() then nf_read will be called but no plot produced
     % If [nf,f,P] = nf_eirs() then nf_spatial_spectrum will also be called
     % and a plot produced
+    if nargin < 9 || isempty(fprefix)
+        fprefix = 'neurofield';
+    end
+
+    if nargin < 8 || isempty(ranseed)
+        ranseed = [];
+    end
+
     if nargin < 7 || isempty(waves)
         waves = 0; % waves = 1 for wave propagators in stimulus and relay nuclei
     end
@@ -74,13 +82,21 @@ function varargout = nf_eirs(p,file_id,firemode,int_time,grid_edge,fs,waves)
         fprintf(1,'Deltat = %f\n',deltat);
     end
     
-    % Write the file
-    write_nf(file_id,p,int_time,deltat,deltax,grid_edge,firemode,waves);
+    % Downscale the cortex
+    downscale = 4;
+    grid_edge = grid_edge/downscale;
+    if round(grid_edge)~=grid_edge || mod(grid_edge,2)
+        error('After downscaling, grid_edge needs to be an even integer')
+    end
+    p.re = p.re/downscale;
+
+    confname = sprintf('%s_%d',fprefix,file_id);
+    write_nf(confname);
 
     if nargout > 0
-        varargout{1} = nf_run(sprintf('neurofield_%i',file_id));
+        varargout{1} = nf_run(confname);
     else
-        nf_run(sprintf('neurofield_%i',file_id));
+        nf_run(confname);
     end
     
     if nargout > 3
@@ -113,122 +129,126 @@ function varargout = nf_eirs(p,file_id,firemode,int_time,grid_edge,fs,waves)
             kdb
         end
     end
-end
 
-function write_nf(file_id,p,int_time,deltat,deltax,grid_edge,firemode,waves)
-    % WRITE THE FILE
-    fid = fopen(sprintf('neurofield_%i.conf',file_id),'w');
-    
-    fprintf(fid,'EIRS model, automatically generated with nf_eirs.m\n');
-    fprintf(fid,'Time: %f Deltat: %f\n',int_time,deltat);
-    fprintf(fid,'Nodes: %i\n',grid_edge^2);
-                     
-    fprintf(fid,'\n');
+
+    function write_nf()
+        fid = fopen(confname,'w');
+        fprintf(fid,'EIRS model, automatically generated with nf_eirs.m\n');
+        fprintf(fid,'Time: %f Deltat: %f\n',int_time,deltat);
+        fprintf(fid,'Nodes: %i\n',grid_edge^2);
+                         
+        fprintf(fid,'\n');
+                
+        fprintf(fid,'    Connection matrix:\n');
+        fprintf(fid,'From:  1  2  3  4  5\n');
+        fprintf(fid,'To 1:  1  2  0  3  0\n');
+        fprintf(fid,'To 2:  4  5  0  6  0\n');
+        fprintf(fid,'To 3:  7  0  0  8  0\n');
+        fprintf(fid,'To 4:  9  0  10 0  11\n');
+        fprintf(fid,'To 5:  0  0  0  0  0 \n\n');
+
+        labels = {'Excitatory','Inhibitory','Reticular','Relay'};
+        phivals = [p.phia(1) p.phia(1) p.phia(2) p.phia(3)];
+        n_dendrites = [3 3 2 3]; % Number of dendrites on each population
+        counter = 1;
+        
+
+        for j = 1:4 % For each population
+            fprintf(fid,'Population %d: %s\n',j,labels{j});
+            fprintf(fid,'Q: %f\n',phivals(j));
+            if firemode(j) == 1 % If population has been linearized
+                v0 = sinv(phivals(j),p);
+                a = rho1(phivals(j),p);
+                b = phivals(j) - a*v0;
+                fprintf(fid,'Firing: Linear - a: %f b: %f\n',a,b);
+                fprintf(1,'Linear %s\n',labels{j});
+            elseif firemode(j) == 2 % If population has been quadraticized
+                v0 = sinv(phivals(j),p);
+                a = rho2(phivals(j),p)/2;
+                b = rho1(phivals(j),p) - 2*a*v0;
+                c = phivals(j) - rho1(phivals(j),p)*v0 + a*v0.^2;
+                fprintf(fid,'Firing: Quadratic - a: %f b: %f c: %f\n',a,b,c);
+                fprintf(1,'Quadratic %s\n',labels{j});
+            elseif firemode(j) == 3 % Cubic population
+                v0 = sinv(phivals(j),p);
+                rho3 = @(Q,p) 6*Q^2*rho1(Q,p)/p.sigma^2/p.qmax^2 - 6*Q*rho1(Q,p)/p.sigma^2/p.qmax + rho1(Q,p)/p.sigma^2;
+                r3 = rho3(phivals(j),p);
+                r2 = rho2(phivals(j),p);
+                r1 = rho1(phivals(j),p);
+                d =  - (r3*v0^3)/6 + (r2*v0^2)/2 - r1*v0 + phivals(j);
+                c =  (r3*v0^2)/2 - r2*v0 + r1;
+                b = r2/2 - (r3*v0)/2;
+                a = r3/6;
+                fprintf(fid,'Firing: Cubic - a: %f b: %f c: %f d: %f\n',a,b,c,d);
+                fprintf(1,'Cubic %s\n',labels{j});
+            else
+                fprintf(fid,'Firing: Sigmoid - Theta: %f Sigma: %f Qmax: %f\n',p.theta,p.sigma,p.qmax);
+            end
             
-    fprintf(fid,'    Connection matrix:\n');
-    fprintf(fid,'From:  1  2  3  4  5\n');
-    fprintf(fid,'To 1:  1  2  0  3  0\n');
-    fprintf(fid,'To 2:  4  5  0  6  0\n');
-    fprintf(fid,'To 3:  7  0  0  8  0\n');
-    fprintf(fid,'To 4:  9  0  10 0  11\n');
-    fprintf(fid,'To 5:  0  0  0  0  0 \n\n');
+            for k = 1:n_dendrites(j)
+                fprintf(fid,'Dendrite %d: alpha: %f beta: %f\n',counter,p.alpha,p.beta);
+                counter = counter + 1;
+            end
+            fprintf(fid,'\n');
+        end
 
-    labels = {'Excitatory','Inhibitory','Reticular','Relay'};
-    phivals = [p.phia(1) p.phia(1) p.phia(2) p.phia(3)];
-    n_dendrites = [3 3 2 3]; % Number of dendrites on each population
-    counter = 1;
-    
-
-    for j = 1:4 % For each population
-        fprintf(fid,'Population %d: %s\n',j,labels{j});
-        fprintf(fid,'Q: %f\n',phivals(j));
-        if firemode(j) == 1 % If population has been linearized
-            v0 = sinv(phivals(j),p);
-            a = rho1(phivals(j),p);
-            b = phivals(j) - a*v0;
-            fprintf(fid,'Firing: Linear - a: %f b: %f\n',a,b);
-            fprintf(1,'Linear %s\n',labels{j});
-        elseif firemode(j) == 2 % If population has been quadraticized
-            v0 = sinv(phivals(j),p);
-            a = rho2(phivals(j),p)/2;
-            b = rho1(phivals(j),p) - 2*a*v0;
-            c = phivals(j) - rho1(phivals(j),p)*v0 + a*v0.^2;
-            fprintf(fid,'Firing: Quadratic - a: %f b: %f c: %f\n',a,b,c);
-            fprintf(1,'Quadratic %s\n',labels{j});
-        elseif firemode(j) == 3 % Cubic population
-            v0 = sinv(phivals(j),p);
-            rho3 = @(Q,p) 6*Q^2*rho1(Q,p)/p.sigma^2/p.qmax^2 - 6*Q*rho1(Q,p)/p.sigma^2/p.qmax + rho1(Q,p)/p.sigma^2;
-            r3 = rho3(phivals(j),p);
-            r2 = rho2(phivals(j),p);
-            r1 = rho1(phivals(j),p);
-            d =  - (r3*v0^3)/6 + (r2*v0^2)/2 - r1*v0 + phivals(j);
-            c =  (r3*v0^2)/2 - r2*v0 + r1;
-            b = r2/2 - (r3*v0)/2;
-            a = r3/6;
-            fprintf(fid,'Firing: Cubic - a: %f b: %f c: %f d: %f\n',a,b,c,d);
-            fprintf(1,'Cubic %s\n',labels{j});
+        fprintf(fid,'Population 5: Stimulation\n');
+        if isempty(ranseed)
+            fprintf(fid,'Stimulus: White - Onset: 0 Amplitude: %f Mean: 1 Deltax: %f\n',p.phin,deltax);
         else
-            fprintf(fid,'Firing: Sigmoid - Theta: %f Sigma: %f Qmax: %f\n',p.theta,p.sigma,p.qmax);
+            fprintf(fid,'Stimulus: White - Onset: 0 Ranseed: %d Amplitude: %f Mean: 1 Deltax: %f\n',ranseed,p.phin,deltax);
+        end
+        %fprintf(fid,'Stimulus: White - Onset: 0 Amplitude: 13 Mean: 1');
+
+        fprintf(fid,'\n');
+        if waves
+            fprintf(1,'Wave propagators in stimulus and relay\n');
+            fprintf(fid,'Propag 1: Wave - Tau: %f Deltax: %f Range: %f gamma: %f\n',0,deltax,p.re,p.gammae); %e CX
+            fprintf(fid,'Propag 2: Map - Tau: %f\n',0);   %i CX
+            fprintf(fid,'Propag 3: Wave - Tau: %f Deltax: %f Range: %f gamma: %f\n',p.taues,deltax,p.rs,p.gammas); % relay
+            fprintf(fid,'Propag 4: Wave - Tau: %f Deltax: %f Range: %f gamma: %f\n',0,deltax,p.re,p.gammae);%e CX
+            fprintf(fid,'Propag 5:  Map - Tau: %f\n',0); %i CX 
+            fprintf(fid,'Propag 6: Wave - Tau: %f Deltax: %f Range: %f gamma: %f\n',p.taues,deltax,p.rs,p.gammas); % relay
+            fprintf(fid,'Propag 7: Wave - Tau: %f Deltax: %f Range: %f gamma: %f\n',p.tause,deltax,p.re,p.gammae);%e CX
+            fprintf(fid,'Propag 8: Wave - Tau: %f Deltax: %f Range: %f gamma: %f\n',0,deltax,p.rs,p.gammas); % relay
+            fprintf(fid,'Propag 9: Wave - Tau: %f Deltax: %f Range: %f gamma: %f\n',p.tause,deltax,p.re,p.gammae);%e CX
+            fprintf(fid,'Propag 10: Map - Tau: %f\n',0);  % nRT
+            fprintf(fid,'Propag 11: Wave - Tau: %f Deltax: %f Range: %f gamma: %f\n',0,deltax,p.rn,p.gamman);   % STIM
+        else
+            fprintf(fid,'Propag 1: Wave - Tau: %f Deltax: %f Range: %f gamma: %f\n',0,deltax,p.re,p.gammae);
+            fprintf(fid,'Propag 2: Map - Tau: %f\n',0);   
+            fprintf(fid,'Propag 3: Map - Tau: %f\n',p.taues);   
+            fprintf(fid,'Propag 4: Wave - Tau: %f Deltax: %f Range: %f gamma: %f\n',0,deltax,p.re,p.gammae);
+            fprintf(fid,'Propag 5:  Map - Tau: %f\n',0);  
+            fprintf(fid,'Propag 6:  Map - Tau: %f\n',p.tause); 
+            fprintf(fid,'Propag 7: Wave - Tau: %f Deltax: %f Range: %f gamma: %f\n',p.tause,deltax,p.re,p.gammae);
+            fprintf(fid,'Propag 8:  Map - Tau: %f\n',0);  
+            fprintf(fid,'Propag 9: Wave - Tau: %f Deltax: %f Range: %f gamma: %f\n',p.tause,deltax,p.re,p.gammae);
+            fprintf(fid,'Propag 10: Map - Tau: %f\n',0);  
+            fprintf(fid,'Propag 11: Map - Tau: %f\n',0);
         end
         
-        for k = 1:n_dendrites(j)
-            fprintf(fid,'Dendrite %d: alpha: %f beta: %f\n',counter,p.alpha,p.beta);
-            counter = counter + 1;
-        end
+        fprintf(fid,'Couple 1:  Map - nu: %f\n',p.nus(1)); % ee
+        fprintf(fid,'Couple 2:  Map - nu: %f\n',p.nus(2)); % ei
+        fprintf(fid,'Couple 3:  Map - nu: %f\n',p.nus(3)); % es
+        fprintf(fid,'Couple 4:  Map - nu: %f\n',p.nus(1)); % ie = ee
+        fprintf(fid,'Couple 5:  Map - nu: %f\n',p.nus(2)); % ii = ei
+        fprintf(fid,'Couple 6:  Map - nu: %f\n',p.nus(3)); % is = es
+        fprintf(fid,'Couple 7:  Map - nu: %f\n',p.nus(7)); % re
+        fprintf(fid,'Couple 8:  Map - nu: %f\n',p.nus(8)); % rs
+        fprintf(fid,'Couple 9:  Map - nu: %f\n',p.nus(4)); % se
+        fprintf(fid,'Couple 10: Map - nu: %f\n',p.nus(5)); % sr
+        fprintf(fid,'Couple 11: Map - nu: %f\n',p.nus(6)); % sn
         fprintf(fid,'\n');
+
+        fprintf(fid,'Output: Node: All Start: 0 Interval: 1e-2\n');
+        fprintf(fid,'Population: 4\n');
+        fprintf(fid,'Dendrite:  \n');
+        fprintf(fid,'Propag: 1 \n');
+        fprintf(fid,'Couple:  \n');
+
+        fclose(fid);
+        
+        fprintf(1,'Integration time: %d s sampled at %d Hz\nGrid size %dx%d, outputting all nodes\nSimulating...',int_time,1/deltat,grid_edge,grid_edge);
     end
-
-    fprintf(fid,'Population 5: Stimulation\n');
-    fprintf(fid,'Stimulus: White - Onset: 0 Amplitude: %f Mean: 1 Deltax: %f\n',p.phin,deltax);
-    
-    fprintf(fid,'\n');
-    if waves
-        fprintf(1,'Wave propagators in stimulus and relay\n');
-        fprintf(fid,'Propag 1: Wave - Tau: %f Deltax: %f Range: %f gamma: %f\n',0,deltax,p.re,p.gammae); %e CX
-        fprintf(fid,'Propag 2: Map - Tau: %f\n',0);   %i CX
-        fprintf(fid,'Propag 3: Wave - Tau: %f Deltax: %f Range: %f gamma: %f\n',p.taues,deltax,p.rs,p.gammas); % relay
-        fprintf(fid,'Propag 4: Wave - Tau: %f Deltax: %f Range: %f gamma: %f\n',0,deltax,p.re,p.gammae);%e CX
-        fprintf(fid,'Propag 5:  Map - Tau: %f\n',0); %i CX 
-        fprintf(fid,'Propag 6: Wave - Tau: %f Deltax: %f Range: %f gamma: %f\n',p.taues,deltax,p.rs,p.gammas); % relay
-        fprintf(fid,'Propag 7: Wave - Tau: %f Deltax: %f Range: %f gamma: %f\n',p.tause,deltax,p.re,p.gammae);%e CX
-        fprintf(fid,'Propag 8: Wave - Tau: %f Deltax: %f Range: %f gamma: %f\n',0,deltax,p.rs,p.gammas); % relay
-        fprintf(fid,'Propag 9: Wave - Tau: %f Deltax: %f Range: %f gamma: %f\n',p.tause,deltax,p.re,p.gammae);%e CX
-        fprintf(fid,'Propag 10: Map - Tau: %f\n',0);  % nRT
-        fprintf(fid,'Propag 11: Wave - Tau: %f Deltax: %f Range: %f gamma: %f\n',0,deltax,p.rn,p.gamman);   % STIM
-    else
-        fprintf(fid,'Propag 1: Wave - Tau: %f Deltax: %f Range: %f gamma: %f\n',0,deltax,p.re,p.gammae);
-        fprintf(fid,'Propag 2: Map - Tau: %f\n',0);   
-        fprintf(fid,'Propag 3: Map - Tau: %f\n',p.taues);   
-        fprintf(fid,'Propag 4: Wave - Tau: %f Deltax: %f Range: %f gamma: %f\n',0,deltax,p.re,p.gammae);
-        fprintf(fid,'Propag 5:  Map - Tau: %f\n',0);  
-        fprintf(fid,'Propag 6:  Map - Tau: %f\n',p.tause); 
-        fprintf(fid,'Propag 7: Wave - Tau: %f Deltax: %f Range: %f gamma: %f\n',p.tause,deltax,p.re,p.gammae);
-        fprintf(fid,'Propag 8:  Map - Tau: %f\n',0);  
-        fprintf(fid,'Propag 9: Wave - Tau: %f Deltax: %f Range: %f gamma: %f\n',p.tause,deltax,p.re,p.gammae);
-        fprintf(fid,'Propag 10: Map - Tau: %f\n',0);  
-        fprintf(fid,'Propag 11: Map - Tau: %f\n',0);
-    end
-    
-    fprintf(fid,'Couple 1:  Map - nu: %f\n',p.nus(1)); % ee
-    fprintf(fid,'Couple 2:  Map - nu: %f\n',p.nus(2)); % ei
-    fprintf(fid,'Couple 3:  Map - nu: %f\n',p.nus(3)); % es
-    fprintf(fid,'Couple 4:  Map - nu: %f\n',p.nus(1)); % ie = ee
-    fprintf(fid,'Couple 5:  Map - nu: %f\n',p.nus(2)); % ii = ei
-    fprintf(fid,'Couple 6:  Map - nu: %f\n',p.nus(3)); % is = es
-    fprintf(fid,'Couple 7:  Map - nu: %f\n',p.nus(7)); % re
-    fprintf(fid,'Couple 8:  Map - nu: %f\n',p.nus(8)); % rs
-    fprintf(fid,'Couple 9:  Map - nu: %f\n',p.nus(4)); % se
-    fprintf(fid,'Couple 10: Map - nu: %f\n',p.nus(5)); % sr
-    fprintf(fid,'Couple 11: Map - nu: %f\n',p.nus(6)); % sn
-    fprintf(fid,'\n');
-
-    fprintf(fid,'Output: Node: All Start: 0\n');
-    fprintf(fid,'Population: 4\n');
-    fprintf(fid,'Dendrite:  \n');
-    fprintf(fid,'Propag: 1 \n');
-    fprintf(fid,'Couple:  \n');
-
-    fclose(fid);
-    
-    fprintf(1,'Integration time: %d s sampled at %d Hz\nGrid size %dx%d, outputting all nodes\nSimulating...',int_time,1/deltat,grid_edge,grid_edge);
 end
