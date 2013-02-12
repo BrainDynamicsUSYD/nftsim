@@ -6,7 +6,7 @@
 # generic compile command, used in yossarian
 COMP = g++ -g -lm -Wall  # Debugging
 #COMP = g++ -lm -Wall -Ofast # Performance
-#wavefourier LIBS = -lfftw3 -lm
+LIBS = -lfftw3 -lm
 
 # compile command on intel
 #COMP = /usr/physics/intel/cce/bin/icc -p -g -Drestrict=__restrict__ -vec-report1 -O2 -lm
@@ -18,7 +18,7 @@ OBJ = $(CPP:.cpp=.o)
 default: Release/NeuroField
 
 Release/NeuroField: $(addprefix Release/,$(OBJ))
-	$(COMP) $(addprefix Release/,$(OBJ)) -o $@ $(#wavefourier LIBS)
+	$(COMP) $(addprefix Release/,$(OBJ)) -o $@ $(LIBS)
 
 $(addprefix Release/,$(OBJ)): Release/%.o: %.cpp %.h
 	mkdir -p Release
@@ -41,6 +41,9 @@ clean:
 
 main.h:
 	touch main.h
+
+
+
 
 
 

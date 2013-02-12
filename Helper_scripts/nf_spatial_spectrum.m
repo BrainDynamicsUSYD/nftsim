@@ -58,6 +58,8 @@ function [f,P,V] = nf_spatial_spectrum(nf,p,kmax,n_windows,spatial_filter)
     % Calculate the Fourier f and k values
     Lx = 0.5; % linear cortex dimension (m)
     Ly = 0.5;
+    %Lx = 0.25;
+    %Ly = 0.25;
     [f,Kx,Ky] = calculate_fft_components(data(:,:,window_vectors{1}),fs,Lx,Ly);
     
     k2 = Kx.^2+Ky.^2; % Matrix of k-squared values
@@ -97,7 +99,7 @@ function P = get_3d_spectrum(data,k_mask,k_filter,Lx,fs)
     % Apply spatial filtering
     %P = bsxfun(@times,P,k_mask);
     P = bsxfun(@times,P,sqrt(k_filter));
-    keyboard
+    
     % Calculate power spectrum
     P = squeeze(sum(sum(P,1),2)); % A sum is OK here because we have multiplied by dk (so don't need trapz)
 
