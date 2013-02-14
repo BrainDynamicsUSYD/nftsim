@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import os
 import sys
 import commands
@@ -37,19 +38,19 @@ def rmline(fname):
 if len(sys.argv)==1:
 	print "Usage:\n\n fftw_mode enable/disable\n\n to activate or deactivate FFTW usage"
 
-enabled = len(commands.getoutput('grep wavefourier Makefile'))==0
+enabled = len(commands.getoutput('grep lfftw3 Makefile')) > 0
 
 if sys.argv[1] == 'enable':
 	if enabled:
 		print "Already enabled"
 		sys.exit()
-	file_subst('Makefile','#wavefourier LIBS','LIBS')
+	file_subst('Makefile','LIBS =','LIBS = -lfftw3 -lm')
 	prepend('solver.cpp')
 	prepend('wavefourier.cpp')
 else:
 	if not enabled:
 		print "Already disabled"
 		sys.exit()
-	file_subst('Makefile','LIBS','#wavefourier LIBS')
+	file_subst('Makefile','LIBS = -lfftw3 -lm','LIBS =')
 	rmline('solver.cpp')
 	rmline('wavefourier.cpp')
