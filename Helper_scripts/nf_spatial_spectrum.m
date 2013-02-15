@@ -50,7 +50,7 @@ function [f,P,V] = nf_spatial_spectrum(nf,p,kmax,n_windows,spatial_filter)
         kmax = 4; % Limit to 4 k values in each direction by default
     end
 
-    
+
     % Calculate the temporal windows
     frac_overlap = 0.5;
     window_vectors = get_window_vectors(size(data,3),n_windows,frac_overlap); 
@@ -97,11 +97,10 @@ function P = get_3d_spectrum(data,k_mask,k_filter,Lx,fs)
     P = P./numel(data);
     
     % Apply spatial filtering
-    %P = bsxfun(@times,P,k_mask);
+    P = bsxfun(@times,P,k_mask);
     P = bsxfun(@times,P,sqrt(k_filter));
     
     % Calculate power spectrum
-    P = squeeze(sum(sum(P,1),2)); % A sum is OK here because we have multiplied by dk (so don't need trapz)
 
     % Convert to power density
     P = abs(P).^2;
@@ -113,6 +112,7 @@ function P = get_3d_spectrum(data,k_mask,k_filter,Lx,fs)
     P = P / df; % Take a shortcut and omit converting to density in the spatial direction
     
 
+    P = squeeze(sum(sum(P,1),2)); % A sum is OK here because we have multiplied by dk (so don't need trapz)
     P = ifftshift(P);
     P = P(1:size(data,3)/2+1);
     P(2:size(data,3)/2) = 2*P(2:size(data,3)/2); % Double the frequency components at nonzero and non-Nyquist frequencies
