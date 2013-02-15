@@ -83,7 +83,7 @@ function varargout = nf_eirs(p,file_id,firemode,int_time,grid_edge,fs,waves,rans
     end
     
     % Downscale the cortex
-    downscale = 4;
+    downscale = 1;
     grid_edge = grid_edge/downscale;
     if round(grid_edge)~=grid_edge || mod(grid_edge,2)
         error('After downscaling, grid_edge needs to be an even integer')
