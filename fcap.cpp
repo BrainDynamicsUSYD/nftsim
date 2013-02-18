@@ -7,6 +7,7 @@ using std::endl;
 void fCaP::fCaDE::init( Configf& configf )
 {
   CaDE::init(configf);
+  configf>>xresponse; configf>>yresponse;
   /*configf.param("alpha",alpha);
   configf.param("lambda_x",lambda_x);
   configf.param("mu_x",mu_x);
@@ -39,6 +40,9 @@ void fCaP::fCaDE::rhs( const vector<double>& y, vector<double>& dydt )
 void fCaP::fCaDE::pot(void)
 {
   CaDE::pot();
+  xresponse.step();
+  for( int i=0; i<nodes; i++ )
+    variables[4][i] = xresponse[i];
   /*for( int i=0; i<nodes; i++ ) {
     double& x = variables[4][i];
     x1[i]->newHistory( _x(variables[2][i]) -x );
@@ -50,6 +54,9 @@ void fCaP::fCaDE::pot(void)
 void fCaP::fCaDE::dep(void)
 {
   CaDE::dep();
+  yresponse.step();
+  for( int i=0; i<nodes; i++ )
+    variables[5][i] = yresponse[i];
   /*for( int i=0; i<nodes; i++ ) {
     double& y = variables[5][i];
     y1[i]->newHistory( _y(variables[2][i]) -y );
@@ -124,4 +131,42 @@ fCaP::FractionalIntegral::operator double() const
 void fCaP::FractionalIntegral::newHistory ( double newest_history )
 {
   history.push_front( newest_history );
+}
+
+void fCaP::fCaDE::Response::init( Configf& configf )
+{
+  configf.param("lambda",lambda);
+  configf.param("mu",mu);
+  lminusm = lambda -mu;
+  expl = exp(-lambda*deltat);
+  expm = exp(-mu*deltat);
+  factorlm = 1./lambda +1./mu;
+}
+
+void fCaP::fCaDE::Response::restart( Restartf& restartf )
+{
+}
+
+void fCaP::fCaDE::Response::dump( Dumpf& dumpf ) const
+{
+}
+
+void fCaP::fCaDE::Response::step(void)
+{
+  // assumes lambda!=mu
+  for( int i=0; i<nodes; i++ ) {
+    double dpdt = ( phi[i] -oldphi[i] )/deltat;
+    adjustedphi = oldphi[i] -factorlm*dpdt -value[i];
+    C1 = ( adjustedphi*mu -dvdt[i] +dpdt )/lminusm;
+    C1expl = C1*expl;
+    C2expm = expm*(-C1-adjustedphi);
+    value[i] = C1expl+C2expm+phi[i] -factorlm*dpdt;
+    dvdt[i] = C1expl*(-lambda) +C2expm*(-mu)+dpdt;
+    oldphi[i] = phi[i];
+  }
+}
+
+double fCaP::fCaDE::Response::operator [] ( int index ) const
+{
+  return value[index];
 }
