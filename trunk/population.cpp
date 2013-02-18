@@ -130,11 +130,11 @@ void Population::add2Dendrite( int index,
 
 void Population::growHistory( const Tau& tau )
 {
-  if( settled ) {
+  /*if( settled ) {
     cerr<<"Population is already settled, cannot resize firing history!"
         <<endl;
     exit(EXIT_FAILURE);
-  }
+  }*/
 
   if( size_t(tau.max) > qhistory.size() )
     qhistory.resize( tau.max+1 );

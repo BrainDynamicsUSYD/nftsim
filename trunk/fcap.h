@@ -51,7 +51,9 @@ protected:
   vector< deque<double> > history1st; // == eta*( old dnudt in CaDP )
   vector< deque<double> > history2nd; // == D^-alpha(history1st) -eta*nu
   vector<double> oldnu; // to calculate old dnudt*/
+  double lambda, mu;
   vector<FractionalIntegral*> newnu;
+  vector<FractionalIntegral*> newnu2;
   vector<double> oldnu;
   double zeta;
   double init_nu; // initial condition
