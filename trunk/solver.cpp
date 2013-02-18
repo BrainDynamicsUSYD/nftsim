@@ -218,7 +218,7 @@ void Solver::init( Configf& configf )
     configf.param( label("Couple ",i+1), *couples[i] );
 
   // initialize outputs
-  configf.go2("Output"); configf.next("Output");
+  configf.next("Output");
   initOutput(configf);
 }
 

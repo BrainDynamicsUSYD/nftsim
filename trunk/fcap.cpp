@@ -72,8 +72,6 @@ void fCaP::init( Configf& configf )
   init_nu = (*de)[3][0];
 
   configf.param("zeta",zeta);
-  configf.param("lambda",lambda);
-  configf.param("mu",mu);
   for( int i=0; i<nodes; i++ ) {
     newnu[i]  = new FractionalIntegral(zeta,deltat);
     newnu2[i] = new FractionalIntegral(zeta,deltat);
@@ -110,10 +108,10 @@ void fCaP::step(void)
   for( int i=0; i<nodes; i++ ) {
     double& newn = (*de)[3][i];
     // put in the "rate" == eta(Omega-nu) from CaDP::rhs()
-    //newnu[i]->newHistory( (newn-oldnu[i])/deltat );
-    newnu[i]->newHistory( -newn +de->max*de->_x((*de)[2][i]) );
-    newnu2[i]->newHistory( *newnu[i]*lambda*mu -(lambda+mu)*newn );
-    newn = *newnu2[i] +init_nu;
+    newnu[i]->newHistory( (newn-oldnu[i])/deltat );
+    //newnu[i]->newHistory( -newn +de->max*de->_x((*de)[2][i]) );
+    //newnu2[i]->newHistory( *newnu[i]*lambda*mu -(lambda+mu)*newn );
+    newn = *newnu/*2*/[i] +init_nu;
     if( newn*pos <0 ) newn = 0;
     oldnu[i] = newn;
   }
