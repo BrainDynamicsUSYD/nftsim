@@ -7,7 +7,7 @@ using std::endl;
 void fCaP::fCaDE::init( Configf& configf )
 {
   CaDE::init(configf);
-  configf.param("alpha",alpha);
+  /*configf.param("alpha",alpha);
   configf.param("lambda_x",lambda_x);
   configf.param("mu_x",mu_x);
   configf.param("beta",beta);
@@ -22,7 +22,7 @@ void fCaP::fCaDE::init( Configf& configf )
     y1[i] = new FractionalIntegral(beta,deltat);
     x2[i] = new FractionalIntegral(alpha,deltat);
     y2[i] = new FractionalIntegral(beta,deltat);
-  }
+  }*/
 }
 
 void fCaP::fCaDE::rhs( const vector<double>& y, vector<double>& dydt )
@@ -38,24 +38,24 @@ void fCaP::fCaDE::rhs( const vector<double>& y, vector<double>& dydt )
 
 void fCaP::fCaDE::pot(void)
 {
-  //CaDE::pot();
-  for( int i=0; i<nodes; i++ ) {
+  CaDE::pot();
+  /*for( int i=0; i<nodes; i++ ) {
     double& x = variables[4][i];
     x1[i]->newHistory( _x(variables[2][i]) -x );
     x2[i]->newHistory( *x1[i]*lambda_x*mu_x -(lambda_x+mu_x)*x );
     x = *x2[i];
-  }
+  }*/
 }
 
 void fCaP::fCaDE::dep(void)
 {
-  //CaDE::dep();
-  for( int i=0; i<nodes; i++ ) {
+  CaDE::dep();
+  /*for( int i=0; i<nodes; i++ ) {
     double& y = variables[5][i];
     y1[i]->newHistory( _y(variables[2][i]) -y );
     y2[i]->newHistory( *y1[i]*lambda_y*mu_y -(lambda_y+mu_y)*y );
     y = *y2[i];
-  }
+  }*/
 }
 
 void fCaP::init( Configf& configf )
@@ -65,13 +65,12 @@ void fCaP::init( Configf& configf )
   init_nu = (*de)[3][0];
 
   configf.param("zeta",zeta);
-  if( zeta<=0 ) {
-    cerr<<"Fractional derivative order zeta of Couple "
-        <<index+1<<" must satisfy 0<=zeta"<<endl;
-    exit(EXIT_FAILURE);
+  configf.param("lambda",lambda);
+  configf.param("mu",mu);
+  for( int i=0; i<nodes; i++ ) {
+    newnu[i]  = new FractionalIntegral(zeta,deltat);
+    newnu2[i] = new FractionalIntegral(zeta,deltat);
   }
-  for( int i=0; i<nodes; i++ )
-    newnu[i] = new FractionalIntegral(zeta,deltat);
 }
 
 void fCaP::restart( Restartf& restartf )
@@ -84,7 +83,7 @@ void fCaP::dump( Dumpf& dumpf ) const
 
 fCaP::fCaP( int nodes, double deltat, int index, const vector<double>& glu,
           const Propag& prepropag, const Population& postpop )
-    : CaDP(nodes,deltat,index,glu,prepropag,postpop), newnu(nodes), oldnu(nodes)
+    : CaDP(nodes,deltat,index,glu,prepropag,postpop), newnu(nodes), newnu2(nodes), oldnu(nodes)
 {
   delete de;
   delete rk4;
@@ -102,10 +101,14 @@ void fCaP::step(void)
 {
   CaDP::step();
   for( int i=0; i<nodes; i++ ) {
-    newnu[i]->newHistory( ((*de)[3][i]-oldnu[i])/deltat );
-    (*de)[3][i] = *newnu[i] +init_nu;
-    if( (*de)[3][i]*pos <0 ) (*de)[3][i] = 0;
-    oldnu[i] = (*de)[3][i];
+    double& newn = (*de)[3][i];
+    // put in the "rate" == eta(Omega-nu) from CaDP::rhs()
+    //newnu[i]->newHistory( (newn-oldnu[i])/deltat );
+    newnu[i]->newHistory( -newn +de->max*de->_x((*de)[2][i]) );
+    newnu2[i]->newHistory( *newnu[i]*lambda*mu -(lambda+mu)*newn );
+    newn = *newnu2[i] +init_nu;
+    if( newn*pos <0 ) newn = 0;
+    oldnu[i] = newn;
   }
 }
 

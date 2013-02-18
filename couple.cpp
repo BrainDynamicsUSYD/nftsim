@@ -29,6 +29,12 @@ void Couple::step(void)
 {
 }
 
+double Couple::nuinit( Configf& configf ) const
+{
+  string buffer = configf.find( label("Couple ",index+1)+"*nu:");
+  return atof(buffer.c_str());
+}
+
 void Couple::output( Output& output ) const
 {
   output("Couple",index+1,"nu",n);

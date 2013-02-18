@@ -30,6 +30,7 @@ public:
       const Propag& prepropag, const Population& postpop );
   virtual ~Couple(void);
   virtual void step(void);
+  double nuinit( Configf& configf ) const;
   virtual void output( Output& output ) const; 
   virtual const vector<double>& nu(void) const;
   virtual const double operator[]( int node ) const;
