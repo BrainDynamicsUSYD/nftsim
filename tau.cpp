@@ -1,4 +1,5 @@
 #include<iostream>
+using std::cerr;
 using std::endl;
 #include<cmath>
 #include"tau.h"
@@ -8,13 +9,13 @@ void Tau::init( Configf& configf )
   vector<double> temp = configf.numbers();
   if( temp.size() == 1 ) {
     if( remainder(temp[0],deltat) >deltat ) {
-      std::cerr<<"Value of tau not divisible by Deltat!"<<endl;
+      cerr<<"Value of tau not divisible by Deltat!"<<endl;
       exit(EXIT_FAILURE);
     }
     m.resize(1,temp[0]/deltat);
     max = m[0];
   }
-  else if( temp.size() == size_t(nodes) ) {
+  else if( temp.size() == nodes ) {
     for( int i=0; i<nodes; i++ ) {
       if( remainder(temp[0],deltat) >deltat ) {
         std::cerr<<"Value of tau not divisible by Deltat!"<<endl;
