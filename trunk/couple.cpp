@@ -1,10 +1,26 @@
+#include<iostream>
+using std::cerr;
+using std::endl;
 #include "couple.h"
 
 void Couple::init( Configf& configf )
 {
-  double nuinit; configf.param("nu",nuinit);
-  n.resize(nodes,nuinit);
-  pos = (nuinit>0)?1:-1;
+  configf.next("nu");
+  vector<double> temp = configf.numbers();
+  if( temp.size() == 1 ) {
+    n.resize(nodes,temp[0]);
+    pos = (temp[0]>0)?1:-1;
+  }
+  else if( temp.size() == nodes ) {
+    n.resize(nodes);
+    for( int i=0; i<nodes; i++ )
+      n[i] = temp[i];
+    pos = 0;
+  }
+  else {
+    cerr<<"nu either has a homogeneous initial value or has one intial value per node."<<endl;
+    exit(EXIT_FAILURE);
+  }
 }
 
 void Couple::restart( Restartf& restartf )
