@@ -52,13 +52,6 @@ void BurstResponse::dump( Dumpf& dumpf ) const
 BurstResponse::BurstResponse( int nodes, double deltat, int index )
 	: QResponse(nodes,deltat,index), xtemp(nodes), htemp(nodes)
 {
-    //ia=-2.6; //A m^-2
-    //ib=1.2; // A m^-2
-    //ic=0.197; // A m^-2
-    //taux=0.015; // 15ms 
-    //tauh=0.056; // 56ms
-    //ax=0.26; // for tauR=2.1ms
-    //mu=3.1; // mu=-Itheta/theta S m^-2
     h=deltat;
     h2=deltat/2;
     h6=deltat/6;
@@ -74,7 +67,7 @@ void BurstResponse::step(void)
   QResponse::step(); // sum soma potential
   rk4(); // update dynamic variables in y
   for(int i=0; i<nodes; i++ )
-    modtheta[i] = (3*ib*xtilde[i]+(ib-ia)*htilde[i])/mu; // use updated y to calculate theta
+    modtheta[i] = (ic-3*ib*xtilde[i]+(ib-ia)*htilde[i])/mu; // use updated y to calculate theta
 
 }
 
@@ -82,7 +75,6 @@ void BurstResponse::output(Output& output) const
 {
   // write a field into an output file
   // see cadp.cpp
-  // Something like this- check with Felix how to do it properly (throws error)
   output.prefix("Population",index+1);
   output("HTilde",htilde);
   output("XTilde",xtilde);
@@ -97,12 +89,18 @@ void BurstResponse::outputDendrite(int index, Output& output) const
 void BurstResponse::fire( vector<double>& Q ) const
 {
     for(int i=0; i<nodes; i++ )
-        Q[i] = Q_max/( 1.0F+ exp( -(v[i]-modtheta[i])/sigma ) );
+    {    //   if (v[i]+ic/mu-modtheta[i] >0.0129)
+         // Q[i] = 86 * sqrt((v[i]+ic/mu-modtheta[i])/0.0129 -1);
+         Q[i] = Q_max/( 1.0F+ exp( -(v[i]-modtheta[i])/sigma ) );
+
+      //else
+      //    Q[i] = 0;
+    }      
 }
   
 void BurstResponse::rk4() 
 {
-    // Takes current values of htilde and xtilda
+    // Takes current values of htilde and xtilde
     // Updates them by one time step in place
         
 	rkderivs(xtilde,htilde,xk[0],hk[0]);
@@ -138,7 +136,11 @@ void BurstResponse::rkderivs(vector<double>& xtemp, vector<double>& htemp,vector
 	for(int i = 0; i < nodes; i++){
 	    thetatemp[i] = (ic-3*ib*xtilde[i]+(ib-ia)*htilde[i])/mu;
 	    qfiring[i] = Q_max/(1+exp(-(v[i]-thetatemp[i])/sigma));
-	    
+        //if (v[i]+ic/mu-thetatemp[i] >0.0129)
+          //qfiring[i] = 86 * sqrt((v[i]+ic/mu-thetatemp[i])/0.0129 -1);
+        //else
+        //   qfiring[i] = 0;
+
 	    xinfinity[i] = qfiring[i]*ax;
 	    if(xinfinity[i] < 0)
 	        xinfinity[i] = 0;
