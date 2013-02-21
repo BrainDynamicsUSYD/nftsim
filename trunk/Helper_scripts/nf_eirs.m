@@ -81,15 +81,7 @@ function varargout = nf_eirs(p,file_id,firemode,int_time,grid_edge,fs,waves,rans
         deltat = deltax/v * 0.9;
         fprintf(1,'Deltat = %f\n',deltat);
     end
-    
-    % Downscale the cortex
-    downscale = 1;
-    grid_edge = grid_edge/downscale;
-    if round(grid_edge)~=grid_edge || mod(grid_edge,2)
-        error('After downscaling, grid_edge needs to be an even integer')
-    end
-    p.re = p.re/downscale;
-
+       
     confname = sprintf('%s_%d',fprefix,file_id);
     write_nf();
 
@@ -119,7 +111,7 @@ function varargout = nf_eirs(p,file_id,firemode,int_time,grid_edge,fs,waves,rans
         set(gca,'XLim',[1 45]);
 
         try
-            [f_a,P_a] = analytic_spectrum(p,any(firemode==0));
+            [f_a,P_a] = analytic_spectrum(p,0);
             P_a = interp1(f_a,P_a,f,'pchip','extrap');
             hold on
             loglog(f,P_a,'r--');
