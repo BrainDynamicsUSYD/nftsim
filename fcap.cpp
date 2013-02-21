@@ -7,62 +7,33 @@ using std::endl;
 void fCaP::fCaDE::init( Configf& configf )
 {
   CaDE::init(configf);
-  configf>>xresponse; configf>>yresponse;
-  /*configf.param("alpha",alpha);
-  configf.param("lambda_x",lambda_x);
-  configf.param("mu_x",mu_x);
-  configf.param("beta",beta);
-  configf.param("lambda_y",lambda_y);
-  configf.param("mu_y",mu_y);
-  ltp = pow(ltp,alpha);
-  lambda_x = pow(lambda_x,alpha); lambda_x = pow(lambda_x,alpha);
-  ltd = pow(ltd,beta);
-  lambda_y = pow(lambda_y,beta);  lambda_y = pow(lambda_y,beta);
-  for( int i=0; i<nodes; i++ ) {
-    x1[i] = new FractionalIntegral(alpha,deltat);
-    y1[i] = new FractionalIntegral(beta,deltat);
-    x2[i] = new FractionalIntegral(alpha,deltat);
-    y2[i] = new FractionalIntegral(beta,deltat);
-  }*/
-}
-
-void fCaP::fCaDE::rhs( const vector<double>& y, vector<double>& dydt )
-{
-  CaDE::rhs(y,dydt); // keep old stuff
-  // y == { binding, H, Ca, nu, x, y }
-  // change nu
-  //double m = .6;
-  //dydt[3] = y[4]*(pow(max,m)-pow(y[3],m)) -y[5]*pow(y[3],m);
-  //dydt[3] = y[4]*pow(max-y[3],m) -y[5]*pow(y[3],m);
-  //if( pos*(y[3]+dydt[3]*deltat) < 0 ) dydt[3] = -y[3];
+  xresponse.init(configf); yresponse.init(configf);
+  //xresponse[0].clear(); xresponse[0].resize(nodes,th);
+  //yresponse[0].clear(); yresponse[0].resize(nodes,th);
 }
 
 void fCaP::fCaDE::pot(void)
 {
   CaDE::pot();
-  xresponse.step();
+  xresponse.input(variables[4][0]);
+  variables[4][0] = xresponse;
+  /*for( int i=0; i<nodes; i++ )
+    xresponse[2][i] = variables[4][i];
+  xrk4.step();
   for( int i=0; i<nodes; i++ )
-    variables[4][i] = xresponse[i];
-  /*for( int i=0; i<nodes; i++ ) {
-    double& x = variables[4][i];
-    x1[i]->newHistory( _x(variables[2][i]) -x );
-    x2[i]->newHistory( *x1[i]*lambda_x*mu_x -(lambda_x+mu_x)*x );
-    x = *x2[i];
-  }*/
+    variables[4][i] = xresponse[0][i];*/
 }
 
 void fCaP::fCaDE::dep(void)
 {
   CaDE::dep();
-  yresponse.step();
+  xresponse.input(variables[5][0]);
+  variables[5][0] = xresponse;
+  /*for( int i=0; i<nodes; i++ )
+    yresponse[2][i] = variables[5][i];
+  yrk4.step();
   for( int i=0; i<nodes; i++ )
-    variables[5][i] = yresponse[i];
-  /*for( int i=0; i<nodes; i++ ) {
-    double& y = variables[5][i];
-    y1[i]->newHistory( _y(variables[2][i]) -y );
-    y2[i]->newHistory( *y1[i]*lambda_y*mu_y -(lambda_y+mu_y)*y );
-    y = *y2[i];
-  }*/
+    variables[5][i] = yresponse[0][i];*/
 }
 
 void fCaP::init( Configf& configf )
@@ -105,16 +76,16 @@ fCaP::~fCaP(void)
 void fCaP::step(void)
 {
   CaDP::step();
-  for( int i=0; i<nodes; i++ ) {
+  /*for( int i=0; i<nodes; i++ ) {
     double& newn = (*de)[3][i];
     // put in the "rate" == eta(Omega-nu) from CaDP::rhs()
     newnu[i]->newHistory( (newn-oldnu[i])/deltat );
     //newnu[i]->newHistory( -newn +de->max*de->_x((*de)[2][i]) );
     //newnu2[i]->newHistory( *newnu[i]*lambda*mu -(lambda+mu)*newn );
-    newn = *newnu/*2*/[i] +init_nu;
+    newn = *newnu[i] +init_nu;
     if( newn*pos <0 ) newn = 0;
     oldnu[i] = newn;
-  }
+  }*/
 }
 
 fCaP::FractionalIntegral::operator double() const
@@ -135,36 +106,27 @@ void fCaP::fCaDE::Response::init( Configf& configf )
 {
   configf.param("lambda",lambda);
   configf.param("mu",mu);
-  lminusm = lambda -mu;
-  expl = exp(-lambda*deltat);
-  expm = exp(-mu*deltat);
-  factorlm = 1./lambda +1./mu;
 }
 
-void fCaP::fCaDE::Response::restart( Restartf& restartf )
+/*void fCaP::fCaDE::Response::rhs(
+        const vector<double>& y, vector<double>& dydt )
 {
+  // y = { y, dydt, xtilde }
+  dydt[0] = y[1];
+  if( y[0]+dydt[0] <0 ) dydt[0] = -y[0];
+  dydt[1] = -(lambda+mu)*y[1] +lambda*mu*y[0]*(y[2]-1);
+  dydt[2] = 0;
+}*/
+
+fCaP::fCaDE::Response::operator double() const
+{
+  return _d1;
 }
 
-void fCaP::fCaDE::Response::dump( Dumpf& dumpf ) const
+void fCaP::fCaDE::Response::input( double input )
 {
-}
-
-void fCaP::fCaDE::Response::step(void)
-{
-  // assumes lambda!=mu
-  for( int i=0; i<nodes; i++ ) {
-    double dpdt = ( phi[i] -oldphi[i] )/deltat;
-    adjustedphi = oldphi[i] -factorlm*dpdt -value[i];
-    C1 = ( adjustedphi*mu -dvdt[i] +dpdt )/lminusm;
-    C1expl = C1*expl;
-    C2expm = expm*(-C1-adjustedphi);
-    value[i] = C1expl+C2expm+phi[i] -factorlm*dpdt;
-    dvdt[i] = C1expl*(-lambda) +C2expm*(-mu)+dpdt;
-    oldphi[i] = phi[i];
-  }
-}
-
-double fCaP::fCaDE::Response::operator [] ( int index ) const
-{
-  return value[index];
+  d2.newHistory( -(lambda+mu)*_d2 +lambda*mu*_d1*(input-1) );
+  _d2 = d2;
+  d1.newHistory(_d2);
+  _d1 = d1;
 }
