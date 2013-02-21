@@ -24,59 +24,49 @@ protected:
 
   struct fCaDE : public CaDE
   {
-    /*double alpha, beta;
-    double lambda_x, mu_x;
-    double lambda_y, mu_y;
-    vector<FractionalIntegral*> x1;
-    vector<FractionalIntegral*> x2;
-    vector<FractionalIntegral*> y1;
-    vector<FractionalIntegral*> y2;*/
-    virtual void init( Configf& configf );
-    void rhs( const vector<double>& y, vector<double>& dydt );
-    fCaDE( int nodes, double deltat )
-        : CaDE(nodes,deltat), /*, x1(nodes), x2(nodes), y1(nodes), y2(nodes)*/
-          xresponse(nodes,deltat,variables[4]),
-          yresponse(nodes,deltat,variables[5]) {}
-    virtual ~fCaDE(void) {
-      /*for( int i=0; i<nodes; i++ ) {
-        delete x1[i];
-        delete x2[i];
-        delete y1[i];
-        delete y2[i];
-      }*/
-    }
-    void pot(void);
-    void dep(void);
-
-    class Response : public NF
+    /*class Response : public DE //public NF
     {
-      vector<double>& phi;
+      vector<double>& input;
       double lambda, mu;
-      double lminusm, expl, expm, factorlm;
-      double adjustedphi, deltaPdeltat, C1, dpdt, C1expl, C2expm, C1dtplusC2;
       vector<double> value;
-      vector<double> dvdt;
-      vector<double> oldphi;
     public:
-      void step(void);
       void init( Configf& configf );
-      void restart( Restartf& restartf );
-      void dump( Dumpf& dumpf ) const;
-      double operator [] ( int index ) const;
-      Response( int nodes, double deltat, vector<double>& phi )
-          : NF(nodes,deltat,0),
-            phi(phi), value(nodes), dvdt(nodes), oldphi(nodes) {
-      }
+      Response( int nodes, double deltat, vector<double>& input )
+          : DE(nodes,deltat,3), input(input), value(nodes) {}
+      virtual ~Response(void) {}
+      virtual void rhs( const vector<double>& y, vector<double>& dydt );
+    };
+    Response xresponse; RK4 xrk4;
+    Response yresponse; RK4 yrk4;*/
+
+    class Response
+    {
+      double alpha, deltat;
+      double lambda, mu;
+      FractionalIntegral d1, d2;
+      double _d1, _d2;
+    public:
+      void init( Configf& configf );
+      Response( double alpha, double deltat, double init )
+          : alpha(alpha), deltat(deltat),
+          d1(alpha,deltat), d2(alpha,deltat), _d1(init) {}
       ~Response(void) {}
+      operator double() const;
+      void input( double input );
     };
     Response xresponse; Response yresponse;
+
+    virtual void init( Configf& configf );
+    fCaDE( int nodes, double deltat )
+        : CaDE(nodes,deltat),
+        xresponse(0.7,deltat,1e-4), yresponse(0.7,deltat,1e-4)
+          /*xresponse(nodes,deltat,variables[4]), xrk4(xresponse),
+          yresponse(nodes,deltat,variables[5]), yrk4(yresponse)*/ {}
+    virtual ~fCaDE(void) {}
+    void pot(void);
+    void dep(void);
   };
 
-  /*double alpha;
-  vector< deque<double> > history1st; // == eta*( old dnudt in CaDP )
-  vector< deque<double> > history2nd; // == D^-alpha(history1st) -eta*nu
-  vector<double> oldnu; // to calculate old dnudt*/
-  double lambda, mu;
   vector<FractionalIntegral*> newnu;
   vector<FractionalIntegral*> newnu2;
   vector<double> oldnu;
