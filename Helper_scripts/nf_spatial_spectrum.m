@@ -47,7 +47,7 @@ function [f,P,V] = nf_spatial_spectrum(nf,p,kmax,n_windows,spatial_filter)
     end
 
     if nargin < 3 || isempty(kmax)
-        kmax = 4; % Limit to 4 k values in each direction by default
+        kmax = []; % Use all k-values by default
     end
 
 
@@ -58,8 +58,7 @@ function [f,P,V] = nf_spatial_spectrum(nf,p,kmax,n_windows,spatial_filter)
     % Calculate the Fourier f and k values
     Lx = 0.5; % linear cortex dimension (m)
     Ly = 0.5;
-    %Lx = 0.25;
-    %Ly = 0.25;
+
     [f,Kx,Ky] = calculate_fft_components(data(:,:,window_vectors{1}),fs,Lx,Ly);
     
     k2 = Kx.^2+Ky.^2; % Matrix of k-squared values
@@ -90,9 +89,6 @@ function [f,P,V] = nf_spatial_spectrum(nf,p,kmax,n_windows,spatial_filter)
     end
     
 function P = get_3d_spectrum(data,k_mask,k_filter,Lx,fs)
-    %data = data-mean(data(:));
-    %win(1,1,:) = hamming(size(data,3));
-    %data = bsxfun(@times,data,win);
     P = fftshift(fftn(data));
     P = P./numel(data);
     
@@ -100,18 +96,14 @@ function P = get_3d_spectrum(data,k_mask,k_filter,Lx,fs)
     P = bsxfun(@times,P,k_mask);
     P = bsxfun(@times,P,sqrt(k_filter));
     
-    % Calculate power spectrum
-
     % Convert to power density
     P = abs(P).^2;
     df = fs/(size(data,3));
     dk = 2*pi/Lx;
-    
     %P = P / df / dk / dk; % Get power density in all 3 dimensions
     %P = P*dk*dk; % Since we are summing over k, multiply by dk
     P = P / df; % Take a shortcut and omit converting to density in the spatial direction
     
-
     P = squeeze(sum(sum(P,1),2)); % A sum is OK here because we have multiplied by dk (so don't need trapz)
     P = ifftshift(P);
     P = P(1:size(data,3)/2+1);
@@ -146,7 +138,7 @@ function [f,Kx,Ky] = calculate_fft_components(v,fs,Lx,Ly)
 
 function V = get_filtered_timeseries(data,k_filter,k_mask,k2);
     output = fftshift(fftn(data));
-    %output = bsxfun(@times,output,k_mask);
+    output = bsxfun(@times,output,k_mask);
     output = bsxfun(@times,output,k_filter);
     output = ifftn(fftshift(output));
     [a,b] = find(k2==0);
