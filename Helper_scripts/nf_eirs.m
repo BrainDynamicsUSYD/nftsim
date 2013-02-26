@@ -217,7 +217,7 @@ function varargout = nf_eirs(p,file_id,firemode,int_time,grid_edge,fs,waves,rans
             fprintf(fid,'Propag 8:  Map - Tau: %f\n',0);  
             fprintf(fid,'Propag 9: Wave - Tau: %f Deltax: %f Range: %f gamma: %f\n',p.tause,deltax,p.re,p.gammae);
             fprintf(fid,'Propag 10: Map - Tau: %f\n',0);  
-            fprintf(fid,'Propag 11: Map - Tau: %f\n',0);
+            fprintf(fid,'Propag 11: Wave - Tau: %f Deltax: %f Range: %f gamma: %f\n',0,deltax,p.rn,p.gamman); % Stimulus wave
         end
         
         fprintf(fid,'Couple 1:  Map - nu: %f\n',p.nus(1)); % ee
@@ -234,7 +234,7 @@ function varargout = nf_eirs(p,file_id,firemode,int_time,grid_edge,fs,waves,rans
         fprintf(fid,'\n');
 
         fprintf(fid,'Output: Node: All Start: 0 Interval: 1e-2\n');
-        fprintf(fid,'Population: 4\n');
+        fprintf(fid,'Population: \n');
         fprintf(fid,'Dendrite:  \n');
         fprintf(fid,'Propag: 1 \n');
         fprintf(fid,'Couple:  \n');
