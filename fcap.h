@@ -14,11 +14,12 @@ protected:
   {
     operator double() const;
     void newHistory( double newest_history );
-    FractionalIntegral( double alpha, double deltat )
-        : alpha(alpha), deltat(deltat) {}
+    FractionalIntegral( double alpha, double deltat, double init )
+        : alpha(alpha), deltat(deltat), init(init) {}
   private:
     double alpha;
     double deltat;
+    double init;
     deque<double> history;
   };
 
@@ -49,7 +50,7 @@ protected:
       void init( Configf& configf );
       Response( double alpha, double deltat, double init )
           : alpha(alpha), deltat(deltat),
-          d1(alpha,deltat), d2(alpha,deltat), _d1(init) {}
+          d1(alpha,deltat,init), d2(alpha,deltat,0), _d1(init), _d2(0) {}
       ~Response(void) {}
       operator double() const;
       void input( double input );
@@ -59,7 +60,7 @@ protected:
     virtual void init( Configf& configf );
     fCaDE( int nodes, double deltat )
         : CaDE(nodes,deltat),
-        xresponse(0.7,deltat,1e-4), yresponse(0.7,deltat,1e-4)
+        xresponse(.7,deltat,1e-4), yresponse(.7,deltat,1e-4)
           /*xresponse(nodes,deltat,variables[4]), xrk4(xresponse),
           yresponse(nodes,deltat,variables[5]), yrk4(yresponse)*/ {}
     virtual ~fCaDE(void) {}
@@ -71,7 +72,7 @@ protected:
   vector<FractionalIntegral*> newnu2;
   vector<double> oldnu;
   double zeta;
-  double init_nu; // initial condition
+  double init_nu;
 
   virtual void init( Configf& configf );
   virtual void restart( Restartf& restartf );
