@@ -8,15 +8,15 @@ void fCaP::fCaDE::init( Configf& configf )
 {
   CaDE::init(configf);
   xresponse.init(configf); yresponse.init(configf);
-  //xresponse[0].clear(); xresponse[0].resize(nodes,th);
-  //yresponse[0].clear(); yresponse[0].resize(nodes,th);
+  /*xresponse[0].clear(); xresponse[0].resize(nodes,th);
+  yresponse[0].clear(); yresponse[0].resize(nodes,th);*/
 }
 
 void fCaP::fCaDE::pot(void)
 {
   CaDE::pot();
   xresponse.input(variables[4][0]);
-  variables[4][0] = xresponse;
+  variables[4][0] = ltp*pow(xresponse,2)/(pow(xresponse,2)+pow(ltp/2,2));
   /*for( int i=0; i<nodes; i++ )
     xresponse[2][i] = variables[4][i];
   xrk4.step();
@@ -27,8 +27,8 @@ void fCaP::fCaDE::pot(void)
 void fCaP::fCaDE::dep(void)
 {
   CaDE::dep();
-  xresponse.input(variables[5][0]);
-  variables[5][0] = xresponse;
+  yresponse.input(variables[5][0]);
+  variables[5][0] = ltd*pow(yresponse,2)/(pow(yresponse,2)+pow(ltd/2,2));
   /*for( int i=0; i<nodes; i++ )
     yresponse[2][i] = variables[5][i];
   yrk4.step();
@@ -44,8 +44,8 @@ void fCaP::init( Configf& configf )
 
   configf.param("zeta",zeta);
   for( int i=0; i<nodes; i++ ) {
-    newnu[i]  = new FractionalIntegral(zeta,deltat);
-    newnu2[i] = new FractionalIntegral(zeta,deltat);
+    newnu[i]  = new FractionalIntegral(zeta,deltat,init_nu);
+    newnu2[i] = new FractionalIntegral(zeta,deltat,0);
   }
 }
 
@@ -76,16 +76,16 @@ fCaP::~fCaP(void)
 void fCaP::step(void)
 {
   CaDP::step();
-  /*for( int i=0; i<nodes; i++ ) {
+  for( int i=0; i<nodes; i++ ) {
     double& newn = (*de)[3][i];
     // put in the "rate" == eta(Omega-nu) from CaDP::rhs()
     newnu[i]->newHistory( (newn-oldnu[i])/deltat );
     //newnu[i]->newHistory( -newn +de->max*de->_x((*de)[2][i]) );
     //newnu2[i]->newHistory( *newnu[i]*lambda*mu -(lambda+mu)*newn );
-    newn = *newnu[i] +init_nu;
+    newn = *newnu[i]; //+init_nu;
     if( newn*pos <0 ) newn = 0;
     oldnu[i] = newn;
-  }*/
+  }
 }
 
 fCaP::FractionalIntegral::operator double() const
@@ -94,6 +94,7 @@ fCaP::FractionalIntegral::operator double() const
   for( size_t tau=1; tau<history.size(); tau++ )
     integral += history[tau] *pow( tau*deltat, alpha-1 );
   integral *= deltat/tgamma(alpha);
+  integral += init;
   return integral;
 }
 
@@ -125,8 +126,8 @@ fCaP::fCaDE::Response::operator double() const
 
 void fCaP::fCaDE::Response::input( double input )
 {
-  d2.newHistory( -(lambda+mu)*_d2 +lambda*mu*_d1*(input-1) );
+  d2.newHistory( lambda*mu*_d1*(input-1) -(lambda+mu)*_d2 );
   _d2 = d2;
-  d1.newHistory(_d2);
+  d1.newHistory( _d2 );
   _d1 = d1;
 }
