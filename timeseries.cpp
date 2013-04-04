@@ -14,15 +14,17 @@ void Timeseries::init( Configf& configf )
         cease += t;
     // PUT YOUR TIMEFUNCTION HERE
     if( mode[0]=="Const" )
-      series.push_back( new Const(nodes,deltat,index) );
+      series.push_back( new TIMESERIES::Const(nodes,deltat,index) );
     else if( mode[0]=="Pulse" )
-      series.push_back( new Pulse(nodes,deltat,index) );
+      series.push_back( new TIMESERIES::Pulse(nodes,deltat,index) );
     else if( mode[0]=="White" )
-      series.push_back( new White(nodes,deltat,index) );
+      series.push_back( new TIMESERIES::White(nodes,deltat,index) );
     else if( mode[0]=="WhiteCoherent" )
-      series.push_back( new WhiteCoherent(nodes,deltat,index) );
+      series.push_back( new TIMESERIES::WhiteCoherent(nodes,deltat,index) );
     else if( mode[0]=="PAS" )
-      series.push_back( new PAS(nodes,deltat,index) );
+      series.push_back( new TIMESERIES::PAS(nodes,deltat,index) );
+    else if( mode[0]=="Burst" )
+      series.push_back( new TIMESERIES::Burst(nodes,deltat,index) );
 	else {
       cerr<<"Stimulus mode "<<mode[0].c_str()<<" not found"<<endl;
       exit(EXIT_FAILURE);
@@ -63,6 +65,9 @@ void Timeseries::step(void)
   for( size_t i=0; i<series.size(); i++ )
     series[i]->t += deltat;
 }
+
+namespace TIMESERIES
+{
 
 void Const::init( Configf& configf )
 {
@@ -176,3 +181,26 @@ void PAS::fire( vector<double>& Q ) const
     for( int i=0; i<nodes; i++ )
       Q[i] += tmsh;
 }
+
+void Burst::init( Configf& configf )
+{
+  // Amplitude: 10 Width: .5e-3 Bursts: 3 Burst Frequency: 50 On: 2 Off: 8 Total Pulses: 1000
+  configf.param("Amplitude",amp);
+  configf.param("Width",width);
+  configf.param("Bursts",bursts);
+  configf.param("Burst Frequency",freq);
+  configf.param("Oscillation Frequency",oscillation_freq);
+  configf.param("On",on);
+  configf.param("Off",off);
+}
+
+void Burst::fire( vector<double>& Q ) const
+{
+  if( fmod(t,on+off)>=0 && fmod(t,on+off)<on &&
+      fmod(t,1/oscillation_freq)>=0 && fmod(t,1/oscillation_freq)<bursts/freq &&
+      fmod(t,1/freq)>=0 && fmod(t,1/freq)<width )
+    for( int i=0; i<nodes; i++ )
+      Q[i] = amp;
+}
+
+} // this bracket closes namespace TIMESERIES, do not touch

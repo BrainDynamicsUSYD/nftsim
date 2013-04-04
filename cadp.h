@@ -37,8 +37,8 @@ protected:
 
     virtual void rhs( const vector<double>& y, vector<double>& dydt );
     double sig( double x, double beta ) const;
-    double _x( double Ca ) const; // potentiation rate
-    double _y( double Ca ) const; // depression rate
+    virtual double _x( double Ca ) const; // potentiation rate
+    virtual double _y( double Ca ) const; // depression rate
     virtual void pot(void);
     virtual void dep(void);
   };

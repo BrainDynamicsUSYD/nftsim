@@ -8,11 +8,11 @@ void Couple::init( Configf& configf )
   configf.next("nu");
   vector<double> temp = configf.numbers();
   if( temp.size() == 1 ) {
-    n.resize(nodes,temp[0]);
+    n.clear(); n.resize(nodes,temp[0]);
     pos = (temp[0]>0)?1:-1;
   }
-  else if( temp.size() == nodes ) {
-    n.resize(nodes);
+  else if( temp.size() == uint(nodes) ) {
+    n.clear(); n.resize(nodes);
     for( int i=0; i<nodes; i++ )
       n[i] = temp[i];
     pos = 0;
@@ -33,7 +33,8 @@ void Couple::dump( Dumpf& dumpf ) const
 
 Couple::Couple( int nodes, double deltat, int index, const vector<double>& glu,
         const Propag& prepropag, const Population& postpop )
-    : NF(nodes,deltat,index), glu(glu), prepropag(prepropag), postpop(postpop)
+    : NF(nodes,deltat,index), glu(glu),
+      prepropag(prepropag), postpop(postpop), n(nodes)
 {
 }
 

@@ -22,7 +22,10 @@ using std::stringstream;
 
 #include"couple.h"
 #include"cadp.h"
-#include"fcap.h"
+#include"cascade.h"
+#include"ca2.h"
+#include"bcm.h"
+//#include"fcap.h"
 #include"stp.h"
 
 #include"output.h"
@@ -186,9 +189,18 @@ void Solver::init( Configf& configf )
     else if(ctype=="CaDP")
       couples.add( new
         CaDP(nodes,deltat,i,(*glu)[0], *propags[i], *pops[cnt.post[i]] ) );
-    else if(ctype=="fCaP")
+    else if(ctype=="Cascade")
       couples.add( new
-        fCaP(nodes,deltat,i,(*glu)[0], *propags[i], *pops[cnt.post[i]] ) );
+        CaCascade(nodes,deltat,i,(*glu)[0], *propags[i], *pops[cnt.post[i]] ) );
+    else if(ctype=="Ca2")
+      couples.add( new
+        Ca2(nodes,deltat,i,(*glu)[0], *propags[i], *pops[cnt.post[i]] ) );
+    else if(ctype=="BCM")
+      couples.add( new
+        BCM(nodes,deltat,i,(*glu)[0], *propags[i], *pops[cnt.post[i]] ) );
+    //else if(ctype=="fCaP")
+      //couples.add( new
+        //fCaP(nodes,deltat,i,(*glu)[0], *propags[i], *pops[cnt.post[i]] ) );
     else if(ctype=="STP")
       couples.add( new
         STP(nodes,deltat,i,(*glu)[0], *propags[i], *pops[cnt.post[i]] ) );
@@ -433,8 +445,3 @@ void Solver::step(void)
     }
   }
 }
-
-
-
-
-

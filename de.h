@@ -9,11 +9,18 @@ class DE
   DE(void);
   DE(DE&);
   void operator=(DE&);
+protected:
+  // if the number of field variables need to be extended, use this function
+  void extend( int extension ) {
+    n += extension;
+    variables.resize(n);
+    for( int i=0; i<n; i++ )
+      variables[i].resize(nodes,0);
+  }
 public:
   int nodes;
   double deltat;
   int n; // dimension of system == y.size()
-
   vector<vector<double> > variables;
 
   DE( int nodes, double deltat, int n )
@@ -27,7 +34,6 @@ public:
     { return variables[index]; }
   virtual const vector<double>& operator[] ( int index ) const
     { return variables[index]; }
-
   // define dydt here
   virtual void rhs( const vector<double>& y, vector<double>& dydt ) = 0;
 };
