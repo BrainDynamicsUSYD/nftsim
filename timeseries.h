@@ -7,6 +7,7 @@ using std::string;
 using std::vector;
 #include<cmath>
 #include"nf.h"
+#include"random.h"
 
 class Timeseries : public NF
 {
@@ -27,6 +28,9 @@ public:
   virtual void fire( vector<double>& Q ) const;
 };
 
+namespace TIMESERIES
+{
+
 struct Const : public Timeseries
 {
   double mean;
@@ -43,7 +47,6 @@ struct Pulse : public Timeseries
   void fire( vector<double>& Q ) const;
 };
 
-#include"random.h"
 struct White : public Timeseries
 {
   double seed, amp, mean,deltax;
@@ -72,4 +75,13 @@ struct PAS : public Timeseries
   void fire( vector<double>& Q ) const;
 };
 
+struct Burst : public Timeseries
+{
+  double amp, width, bursts, freq, oscillation_freq, on, off, total;
+  Burst(int nodes,double deltat,int index) : Timeseries(nodes,deltat,index) {}
+  void init( Configf& configf );
+  void fire( vector<double>& Q ) const;
+};
+
+}
 #endif
