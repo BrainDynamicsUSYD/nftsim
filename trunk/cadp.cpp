@@ -13,7 +13,7 @@ void CaDP::CaDE::rhs( const vector<double>& y, vector<double>& dydt )
   if( y[2]+dydt[2]*deltat < 0 ) dydt[2] = -y[2];
   // nu
   dydt[3] = y[4]*(max-y[3]) -y[5]*y[3];
-  if( pos*(y[3]+dydt[3]*deltat) < 0 ) dydt[3] = -y[3];
+  //if( pos*(y[3]+dydt[3]*deltat) < 0 ) dydt[3] = -y[3];
   // x, y, leave alone
   dydt[4] = dydt[5] = 0;
 }
@@ -57,12 +57,9 @@ void CaDP::CaDE::init( Configf& configf )
   variables[3].clear(); variables[3].resize(nodes,nuinit);
   pos = (nuinit>0)?1:-1;
   configf.param("nu_max",max);
-  if( !configf.optional("LTD",dth) )
-    dth = .25e-6;
-  if( !configf.optional("LTP",pth) )
-    pth = .45e-6;
-  if( !configf.optional("Threshold",th) )
-    th = 1e-4;
+  configf.param("Dth",dth);
+  configf.param("Pth",pth);
+  configf.param("xyth",th);
   configf.param("x",ltp);
   configf.param("y",ltd);
   configf.param("B",B);

@@ -22,7 +22,7 @@ syn keyword constant Steady All Torus Nonperiodic
 syn keyword type Connection matrix Population Stimulus Population Firing Dendrite Propag Couple Output nextgroup=index skipwhite skipnl skipempty
 syn match index '\d\+' contained
 
-syn keyword statement Superimpose Const White CoherentWhite Pulse Sine Gaussian Ramp GaussPulse PAS Sigmoid Linear Bursting Map Wave Harmonic CaDP BCM STP fCaP Multi Q V phi Tau nu
+syn keyword statement Superimpose Const White CoherentWhite Pulse Sine Gaussian Ramp GaussPulse PAS Sigmoid Linear Bursting Map Wave Harmonic CaDP BCM STP fCaP Cascade LTP LTD Multi Q V phi Tau nu
 
 syn keyword preproc Time Deltat Nodes Topology Bath Glutamate dynamics Onset Cease Duration
 
