@@ -32,7 +32,7 @@ protected:
     double pos; // sign of nu
 
     virtual void init( Configf& configf );
-    CaDE( int nodes, double deltat ) : DE(nodes,deltat,6) {}
+    CaDE( int nodes, double deltat ) : DE(nodes,deltat,8) {}
     virtual ~CaDE(void) {}
 
     virtual void rhs( const vector<double>& y, vector<double>& dydt );
