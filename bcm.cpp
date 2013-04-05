@@ -8,31 +8,31 @@ void BCM::BCMDE::rhs( const vector<double>& y, vector<double>& dydt )
 
   // gNMDA
   //dydt[6] = ( 1.0e2*(y[3] -dydt[3]/ltd*4) +5e-3 -y[6] )/10;
-  dydt[7] = -(100+10)*y[7] +100*10*y[6]*(1.6e2*y[3]-y[6]);
-  dydt[6] = y[7];
-  if( y[6]+dydt[6]*deltat < 0 ) dydt[6] = -y[6];
+  dydt[9] = -(.1+.1)*y[9] +.1*.1*(1.6e2*y[3]-y[8]);
+  dydt[8] = y[9];
+  if( y[8]+dydt[8]*deltat < 0 ) dydt[8] = -y[8];
   // Ca
-  dydt[2] = y[6]*y[0]*y[1] -y[2]/tCa; // replace gnmda with y[6]
+  dydt[2] = y[11]*y[0]*y[1] -y[2]/tCa; // replace gnmda with y[6]
   if( y[2]+dydt[2]*deltat < 0 ) dydt[2] = -y[2];
 }
 
 void BCM::BCMDE::pot(void)
 {
   for( int i=0; i<nodes; i++ )
-    variables[4][i] = _x( variables[2][i] );
+    variables[4][i] = _x( variables[10][i] );
 }
 
 void BCM::BCMDE::dep(void)
 {
   for( int i=0; i<nodes; i++ )
-    variables[5][i] = _y( variables[2][i] );
+    variables[5][i] = _y( variables[10][i] );
 }
 
 void BCM::init( Configf& configf )
 {
   CaDP::init(configf);
   for( int i=0; i<nodes; i++ )
-    (*de)[6][i] = de->gnmda;
+    (*de)[8][i] = de->gnmda;
 }
 
 BCM::BCM( int nodes, double deltat, int index, const vector<double>& glu,
@@ -49,17 +49,18 @@ BCM::~BCM(void)
 
 void BCM::step(void)
 {
-  static vector<double> oldnu(nodes,13e-6);
-  for( int i=0; i<nodes; i++){
-    (*de)[2][i] /= pow( (*de)[3][i]/13e-6, 3/3 );
-    //(*de)[6][i] /= pow( (*de)[3][i]/oldnu[i], 3/3 );
-    oldnu[i]=(*de)[3][i];
+  for( int i=0; i<nodes; i++ ) {
+    (*de)[10][i] = (*de)[2][i]/pow((*de)[3][i]/13e-6,3/2);
+    (*de)[11][i] = (*de)[8][i]/pow((*de)[3][i]/13e-6,3/2);
   }
   CaDP::step();
 }
 
 void BCM::output( Output& output ) const
 {
-  CaDP::output(output);
-  output("gNMDA",(*de)[6]);
+  output.prefix("Couple",index+1);
+  output("nutilde",(*de)[7]);
+  output("nu",(*de)[3]);
+  output("Ca",(*de)[10]);
+  output("gNMDA",(*de)[11]);
 }
