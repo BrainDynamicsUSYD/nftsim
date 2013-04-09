@@ -11,11 +11,9 @@ protected:
   struct BCMDE : public CaDE
   {
     BCMDE( int nodes, double deltat ) : CaDE(nodes,deltat) {
-      extend(4);
+      extend(1);
     }
     virtual ~BCMDE(void) {}
-    virtual void pot(void);
-    virtual void dep(void);
     virtual void rhs( const vector<double>& y, vector<double>& dydt );
   };
   virtual void init( Configf& configf );

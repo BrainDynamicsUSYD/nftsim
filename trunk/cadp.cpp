@@ -13,7 +13,7 @@ void CaDP::CaDE::rhs( const vector<double>& y, vector<double>& dydt )
   if( y[2]+dydt[2]*deltat < 0 ) dydt[2] = -y[2];
   // nu
   dydt[3] = y[6];
-  dydt[6] = -(1+1)*y[6] +1*1*(y[7]-y[3]);
+  dydt[6] = -(.5+.5)*y[6] +.5*.5*(y[7]-y[3]);
   //if( pos*(y[3]+dydt[3]*deltat) < 0 ) dydt[3] = -y[3];
   // x, y, leave alone
   dydt[4] = dydt[5] = 0;
@@ -28,7 +28,7 @@ double CaDP::CaDE::sig( double x, double beta ) const
 
 double CaDP::CaDE::_x(double Ca) const
 {
-  return th +ltp*sig(Ca-pth,4e7);
+  return xth +ltp*sig(Ca-pth,4e7);
 }
 
 void CaDP::CaDE::pot(void)
@@ -39,7 +39,7 @@ void CaDP::CaDE::pot(void)
 
 double CaDP::CaDE::_y(double Ca) const
 {
-  return th +ltd*sig(Ca-dth,4e7) -ltd*sig(Ca-pth,4e7);
+  return yth +ltd*sig(Ca-dth,4e7) -ltd*sig(Ca-pth,4e7);
 }
 
 void CaDP::CaDE::dep(void)
@@ -63,7 +63,7 @@ void CaDP::CaDE::init( Configf& configf )
   configf.param("nu_max",max);
   configf.param("Dth",dth);
   configf.param("Pth",pth);
-  configf.param("xyth",th);
+  configf.param("xyth",xth); yth = xth*(max-nuinit)/nuinit;
   configf.param("x",ltp);
   configf.param("y",ltd);
   configf.param("B",B);
