@@ -18,7 +18,8 @@ protected:
     double glu_0; // glutamte dose-response threshold
 
     double max; // maximum synaptic strength
-    double th;  // threshold time-scale of plasticity
+    double xth;  // threshold time-scale of plasticity
+    double yth;  // threshold time-scale of plasticity
     double ltd; // time-scale of depression
     double ltp; // time-scale of potentiation
 
