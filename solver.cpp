@@ -22,8 +22,8 @@ using std::stringstream;
 
 #include"couple.h"
 #include"cadp.h"
-#include"cascade.h"
-#include"ca2.h"
+//#include"cascade.h"
+//#include"ca2.h"
 #include"bcm.h"
 //#include"fcap.h"
 #include"stp.h"
@@ -189,12 +189,6 @@ void Solver::init( Configf& configf )
     else if(ctype=="CaDP")
       couples.add( new
         CaDP(nodes,deltat,i,(*glu)[0], *propags[i], *pops[cnt.post[i]] ) );
-    else if(ctype=="Cascade")
-      couples.add( new
-        CaCascade(nodes,deltat,i,(*glu)[0], *propags[i], *pops[cnt.post[i]] ) );
-    else if(ctype=="Ca2")
-      couples.add( new
-        Ca2(nodes,deltat,i,(*glu)[0], *propags[i], *pops[cnt.post[i]] ) );
     else if(ctype=="BCM")
       couples.add( new
         BCM(nodes,deltat,i,(*glu)[0], *propags[i], *pops[cnt.post[i]] ) );
