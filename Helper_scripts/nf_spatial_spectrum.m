@@ -35,6 +35,14 @@ function [f,P,V] = nf_spatial_spectrum(nf,p,kmax,n_windows,spatial_filter)
         fs = p;
     end
 
+    if any(isnan(data(:)))
+        data = data(:,:,1:end-1);
+        if any(isnan(data(:)))
+            error('NaNs are present in the data set')
+        end
+    end
+
+
     if mod(size(data,1),2) || mod(size(data,2),2)
         error('In order to have a zero frequency component, you need an even number of grid edge nodes');
     end
