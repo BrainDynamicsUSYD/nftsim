@@ -61,13 +61,13 @@ function [f,P,V] = nf_spatial_spectrum(nf,p,kmax,n_windows,spatial_filter)
 
     % Calculate the temporal windows
     frac_overlap = 0.5;
-    window_vectors = get_window_vectors(size(data,3),n_windows,frac_overlap); 
+    window_idx = nf_partition(size(data,3),n_windows,[],frac_overlap,1,1);
 
     % Calculate the Fourier f and k values
     Lx = 0.5; % linear cortex dimension (m)
     Ly = 0.5;
 
-    [f,Kx,Ky] = calculate_fft_components(data(:,:,window_vectors{1}),fs,Lx,Ly);
+    [f,Kx,Ky] = calculate_fft_components(data(:,:,window_idx(1,1):window_idx(1,2)),fs,Lx,Ly);
     
     k2 = Kx.^2+Ky.^2; % Matrix of k-squared values
     if isempty(kmax)
@@ -87,10 +87,10 @@ function [f,P,V] = nf_spatial_spectrum(nf,p,kmax,n_windows,spatial_filter)
     end
 
     P = zeros(size(f));
-    for j = 1:length(window_vectors)
-        P = P + get_3d_spectrum(data(:,:,window_vectors{j}),k_mask,k_filter,Lx,fs);
+    for j = 1:n_windows
+        P = P + get_3d_spectrum(data(:,:,window_idx(j,1):window_idx(j,2)),k_mask,k_filter,Lx,fs);
     end
-    P = P/length(window_vectors);
+    P = P/n_windows;
     
     if nargout > 2
         V = get_filtered_timeseries(data,k_filter,k_mask,k2);
@@ -115,7 +115,7 @@ function P = get_3d_spectrum(data,k_mask,k_filter,Lx,fs)
     P = squeeze(sum(sum(P,1),2)); % A sum is OK here because we have multiplied by dk (so don't need trapz)
     P = ifftshift(P);
     P = P(1:size(data,3)/2+1);
-    P(2:size(data,3)/2) = 2*P(2:size(data,3)/2); % Double the frequency components at nonzero and non-Nyquist frequencies
+    P(2:end-1) = 2*P(2:end-1); % Double the frequency components at nonzero and non-Nyquist frequencies
 
 function [f,Kx,Ky] = calculate_fft_components(v,fs,Lx,Ly)
     % Given the 3D matrix of phi, the temporal sampling rate, and the grid dimensions
@@ -151,25 +151,5 @@ function V = get_filtered_timeseries(data,k_filter,k_mask,k2);
     output = ifftn(fftshift(output));
     [a,b] = find(k2==0);
     V = squeeze(output(a,b,:));
-    
-function window_vectors = get_window_vectors(l_sample,n_windows,frac_overlap)
-    % Return a cell array with indices for each window
-    % Sample is calculated from n w[indows overlapping by frac_overlap
-    % pwelch uses n_windows = 8, frac_overlap = 0.5 by default
-    window_length = l_sample/((1+(n_windows-1)*(1-frac_overlap)));
-    % And reduce the window length to a multiple of 2
-    window_length = floor(window_length/2)*2;
-    
-    %window_length = floor(window_length);
-    window_start = 1:window_length*(1-frac_overlap):window_length*(1-frac_overlap)*n_windows;
-    window_start = floor(window_start);
-    window_stop = window_start+floor(window_length)-1;
-    if window_stop > l_sample
-        error('Error calculating indices!');
-    end
-    window_vectors = cell(1,n_windows);
-    for j = 1:n_windows
-        window_vectors{j} = window_start(j):window_stop(j);
-    end
-    
+
     
