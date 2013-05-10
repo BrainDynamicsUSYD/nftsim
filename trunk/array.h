@@ -51,6 +51,7 @@ bool Array<T>::empty(void) const
 template<class T>
 void Array<T>::step(void)
 {
+  #pragma omp parallel for
   for( size_t i=0; i<m.size(); i++ )
     m[i]->step();
 }
