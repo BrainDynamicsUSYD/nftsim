@@ -1,4 +1,4 @@
-function varargout = nf_eirs(p,file_id,firemode,int_time,grid_edge,fs,waves,ranseed,fprefix)
+function varargout = nf_eirs(p,file_id,firemode,int_time,grid_edge,fs,waves,ranseed,fprefix,Lx)
     % Run NeuroField on an EIRS point struct
     % [nf,f,P,V] = nf_eirs(p,file_id,firemode,int_time,grid_edge,grid_output)
     % - Accepts a point struct as input
@@ -27,6 +27,11 @@ function varargout = nf_eirs(p,file_id,firemode,int_time,grid_edge,fs,waves,rans
     % If nf = nf_eirs() then nf_read will be called but no plot produced
     % If [nf,f,P] = nf_eirs() then nf_spatial_spectrum will also be called
     % and a plot produced
+
+    if nargin < 10 || isempty(Lx)
+        Lx = 0.5;
+    end
+
     if nargin < 9 || isempty(fprefix)
         fprefix = 'neurofield';
     end
@@ -71,7 +76,6 @@ function varargout = nf_eirs(p,file_id,firemode,int_time,grid_edge,fs,waves,rans
 	
 	% Initialize numerical solver parameters
     deltat = 1/fs;
-    Lx = 0.5; % Cortex linear dimension (meters)
 	deltax= Lx/grid_edge; % Assume square grid
 	
 	% CFL condition
@@ -234,8 +238,8 @@ function varargout = nf_eirs(p,file_id,firemode,int_time,grid_edge,fs,waves,rans
         end
         fprintf(fid,'\n');
 
-        fprintf(fid,'Output: Node: All Start: 0 Interval: 0.2e-2\n');
-        fprintf(fid,'Population: 4\n');
+        fprintf(fid,'Output: Node: All Start: 0 Interval: 0.5e-2\n');
+        fprintf(fid,'Population: \n');
         fprintf(fid,'Dendrite:  \n');
         fprintf(fid,'Propag: 1 \n');
         fprintf(fid,'Couple:  \n');
