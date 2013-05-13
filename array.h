@@ -17,7 +17,7 @@ class Array
   vector<T*> m;
 public:
   virtual void step(void);
-  //virtual void pstep(void); // parallel for loop over elements::loop
+  virtual void pstep(void); // parallel for loop over elements::loop
 
   void add(T* t);
   void add(vector<T*> t);
@@ -51,17 +51,17 @@ bool Array<T>::empty(void) const
 template<class T>
 void Array<T>::step(void)
 {
-  #pragma omp parallel for
   for( size_t i=0; i<m.size(); i++ )
     m[i]->step();
 }
 
-/*template<class T>
+template<class T>
 void Array<T>::pstep(void)
 {
-  for( size_t i=0; i<m.size(); i++ )
+  #pragma omp parallel for num_threads(5)
+for( size_t i=0; i<m.size(); i++ )
     m[i]->step();
-}*/
+}
 
 template<class T>
 Array<T>::Array(void)
