@@ -423,9 +423,9 @@ void Solver::step(void)
   }
 
   // step through populations
-  couples.step();
-  pops.step();
-  propags.step();
+  couples.pstep();
+  pops.pstep();
+  propags.pstep();
 
   // output routine
   if( outputstart )
