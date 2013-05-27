@@ -115,7 +115,13 @@ function P = get_3d_spectrum(data,k_mask,k_filter,Lx,fs)
     P = squeeze(sum(sum(P,1),2)); % A sum is OK here because we have multiplied by dk (so don't need trapz)
     P = ifftshift(P);
     P = P(1:size(data,3)/2+1);
-    P(2:end-1) = 2*P(2:end-1); % Double the frequency components at nonzero and non-Nyquist frequencies
+
+    if rem(size(data,3), 2) % Multiply by 2 to get correct energy, excluding zero and 
+    % Nyquist frequencies
+        P(2:end) = P(2:end)*2;
+    else
+        P(2:end -1) = P(2:end -1)*2;
+    end
 
 function [f,Kx,Ky] = calculate_fft_components(v,fs,Lx,Ly)
     % Given the 3D matrix of phi, the temporal sampling rate, and the grid dimensions
