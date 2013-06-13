@@ -46,8 +46,6 @@ protected:
   CaDE* de;
   RK4* rk4;
   virtual void init( Configf& configf );
-  virtual void restart( Restartf& restartf );
-  virtual void dump( Dumpf& dumpf ) const;
 public: 
   CaDP( int nodes, double deltat, int index, const vector<double>& glu,
           const Propag& prepropag, const Population& postpop );
