@@ -1,8 +1,6 @@
 #ifndef DUMPF_H
 #define DUMPF_H
 
-#include<sstream>
-using std::stringstream;
 #include<iostream>
 using std::istream;
 #include<string>
@@ -19,12 +17,9 @@ class Dumpf
   Dumpf(Dumpf&);
   Dumpf& operator=(Dumpf&);
 
-  ofstream file;
-  stringstream ss;
-  ostream* s;
+  ofstream file;  // stream to a file, if outputting to file
+  ostream* s;     // pointer to output, maybe to file, or to cout
   string filename;
-  void open(void);
-  void checkFlush(void);
 public:
   Dumpf(void);
   ~Dumpf(void);
@@ -37,7 +32,7 @@ public:
 };
 
 ostream& septor( ostream& os ); // implements the separator "|" between fields
-ostream& space( ostream& os ); //  puts a space into dumpfile
+ostream& space( ostream& os );  // puts a space into dumpfile
 ostream& setw( ostream& os );
 
 #endif
