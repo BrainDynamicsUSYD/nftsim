@@ -20,7 +20,7 @@ class Solver : public NF
   Solver(); // no default constructor
   Solver(Solver& ); // no copy constructor
 
-  Dumpf* dumpf;
+  Dumpf& dumpf;
 
   int steps; // number of integration steps to perform
 
@@ -53,16 +53,42 @@ class Solver : public NF
     void init( Configf& configf );
     void restart( Restartf& restartf ) {}
     void dump( Dumpf& dumpf ) const;
-    CntMat( int nodes, double deltat, int index ) : NF(nodes,deltat,0) {}
+    CntMat(void) : NF(0,0,0) {}
     ~CntMat(void) {}
     void step(void) {}
   } cnt;
 
-  Array<Outlet> outputs;
-  int t;
-  int outputstart;
-  int outputinterval;
-  void initOutput( Configf& configf );
+  struct Outputs : public NF
+  {
+    vector<Outlet*> outlets;
+    int t;
+    int outputstart;
+    int outputinterval;
+    vector<unsigned int> node;
+    Dumpf& dumpf;
+    CntMat& cnt;
+    Array<Population>& pops;
+    Array<Propag>& propags;
+    Array<Couple>& couples;
+
+    void init( Configf& configf );
+    void restart( Restartf& restartf ) {}
+    void dump( Dumpf& dumpf ) const {}
+    Outputs( int nodes, double deltat, Dumpf& dumpf,
+        CntMat& cnt, Array<Population>& pops, Array<Propag>& propags, Array<Couple>& couples )
+        : NF(nodes,deltat,0), dumpf(dumpf),
+        cnt(cnt), pops(pops), propags(propags), couples(couples) {}
+    ~Outputs(void) {}
+    void step(void);
+    void writeName( Outlet& outlet );
+    void writeNode( Outlet& outlet );
+    void writeOutlet( Outlet& outlet );
+    void add( vector<Outlet*> _outlets ) {
+      for( size_t i=0; i<_outlets.size(); i++ )
+        outlets.push_back( _outlets[i] );
+    }
+  };
+  Outputs* outputs;
 
   Array<Population> pops;
   Array<Propag> propags;
@@ -72,7 +98,7 @@ protected:
   virtual void restart( Restartf& restartf );
   virtual void dump( Dumpf& dumpf ) const;
 public: 
-  Solver( Dumpf* dumpf );
+  Solver( Dumpf& dumpf );
   virtual ~Solver(void);
 
   void solve(void); // main integration loop

@@ -5,22 +5,14 @@
 using std::string;
 #include<vector>
 using std::vector;
-#include"dumpf.h"
 
 class Outlet
 {
-  const string name; // name of field
-  const vector<double>& field; // field to output
-  const bool single_output;
 public: 
   Outlet( const string& name, const vector<double>& field, bool single_output=false );
-  const string& fieldname(void) const; // returns name
-  void step(void) const; // output field values
-  void writeName(void) const;
-  void writeNode(void) const;
-
-  static vector<int> node; // vector of nodes to output
-  static Dumpf dumpf; // file to dump
+  const string name;
+  const vector<double>& field;
+  const bool single_output;
 };
 
 class Output

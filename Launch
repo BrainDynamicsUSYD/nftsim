@@ -73,7 +73,16 @@ if( scalar(@ARGV)<2 ) {
 		close PBS;
 		exec "qsub pbs" or die $!;
 	} else {
-		exec "time ./Release/NeuroField $arglist &";
+		if( `which pv | wc -l` =~ /0/ ) {
+			exec "time ./Release/NeuroField $arglist &";
+		}
+		else {
+			my $time = $1 if( `grep Time neurofield.conf` =~ /Time:\s*([-\d\.e]+)/ );
+			my $interval = $1 if( `grep Deltat neurofield.conf` =~ /Deltat:\s*([-\d\.e]+)/ );
+			$interval = $1 if( `grep Interval neurofield.conf` =~ /Interval:\s*([-\d\.e]+)/ );
+			my $steps = $time/$interval;
+			exec "./Release/NeuroField $arglist -v | pv -pter -ls $steps >neurofield.output";
+		}
 	}
 }
 
@@ -174,7 +183,7 @@ for( my $i=0; $i<$runs; $i++ ) {
 		close NEWPBS;
 		system "bash -c 'qsub pbs' &";
 	} else {
-		system "time ./NeuroField $arglist &";
+		system "./NeuroField $arglist &";
 	}
 	close IN; close OUT;
 	chdir "../..";
