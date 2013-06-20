@@ -79,18 +79,15 @@ void Solver::CntMat::dump( Dumpf& dumpf ) const
   dumpf << endl << endl;
 }
 
-Solver::Solver( Dumpf* dumpf )
-    : NF(0,0,0), dumpf(dumpf), cnt(0,0,0)
+Solver::Solver( Dumpf& dumpf )
+    : NF(0,0,0), dumpf(dumpf), cnt()
 {
 }
 
 Solver::~Solver()
 {
-  if(dumpf) {
-    *dumpf<<*this;
-    delete dumpf;
-  }
   delete glu; delete glu_rk4;
+  delete outputs;
 }
 
 void Solver::init( Configf& configf )
@@ -228,154 +225,8 @@ void Solver::init( Configf& configf )
 
   // initialize outputs
   configf.go2("Output"); configf.next("Output");
-  initOutput(configf);
-}
-
-void Solver::initOutput( Configf& configf )
-{
-  double tempf;
-  // read in nodes to output
-  configf.next("Node");
-  if( configf.find("Node:") == "All" ) // beware of this slightly hackish line
-    for( int i=0; i<nodes; i++ )
-      Outlet::node.push_back(i);
-  else {
-    vector<double> temp = configf.numbers();
-    for( size_t i=0; i<temp.size(); i++ )
-      if( temp[i] > nodes ) {
-        cerr<<"Trying to plot node number "<<temp[i]
-            <<", which is bigger than the highest node index."<<endl;
-        exit(EXIT_FAILURE);
-      }
-      else
-        Outlet::node.push_back( temp[i]-1 );
-  }
-
-  // read in time to start of output
-  if( !configf.optional("Start",tempf) )
-    outputstart = 0;
-  else {
-    if( remainder(tempf,deltat) >deltat ) {
-      cerr<<"Value of output start time not divisible by Deltat."<<endl;
-      exit(EXIT_FAILURE);
-    }
-    else
-      outputstart = tempf/deltat;
-  }
-  t = 0;
-
-  // read in output interval
-  if( !configf.optional("Interval",tempf) )
-    outputinterval = 1;
-  else {
-    if( remainder(tempf,deltat) >deltat ) {
-      cerr<<"Value of output interval not divisible by Deltat."<<endl;
-      exit(EXIT_FAILURE);
-    }
-    else
-      outputinterval = tempf/deltat+.5;
-  }
-
-  // read in populations to output
-  configf.next("Population");
-  vector<string> temp = configf.arb("Dendrite:");
-  for( size_t i=0; i<temp.size(); i++ ) {
-    int obj_index = atoi(temp[i].c_str()); // atoi() takes only 1 of "1.V"
-    if( obj_index > cnt.npop || obj_index<1 ) {
-      cerr<<"Trying to output population "<<obj_index
-          <<", which is an invalid population."<<endl;
-      exit(EXIT_FAILURE);
-    }
-    string key;
-    if( temp[i].find(".")!=string::npos )
-      key = temp[i].substr( temp[i].find(".")+1, string::npos );
-    Output output(key);
-    pops[obj_index-1]->output(output);
-    if( output.empty() ) {
-      cerr<<"Output "<<temp[i].c_str()<<" cannot be outputted."<<endl;
-      exit(EXIT_FAILURE);
-    }
-    outputs.add(output);
-  }
-
-  // read in dendrites to output
-  configf.next("Dendrite");
-  temp = configf.arb("Propag:");
-  for( size_t i=0; i<temp.size(); i++ ) {
-    int obj_index = atoi(temp[i].c_str());
-    if( obj_index > cnt.ncnt || obj_index<1 ) {
-      cerr<<"Trying to output dendrite "<<obj_index
-          <<", which is an invalid dendrite."<<endl;
-      exit(EXIT_FAILURE);
-    }
-    string key;
-    if( temp[i].find(".")!=string::npos )
-      key = temp[i].substr( temp[i].find(".")+1, string::npos );
-    Output output(key);
-    for( size_t j=0; j<pops.size(); j++ )
-      pops[j]->outputDendrite(obj_index-1,output);
-    if( output.empty() ) {
-      cerr<<"Output "<<temp[i].c_str()<<" cannot be outputted."<<endl;
-      exit(EXIT_FAILURE);
-    }
-    outputs.add(output);
-  }
-
-  // read in propags to output
-  configf.next("Propag");
-  temp = configf.arb("Couple:");
-  for( size_t i=0; i<temp.size(); i++ ) {
-    int obj_index = atoi(temp[i].c_str());
-    if( obj_index > cnt.ncnt || obj_index<1 ) {
-      cerr<<"Trying to output propag "<<obj_index
-          <<", which is an invalid propag."<<endl;
-      exit(EXIT_FAILURE);
-    }
-    string key;
-    if( temp[i].find(".")!=string::npos )
-      key = temp[i].substr( temp[i].find(".")+1, string::npos );
-    Output output(key);
-    propags[obj_index-1]->output(output);
-    if( output.empty() ) {
-      cerr<<"Output "<<temp[i].c_str()<<" cannot be outputted."<<endl;
-      exit(EXIT_FAILURE);
-    }
-    outputs.add(output);
-  }
-
-  // read in couples to output
-  configf.next("Couple");
-  temp = configf.arb("Nonexistent:");
-  for( size_t i=0; i<temp.size(); i++ ) {
-    int obj_index = atoi(temp[i].c_str());
-    if( obj_index > cnt.ncnt || obj_index<1 ) {
-      cerr<<"Trying to output couple "<<obj_index
-          <<", which is an invalid couple."<<endl;
-      exit(EXIT_FAILURE);
-    }
-    string key;
-    if( temp[i].find(".")!=string::npos )
-      key = temp[i].substr( temp[i].find(".")+1, string::npos );
-    Output output(key);
-    couples[obj_index-1]->output(output);
-    if( output.empty() ) {
-      cerr<<"Output "<<temp[i].c_str()<<" cannot be outputted."<<endl;
-      exit(EXIT_FAILURE);
-    }
-    outputs.add(output);
-  }
-
-  // write out first row
-  Outlet::dumpf<<space<<"Time"<<space<<space<<septor;
-  for( size_t i=0; i<outputs.size(); i++ ) {
-    outputs[i]->writeName();
-  }
-  // write out second row
-  Outlet::dumpf<<endl<<space<<space<<space<<" "<<septor;
-  for( size_t i=0; i<outputs.size(); i++ ) {
-    outputs[i]->writeNode();
-  }
-  Outlet::dumpf<<endl;
+  outputs = new Outputs(nodes,deltat,dumpf,cnt,pops,propags,couples);
+  outputs->init(configf);
 }
 
 void Solver::restart( Restartf& restartf )
@@ -426,16 +277,197 @@ void Solver::step(void)
   couples.pstep();
   pops.pstep();
   propags.pstep();
+  outputs->step();
+}
 
-  // output routine
+void Solver::Outputs::step(void)
+{
   if( outputstart )
     outputstart--;
   else {
     t++;
     if( t%outputinterval==0 ) {
-      Outlet::dumpf<<double(t)*deltat<<space<<space<<septor;
-      outputs.step();
-      Outlet::dumpf<<endl;
+      dumpf<<double(t)*deltat<<space<<space<<septor;
+      for( size_t i=0; i<outlets.size(); i++ )
+        writeOutlet( *outlets[i] );
+      dumpf<<endl;
     }
+  }
+}
+void Solver::Outputs::init( Configf& configf )
+{
+  double tempf;
+  // read in nodes to output
+  configf.next("Node");
+  if( configf.find("Node:") == "All" ) // beware of this slightly hackish line
+    for( int i=0; i<nodes; i++ )
+      node.push_back(i);
+  else {
+    vector<double> temp = configf.numbers();
+    for( size_t i=0; i<temp.size(); i++ )
+      if( temp[i] > nodes ) {
+        cerr<<"Trying to plot node number "<<temp[i]
+            <<", which is bigger than the highest node index."<<endl;
+        exit(EXIT_FAILURE);
+      }
+      else
+        node.push_back( temp[i]-1 );
+  }
+
+  // read in time to start of output
+  if( !configf.optional("Start",tempf) )
+    outputstart = 0;
+  else {
+    if( remainder(tempf,deltat) >deltat ) {
+      cerr<<"Value of output start time not divisible by Deltat."<<endl;
+      exit(EXIT_FAILURE);
+    }
+    else
+      outputstart = tempf/deltat;
+  }
+  t = 0;
+
+  // read in output interval
+  if( !configf.optional("Interval",tempf) )
+    outputinterval = 1;
+  else {
+    if( remainder(tempf,deltat) >deltat ) {
+      cerr<<"Value of output interval not divisible by Deltat."<<endl;
+      exit(EXIT_FAILURE);
+    }
+    else
+      outputinterval = tempf/deltat+.5;
+  }
+
+  // read in populations to output
+  configf.next("Population");
+  vector<string> temp = configf.arb("Dendrite:");
+  for( size_t i=0; i<temp.size(); i++ ) {
+    int obj_index = atoi(temp[i].c_str()); // atoi() takes only 1 of "1.V"
+    if( obj_index > cnt.npop || obj_index<1 ) {
+      cerr<<"Trying to output population "<<obj_index
+          <<", which is an invalid population."<<endl;
+      exit(EXIT_FAILURE);
+    }
+    string key;
+    if( temp[i].find(".")!=string::npos )
+      key = temp[i].substr( temp[i].find(".")+1, string::npos );
+    Output output(key);
+    pops[obj_index-1]->output(output);
+    if( output.empty() ) {
+      cerr<<"Output "<<temp[i].c_str()<<" cannot be outputted."<<endl;
+      exit(EXIT_FAILURE);
+    }
+    add(output);
+  }
+
+  // read in dendrites to output
+  configf.next("Dendrite");
+  temp = configf.arb("Propag:");
+  for( size_t i=0; i<temp.size(); i++ ) {
+    int obj_index = atoi(temp[i].c_str());
+    if( obj_index > cnt.ncnt || obj_index<1 ) {
+      cerr<<"Trying to output dendrite "<<obj_index
+          <<", which is an invalid dendrite."<<endl;
+      exit(EXIT_FAILURE);
+    }
+    string key;
+    if( temp[i].find(".")!=string::npos )
+      key = temp[i].substr( temp[i].find(".")+1, string::npos );
+    Output output(key);
+    for( size_t j=0; j<pops.size(); j++ )
+      pops[j]->outputDendrite(obj_index-1,output);
+    if( output.empty() ) {
+      cerr<<"Output "<<temp[i].c_str()<<" cannot be outputted."<<endl;
+      exit(EXIT_FAILURE);
+    }
+    add(output);
+  }
+
+  // read in propags to output
+  configf.next("Propag");
+  temp = configf.arb("Couple:");
+  for( size_t i=0; i<temp.size(); i++ ) {
+    int obj_index = atoi(temp[i].c_str());
+    if( obj_index > cnt.ncnt || obj_index<1 ) {
+      cerr<<"Trying to output propag "<<obj_index
+          <<", which is an invalid propag."<<endl;
+      exit(EXIT_FAILURE);
+    }
+    string key;
+    if( temp[i].find(".")!=string::npos )
+      key = temp[i].substr( temp[i].find(".")+1, string::npos );
+    Output output(key);
+    propags[obj_index-1]->output(output);
+    if( output.empty() ) {
+      cerr<<"Output "<<temp[i].c_str()<<" cannot be outputted."<<endl;
+      exit(EXIT_FAILURE);
+    }
+    add(output);
+  }
+
+  // read in couples to output
+  configf.next("Couple");
+  temp = configf.arb("EOF"); // config files do not contain "EOF", reads to end of file
+  for( size_t i=0; i<temp.size(); i++ ) {
+    int obj_index = atoi(temp[i].c_str());
+    if( obj_index > cnt.ncnt || obj_index<1 ) {
+      cerr<<"Trying to output couple "<<obj_index
+          <<", which is an invalid couple."<<endl;
+      exit(EXIT_FAILURE);
+    }
+    string key;
+    if( temp[i].find(".")!=string::npos )
+      key = temp[i].substr( temp[i].find(".")+1, string::npos );
+    Output output(key);
+    couples[obj_index-1]->output(output);
+    if( output.empty() ) {
+      cerr<<"Output "<<temp[i].c_str()<<" cannot be outputted."<<endl;
+      exit(EXIT_FAILURE);
+    }
+    add(output);
+  }
+
+  // write out first row
+  dumpf<<space<<"Time"<<space<<space<<septor;
+  for( size_t i=0; i<outlets.size(); i++ )
+    writeName(*outlets[i]);
+  // write out second row
+  dumpf<<endl<<space<<space<<space<<" "<<septor;
+  for( size_t i=0; i<outlets.size(); i++ )
+    writeNode(*outlets[i]);
+  dumpf<<endl;
+}
+
+void Solver::Outputs::writeName( Outlet& outlet )
+{
+  if( outlet.single_output )
+    dumpf<<space<<space<<setw<<outlet.name;
+  else {
+    for( size_t i=0; i<node.size(); i++ )
+      dumpf<<space<<space<<setw<<outlet.name;
+  }
+  dumpf<<space<<space<<septor;
+}
+
+void Solver::Outputs::writeNode( Outlet& outlet )
+{
+  if( outlet.single_output )
+    dumpf<<space<<space<<setw<<1;
+  else {
+    for( size_t i=0; i<node.size(); i++ )
+      dumpf<<space<<space<<setw<<int(node[i]+1);
+  }
+  dumpf<<space<<space<<septor;
+}
+
+void Solver::Outputs::writeOutlet( Outlet& outlet )
+{
+  if( outlet.single_output )
+    dumpf<<space<<outlet.field[0]<<space<<space<<septor;
+  else {
+    for( size_t i=0; i<node.size(); i++ )
+      dumpf<<space<<outlet.field[node[i]];
+    dumpf<<space<<space<<septor;
   }
 }
