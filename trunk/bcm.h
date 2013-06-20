@@ -11,9 +11,8 @@ protected:
   //double t_BCM;
   struct BCMDE : public CaDE
   {
-    double nu_init;
     double t_BCM;
-    double maxgnmda;
+    double gnmda_0;
     BCMDE( int nodes, double deltat ) : CaDE(nodes,deltat) {
       extend(1);
     }
@@ -25,8 +24,6 @@ public:
   BCM( int nodes, double deltat, int index, const vector<double>& glu,
           const Propag& prepropag, const Population& postpop );
   virtual ~BCM(void);
-  //virtual void init( Configf& configf );
-  virtual void step(void);
   virtual void output( Output& output ) const;
 };
 

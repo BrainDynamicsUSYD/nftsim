@@ -80,8 +80,8 @@ if( scalar(@ARGV)<2 ) {
 			my $time = $1 if( `grep Time neurofield.conf` =~ /Time:\s*([-\d\.e]+)/ );
 			my $interval = $1 if( `grep Deltat neurofield.conf` =~ /Deltat:\s*([-\d\.e]+)/ );
 			$interval = $1 if( `grep Interval neurofield.conf` =~ /Interval:\s*([-\d\.e]+)/ );
-			my $steps = $time/$interval;
-			exec "./Release/NeuroField $arglist -v | pv -pter -ls $steps >neurofield.output";
+			my $steps = $time/$interval +2;
+			exec "./Release/NeuroField $arglist -v | pv -pte -ls $steps >neurofield.output";
 		}
 	}
 }
