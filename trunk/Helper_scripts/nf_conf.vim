@@ -4,36 +4,25 @@
 " and add "au BufRead,BufNewFile *.conf setfiletype nf_conf" into
 " ~/.vim/filetype.vim
 
-" Integer with - + or nothing in front
-syn match number '\<\d\+\>'
-syn match number '\<[-+]\d\+\>'
-" Floating point number with decimal no E or e (+,-)
-syn match number '\<\d\+\.\d*\>'
-syn match number '\<[-+]\d\+\.\d*\>'
-" Floating point like number with E and no decimal point (+,-)
-syn match number '\<[-+]\=\d[[:digit:]]*[eE][\-+]\=\d\+\>'
-syn match number '\<\d[[:digit:]]*[eE][\-+]\=\d\+\>'
-" Floating point like number with E and decimal point (+,-)
-syn match number '\<[-+]\=\d[[:digit:]]*\.\d*[eE][\-+]\=\d\+\>'
-syn match number '\<\d[[:digit:]]*\.\d*[eE][\-+]\=\d\+\>'
+syn region error start='\%^' end='$'
 
-syn keyword constant Steady All Torus Nonperiodic
+syn keyword preproc Time Deltat Nodes Topology Bath Glutamate dynamics Onset Cease Duration Output
 
-syn keyword type Connection matrix Population Stimulus Population Firing Dendrite Propag Couple Output nextgroup=index skipwhite skipnl skipempty
-syn match index '\d\+' contained
+syn keyword CntKey From To nextgroup=CntI skipwhite skipnl skipempty
+syn match CntI '\d\+' contained
 
-syn keyword statement Superimpose Const White CoherentWhite Pulse Sine Gaussian Ramp GaussPulse PAS Sigmoid Linear Bursting Map Wave Harmonic CaDP BCM STP fCaP Cascade LTP LTD Multi Q V phi Tau nu
+syn keyword Object Connection matrix Population Stimulus Population Firing Dendrite Propag Couple nextgroup=Index skipwhite skipnl skipempty
+syn match Index '\d\+' contained
 
-syn keyword preproc Time Deltat Nodes Topology Bath Glutamate dynamics Onset Cease Duration
+syn match Choice /:\D*-/ms=s+1,me=e-1
+syn keyword statement Q phi Tau nu
 
-syn keyword cntmatc From To nextgroup=cntmati skipwhite skipnl skipempty
-syn match cntmati '\d\+' contained
+syn match Number '\<[-+]\=\d*\.\=\d*[eE]\=[-+]\=\d*\>'
+syn keyword Constant Steady All Torus Nonperiodic
 
-syn region error start="\%^" end="$"
-
-"hi def link object Type
-hi def link index Type
-hi def link cntmatc PreProc
-hi def link cntmati PreProc
+hi def link Object type
+hi def link CntKey preproc
+hi def link CntI preproc
+hi def link Choice statement
 
 let b:current_syntax = "neurofield"
