@@ -36,7 +36,7 @@ class Dendrite : public NF
 protected:
   vector<double> v;
   vector<double> dvdt;
-  vector<double> np;
+  //vector<double> np;
   vector<double> oldnp;
 
   const Propag& prepropag;
