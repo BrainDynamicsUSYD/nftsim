@@ -34,7 +34,7 @@ void Couple::dump( Dumpf& dumpf ) const
 Couple::Couple( int nodes, double deltat, int index, const vector<double>& glu,
         const Propag& prepropag, const Population& postpop )
     : NF(nodes,deltat,index), glu(glu),
-      prepropag(prepropag), postpop(postpop), n(nodes)
+      prepropag(prepropag), postpop(postpop), n(nodes), P(nodes)
 {
 }
 
@@ -44,6 +44,8 @@ Couple::~Couple(void)
 
 void Couple::step(void)
 {
+  for( int i=0; i<nodes; i++ )
+    P[i] = n[i]*prepropag[i];
 }
 
 double Couple::nuinit( Configf& configf ) const
@@ -57,14 +59,14 @@ void Couple::output( Output& output ) const
   output("Couple",index+1,"nu",n);
 }
 
-const vector<double>& Couple::nu(void) const
+const vector<double>& Couple::nuphi(void) const
 {
-  return n;
+  return P;
 }
 
 const double Couple::operator[]( int node ) const
 {
-  return nu()[node];
+  return nuphi()[node];
 }
 
 bool Couple::excite(void) const
