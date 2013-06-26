@@ -100,6 +100,8 @@ void CaDP::step(void)
   }
   de->pot(); de->dep();
   rk4->step();
+  for( int i=0; i<nodes; i++ )
+    P[i] = (*de)[7][i]*prepropag[i];
 }
 
 const vector<double>& CaDP::nu(void) const

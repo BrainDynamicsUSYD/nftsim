@@ -47,7 +47,7 @@ void Dendrite::dump( Dumpf& dumpf ) const
 
 Dendrite::Dendrite( int nodes, double deltat, int index,
     const Propag& prepropag, const Couple& precouple )
-  : NF(nodes,deltat,index), v(nodes), dvdt(nodes,0), np(nodes), oldnp(nodes),
+  : NF(nodes,deltat,index), v(nodes), dvdt(nodes,0), oldnp(nodes),
     prepropag(prepropag), precouple(precouple)
 {
 }
@@ -59,30 +59,30 @@ Dendrite::~Dendrite(void)
 void Dendrite::step(void)
 {
   // assume that alpha, beta are constant and nu*phi is linear for the time step
-  for( int i=0; i<nodes; i++ )
-    np[i] = precouple[i]*prepropag[i];
+  /*for( int i=0; i<nodes; i++ )
+    np[i] = precouple[i]*prepropag[i];*/
 
   if(alpha!=beta)
 //#pragma omp parallel for private(adjustedPab,deltaPdeltat)
     for(int i=0; i<nodes; i++) {
-      dpdt = ( np[i] -oldnp[i] )/deltat;
+      dpdt = ( precouple.nuphi()[i] -oldnp[i] )/deltat;
       adjustednp = oldnp[i] -factorab*dpdt -v[i];
       C1 = ( adjustednp*beta -dvdt[i] +dpdt )/aminusb;
       C1expa = C1*expa;
       C2expb = expb*(-C1-adjustednp);
-      v[i] = C1expa+C2expb+np[i] -factorab*dpdt;
+      v[i] = C1expa+C2expb+precouple.nuphi()[i] -factorab*dpdt;
       dvdt[i] = C1expa*(-alpha) +C2expb*(-beta)+dpdt;
-      oldnp[i]=np[i]; //Save current pulse density for next step
+      oldnp[i]=precouple.nuphi()[i]; //Save current pulse density for next step
     }
   else // alpha==beta
     for(int i=0; i<nodes; i++) {
-      dpdt = ( np[i] -oldnp[i] )/deltat;
+      dpdt = ( precouple.nuphi()[i] -oldnp[i] )/deltat;
       adjustednp = oldnp[i] -factorab*dpdt -v[i];
       C1 = dvdt[i] -alpha*adjustednp -dpdt;
       C1dtplusC2 = C1*deltat -adjustednp;
-      v[i] = C1dtplusC2*expa +np[i] -factorab*dpdt;
+      v[i] = C1dtplusC2*expa +precouple.nuphi()[i] -factorab*dpdt;
       dvdt[i] = (C1-alpha*C1dtplusC2)*expa +dpdt;
-      oldnp[i]=np[i]; //Save current pulse density for next step
+      oldnp[i]=precouple.nuphi()[i]; //Save current pulse density for next step
     }
 }
 

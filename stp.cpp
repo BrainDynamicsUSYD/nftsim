@@ -104,6 +104,7 @@ void STP::step(void)
   //de.t_Xi = 50e-3 -45e-3*prepropag[0]/(prepropag[0]+150);
   rk4.step();
   de[3] = prepropag.phi();
+  Couple::step();
 }
 
 const vector<double>& STP::nu(void) const

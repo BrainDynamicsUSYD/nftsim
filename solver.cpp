@@ -9,7 +9,7 @@ using std::stringstream;
 
 #include"solver.h"
 #include"population.h"
-#include"single.h"
+//#include"single.h"
 #include"array.h"
 #include"configf.h"
 
@@ -21,6 +21,7 @@ using std::stringstream;
 #endif
 
 #include"couple.h"
+#include"longcouple.h"
 #include"cadp.h"
 //#include"cascade.h"
 //#include"ca2.h"
@@ -183,6 +184,9 @@ void Solver::init( Configf& configf )
     if(ctype=="Map")
       couples.add( new
         Couple(nodes,deltat,i,(*glu)[0], *propags[i], *pops[cnt.post[i]] ) );
+    else if(ctype=="Matrix")
+      couples.add( new
+        LongCouple(nodes,deltat,i,(*glu)[0], *propags[i], *pops[cnt.post[i]] ) );
     else if(ctype=="CaDP")
       couples.add( new
         CaDP(nodes,deltat,i,(*glu)[0], *propags[i], *pops[cnt.post[i]] ) );

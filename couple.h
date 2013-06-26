@@ -23,7 +23,8 @@ protected:
   const vector<double>& glu;
   const Propag& prepropag;
   const Population& postpop;
-  vector<double> n;
+  vector<double> n; // nu
+  vector<double> P; // nu*phi
   int pos;
 public: 
   Couple( int nodes, double deltat, int index, const vector<double>& glu,
@@ -31,10 +32,10 @@ public:
   virtual ~Couple(void);
   virtual void step(void);
   double nuinit( Configf& configf ) const;
-  virtual void output( Output& output ) const; 
-  virtual const vector<double>& nu(void) const;
+  virtual void output( Output& output ) const;
+  virtual const vector<double>& nuphi(void) const;
   virtual const double operator[]( int node ) const;
-  bool excite(void) const;
+  virtual bool excite(void) const;
 };
 
 #endif
