@@ -13,6 +13,7 @@ using std::string;
 #include<vector>
 using std::vector;
 #include<cstdlib>
+using std::cerr;
 using std::endl;
 
 class Configf : protected std::ifstream // derived class 
@@ -66,20 +67,22 @@ template<class T> void Configf::param(const string& param, T& ret, int delim )
 {
   if( next(param,delim) ) {
     if( !good() ) {
-      std::cerr << "Input variable '" << param << "' is given a wrong type."
+      cerr << "Input variable '" << param << "' is given a wrong type."
         << endl;
       exit(EXIT_FAILURE);
     }
     *this >> ret;
   }
   else {
-  std::cerr << "Unable to find next input variable :'"
-    << param << "' "<< endl
-    << "Last read was :'"
-    << buffer
-    << "' "<< endl
-    << "Please check the sequence of parameters." << endl;
-  exit(EXIT_FAILURE);
+    int position = tellg();
+    seekg(0,std::ios::beg);
+    read(buffer,position);
+    buffer[position] = '\0';
+    cerr << "Unable to find next input variable: "
+      << param << endl
+      << "From configuration file:" << endl
+      << buffer << endl;
+    exit(EXIT_FAILURE);
   }
 }
 
@@ -88,21 +91,15 @@ template<> inline void Configf::param<string>(const string& param, string& ret, 
   if( next(param,delim) ) {
     *this >> buffer;
     if( !good() ) {
-      std::cerr << "Input variable '" << param << "' is given a wrong type."
+      cerr << "Input variable '" << param << "' is given a wrong type."
         << endl;
       exit(EXIT_FAILURE);
     }
     ret = string(buffer);
   }
   else {
-    std::cerr << "Unable to find next input variable :'"
-      << param << "' "<< endl
-      << "Last read was :'"
-      << buffer
-      << "' "<< endl
-      << "Please check the sequence of parameters." << endl;
     exit(EXIT_FAILURE);
-    }
+  }
 }
 
 template<class T> bool Configf::optional( const string& param, T& ret, int delim )
@@ -110,7 +107,7 @@ template<class T> bool Configf::optional( const string& param, T& ret, int delim
   if( next(param,delim) ) {
     *this >> ret;
     if( !good() ) {
-      std::cerr << "Input variable '" << param << "' is given a wrong type."
+      cerr << "Input variable '" << param << "' is given a wrong type."
         << endl;
       exit(EXIT_FAILURE);
     }
