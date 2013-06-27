@@ -85,12 +85,12 @@ void Wave::step(void)
 {
   for( int i=0; i<nodes; i++,
           (*oldp[0])++, (*oldQ[0])++, (*oldp[1])++, (*oldQ[1])++ ) {
-    sump    =oldp[key]->n()  +oldp[key]->s()  +oldp[key]->w()  +oldp[key]->e();
-    diagsump=oldp[key]->nw() +oldp[key]->ne() +oldp[key]->sw() +oldp[key]->se();
-    sumQ    =oldQ[key]->n()  +oldQ[key]->s()  +oldQ[key]->w()  +oldQ[key]->e();
-    diagsumQ=oldQ[key]->nw() +oldQ[key]->ne() +oldQ[key]->sw() +oldQ[key]->se();
-    drive = dfact*( tenminus3p2*exp1*oldQ[key]->c() +prepop(tau)[i] +exp2*oldQ[!key]->c() +exp1*.5*p2*(sumQ+.5*diagsumQ) );
-    p[i] = twominus3p2*exp1*oldp[key]->c() +exp1*.5*p2*(sump+.5*diagsump) -exp2*oldp[!key]->c() +drive;
+    sump    = (*oldp[key]) (n) +(*oldp[key]) (s) +(*oldp[key]) (w) +(*oldp[key]) (e);
+    diagsump= (*oldp[key])(nw) +(*oldp[key])(ne) +(*oldp[key])(sw) +(*oldp[key])(se);
+    sumQ    = (*oldQ[key]) (n) +(*oldQ[key]) (s) +(*oldQ[key]) (w) +(*oldQ[key]) (e);
+    diagsumQ= (*oldQ[key])(nw) +(*oldQ[key])(ne) +(*oldQ[key])(sw) +(*oldQ[key])(se);
+    drive = dfact*( tenminus3p2*exp1* (*oldQ[key]) +prepop(tau)[i] +exp2* (*oldQ[!key]) +exp1*.5*p2*(sumQ+.5*diagsumQ) );
+    p[i] = twominus3p2*exp1 *(*oldp[key]) +exp1*.5*p2*(sump+.5*diagsump) -exp2 *(*oldp[!key]) +drive;
   }
 
   key = !key;

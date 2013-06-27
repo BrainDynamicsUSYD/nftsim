@@ -7,6 +7,12 @@ using std::string;
 #include<vector>
 using std::vector;
 
+enum Moore {
+  nw=-4, n, ne,
+   w,    c,  e,
+  sw,    s, se
+};
+
 class Stencil
 {
   Stencil();
@@ -29,10 +35,17 @@ public:
   void set( int node ) const; // point to node
   int get(void) const; // get ptr
 
+  inline double operator() ( Moore moore=c ) const {
+    return m[ ptr +longside*(moore/3) +(moore%3) ];
+  }
+  inline operator double (void) const {
+    return (*this)(c);
+  }
+
   // get Moore grid values
-  double nw() const; double n() const; double ne() const;
-  double  w() const; double c() const; double  e() const;
-  double sw() const; double s() const; double se() const;
+  //double nw() const; double n() const; double ne() const;
+  //double  w() const; double c() const; double  e() const;
+  //double sw() const; double s() const; double se() const;
 };
 
 #endif

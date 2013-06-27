@@ -5,6 +5,7 @@
 " ~/.vim/filetype.vim
 
 syn region error start='\%^' end='$'
+syn region error start='"' end='"'
 
 syn keyword preproc Time Deltat Nodes Topology Bath Glutamate dynamics Onset Cease Duration Output
 
@@ -21,6 +22,7 @@ syn match Number '\<[-+]\=\d*\.\=\d*[eE]\=[-+]\=\d*\>'
 syn keyword Constant Steady All Torus Nonperiodic
 
 hi def link Object type
+hi def link Index type
 hi def link CntKey preproc
 hi def link CntI preproc
 hi def link Choice statement
