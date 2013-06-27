@@ -18,7 +18,7 @@ void LongCouple::init( Configf& configf )
     for( int i=0; i<nodes; i++ ) {
       n2d[i].resize(nodes);
       for( int j=0; j<nodes; j++ )
-        n2d[i][j] = temp[i*nodes+j];
+        n2d[i][j] = temp[i+j*nodes];
     }
     pos = (temp[0]>0)?1:-1;
   }
@@ -41,10 +41,13 @@ void LongCouple::step(void)
 {
   for( int i=0; i<nodes; i++ )
     for( int j=0; j<nodes; j++ )
-      P[i] = n2d[i][j]*prepropag[j];
+      P[j] = n2d[i][j]*prepropag[i];
 }
 
 void LongCouple::output( Output& output ) const
 {
-  // outputs nothing
+  // outputting a 2D matrix rather than a vector:
+  // for each "to", output all "from"
+  for( int i=0; i<nodes; i++ )
+    output("C.Matrix",index+1,label("nu.",i+1),n2d[i]);
 }

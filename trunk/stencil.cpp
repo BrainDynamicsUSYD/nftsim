@@ -158,7 +158,7 @@ int Stencil::get(void) const
   return x+y*longside;
 }
 
-double Stencil::nw(void) const { return m[ ptr-longside-2-1]; }
+/*double Stencil::nw(void) const { return m[ ptr-longside-2-1]; }
 double Stencil::n (void) const { return m[ ptr-longside-2  ]; }
 double Stencil::ne(void) const { return m[ ptr-longside-2+1]; }
 double Stencil:: w(void) const { return m[ ptr           -1]; }
@@ -166,4 +166,4 @@ double Stencil:: c(void) const { return m[ ptr             ]; }
 double Stencil:: e(void) const { return m[ ptr           +1]; }
 double Stencil::sw(void) const { return m[ ptr+longside+2-1]; }
 double Stencil::s (void) const { return m[ ptr+longside+2  ]; }
-double Stencil::se(void) const { return m[ ptr+longside+2+1]; }
+double Stencil::se(void) const { return m[ ptr+longside+2+1]; }*/
