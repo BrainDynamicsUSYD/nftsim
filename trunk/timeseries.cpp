@@ -7,6 +7,8 @@ void Timeseries::init( Configf& configf )
 {
   int superimpose = 1; configf.optional("Superimpose",superimpose);
   for( int i=0; i<superimpose; i++ ) {
+    if( superimpose>1 )
+      configf.next("Stimulus");
     vector<string> mode = configf.arb("-");
     configf.optional("Onset",t); t = -t;
     if( !configf.optional("Duration",cease) )
