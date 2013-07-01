@@ -133,11 +133,9 @@ In terms of syntactic restriction, each row in the table can have an arbitary nu
 \item Switches are accepted for choosing options. To turn on the switches, put them in the argument list to the launcher script. The following switches are accepted:
 	\begin{description}
 	\item[\type{--restart}] run \NF in restart mode.
-	\item[\type{-d}] specify an alternative dump file name.
 	\item[\type{-i}] specify an configuration file name.
 	\item[\type{-o}] specify an output dump file name.
-	\item[\type{-s}] specify silent mode, so that no dump files are generated. This switch supercedes the \type{-d} switch.
-	\item[\type{-v}] specify verbose mode, so that \NF outputs every timestep.
+	\item[\type{-v}] prints to standard output rather than to a file.
 	\item[\type{-h}] prints out a list of these switches.
 	\end{description}
 
@@ -261,38 +259,37 @@ Population 2: Stimulation
 
 Population 3: Excitatory neurons
  Q: 8.87145
- Firing: Sigmoid - Theta: 0.013 Sigma: 0.0038 Qmax: 340.0
-  Dendrite 1: V: 0.0 alpha: 83 beta: 769
+ Firing: Sigmoid - Theta: 13e-3 Sigma: 3.8e-3 Qmax: 340
+  Dendrite 1: V: Steady alpha: 83 beta: 769
   Dendrite 2: alpha: 83 beta: 769
   Dendrite 3: alpha: 83 beta: 769
 
 Population 4: Inhibitory neurons
  Q: 8.87145
- Firing: Sigmoid - Theta: 0.013 Sigma: 0.0038 Qmax: 340.0
-  Dendrite 4: V: 0.0 alpha: 83 beta: 769
+ Firing: Sigmoid - Theta: 13e-3 Sigma: 3.8e-3 Qmax: 340
+  Dendrite 4: V: Steady alpha: 83 beta: 769
   Dendrite 5: alpha: 83 beta: 769
   Dendrite 6: alpha: 83 beta: 769
 
 Propag 1: Map  - Tau: 0
-Propag 2: Map  - Tau: 0
-Propag 3: Wave - Tau: 0 Deltax: 0.0035 Range: 0.08 gamma: 116
-Propag 4: Wave - Tau: 0 Deltax: 0.0035 Range: 0.08 gamma: 116
-Propag 5: Map  - Tau: 0
+Propag 2: Wave - Tau: 0 Deltax: 3.5e-3 Range: 80e-3 gamma: 116
+Propag 3: Map  - Tau: 0
+Propag 4: Map  - Tau: 0
+Propag 5: Wave - Tau: 0 Deltax: 3.5e-3 Range: 80e-3 gamma: 116
 Propag 6: Map  - Tau: 0
 
-Couple 1: Map  - nu: 0.00015
-Couple 2: Map  - nu: 0.00015
-Couple 3: Map  - nu: 0.0015
-Couple 4: Map  - nu: 0.0015
-Couple 5: Map  - nu:-0.0018
-Couple 6: Map  - nu:-0.0018
+Couple 1: Map - nu: .15e-3
+Couple 2: Map - nu: 1.5e-3
+Couple 3: Map - nu:-1.8e-3
+Couple 4: Map - nu: .15e-3
+Couple 5: Map - nu: 1.5e-3
+Couple 6: Map - nu:-1.8e-3
 
-Output:
-Node: 1 Start: 0 Interval: 1e-3
+Output: Node: All
 Population: 
 Dendrite:
-Propag: 2
-Couple: 
+Propag: 3 4
+Couple:
 	\end{lstlisting}
 \end{center}
 \caption{An example configuration file, which can be found in \type{Configs/cortex.conf}.}
@@ -316,10 +313,10 @@ In general, the entries in configuration file follow the following rules:
 \begin{lstlisting}
 Purely cortical model with excitatory and inhibitory neurons
 \end{lstlisting}
-Any text before the entry, \type{Integration steps:}, is disregarded by \NF and serves as comment.
+Any text before the entry, \type{Time:}, is disregarded by \NF and serves as comment.
 \item
 \begin{lstlisting}
-Time: 10 Deltat: .0001 
+Time: 10 Deltat: 1e-4
 \end{lstlisting}
 \type{Time} is the simulation duration in seconds.
 
@@ -338,7 +335,7 @@ Both spatial dimensions have periodic boundary conditions, so that populations h
 Glutamate dynamics - fast Lambda: 3e-4 fast tGlu: 5e-3
                      slow Lambda: 3e-4 slow tGlu: 5e-3
 \end{lstlisting}
-Parameters governing glutamate dynamics, which is currently useful only for \type{CaDP} couples. This block is optional
+Parameters governing glutamate dynamics, which is currently useful only for \type{CaDP}. This block is optional.
 
 \type{Lambda} is the glutamate release concentration per presynaptic spike, in moles.
 
@@ -409,11 +406,11 @@ White - Ranseed:-98716872 Amplitude: 20 Mean: 1
 White - Amplitude: 0.00001 Mean: 1 Deltax: 0.025
 	\end{lstlisting}
 	
-	To superimpose 2 or more stimuli, begin with the keyword \type{Superimpose}, followed by the number of stimuli. Then list all the stimulus patterns and their parameters.
+	To superimpose 2 or more stimuli, begin with the keyword \type{Superimpose}, followed by the number of stimuli. Then list all the stimulus patterns and their parameters, with each stimulus pattern preceded by the keyword \type{Stimulus}.
 	\begin{lstlisting}
 Stimulus: Superimpose: 2
- White - Amplitude: 1 Mean: 1
- Pulse - Onset: 0.5 Width: 2e-2 Frequency 1 Pulses: 1
+ Stimulus: White - Amplitude: 1 Mean: 1
+ Stimulus: Pulse - Onset: 0.5 Width: 2e-2 Frequency 1 Pulses: 1
 	\end{lstlisting}
 
 	\end{itemize}
@@ -435,7 +432,7 @@ Q: 8.87145
 	The initial firing rate.
 	\item
 	\begin{lstlisting}
-Firing: Sigmoid - Theta: 0.013 Sigma: 0.0038 Qmax: 340.0
+Firing: Sigmoid - Theta: 13e-3 Sigma: 3.8e-3 Qmax: 340
 	\end{lstlisting}
 	Specify the sigmoidal firing response of the population.
 
@@ -514,7 +511,7 @@ Harmonic - phi: Steady Tau: 0 gamma: 116
 Couple 1:
 	\end{lstlisting}
 	Identifier for cross-checking.
-\item A couple type is required at this point. Choices are \type{Map}, \type{Modcouple}, \type{CaDP}, and \type{STP}.
+\item A couple type is required at this point. Choices are \type{Map}, \type{CaDP}, \type{BCM} and \type{Matrix}.
 
 \begin{description}
 
@@ -549,14 +546,25 @@ Map - nu: 0.0012
 %Number of traces: 100  Single/All: All nodes}
 	%\end{lstlisting}
 
+	\item[Matrix]\ \\
+	Coupling becomes connection matrix, where connection strength does \emph{not} change with time. The format of the nu matrix is the same as the population connection matrix, each row is to the same node, each column is from the same node. When outputting, each specified outputting node output the indexed row.
+	\begin{lstlisting}
+nu:
+  13e-6 0
+  0 13e-6
+	\end{lstlisting}
+
 	\item[CaDP]\ \\
 	Calcium dependent plasticity according to Fung and Robinson.
 	\begin{lstlisting}
-CaDP - nu: .4086e-4 Nu_max: .1e-3 Threshold: 1e-4 LTD: 5e-2 LTP: 8e-2 B: 2e4 N: 10000 rho: 4200
+CaDP - nu: 13e-6 nu_max: 80e-6 Dth: .25e-6 Pth: .45e-6 xyth: 1e-4 x: 2.3e-2 y: 2e-2 B: 30e3 glu_0: 200e-6 gNMDA: 2e-3
 	\end{lstlisting}
 
-	\item[STP]\ \\
-	Short term plasticity.
+	\item[BCM]\ \\
+	BCM plasticity according to Fung and Robinson. Based on \type{CaDP}, it has an additional parameter \type{t\_BCM}.
+	\begin{lstlisting}
+CaDP - nu: 13e-6 nu_max: 80e-6 Dth: .25e-6 Pth: .45e-6 xyth: 1e-4 x: 2.3e-2 y: 2e-2 B: 30e3 glu_0: 200e-6 gNMDA: 2e-3 t_BCM: 7
+	\end{lstlisting}
 
 \end{description}
 \end{itemize}
@@ -564,7 +572,7 @@ CaDP - nu: .4086e-4 Nu_max: .1e-3 Threshold: 1e-4 LTD: 5e-2 LTP: 8e-2 B: 2e4 N: 
 \subsubsection{Output data}
 \label{sec:output}
 
-\NF outputs field quantities with respect to nodes and time. By default, the output file is \type{neurofield.output}, which can be changed by launching the program with the \type{-o} switch.
+\NF outputs field quantities (i.e. a neurodynamic quantity which takes a value for each node) with respect to nodes and time. By default, the output file is \type{neurofield.output}, which can be changed by launching the program with the \type{-o} switch.
 
 \begin{itemize}
 	\item \begin{lstlisting}
@@ -580,7 +588,7 @@ Start: 0 Interval: 1e-3
 \end{lstlisting}
 Optional parameters for the time to start output, and optional parameter for time interval between outputs.
 
-If undefined, defaults, to 0 and \type{deltat}, respectively.
+If undefined, defaults, to 0 and \type{Deltat}, respectively.
 \item \begin{lstlisting}
 Population: 2.V
 Dendrite:
@@ -596,7 +604,7 @@ Specifying desired objects and fields to output. Enter the appropriate object in
 
 \begin{tabular}{l p{11.5cm}}
 \type{neurofield.conf}& When using the launcher script, this file is created to store the running configuration file.\\
-\type{neurofield.dump}& \NF dumps data here when it terminates. This file can be used in restart mode to continue simulation. Creation of this file can be suppressed by a \type{-s} switch.\\
+%\type{neurofield.dump}& \NF dumps data here when it terminates. This file can be used in restart mode to continue simulation. Creation of this file can be suppressed by a \type{-s} switch.\\
 \type{neurofield.output}& The result of the simulation is stored here for postprocessing.\\
 \type{neurofield.pbs}& If \NF is run in \type{yossarian}, then this file stores the output of the queueing system.
 \end{tabular}
@@ -689,11 +697,12 @@ One important task is computing the power spectrum as predicted by the linearize
 
 \NF solves each equation within the Robinson et al. model with an object:
 \begin{align*}
-	D_{ab}V_{ab}(\mathbf{r},t) &= \nu_{ab}\phi_{ab}(\mathbf{r},t), & \mathrm{Dendrite}\\
-					  Q_a(\mathbf{r},t) &= S_a \big[\sum_b V_{ab}(\mathbf{r},t) \big], & \mathrm{QResponse}\\
-	\mathcal{D}_{ab}\phi_{ab}(\mathbf{r},t) &= Q_b(\mathbf{r},t-\tau_{ab}).&  \mathrm{Propag}
+	P &= \nu_{ab}\phi_{ab}, & \mathtt{Couple}\\
+	D_{ab}V_{ab} &= P, & \mathtt{Dendrite}\\
+	Q_a &= S_a \big[\sum_b V_{ab} \big], & \mathtt{QResponse}\\
+	\mathcal{D}_{ab}\phi_{ab} &= Q_b.&  \mathtt{Propag}
 \end{align*}
-\type{Propag} and \type{Couple} is overloaded to give more sophisticated axonal propagation (see Sec.~\ref{sec:newpropag}) and synaptic plasticity (see Sec.~\ref{sec:newcouple}), respectively.
+Each object class may be overloaded for more sophisticated behaviour; for example, \type{Couple} may be overloaded for synaptic plasticity (see Sec.~\ref{sec:newcouple}).
 
 \subsection{Coding style}
 
@@ -733,7 +742,7 @@ Within the C++ source files, developers should stick to this conventions for con
     \draw (vpop) -| (apop);
 	\node[below of=vcouple] (acouple) {\type{Array$\langle$Couple$\rangle$}};
     \draw (vcouple) -| (acouple);
-	\node[below of=voutput] (aoutput) {\type{Array$\langle$Output$\rangle$}};
+	\node[below of=voutput] (aoutput) {\type{Array$\langle$Outlet$\rangle$}};
     \draw (voutput) -- (aoutput);
 
 	\node[below of=apropag] (propag) {\type{Propag} $\ni \phi_{ab}$};
@@ -742,7 +751,7 @@ Within the C++ source files, developers should stick to this conventions for con
     \draw (apop) -- (pop);
 	\node[below of=acouple] (couple) {\type{Couple} $\ni \nu_{ab}$};
     \draw (acouple) -- (couple);
-	\node[below of=aoutput] (output) {\type{Output}};
+	\node[below of=aoutput] (output) {\type{Outlet}};
     \draw (aoutput) -- (output);
 
 	\node[below of=pop,node distance=3em](vpop){};
@@ -925,7 +934,7 @@ We use the semicolon to denote a succession of functions/procedures, and \type{a
 
 \begin{itemize}
 \item One integration step of the model implements the following stages: 1) Dendritic response 2) Afferent summation. 3) Firing response/stimulus response. 4) Wave equation integration step which includes Q delay processing 5) Coupling response.
-\item Most of the computational load comes from integrating wave equations and harmonic oscillators within the dendritic responses.
+\item Most of the computational load comes from integrating wave equations and harmonic oscillators within the dendritic responses. Most computational time is probably on outputting.
 \item Wave equations are integrated by explicit finite differences integration. A nine point spatial stencil is used to reduce high frequency spatial instabilities when driven by random noise. Other parts of code are unaffected by spatial geometry so this can be switched to irregular gridding easily.
 \item Harmonic oscillators with dendritic rseponse are integrated using a heavily strength reduced explicit direct integration assuming constant drive. This was more efficient than a constant drive RK4 algorithm which would not be fourth order in any case due to the constant drive. Rennie used a constant drive RK4 for his 1997 code.
 \end{itemize}
@@ -972,6 +981,6 @@ You can then freely modify the code in the branch with the benefit of version co
 \subsection{TODO}
 \begin{enumerate}
 \item check numerical entry of connection matrix
-\item restart mode is crippled; rewrite the whole thing.
+\item restart mode has never been used. Leave it that way.
 \end{enumerate}
 \end{document}
