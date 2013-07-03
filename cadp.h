@@ -47,7 +47,7 @@ protected:
   RK4* rk4;
   virtual void init( Configf& configf );
 public: 
-  CaDP( int nodes, double deltat, int index, const vector<double>& glu,
+  CaDP( int nodes, double deltat, int index,
           const Propag& prepropag, const Population& postpop );
   virtual ~CaDP(void);
   virtual void step(void);

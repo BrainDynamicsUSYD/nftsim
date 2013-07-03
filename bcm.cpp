@@ -13,6 +13,7 @@ void BCM::BCMDE::rhs( const vector<double>& y, vector<double>& dydt )
   if( y[2]+dydt[2]*deltat < 0 ) dydt[2] = -y[2];
   // gNMDA
   dydt[8] = -y[8]/t_BCM *(y[3]/y[7]-1) +(gnmda_0-y[8])/1000;
+  if( y[7]==0 ) dydt[8] = 0;
 }
 
 void BCM::BCMDE::init( Configf& configf )
@@ -24,9 +25,9 @@ void BCM::BCMDE::init( Configf& configf )
   gnmda_0 = gnmda;
 }
 
-BCM::BCM( int nodes, double deltat, int index, const vector<double>& glu,
+BCM::BCM( int nodes, double deltat, int index,
         const Propag& prepropag, const Population& postpop )
-    : CaDP(nodes,deltat,index,glu,prepropag,postpop)
+    : CaDP(nodes,deltat,index,prepropag,postpop)
 {
   delete de; de = new BCMDE(nodes,deltat);
   delete rk4; rk4 = new RK4(*de);
@@ -42,7 +43,7 @@ void BCM::output( Output& output ) const
   output("nu",(*de)[7]);
   output("nutilde",(*de)[3]);
   output("Ca",(*de)[2]);
+  output("B",(*de)[0]);
+  output("H",(*de)[1]);
   output("gNMDA",(*de)[8]);
-  output("x",(*de)[4]);
-  output("y",(*de)[5]);
 }

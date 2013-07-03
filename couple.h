@@ -17,17 +17,16 @@ class Couple : public NF
   Couple(Couple&);
 protected:
   virtual void init( Configf& configf ); 
-  virtual void restart( Restartf& restartf ); 
-  virtual void dump( Dumpf& dumpf ) const; 
+  //virtual void restart( Restartf& restartf ); 
+  //virtual void dump( Dumpf& dumpf ) const; 
 
-  const vector<double>& glu;
   const Propag& prepropag;
   const Population& postpop;
   vector<double> n; // nu
   vector<double> P; // nu*phi
   int pos;
 public: 
-  Couple( int nodes, double deltat, int index, const vector<double>& glu,
+  Couple( int nodes, double deltat, int index,
       const Propag& prepropag, const Population& postpop );
   virtual ~Couple(void);
   virtual void step(void);

@@ -28,8 +28,8 @@ protected:
   double I_c;
 
   virtual void init( Configf& configf );
-  virtual void restart( Restartf& restartf );
-  virtual void dump( Dumpf& dumpf ) const;
+  //virtual void restart( Restartf& restartf );
+  //virtual void dump( Dumpf& dumpf ) const;
 public:
   FS( int nodes, double deltat, int index );
   virtual ~FS(void);

@@ -23,18 +23,9 @@ void Couple::init( Configf& configf )
   }
 }
 
-void Couple::restart( Restartf& restartf )
-{
-}
-
-void Couple::dump( Dumpf& dumpf ) const
-{
-}
-
-Couple::Couple( int nodes, double deltat, int index, const vector<double>& glu,
+Couple::Couple( int nodes, double deltat, int index,
         const Propag& prepropag, const Population& postpop )
-    : NF(nodes,deltat,index), glu(glu),
-      prepropag(prepropag), postpop(postpop), n(nodes), P(nodes)
+    : NF(nodes,deltat,index), prepropag(prepropag), postpop(postpop), n(nodes), P(nodes)
 {
 }
 

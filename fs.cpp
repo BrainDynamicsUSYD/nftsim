@@ -26,14 +26,6 @@ void FS::init( Configf& configf )
   de[2].clear(); de[2].resize(nodes,.01);
 }
 
-void FS::restart( Restartf& restartf )
-{
-}
-
-void FS::dump( Dumpf& dumpf ) const
-{
-}
-
 FS::FS( int nodes, double deltat, int index )
     : QResponse(nodes,deltat,index), de(nodes,deltat), rk4(de), I_theta(nodes)
 {

@@ -32,21 +32,6 @@ void Tau::init( Configf& configf )
   }
 }
 
-void Tau::restart( Restartf& restart )
-{
-}
-
-void Tau::dump( Dumpf& dumpf ) const
-{
-  /*if( !m.empty() ){
-    dumpf << "- TauabArray";
-    for(int i=0;i<nodes;i++)
-      dumpf << ": " << tauarr[i] << " ";
-  }
-  else
-    dumpf << "- Tauab: " << tauab << " ";*/
-};
-
 Tau::Tau(void) : NF(0,0,0), max(0), m(1,0)
 {
 }

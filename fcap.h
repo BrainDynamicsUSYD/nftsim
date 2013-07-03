@@ -75,10 +75,10 @@ protected:
   double init_nu;
 
   virtual void init( Configf& configf );
-  virtual void restart( Restartf& restartf );
-  virtual void dump( Dumpf& dumpf ) const;
+  //virtual void restart( Restartf& restartf );
+  //virtual void dump( Dumpf& dumpf ) const;
 public: 
-  fCaP( int nodes, double deltat, int index, const vector<double>& glu,
+  fCaP( int nodes, double deltat, int index,
           const Propag& prepropag, const Population& postpop );
   virtual ~fCaP(void);
   virtual void step(void);
