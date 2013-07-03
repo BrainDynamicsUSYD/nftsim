@@ -26,29 +26,31 @@ void QResponse::init( Configf& configf )
     configf.param("c",c);
     configf.param("d",d);
   }
-  else if( mode == "Bursting") {
-    
-  }
+
   for( size_t i=0; i<dendrites.size(); i++ )
     configf>>*dendrites[i];
+
+  glu_m.init(configf);
 }
 
-void QResponse::restart( Restartf& configf )
+void QResponse::Glu::init( Configf& configf )
 {
+  configf.optional("Lambda",Lambda); configf.optional("Glu",tGlu);
+  variables[0].resize(nodes,1e-4); variables[1].resize(nodes);
 }
 
-void QResponse::dump( Dumpf& dumpf ) const
+void QResponse::Glu::rhs( const vector<double>& y, vector<double>& dydt )
 {
-/*  if(theta)
-    dumpf << "Sigmoid - Theta: " << theta
-      << " Sigma: " << sigma << " Qmax: " << Q_max << endl;
-  else
-    dumpf << "Linear - Gradient: " << gradient
-      << " Intercept: " << intercept << endl;*/
+  // y = { glu, excitatory phi }
+  // glu
+  dydt[0] = Lambda*y[1] -y[0]/tGlu;
+  if( y[0]+dydt[0]*deltat <0 ) dydt[0] = -y[0];
+  // excitatory phi, leave alone
+  dydt[1] = 0;
 }
 
 QResponse::QResponse( int nodes, double deltat, int index )
-    : NF(nodes,deltat,index), v(nodes)
+    : NF(nodes,deltat,index), v(nodes), glu_m(nodes,deltat), glu_rk4(glu_m)
 {
 }
 
@@ -65,12 +67,28 @@ void QResponse::step(void)
   for( size_t i=0; i<dendrites.size(); i++ )
     for( int j=0; j<nodes; j++ )
       v[j] += dendrites[i]->V()[j];
+
+  // glutamte dynamics
+  if( glu_m.Lambda != 0 ) {
+    for( int j=0; j<nodes; j++ )
+      glu_m[1][j] = 0; // reset excitatory phi
+    for( size_t i=0; i<dendrites.size(); i++ )
+      if( dendrites[i]->precouple.excite() )
+        for( int j=0; j<nodes; j++ )
+          glu_m[1][j] += dendrites[i]->prepropag[j]; // put in excitatory phi
+    glu_rk4.step();
+  }
 }
 
 void QResponse::add2Dendrite( int index,
     const Propag& prepropag, const Couple& precouple )
 {
   dendrites.add( new Dendrite(nodes,deltat,index,prepropag,precouple) );
+}
+
+const vector<double>& QResponse::glu(void) const
+{
+  return glu_m[0];
 }
 
 void QResponse::fire( vector<double>& Q ) const
@@ -98,13 +116,6 @@ const vector<double>& QResponse::V(void) const
 void QResponse::output( Output& output ) const
 {
   output("Pop",index+1,"V",v);
-  /*if(req_index == 0)
-    temp.push_back( new Output( label("Pop.",index+1)+".V", v ) );
-  else
-      for( size_t i=0; i<dendrites.size(); i++ ){
-        temp2 = dendrites[i]->output(req_index);
-        temp.insert(temp.end(), temp2.begin(), temp2.end());
-      }*/
 }
 
 void QResponse::outputDendrite( int index, Output& output ) const

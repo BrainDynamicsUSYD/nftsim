@@ -28,14 +28,6 @@ void Population::init( Configf& configf )
   settled = true;
 }
 
-void Population::restart( Restartf& restartf )
-{
-}
-
-void Population::dump( Dumpf& dumpf ) const
-{
-}
-
 Population::Population( int nodes, double deltat, int index )
     : NF(nodes,deltat,index),
     qresponse(0), timeseries(0), qkey(0), settled(false)
@@ -105,6 +97,16 @@ const vector<double>& Population::V(void) const
 double Population::operator[]( int node ) const
 {
   return V()[node];
+}
+
+const vector<double>& Population::glu(void) const
+{
+  if( qresponse )
+    return qresponse->glu();
+  else {
+    cerr<<"Trying to access glu of a stimulus population."<<endl;
+    exit(EXIT_FAILURE);
+  }
 }
 
 void Population::add2Dendrite( int index,

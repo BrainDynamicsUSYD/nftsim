@@ -7,7 +7,7 @@ Configf& operator>> ( Configf& configf, NF& nf )
   return configf;
 }
 
-Restartf& operator>> ( Restartf& restartf, NF& nf )
+/*Restartf& operator>> ( Restartf& restartf, NF& nf )
 {
   //nf.init( restartf );
   nf.restart(restartf);
@@ -18,7 +18,7 @@ Dumpf& operator<< ( Dumpf& dumpf, const NF& nf )
 {
   nf.dump(dumpf);
   return dumpf;
-}
+}*/
 
 NF::NF( int nodes, double deltat, int index )
     : nodes(nodes), deltat(deltat), index(index)

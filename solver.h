@@ -24,22 +24,6 @@ class Solver : public NF
 
   int steps; // number of integration steps to perform
 
-  // glutamate concentration in synaptic cleft
-  struct Glu : public DE
-  {
-    double fLambda; // glutamate concentration per action potential
-    double sLambda; // glutamate concentration per action potential
-    double tfGlu;   // fast time scale of glutamate
-    double tsGlu;   // slow time scale of glutamate
-
-    Glu( int nodes, double deltat ) : DE(nodes,deltat,2) {}
-    virtual ~Glu(void) {}
-    void init( Configf& configf );
-    void rhs( const vector<double>& y, vector<double>& dydt );
-  };
-  Glu* glu;
-  RK4* glu_rk4;
-
   struct CntMat : public NF
   {
     int npop; // number of populations
@@ -51,8 +35,8 @@ class Solver : public NF
     vector<int> ndr;  // number of dendrites for each population
 
     void init( Configf& configf );
-    void restart( Restartf& restartf ) {}
-    void dump( Dumpf& dumpf ) const;
+    //void restart( Restartf& restartf ) {}
+    //void dump( Dumpf& dumpf ) const;
     CntMat(void) : NF(0,0,0) {}
     ~CntMat(void) {}
     void step(void) {}
@@ -72,13 +56,16 @@ class Solver : public NF
     Array<Couple>& couples;
 
     void init( Configf& configf );
-    void restart( Restartf& restartf ) {}
-    void dump( Dumpf& dumpf ) const {}
+    //void restart( Restartf& restartf ) {}
+    //void dump( Dumpf& dumpf ) const {}
     Outputs( int nodes, double deltat, Dumpf& dumpf,
         CntMat& cnt, Array<Population>& pops, Array<Propag>& propags, Array<Couple>& couples )
         : NF(nodes,deltat,0), dumpf(dumpf),
         cnt(cnt), pops(pops), propags(propags), couples(couples) {}
-    ~Outputs(void) {}
+    ~Outputs(void) {
+      for( size_t i=0; i<outlets.size(); i++ )
+        delete outlets[i];
+    }
     void step(void);
     void writeName( Outlet& outlet );
     void writeNode( Outlet& outlet );
@@ -95,8 +82,8 @@ class Solver : public NF
   Array<Couple> couples;
 protected:
   virtual void init( Configf& configf );
-  virtual void restart( Restartf& restartf );
-  virtual void dump( Dumpf& dumpf ) const;
+  //virtual void restart( Restartf& restartf );
+  //virtual void dump( Dumpf& dumpf ) const;
 public: 
   Solver( Dumpf& dumpf );
   virtual ~Solver(void);

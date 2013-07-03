@@ -3,9 +3,8 @@
 #include"stp.h"
 
 STP::STP( int nodes, double deltat, int index,
-    const vector<double>& glu, const Propag& prepropag,
-    const Population& postpop )
-    : Couple(nodes,deltat,index,glu,prepropag,postpop),
+    const Propag& prepropag, const Population& postpop )
+    : Couple(nodes,deltat,index,prepropag,postpop),
       de(nodes,deltat), rk4(de)
 {
 }
@@ -80,14 +79,6 @@ void STP::init( Configf& configf )
   de.undersaturate = false;
   string temp; if( configf.optional("Undersaturate",temp) )
     de.undersaturate = (temp=="True");
-}
-
-void STP::restart( Restartf& restartf )
-{
-}
-
-void STP::dump( Dumpf& dumpf ) const
-{
 }
 
 void STP::step(void)

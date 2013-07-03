@@ -39,13 +39,13 @@ protected:
   //vector<double> np;
   vector<double> oldnp;
 
+  virtual void init( Configf& configf );
+  //virtual void restart( Restartf& restartf );
+  //virtual void dump( Dumpf& dumpf ) const;
+public: 
   const Propag& prepropag;
   const Couple& precouple;
 
-  virtual void init( Configf& configf );
-  virtual void restart( Restartf& restartf );
-  virtual void dump( Dumpf& dumpf ) const;
-public: 
   Dendrite( int nodes, double deltat, int index,
       const Propag& prepropag, const Couple& precouple );
   virtual ~Dendrite(void);

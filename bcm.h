@@ -21,7 +21,7 @@ protected:
     virtual void rhs( const vector<double>& y, vector<double>& dydt );
   };
 public:
-  BCM( int nodes, double deltat, int index, const vector<double>& glu,
+  BCM( int nodes, double deltat, int index,
           const Propag& prepropag, const Population& postpop );
   virtual ~BCM(void);
   virtual void output( Output& output ) const;

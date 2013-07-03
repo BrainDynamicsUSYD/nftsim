@@ -39,16 +39,6 @@ void BurstResponse::init( Configf& configf )
         
 }
 
-void BurstResponse::restart( Restartf& restartf )
-{
-  // leave empty
-}
-
-void BurstResponse::dump( Dumpf& dumpf ) const
-{
-  // leave empty
-}
-
 BurstResponse::BurstResponse( int nodes, double deltat, int index )
 	: QResponse(nodes,deltat,index), xtemp(nodes), htemp(nodes)
 {

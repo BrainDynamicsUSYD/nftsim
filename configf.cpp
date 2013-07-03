@@ -32,7 +32,8 @@ Configf::Configf( const char* filename )
   int sp = tellg(); // store current file position
   seekg(0,std::ios::end);
   filesize = tellg();
-  buffer = new char[filesize];
+  buffer = new char[filesize+1];
+  buffer[filesize] = '\0';
   seekg(sp);
 }
 
@@ -164,15 +165,6 @@ void Configf::go2( const string& keyword )
     exit(EXIT_FAILURE);
   }
   seekg( file_content.find(keyword)-1 );
-}
-
-Restartf::Restartf( const char* filename )
-    : Configf(filename)
-{
-}
-
-Restartf::~Restartf(void)
-{
 }
 
 string label( const string& prefix, int index )

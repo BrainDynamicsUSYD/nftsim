@@ -29,22 +29,6 @@ void Dendrite::init( Configf& configf )
   factorab = 1./alpha + 1./beta;
 }
 
-void Dendrite::restart( Restartf& restartf )
-{
-}
-
-void Dendrite::dump( Dumpf& dumpf ) const
-{
-/*  dumpf << "Dendritic Response from population ";
-  dumpf << "alpha: " << alpha << " ";
-  dumpf << "beta: " << beta << " ";
-  dumpf << "nuphi_previous:";
-  for(int i=0; i<nodes; i++){
-    dumpf << oldnuphi[i] << " ";
-  }
-  dumpf << endl; // Add endline to dendritic response input*/
-}
-
 Dendrite::Dendrite( int nodes, double deltat, int index,
     const Propag& prepropag, const Couple& precouple )
   : NF(nodes,deltat,index), v(nodes), dvdt(nodes,0), oldnp(nodes),

@@ -19,8 +19,8 @@ class Propag : public NF
   Propag(Propag&); // no copy constructor
 protected:
   void init( Configf& configf );
-  void restart( Restartf& restartf );
-  void dump( Dumpf& dumpf ) const;
+  //void restart( Restartf& restartf );
+  //void dump( Dumpf& dumpf ) const;
 
   Population& prepop;
   Population& postpop;

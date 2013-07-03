@@ -32,8 +32,8 @@ private:
 	
 protected:
   void init( Configf& inputf );
-  void restart( Restartf& restartf );
-  void dump( Dumpf& dumpf ) const; //const member fnctn does not change obj
+  //void restart( Restartf& restartf );
+  //void dump( Dumpf& dumpf ) const; //const member fnctn does not change obj
 public: 
   BurstResponse( int nodes, double deltat, int index );
   virtual ~BurstResponse(void); //destructor mem fnctn 

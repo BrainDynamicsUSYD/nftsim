@@ -26,10 +26,10 @@ protected:
   RK4 rk4;
 
   virtual void init( Configf& configf );
-  virtual void restart( Restartf& restartf );
-  virtual void dump( Dumpf& dumpf ) const;
+  //virtual void restart( Restartf& restartf );
+  //virtual void dump( Dumpf& dumpf ) const;
 public: 
-  STP( int nodes, double deltat, int index, const vector<double>& glu,
+  STP( int nodes, double deltat, int index,
           const Propag& prepropag, const Population& postpop );
   virtual ~STP(void);
   virtual void step(void);

@@ -56,14 +56,6 @@ if(range/2.0 < deltax){
   }
 }
 
-void Wave::restart( Restartf& restartf )
-{
-}
-
-void Wave::dump( Dumpf& dumpf ) const
-{
-}
-
 Wave::Wave( int nodes, double deltat, int index, Population& prepop,
         Population& postpop, int longside, string topology )
     : Propag(nodes,deltat,index,prepop,postpop,longside,topology),
