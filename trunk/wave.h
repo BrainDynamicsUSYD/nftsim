@@ -10,8 +10,8 @@ class Wave : public Propag
   Wave(Wave&); // no copy constructor
 protected:
   void init( Configf& configf );
-  void restart( Restartf& restartf );
-  void dump( Dumpf& dumpf ) const;
+  //void restart( Restartf& restartf );
+  //void dump( Dumpf& dumpf ) const;
 
   Stencil* oldp[2]; // keyring stencil to past phi, oldp[key]==most recent
   Stencil* oldQ[2]; // keyring stencil to past Q, oldQ[key]==most recent

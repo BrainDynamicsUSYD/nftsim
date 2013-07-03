@@ -13,7 +13,7 @@ protected:
   vector< vector<double> > n2d; // nu tensor, nu[i][j] = from i to j
   int pos;
 public: 
-  LongCouple( int nodes, double deltat, int index, const vector<double>& glu,
+  LongCouple( int nodes, double deltat, int index,
       const Propag& prepropag, const Population& postpop );
   virtual ~LongCouple(void);
   virtual void step(void);

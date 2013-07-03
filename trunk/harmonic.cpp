@@ -23,14 +23,6 @@ void Harmonic::init( Configf& configf )
   expgamma = exp(-gamma*deltat);
 }
 
-void Harmonic::restart( Restartf& restartf )
-{
-}
-
-void Harmonic::dump( Dumpf& dumpf ) const
-{
-}
-
 Harmonic::Harmonic( int nodes, double deltat, int index, Population& prepop,
         Population& postpop, int longside, string topology )
     : Propag(nodes,deltat,index,prepop,postpop,longside,topology)

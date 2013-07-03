@@ -66,20 +66,6 @@ void Solver::CntMat::init( Configf& configf )
   ncnt = post.size(); // == pre.size()
 }
 
-void Solver::CntMat::dump( Dumpf& dumpf ) const
-{
-  dumpf << "Connection matrix:" << endl
-    << "From:";
-  for( int i=0; i<npop; i++ )
-    dumpf << " " << i;
-  for( int i=0; i<npop; i++ ) {
-    dumpf << endl << "To " << i+1 << ":";
-    for( int j=0; j<npop; j++ )
-      dumpf << " " << raw[i][j];
-  }
-  dumpf << endl << endl;
-}
-
 Solver::Solver( Dumpf& dumpf )
     : NF(0,0,0), dumpf(dumpf), cnt()
 {
@@ -87,7 +73,6 @@ Solver::Solver( Dumpf& dumpf )
 
 Solver::~Solver()
 {
-  delete glu; delete glu_rk4;
   delete outputs;
 }
 
@@ -126,10 +111,6 @@ void Solver::init( Configf& configf )
       stringstream ss; ss<<topology<<" "<<bath;
       topology = ss.str();
     }
-
-  // read in glutamate dynamics
-  glu = new Glu(nodes,deltat); glu_rk4 = new RK4(*glu);
-  glu->init(configf);
 
   // read in connection matrix
   configf.param("Connection matrix",cnt);
@@ -183,22 +164,20 @@ void Solver::init( Configf& configf )
     // PUT YOUR COUPLES HERE
     if(ctype=="Map")
       couples.add( new
-        Couple(nodes,deltat,i,(*glu)[0], *propags[i], *pops[cnt.post[i]] ) );
+        Couple(nodes,deltat,i, *propags[i], *pops[cnt.post[i]] ) );
     else if(ctype=="Matrix")
       couples.add( new
-        LongCouple(nodes,deltat,i,(*glu)[0], *propags[i], *pops[cnt.post[i]] ) );
+        LongCouple(nodes,deltat,i, *propags[i], *pops[cnt.post[i]] ) );
     else if(ctype=="CaDP")
       couples.add( new
-        CaDP(nodes,deltat,i,(*glu)[0], *propags[i], *pops[cnt.post[i]] ) );
+        CaDP(nodes,deltat,i, *propags[i], *pops[cnt.post[i]] ) );
     else if(ctype=="BCM")
       couples.add( new
-        BCM(nodes,deltat,i,(*glu)[0], *propags[i], *pops[cnt.post[i]] ) );
+        BCM(nodes,deltat,i, *propags[i], *pops[cnt.post[i]] ) );
     //else if(ctype=="fCaP")
-      //couples.add( new
-        //fCaP(nodes,deltat,i,(*glu)[0], *propags[i], *pops[cnt.post[i]] ) );
     else if(ctype=="STP")
       couples.add( new
-        STP(nodes,deltat,i,(*glu)[0], *propags[i], *pops[cnt.post[i]] ) );
+        STP(nodes,deltat,i, *propags[i], *pops[cnt.post[i]] ) );
     else {
       cerr<<"Invalid couple type '"<<ctype<<"'."<<endl;
       exit(EXIT_FAILURE);
@@ -233,50 +212,14 @@ void Solver::init( Configf& configf )
   outputs->init(configf);
 }
 
-void Solver::restart( Restartf& restartf )
-{
-}
-
-void Solver::dump( Dumpf& dumpf ) const
-{
-}
-
 void Solver::solve(void)
 {
   for( int i=0; i<steps; i++ )
     step();
 }
 
-void Solver::Glu::init( Configf& configf )
-{
-  configf.optional("fast Lambda",fLambda); configf.optional("fast Glu",tfGlu);
-  configf.optional("slow Lambda",sLambda); configf.optional("slow Glu",tsGlu);
-  variables[0].resize(nodes,1e-4); variables[1].resize(nodes);
-}
-
-void Solver::Glu::rhs( const vector<double>& y, vector<double>& dydt )
-{
-  // y = { glu, excitatory phi }
-  // glu
-  dydt[0] = fLambda*y[1] -y[0]/tsGlu;
-  if( y[0]+dydt[0]*deltat <0 ) dydt[0] = -y[0];
-  // excitatory phi, leave alone
-  dydt[1] = 0;
-}
-
 void Solver::step(void)
 {
-  // glutamte dynamics
-  if( glu->fLambda != 0 ) {
-    for( int j=0; j<nodes; j++ )
-      (*glu)[1][j] = 0; // reset excitatory phi
-    for( size_t i=0; i<couples.size(); i++ )
-      if( couples[i]->excite() )
-        for( int j=0; j<nodes; j++ )
-          (*glu)[1][j] += (*propags[i])[j]; // put in excitatory phi
-    glu_rk4->step();
-  }
-
   // step through populations
   couples.pstep();
   pops.pstep();
@@ -359,7 +302,7 @@ void Solver::Outputs::init( Configf& configf )
     Output output(key);
     pops[obj_index-1]->output(output);
     if( output.empty() ) {
-      cerr<<"Output "<<temp[i].c_str()<<" cannot be outputted."<<endl;
+      cerr<<"Population "<<temp[i].c_str()<<" cannot be outputted."<<endl;
       exit(EXIT_FAILURE);
     }
     add(output);
@@ -382,7 +325,7 @@ void Solver::Outputs::init( Configf& configf )
     for( size_t j=0; j<pops.size(); j++ )
       pops[j]->outputDendrite(obj_index-1,output);
     if( output.empty() ) {
-      cerr<<"Output "<<temp[i].c_str()<<" cannot be outputted."<<endl;
+      cerr<<"Dendrite "<<temp[i].c_str()<<" cannot be outputted."<<endl;
       exit(EXIT_FAILURE);
     }
     add(output);
@@ -404,7 +347,7 @@ void Solver::Outputs::init( Configf& configf )
     Output output(key);
     propags[obj_index-1]->output(output);
     if( output.empty() ) {
-      cerr<<"Output "<<temp[i].c_str()<<" cannot be outputted."<<endl;
+      cerr<<"Propag "<<temp[i].c_str()<<" cannot be outputted."<<endl;
       exit(EXIT_FAILURE);
     }
     add(output);
@@ -426,7 +369,7 @@ void Solver::Outputs::init( Configf& configf )
     Output output(key);
     couples[obj_index-1]->output(output);
     if( output.empty() ) {
-      cerr<<"Output "<<temp[i].c_str()<<" cannot be outputted."<<endl;
+      cerr<<"Couple "<<temp[i].c_str()<<" cannot be outputted."<<endl;
       exit(EXIT_FAILURE);
     }
     add(output);

@@ -11,8 +11,8 @@ class Harmonic : public virtual Propag
   Harmonic(Harmonic&); // no copy constructor
 protected:
   virtual void init( Configf& configf );
-  virtual void restart( Restartf& restartf );
-  virtual void dump( Dumpf& dumpf ) const;
+  //virtual void restart( Restartf& restartf );
+  //virtual void dump( Dumpf& dumpf ) const;
 
   double gamma;  // damping coefficient
 

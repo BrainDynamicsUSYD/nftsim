@@ -88,5 +88,6 @@ int main(int argc, char* argv[])
   Solver neurofield(dumpf); *inputf>>neurofield;
   neurofield.solve();
 
+  delete inputf;
   return EXIT_SUCCESS;
 }

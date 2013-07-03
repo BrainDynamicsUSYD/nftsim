@@ -78,9 +78,9 @@ void CaDP::CaDE::init( Configf& configf )
     gnmda = 2e-3;
 }
 
-CaDP::CaDP( int nodes, double deltat, int index, const vector<double>& glu,
+CaDP::CaDP( int nodes, double deltat, int index,
         const Propag& prepropag, const Population& postpop )
-    : Couple(nodes,deltat,index,glu,prepropag,postpop)
+    : Couple(nodes,deltat,index,prepropag,postpop)
 {
   de = new CaDE(nodes,deltat);
   rk4 = new RK4(*de);
@@ -95,7 +95,7 @@ CaDP::~CaDP(void)
 void CaDP::step(void)
 {
   for( int i=0; i<nodes; i++ ) {
-    (*de)[0][i] = de->sig( glu[i] -de->glu_0, de->B );
+    (*de)[0][i] = de->sig( postpop.glu()[i] -de->glu_0, de->B );
     (*de)[1][i] = (195e-3-postpop[i])*de->sig( postpop[i]-45.5e-3,62 );
   }
   de->pot(); de->dep();

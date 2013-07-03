@@ -15,8 +15,6 @@ class Timeseries : public NF
   Timeseries(void);
 protected:
   void init( Configf& configf );
-  void restart( Restartf& restartf ) {}
-  void dump( Dumpf& dumpf ) const {}
 
   vector<Timeseries*> series;
   double t;

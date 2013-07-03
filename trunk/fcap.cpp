@@ -49,17 +49,9 @@ void fCaP::init( Configf& configf )
   }
 }
 
-void fCaP::restart( Restartf& restartf )
-{
-}
-
-void fCaP::dump( Dumpf& dumpf ) const
-{
-}
-
-fCaP::fCaP( int nodes, double deltat, int index, const vector<double>& glu,
+fCaP::fCaP( int nodes, double deltat, int index,
           const Propag& prepropag, const Population& postpop )
-    : CaDP(nodes,deltat,index,glu,prepropag,postpop), newnu(nodes), newnu2(nodes), oldnu(nodes)
+    : CaDP(nodes,deltat,index,prepropag,postpop), newnu(nodes), newnu2(nodes), oldnu(nodes)
 {
   delete de;
   delete rk4;

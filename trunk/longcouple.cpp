@@ -28,8 +28,9 @@ void LongCouple::init( Configf& configf )
   }
 }
 
-LongCouple::LongCouple( int nodes, double deltat, int index, const vector<double>& glu, const Propag& prepropag, const Population& postpop )
-    : Couple(nodes,deltat,index,glu,prepropag,postpop)
+LongCouple::LongCouple( int nodes, double deltat, int index,
+        const Propag& prepropag, const Population& postpop )
+    : Couple(nodes,deltat,index,prepropag,postpop)
 {
 }
 
