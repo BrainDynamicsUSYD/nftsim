@@ -44,6 +44,5 @@ void BCM::output( Output& output ) const
   output("nutilde",(*de)[3]);
   output("Ca",(*de)[2]);
   output("B",(*de)[0]);
-  output("H",(*de)[1]);
   output("gNMDA",(*de)[8]);
 }
