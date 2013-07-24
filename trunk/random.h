@@ -1,29 +1,24 @@
 #ifndef RANDOM_H
 #define RANDOM_H
 
+#include<random>
+
 class Random
 {
   Random(Random& ); // no copy constructor
 
-  // Use "enum hack" to obtain more portable static const int
-  enum {IA=16807};
-  enum {IM=2147483647};
-  enum {IQ=127773};
-  enum {IR=2836};
-  enum {NTAB=32};
-  enum {NDIV=(1+(IM-1)/NTAB)};
-  const double EPS;
-  const double RNMX;
-  const double AM;
+  static int id; // Auto-increment the ID of each Random instance to use as the default seed
 
-  int idum;
-  int iy;
-  int* iv;
+  std::mt19937_64 gen; // Generator
+  std::normal_distribution<double> dist; // Distribution
+
 public: 
-  Random(int seed);
+  Random(double mean, double std);
+  Random(int seed,double mean, double std);
+  void init(int seed,double mean, double std);
+  double get(void);
+  void get(double& target);
   ~Random(void);
-  double ran(void);
-  void gaussian(double& deviate1, double& deviate2);
 };
 
 #endif

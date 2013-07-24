@@ -104,46 +104,40 @@ void Pulse::fire( vector<double>& Q ) const
 
 void White::init( Configf& configf )
 {
-  // "Ranseed": 0 Amplitude: 1 Mean: 1
-  seed = -98715872;
-  configf.optional("Ranseed",seed);
-  random = new Random(seed);
+  // Amplitude: 1 Mean: 1 Deltax: 1 Ranseed: 1
   configf.param("Amplitude",amp);
   configf.param("Mean",mean);
-    if(configf.optional("Deltax",deltax)) // If deltax is given, rescale amp
-        amp = sqrt(4*pow(M_PI,3)*pow(amp,2)/deltat/deltax/deltax);
+  if(configf.optional("Deltax",deltax)) // If deltax is given, rescale amp
+    amp = sqrt(4*pow(M_PI,3)*pow(amp,2)/deltat/deltax/deltax);
+  if(configf.optional("Ranseed",seed))
+    random = new Random(seed,mean,amp);
+  else
+    random = new Random(mean,amp);
 }
 
 void White::fire( vector<double>& Q ) const
 {
-  double deviate1, deviate2;
-  for( int i=0; i<nodes-1; i+= 2 ) {
-    random->gaussian(deviate1,deviate2);
-    Q[i]   = amp*deviate1 +mean;
-    Q[i+1] = amp*deviate2 +mean;
-  }
-  if( nodes%2 ) {
-    random->gaussian(deviate1,deviate2);
-    Q[nodes-1] = amp*deviate1 +mean;
-  }
+  for(double& x : Q)
+    random->get(x);
 }
 
 void WhiteCoherent::init( Configf& configf )
 {
-  // "Ranseed": 0 Amplitude: 1 Mean: 1
-  seed = -98715872;
-  configf.optional("Ranseed",seed);
-  random = new Random(seed);
+  // Amplitude: 1 Mean: 1 Ranseed: 1
   configf.param("Amplitude",amp);
   configf.param("Mean",mean);
+  if(configf.optional("Ranseed",seed))
+    random = new Random(seed,mean,amp);
+  else
+    random = new Random(mean,amp);
 }
 
 void WhiteCoherent::fire( vector<double>& Q ) const
 {
-  double deviate1, deviate2;
-  random->gaussian(deviate1,deviate2);
+  double v;
+  random->get(v);
   for( int i=0; i<nodes; i++ )
-    Q[i] = amp*deviate1 +mean;
+    Q[i] = v;
 }
 
 void PAS::init( Configf& configf )
