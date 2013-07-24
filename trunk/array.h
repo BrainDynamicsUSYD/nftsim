@@ -58,6 +58,8 @@ void Array<T>::step(void)
 template<class T>
 void Array<T>::pstep(void)
 {
+  // Note pstep() is needed as well as step() because output must use
+  // step so that it is not parallelized
   //#pragma omp parallel for num_threads(5)
   for( size_t i=0; i<m.size(); i++ )
     m[i]->step();
