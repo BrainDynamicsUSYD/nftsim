@@ -31,7 +31,7 @@ public:
   virtual ~Stencil(void);
 
   const vector<double>& operator= ( const vector<double>& field );
-  virtual void operator++ (int i) const; // increment Moore grid
+  virtual void operator++ (int) const; // increment Moore grid
   void set( int node ) const; // point to node
   int get(void) const; // get ptr
 

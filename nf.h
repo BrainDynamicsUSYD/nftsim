@@ -21,7 +21,7 @@ public:
   //friend Restartf& operator>> ( Restartf& restartf, NF& nf );
   //friend Dumpf&    operator<< ( Dumpf& dumpf, const NF& nf );
   virtual void step(void) = 0;
-  virtual void output( Output& output ) const;
+  virtual void output( Output& ) const;
 
   virtual ~NF(void);
 };
