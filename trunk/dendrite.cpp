@@ -15,7 +15,7 @@ void Dendrite::init( Configf& configf )
   if( buffer == "Steady" ) {
     v.resize(nodes);
     for( int i=0; i<nodes; i++ )
-      v[i] = prepropag[i]*precouple[i]; // careful, needed in inhomogeneous
+      v[i] = prepropag.phiinit(configf)*precouple.nuinit(configf); // careful, needed in inhomogeneous
   }
   else
     v.resize(nodes,atof(buffer.c_str()));
@@ -48,24 +48,24 @@ void Dendrite::step(void)
 
   if(alpha!=beta)
     for(int i=0; i<nodes; i++) {
-      dpdt = ( precouple.nuphi()[i] -oldnp[i] )/deltat;
+      dpdt = ( precouple[i] -oldnp[i] )/deltat;
       adjustednp = oldnp[i] -factorab*dpdt -v[i];
       C1 = ( adjustednp*beta -dvdt[i] +dpdt )/aminusb;
       C1expa = C1*expa;
       C2expb = expb*(-C1-adjustednp);
-      v[i] = C1expa+C2expb+precouple.nuphi()[i] -factorab*dpdt;
+      v[i] = C1expa+C2expb+precouple[i] -factorab*dpdt;
       dvdt[i] = C1expa*(-alpha) +C2expb*(-beta)+dpdt;
-      oldnp[i]=precouple.nuphi()[i]; //Save current pulse density for next step
+      oldnp[i]=precouple[i]; //Save current pulse density for next step
     }
   else // alpha==beta
     for(int i=0; i<nodes; i++) {
-      dpdt = ( precouple.nuphi()[i] -oldnp[i] )/deltat;
+      dpdt = ( precouple[i] -oldnp[i] )/deltat;
       adjustednp = oldnp[i] -factorab*dpdt -v[i];
       C1 = dvdt[i] -alpha*adjustednp -dpdt;
       C1dtplusC2 = C1*deltat -adjustednp;
-      v[i] = C1dtplusC2*expa +precouple.nuphi()[i] -factorab*dpdt;
+      v[i] = C1dtplusC2*expa +precouple[i] -factorab*dpdt;
       dvdt[i] = (C1-alpha*C1dtplusC2)*expa +dpdt;
-      oldnp[i]=precouple.nuphi()[i]; //Save current pulse density for next step
+      oldnp[i]=precouple[i]; //Save current pulse density for next step
     }
 }
 

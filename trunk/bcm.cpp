@@ -1,5 +1,4 @@
-//#include<deque>
-//using std::deque;
+#include<cmath>
 #include"bcm.h"
 
 void BCM::BCMDE::rhs( const vector<double>& y, vector<double>& dydt )
@@ -8,12 +7,17 @@ void BCM::BCMDE::rhs( const vector<double>& y, vector<double>& dydt )
   CaDE::rhs(y,dydt);
   // recalculate dCadt with NMDAR plasticity
 
+  double timescale = (y[3]-y[7])/y[7];
+
   // Ca
   dydt[2] = y[8]*y[0]*y[1] -y[2]/tCa; // replace gnmda with y[8]
   if( y[2]+dydt[2]*deltat < 0 ) dydt[2] = -y[2];
   // gNMDA
   dydt[8] = -y[8]/t_BCM *(y[3]/y[7]-1) +(gnmda_0-y[8])/1000;
   if( y[7]==0 ) dydt[8] = 0;
+  // dnudt, nu
+  dydt[6] = -2*timescale*y[6] +pow(timescale,2)*timescale*y[7];
+  dydt[7] = y[6];
 }
 
 void BCM::BCMDE::init( Configf& configf )
