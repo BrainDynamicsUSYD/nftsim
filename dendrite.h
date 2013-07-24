@@ -50,8 +50,13 @@ public:
       const Propag& prepropag, const Couple& precouple );
   virtual ~Dendrite(void);
   virtual void step(void);
-  virtual const vector<double>& V(void) const;
+  inline const vector<double>& V(void) const;
   virtual void output( int index, Output& output ) const;
 };
+
+const vector<double>& Dendrite::V(void) const
+{
+  return v;
+}
 
 #endif

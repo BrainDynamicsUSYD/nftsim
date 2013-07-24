@@ -22,7 +22,7 @@ public:
   void add(T* t);
   void add(vector<T*> t);
   bool empty(void) const;
-  T* operator[]( int index ) const;
+  inline T* operator[]( int index ) const;
   unsigned int size(void) const;
 
   Array<T>(void);

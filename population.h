@@ -14,8 +14,8 @@ using std::vector;
 #include"configf.h"
 #include"nf.h"
 
-class QResponse;
 class Propag;
+class QResponse;
 
 class Population : public NF
 {
@@ -35,10 +35,10 @@ public:
   virtual ~Population();
   virtual void step(void);
   virtual const vector<double>& Q( const Tau& tau = Tau() ) const;
-  const vector<double>& operator()( const Tau& tau = Tau() ) const;
+  inline const vector<double>& operator()( const Tau& tau = Tau() ) const;
   double Qinit( Configf& configf ) const;
-  const vector<double>& V(void) const;
-  double operator[]( int node ) const;
+  virtual const vector<double>& V(void) const;
+  inline double operator[]( int node ) const;
   const vector<double>& glu(void) const;
   virtual void add2Dendrite( int index,
           const Propag& prepropag, const Couple& precouple, Configf& configf );
@@ -46,5 +46,15 @@ public:
   virtual void output( Output& output ) const;
   virtual void outputDendrite( int index, Output& output ) const;
 };
+
+const vector<double>& Population::operator()( const Tau& tau ) const
+{
+  return Q(tau);
+}
+
+double Population::operator[]( int node ) const
+{
+  return Q()[node];
+}
 
 #endif

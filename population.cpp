@@ -54,24 +54,6 @@ void Population::step(void)
   }
 }
 
-const vector<double>& Population::Q( const Tau& tau) const
-{
-  if( tau.m.size() == 1 ) // homogeneous tau
-    return qhistory[(qkey-tau.m[0]+qhistory.size())%qhistory.size()];
-  else { // tau.m.size() == nodes, inhomogeneous tau
-    static vector<double> temp(nodes);
-    for( int i=0; i<nodes; i++ )
-      temp[i] = qhistory
-        [ tau.m[i]<=qkey ? qhistory.size()+qkey-tau.m[i] : qkey-tau.m[i] ][i];
-    return temp;
-  }
-}
-
-const vector<double>& Population::operator()( const Tau& tau ) const
-{
-  return Q(tau);
-}
-
 double Population::Qinit( Configf& configf ) const
 {
   if( qresponse ) {
@@ -82,21 +64,6 @@ double Population::Qinit( Configf& configf ) const
     string temp = configf.find( label("Population ",index+1)+"*Mean:");
     return atof( temp.c_str() );
   }
-}
-
-const vector<double>& Population::V(void) const
-{
-  if( qresponse )
-    return qresponse->V();
-  else {
-    cerr<<"Trying to access V of a stimulus population."<<endl;
-    exit(EXIT_FAILURE);
-  }
-}
-
-double Population::operator[]( int node ) const
-{
-  return V()[node];
 }
 
 const vector<double>& Population::glu(void) const
@@ -128,6 +95,29 @@ void Population::add2Dendrite( int index,
       qresponse = new QResponse(nodes,deltat,this->index);
   }
   qresponse->add2Dendrite( index, prepropag, precouple );
+}
+
+const vector<double>& Population::Q( const Tau& tau) const
+{
+  if( tau.m.size() == 1 ) // homogeneous tau
+    return qhistory[(qkey-tau.m[0]+qhistory.size())%qhistory.size()];
+  else { // tau.m.size() == nodes, inhomogeneous tau
+    static vector<double> temp(nodes);
+    for( int i=0; i<nodes; i++ )
+      temp[i] = qhistory
+        [ tau.m[i]<=qkey ? qhistory.size()+qkey-tau.m[i] : qkey-tau.m[i] ][i];
+    return temp;
+  }
+}
+
+const vector<double>& Population::V(void) const
+{
+  if( qresponse )
+    return qresponse->V();
+  else {
+    cerr<<"Trying to access V of a stimulus population."<<endl;
+    exit(EXIT_FAILURE);
+  }
 }
 
 void Population::growHistory( const Tau& tau )

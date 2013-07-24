@@ -50,17 +50,12 @@ void Couple::output( Output& output ) const
   output("Couple",index+1,"nu",n);
 }
 
-const vector<double>& Couple::nuphi(void) const
-{
-  return P;
-}
-
-double Couple::operator[]( int node ) const
-{
-  return nuphi()[node];
-}
-
 bool Couple::excite(void) const
 {
   return pos==1;
+}
+
+const vector<double>& Couple::nuphi(void) const
+{
+  return P;
 }

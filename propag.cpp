@@ -38,11 +38,6 @@ const vector<double>& Propag::phi(void) const
   return p;
 }
 
-double Propag::operator[]( int node ) const
-{
-  return p[node];
-}
-
 void Propag::output( Output& output ) const
 {
   output("Propag",index+1,"phi",p);
