@@ -136,8 +136,8 @@ void WhiteCoherent::fire( vector<double>& Q ) const
 {
   double v;
   random->get(v);
-  for( int i=0; i<nodes; i++ )
-    Q[i] = v;
+  for( double& x : Q)
+    x = v;
 }
 
 void PAS::init( Configf& configf )
