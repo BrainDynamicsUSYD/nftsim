@@ -1,7 +1,4 @@
-#include <cmath>
 #include "random.h"
-
-#include<iostream>
 
 int Random::id = 0;
 

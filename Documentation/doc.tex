@@ -397,7 +397,7 @@ Pulse - Amplitude: 1 Width: 2e-2 Frequency: 1 Pulses: 1
 
 	\textbf{White noise stimulus}
 	\begin{lstlisting}
-White - Ranseed:-98716872 Amplitude: 20 Mean: 1
+White - Amplitude: 20 Mean: 1
 	\end{lstlisting}
 
     One issue with white noise is that the power spectrum of white noise depends on both the temporal sampling rate and the grid size. For a thorough discussion of this phenomenon, see \type{noise.pdf} in the \NF documentation. Therefore, if you change the sampling rate, the number of nodes, or \type{Deltax} then the power spectrum will change in amplitude. If you know what amplitude the noise should have in Fourier space e.g. $\phi_n(\omega) = 1 \times 10^{-5}$ then specifying \type{Deltax} in the stimulus population will tell \NF that the amplitude has been specified in Fourier space, and it will be rescaled accordingly. In this representation, the mean of the distribution corresponds to the zero-frequency component of the noise. 
@@ -406,6 +406,15 @@ White - Ranseed:-98716872 Amplitude: 20 Mean: 1
 White - Amplitude: 0.00001 Mean: 1 Deltax: 0.025
 	\end{lstlisting}
 	
+	Whether \type{Deltax} is specified or not, you can always optionally specify the seed for the random number generator. If you do not specify a seed, an automatically-incremented seed will be used instead, so that multiple stimulus populations will have independent sequences. In general it is not necessary to set the seed manually unless different random numbers are required for otherwise identical runs. 
+
+	\begin{lstlisting}
+White - Amplitude: 0.00001 Mean: 1 Ranseed: 10
+	\end{lstlisting}
+	\begin{lstlisting}
+White - Amplitude: 0.00001 Mean: 1 Deltax: 0.025 Ranseed: 10
+	\end{lstlisting}
+
 	To superimpose 2 or more stimuli, begin with the keyword \type{Superimpose}, followed by the number of stimuli. Then list all the stimulus patterns and their parameters, with each stimulus pattern preceded by the keyword \type{Stimulus}.
 	\begin{lstlisting}
 Stimulus: Superimpose: 2
