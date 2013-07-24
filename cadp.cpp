@@ -104,11 +104,6 @@ void CaDP::step(void)
     P[i] = (*de)[7][i]*prepropag[i];
 }
 
-const vector<double>& CaDP::nu(void) const
-{
-  return (*de)[7];
-}
-
 void CaDP::output( Output& output ) const
 {
   output.prefix("Couple",index+1);
