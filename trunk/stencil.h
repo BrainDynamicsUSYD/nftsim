@@ -31,7 +31,7 @@ public:
   virtual ~Stencil(void);
 
   const vector<double>& operator= ( const vector<double>& field );
-  virtual void operator++ (int) const; // increment Moore grid
+  inline void operator++ (int) const; // increment Moore grid
   void set( int node ) const; // point to node
   int get(void) const; // get ptr
 
@@ -47,5 +47,15 @@ public:
   //double  w() const; double c() const; double  e() const;
   //double sw() const; double s() const; double se() const;
 };
+
+
+void Stencil::operator++ (int) const
+{
+  ptr++;
+  if( ( ptr%(longside+2)==longside+1 ) )
+    ptr += 2;
+  if( ptr == (longside+1)*(shortside+2)+1 )
+    set(0);
+}
 
 #endif

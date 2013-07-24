@@ -5,7 +5,7 @@
 
 # generic compile command, used in yossarian
 #COMP = g++ -g -lm -Wall  # Debugging
-COMP = g++ -lm -Wall -O3 -Wextra -pedantic -std=c++11 # Performance
+COMP = g++ -lm -Wall -Ofast -Wextra -pedantic -std=c++11 # Performance
 #COMP = g++ -lm -Wall -O3 -Wextra -pedantic -std=c++11 -fopenmp # Performance, parallel
 LIBS = 
 #COMP = x86_64-w64-mingw32-g++ -lm -Wall -O3 -std=c++11 # Cross compiling

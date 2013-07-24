@@ -86,10 +86,11 @@ protected:
   //virtual void dump( Dumpf& dumpf ) const;
 public: 
   Solver( Dumpf& dumpf );
-  virtual ~Solver(void);
+  ~Solver(void);
 
   void solve(void); // main integration loop
-  virtual void step(void);
+  void step(void);
 };
+
 
 #endif

@@ -129,14 +129,7 @@ const vector<double>& Stencil::operator= ( const vector<double>& field )
   return field;
 }
 
-void Stencil::operator++ (int) const
-{
-  ptr++;
-  if( ( ptr%(longside+2)==longside+1 ) )
-    ptr += 2;
-  if( ptr == (longside+1)*(shortside+2)+1 )
-    set(0);
-}
+
 
 void Stencil::set( int node ) const
 {

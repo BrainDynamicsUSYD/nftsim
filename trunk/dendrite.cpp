@@ -69,10 +69,7 @@ void Dendrite::step(void)
     }
 }
 
-const vector<double>& Dendrite::V(void) const
-{
-  return v;
-}
+
 
 void Dendrite::output( int index, Output& output ) const
 {

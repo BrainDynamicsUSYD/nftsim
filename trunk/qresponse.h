@@ -54,9 +54,14 @@ public:
   const vector<double>& glu(void) const;
 
   virtual void fire( vector<double>& Q ) const;
-  virtual const vector<double>& V(void) const;
+  inline const vector<double>& V(void) const;
   virtual void output( Output& output ) const;
   virtual void outputDendrite( int index, Output& output ) const;
 };
+
+const vector<double>& QResponse::V(void) const
+{
+  return v;
+}
 
 #endif
