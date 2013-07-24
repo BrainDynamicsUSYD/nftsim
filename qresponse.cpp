@@ -110,11 +110,6 @@ void QResponse::fire( vector<double>& Q ) const
     }
 }
 
-const vector<double>& QResponse::V(void) const
-{
-  return v;
-}
-
 void QResponse::output( Output& output ) const
 {
   output("Pop",index+1,"V",v);

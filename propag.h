@@ -34,8 +34,13 @@ public:
   virtual void step(void); 
   double phiinit( Configf& configf ) const;
   virtual const vector<double>& phi(void) const;
-  double operator[]( int node ) const;
+  inline double operator[]( int node ) const;
   virtual void output( Output& output ) const;
 };
+
+double Propag::operator[]( int node ) const
+{
+  return p[node];
+}
 
 #endif

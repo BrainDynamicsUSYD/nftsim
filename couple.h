@@ -33,8 +33,13 @@ public:
   double nuinit( Configf& configf ) const;
   virtual void output( Output& output ) const;
   virtual const vector<double>& nuphi(void) const;
-  virtual double operator[]( int node ) const;
+  inline double operator[]( int node ) const;
   virtual bool excite(void) const;
 };
+
+double Couple::operator[]( int node ) const
+{
+  return P[node];
+}
 
 #endif
