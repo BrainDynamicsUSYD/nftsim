@@ -35,6 +35,8 @@ void QResponse::init( Configf& configf )
 
 void QResponse::Glu::init( Configf& configf )
 {
+  Lambda = 0;
+  tGlu = 0;
   configf.optional("Lambda",Lambda); configf.optional("Glu",tGlu);
   variables[0].resize(nodes,1e-4); variables[1].resize(nodes);
 }
@@ -68,7 +70,7 @@ void QResponse::step(void)
     for( int j=0; j<nodes; j++ )
       v[j] += dendrites[i]->V()[j];
 
-  // glutamte dynamics
+  // glutamate dynamics
   if( glu_m.Lambda != 0 ) {
     for( int j=0; j<nodes; j++ )
       glu_m[1][j] = 0; // reset excitatory phi

@@ -129,7 +129,7 @@ const vector<double>& Stencil::operator= ( const vector<double>& field )
   return field;
 }
 
-void Stencil::operator++ (int i) const
+void Stencil::operator++ (int) const
 {
   ptr++;
   if( ( ptr%(longside+2)==longside+1 ) )

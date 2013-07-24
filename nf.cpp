@@ -25,7 +25,7 @@ NF::NF( int nodes, double deltat, int index )
 {
 }
 
-void NF::output( Output& output ) const
+void NF::output( Output&  ) const
 {
 }
 

@@ -47,7 +47,6 @@ void Dendrite::step(void)
     np[i] = precouple[i]*prepropag[i];*/
 
   if(alpha!=beta)
-//#pragma omp parallel for private(adjustedPab,deltaPdeltat)
     for(int i=0; i<nodes; i++) {
       dpdt = ( precouple.nuphi()[i] -oldnp[i] )/deltat;
       adjustednp = oldnp[i] -factorab*dpdt -v[i];
