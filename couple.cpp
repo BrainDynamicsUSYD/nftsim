@@ -55,9 +55,9 @@ const vector<double>& Couple::nuphi(void) const
   return P;
 }
 
-const double& Couple::operator[]( int node ) const
+double Couple::operator[]( int node ) const
 {
-  return n[node];
+  return nuphi()[node];
 }
 
 bool Couple::excite(void) const

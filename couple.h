@@ -33,7 +33,7 @@ public:
   double nuinit( Configf& configf ) const;
   virtual void output( Output& output ) const;
   virtual const vector<double>& nuphi(void) const;
-  virtual const double& operator[]( int node ) const;
+  virtual double operator[]( int node ) const;
   virtual bool excite(void) const;
 };
 

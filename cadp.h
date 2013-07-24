@@ -51,7 +51,6 @@ public:
           const Propag& prepropag, const Population& postpop );
   virtual ~CaDP(void);
   virtual void step(void);
-  virtual const vector<double>& nu(void) const;
   virtual void output( Output& output ) const;
 };
 
