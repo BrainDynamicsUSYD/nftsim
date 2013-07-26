@@ -1,4 +1,5 @@
 #include<cmath>
+#include"fmath.h"
 #include"qresponse.h"
 #include<iostream>
 using std::endl;
@@ -97,7 +98,7 @@ void QResponse::fire( vector<double>& Q ) const
 {
   if(mode == "Sigmoid")
     for( int i=0; i<nodes; i++ )
-      Q[i] = Q_max/( 1.0F+ exp( -(v[i]-theta)/sigma ) );
+      Q[i] = Q_max/( 1.0F+ fmath::expd( -(v[i]-theta)/sigma ) );
   else if (mode == "Linear")
     for( int i=0; i<nodes; i++ )
       Q[i] = v[i]*a +b;
