@@ -13,6 +13,10 @@ function r = nf_partition(n_items,pool,id,frac_overlap,evenlength,samesize)
     %   samesize = 1 for all the windows to be the same size, even if this means skipping elements from the end
     %   r - start and stop indices, if total is 
 
+    if nargin < 6 
+        samesize = 0;
+    end
+    
     if nargin < 5
         evenlength = 0;
     end
