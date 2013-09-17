@@ -26,6 +26,7 @@ using std::stringstream;
 //#include"cascade.h"
 //#include"ca2.h"
 #include"bcm.h"
+#include"bcmlong.h"
 //#include"fcap.h"
 #include"stp.h"
 
@@ -174,6 +175,9 @@ void Solver::init( Configf& configf )
     else if(ctype=="BCM")
       couples.add( new
         BCM(nodes,deltat,i, *propags[i], *pops[cnt.post[i]] ) );
+    else if(ctype=="BCM-Spatial")
+      couples.add( new
+        BCMLong(nodes,deltat,i, *propags[i], *pops[cnt.post[i]] ) );
     //else if(ctype=="fCaP")
     else if(ctype=="STP")
       couples.add( new
@@ -191,15 +195,15 @@ void Solver::init( Configf& configf )
       if( cnt.post[j] == i )
         pops[i]->add2Dendrite( j, *propags[j], *couples[j], configf );
 
-  // read couples parameters
-  configf.go2("Couple 1");
-  for( int i=0; i<cnt.ncnt; i++ )
-    configf.param( label("Couple ",i+1), *couples[i] );
-
   // read propags parameters
   configf.go2("Propag 1");
   for( int i=0; i<cnt.ncnt; i++ )
     configf.param( label("Propag ",i+1), *propags[i] );
+
+  // read couples parameters
+  configf.go2("Couple 1");
+  for( int i=0; i<cnt.ncnt; i++ )
+    configf.param( label("Couple ",i+1), *couples[i] );
 
   // read populations parameters
   configf.go2("Population 1");
@@ -243,23 +247,26 @@ void Solver::Outputs::step(void)
 }
 void Solver::Outputs::init( Configf& configf )
 {
-  double tempf;
+  double tempf; string temps; vector<double> temp_node;
   // read in nodes to output
-  configf.next("Node");
-  if( configf.find("Node:") == "All" ) // beware of this slightly hackish line
+  //int position = tellg();
+  if( configf.next("Node") )
+    temp_node = configf.numbers();
+  if( temp_node.empty() )
+  {
+    //seekg(position,ios::beg);
     for( int i=0; i<nodes; i++ )
       node.push_back(i);
-  else {
-    vector<double> temp = configf.numbers();
-    for( size_t i=0; i<temp.size(); i++ )
-      if( temp[i] > nodes ) {
-        cerr<<"Trying to plot node number "<<temp[i]
-            <<", which is bigger than the highest node index."<<endl;
-        exit(EXIT_FAILURE);
-      }
-      else
-        node.push_back( temp[i]-1 );
   }
+
+  for( size_t i=0; i<temp_node.size(); i++ )
+    if( temp_node[i] > nodes ) {
+      cerr<<"Trying to plot node number "<<temp_node[i]
+          <<", which is bigger than the highest node index."<<endl;
+      exit(EXIT_FAILURE);
+    }
+    else
+      node.push_back( temp_node[i]-1 );
 
   // read in time to start of output
   if( !configf.optional("Start",tempf) )

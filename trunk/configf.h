@@ -45,6 +45,9 @@ public:
   bool next( const string& Check, int delim=':' );
   // searches and points to next keyword
   void go2( const string& keyword );
+
+  int tell(void) { return std::ifstream::tellg(); }
+  void seek( int position ) { std::ifstream::seekg(position); }
 };
 
 // global function that returns string=="Object#" for config file parsing

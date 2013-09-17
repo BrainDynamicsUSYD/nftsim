@@ -54,7 +54,7 @@ const vector<double>& Population::operator()( const Tau& tau ) const
 
 double Population::operator[]( int node ) const
 {
-  return Q()[node];
+  return V()[node];
 }
 
 #endif
