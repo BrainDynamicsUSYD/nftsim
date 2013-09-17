@@ -18,7 +18,7 @@ void CaDP::CaDE::rhs( const vector<double>& y, vector<double>& dydt )
   // x, y, leave alone
   dydt[4] = dydt[5] = 0;
   // dnudt, nu
-  dydt[6] = -(.01+.01)*y[6] +.01*.01*(y[3]-y[7]);
+  dydt[6] = -2*z*y[6] +z*z*(y[3]-y[7]);
   dydt[7] = y[6]; //dydt[3];
 }
 
@@ -53,20 +53,21 @@ void CaDP::init( Configf& configf )
 {
   de->init(configf);
   pos = de->pos;
+  nu_init = de->nu_init;
 }
 
 void CaDP::CaDE::init( Configf& configf )
 {
-  double nuinit; configf.param("nu",nuinit);
-  variables[3].clear(); variables[3].resize(nodes,nuinit);
-  variables[7].clear(); variables[7].resize(nodes,nuinit);
+  configf.param("nu",nu_init);
+  variables[3].clear(); variables[3].resize(nodes,nu_init);
+  variables[7].clear(); variables[7].resize(nodes,nu_init);
   variables[2].clear(); variables[2].resize(nodes,.01e-6);
-  pos = (nuinit>0)?1:-1;
+  pos = (nu_init>0)?1:-1;
   configf.param("nu_max",max);
   configf.param("Dth",dth);
   configf.param("Pth",pth);
   configf.param("xyth",xth);
-  yth = xth*(max-nuinit)/nuinit;
+  yth = xth*(max-nu_init)/nu_init;
   //yth = xth;
   configf.param("x",ltp);
   configf.param("y",ltd);
@@ -76,20 +77,25 @@ void CaDP::CaDE::init( Configf& configf )
     tCa = 50e-3;
   if( !configf.optional("gNMDA",gnmda) )
     gnmda = 2e-3;
+  if( !configf.optional("z",z) )
+    z = .01;
 }
 
 CaDP::CaDP( int nodes, double deltat, int index,
         const Propag& prepropag, const Population& postpop )
-    : Couple(nodes,deltat,index,prepropag,postpop)
+    : Couple(nodes,deltat,index,prepropag,postpop), fpot_agent(1), fdep_agent(1)
 {
   de = new CaDE(nodes,deltat);
   rk4 = new RK4(*de);
+  //pot_agent = new Cascades(10,deltat,5e-1,5e+1);
+  //dep_agent = new Cascades(10,deltat,5e-1,5e+1);
 }
 
 CaDP::~CaDP(void)
 {
   delete de;
   delete rk4;
+  delete pot_agent; delete dep_agent;
 }
 
 void CaDP::step(void)
@@ -100,18 +106,24 @@ void CaDP::step(void)
   }
   de->pot(); de->dep();
   rk4->step();
+  //pot_agent->step( (*de)[4][0] ); dep_agent->step( (*de)[5][0] );
+  //fpot_agent[0] = *pot_agent; fdep_agent[0] = *dep_agent;
+  //(*de)[7][0] = nu_init+*pot_agent-*dep_agent;
+  //if( (*de)[7][0] < 0 ) (*de)[7][0] = 0;
   for( int i=0; i<nodes; i++ )
-    P[i] = (*de)[7][i]*prepropag[i];
+    P[i] = (*de)[7][0]*prepropag[i];
 }
 
 void CaDP::output( Output& output ) const
 {
   output.prefix("Couple",index+1);
-  output("nutilde",(*de)[3]);
+  //output("nutilde",(*de)[3]);
   output("nu",(*de)[7]);
   output("Ca",(*de)[2]);
   output("B", (*de)[0]);
   output("H", (*de)[1]);
-  output("x", (*de)[4]);
-  output("y", (*de)[5]);
+  //output("x", (*de)[4]);
+  //output("y", (*de)[5]);
+  output("x",fpot_agent);
+  output("y",fdep_agent);
 }

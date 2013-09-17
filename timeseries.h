@@ -17,6 +17,7 @@ protected:
   void init( Configf& configf );
 
   vector<Timeseries*> series;
+  vector<double> node;
   double t;
   double cease;
 public:

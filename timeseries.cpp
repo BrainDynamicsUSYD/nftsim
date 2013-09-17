@@ -10,10 +10,28 @@ void Timeseries::init( Configf& configf )
     if( superimpose>1 )
       configf.next("Stimulus");
     vector<string> mode = configf.arb("-");
+
     configf.optional("Onset",t); t = -t;
     if( !configf.optional("Duration",cease) )
       if( configf.optional("Cease",cease) )
         cease += t;
+
+  vector<double> temp_node;
+  if( configf.next("Node") )
+    temp_node = configf.numbers();
+  if( temp_node.empty() )
+    for( int i=1; i<=nodes; i++ )
+      temp_node.push_back(i);
+
+  for( size_t i=0; i<temp_node.size(); i++ )
+    if( temp_node[i] > nodes ) {
+      cerr<<"Trying to plot node number "<<temp_node[i]
+          <<", which is bigger than the highest node index."<<endl;
+      exit(EXIT_FAILURE);
+    }
+    else
+      node.push_back( temp_node[i]-1 );
+
     // PUT YOUR TIMEFUNCTION HERE
     if( mode[0]=="Const" )
       series.push_back( new TIMESERIES::Const(nodes,deltat,index) );
@@ -57,8 +75,8 @@ void Timeseries::fire( vector<double>& Q ) const
   for( size_t i=0; i<series.size(); i++ )
     if( series[i]->t>=0 && series[i]->t<series[i]->cease ) {
       series[i]->fire(temp);
-      for( int i=0; i<nodes; i++ )
-        Q[i] += temp[i];
+      for( size_t i=0; i<node.size(); i++ )
+        Q[node[i]] += temp[node[i]];
     }
 }
 
