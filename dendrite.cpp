@@ -13,9 +13,10 @@ void Dendrite::init( Configf& configf )
   string buffer("Steady");
   configf.optional("V",buffer);
   if( buffer == "Steady" ) {
-    v.resize(nodes);
-    for( int i=0; i<nodes; i++ )
-      v[i] = prepropag.phiinit(configf)*precouple.nuinit(configf); // careful, needed in inhomogeneous
+    v = precouple.nuphi();
+    //v.resize(nodes);
+    //for( int i=0; i<nodes; i++ )
+      //v[i] = prepropag.phiinit(configf)*precouple.nuinit(configf); // careful, needed in inhomogeneous
   }
   else
     v.resize(nodes,atof(buffer.c_str()));

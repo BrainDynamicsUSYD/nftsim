@@ -40,9 +40,11 @@ LongCouple::~LongCouple(void)
 
 void LongCouple::step(void)
 {
-  for( int i=0; i<nodes; i++ )
-    for( int j=0; j<nodes; j++ )
-      P[j] = n2d[i][j]*prepropag[i];
+  for( int j=0; j<nodes; j++ ) {
+    P[j] = 0;
+    for( int i=0; i<nodes; i++ )
+      P[j] += n2d[i][j]*prepropag[i];
+  }
 }
 
 void LongCouple::output( Output& output ) const
