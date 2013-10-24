@@ -21,6 +21,7 @@ void Couple::init( Configf& configf )
     cerr<<"nu either has a homogeneous initial value or has one intial value per node."<<endl;
     exit(EXIT_FAILURE);
   }
+  step();
 }
 
 Couple::Couple( int nodes, double deltat, int index,
