@@ -8,8 +8,8 @@ void fCaP::fCaDE::init( Configf& configf )
 {
   CaDE::init(configf);
   xresponse.init(configf); yresponse.init(configf);
-  /*xresponse[0].clear(); xresponse[0].resize(nodes,th);
-  yresponse[0].clear(); yresponse[0].resize(nodes,th);*/
+  //xresponse[0].clear(); xresponse[0].resize(nodes,th);
+  //yresponse[0].clear(); yresponse[0].resize(nodes,th);
 }
 
 void fCaP::fCaDE::pot(void)
