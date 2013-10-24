@@ -3,7 +3,7 @@ using std::cerr;
 using std::endl;
 #include"population.h"
 #include"burst.h"
-#include"fs.h"
+//#include"fs.h"
 
 void Population::init( Configf& configf )
 {
@@ -89,8 +89,8 @@ void Population::add2Dendrite( int index,
     string temp(configf.find( label("Population ",this->index+1)+"*Firing:" ));
     if( temp == "Bursting" )
       qresponse = new BurstResponse(nodes,deltat,this->index);
-    else if( temp == "FS" )
-      qresponse = new FS(nodes,deltat,this->index);
+    //else if( temp == "FS" )
+      //qresponse = new FS(nodes,deltat,this->index);
     else
       qresponse = new QResponse(nodes,deltat,this->index);
   }

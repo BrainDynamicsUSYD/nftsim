@@ -19,7 +19,7 @@ void BCMLong::init( Configf& configf )
     // diagonals == temp[0], off-diagonals ~= 0
     for( int i=0; i<nodes; i++ )
       for( int j=0; j<nodes; j++ )
-        (*de_2d[i])[7][j] = (*de_2d[i])[3][j] = 13e-6;
+        (*de_2d[i])[7][j] = (*de_2d[i])[3][j] = 1e-8;
     for( int i=0; i<nodes; i++ )
       (*de_2d[i])[7][i] = (*de_2d[i])[3][i] = temp[0];
     pos = (temp[0]>0)?1:-1;
@@ -95,7 +95,7 @@ void BCMLong::output( Output& output ) const
   // outputting a 2D matrix rather than a vector:
   // for each "to", output all "from"
   for( int i=0; i<nodes; i++ ) {
-    output( "C.Matrix", index+1, label("Ca.",     i+1), (*de_2d[i])[0] );
+    output( "C.Matrix", index+1, label("Ca.",        i+1), (*de_2d[i])[0] );
     output( "C.Matrix", index+1, label("nutilde.",   i+1), (*de_2d[i])[3] );
     output( "C.Matrix", index+1, label("nu.",        i+1), (*de_2d[i])[7] );
     output( "C.Matrix", index+1, label("nu_Ca.",     i+1), (*de_2d[i])[1] );

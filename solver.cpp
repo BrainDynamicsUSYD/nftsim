@@ -179,6 +179,8 @@ void Solver::init( Configf& configf )
       couples.add( new
         BCMLong(nodes,deltat,i, *propags[i], *pops[cnt.post[i]] ) );
     //else if(ctype=="fCaP")
+      //couples.add( new
+        //fCaP(nodes,deltat,i, *propags[i], *pops[cnt.post[i]] ) );
     else if(ctype=="STP")
       couples.add( new
         STP(nodes,deltat,i, *propags[i], *pops[cnt.post[i]] ) );
