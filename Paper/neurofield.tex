@@ -116,19 +116,44 @@ EEG \sep neurophysiology \sep methods \sep modeling
 \section{Introduction}
 \label{sec:introduction}
 
-Background about the problem being solved, mention of other existing solutions, motivate the code and brief overview of features
+
+\begin{itemize}
+\item Background information about neural field theory, the problem being solved, alternative approaches etc.
+\item Present model equations, motivate usage of the code
+\item Brief overview of key code features e.g. arbitrary populations and connections, plasticity etc. 
+\end{itemize}
 
 \section{Method and Results}
 \label{sec:theory}
 
-Dotpoint form going over key features of the code, with screenshots 
+Dotpoint form going over key features of the code, with screenshots. Perhaps go through the key components of the model (populations, propagators, couples) and explain each one
 
+\begin{itemize}
+\item Populations, can have as many as required, different customizable firing responses, bursting. Stimulus populations, different noise processes, pulsed stimulus, TMS
+\item Propagators, wave propagator, spherical geometry
+\item Couples, incorporate different types of plasticity
+\item MATLAB helper scripts for visualization, power spectrum calculation, processing
+\end{itemize}
+
+Then an overview of the key modeling achievements
+
+\begin{itemize}
+\item Plasticity results (Felix)
+\item Corticothalamic model, compare analytic and neurofield result (Romesh)
+\item Bursting populations (XL)
+\item Seizures (XL, Romesh)
+\end{itemize}
 
 \section{Discussion}
 \label{sec:discussion}
 
 Overview of any tricky issues with the problem being solved e.g. EEGLAB mentiones limitations of time/frequency decompsition. Discuss limitations or qualifiers on the usage of the code.
 
+\begin{itemize}
+\item Discussion regarding spatial components, grid size, noise amplitude with regard to approximations
+\item CFL condition, automatically checked for. Also limitations on $\Delta x$ depending on $r_e$
+\item Incorporating volume conduction
+\end{itemize}
 % \section{Conclusion}
 % \label{sec:conclusion}
 % Summary.
