@@ -48,7 +48,7 @@
 
 \biboptions{,comma,sort&compress}
 
-\journal{J. Neurosci. Methods (any others?)}
+\journal{Neuroscience Methods (any others?)}
   
   
 \begin{document}
@@ -96,13 +96,13 @@
 
 \begin{abstract}
 %% Text of abstract
-Draft on publication of NeuroField to document capability, usage, and example results. Other internal documents exist: a user manual and a developer manual.
+Abstract
 
 \end{abstract}
 
 \begin{keyword}
 %% keywords here, in the form: keyword \sep keyword
-Neural field theory \sep EEG \sep neurophysiology \sep methods \sep modeling
+EEG \sep neurophysiology \sep methods \sep modeling
 %% MSC codes here, in the form: \MSC code \sep code
 %% or \MSC[2008] code \sep code (2000 is the default)
 
@@ -116,11 +116,8 @@ Neural field theory \sep EEG \sep neurophysiology \sep methods \sep modeling
 \section{Introduction}
 \label{sec:introduction}
 
-%Background about the problem being solved, mention of other existing solutions, motivate the code and brief overview of features
 
 Motivation behind neural field theory: large-scale neural dynamics.
-
-Neural field theory of Robinson et al, EEG spectra, alpha and beta peaks, etc:
 
 \begin{align*}
 	D_{ab}V_{ab}(\mathbf{r},t) &= \nu_{ab}\phi_{ab}(\mathbf{r},t),\\
@@ -132,15 +129,13 @@ NeuroField: a general code to solve the neural field theory by allowing users to
 \begin{enumerate}
 	\item Specify an arbitrary number of populations and connections between populations;
 	\item Specify the parameters for any objects, including populations, dendritic responses, firing responses, propagators, synapses, and stimulus pattern.
-	%\item Choose alternative wave propagation types, i.e. choose different forms of \(\mathcal{D}_{ab}\);
-	%\item Uses plastic synapses, i.e. \(\nu_{ab}=\nu_{ab}(\mathbf{r},t)\).
-	%\item Use different firing responses, i.e. change \(S_a\).
+	\item Choose alternative wave propagation types, i.e. choose different forms of \(\mathcal{D}_{ab}\);
+	\item Uses plastic synapses, i.e. \(\nu_{ab}=\nu_{ab}(\mathbf{r},t)\).
+	\item Use different firing responses, i.e. change \(S_a\).
 \end{enumerate}
 
 \section{Method and Results}
 \label{sec:theory}
-
-%Dotpoint form going over key features of the code, with screenshots 
 
 NeuroField solves each equation within the Robinson et al. model with an object:
 \begin{align*}
@@ -149,15 +144,34 @@ NeuroField solves each equation within the Robinson et al. model with an object:
 	Q_a &= S_a \big[\sum_b V_{ab} \big], & \mathtt{QResponse}\\
 	\mathcal{D}_{ab}\phi_{ab} &= Q_b,&  \mathtt{Propag}
 \end{align*}
-where an arbitrary number of these objects, with each object may be a different type (e.g. constant synaptic coupling vs plastic synaptic coupling), and all parameter values may be tailored.
+with an arbitrary number of these objects, with each object may be a different type (e.g. constant synaptic coupling vs plastic synaptic coupling), and all parameter values may be tailored.
+
+\begin{itemize}
+\item Populations, can have as many as required, different customizable firing responses, bursting. Stimulus populations, different noise processes, pulsed stimulus, TMS
+\item Propagators, wave propagator, spherical geometry
+\item Couples, incorporate different types of plasticity
+\item MATLAB helper scripts for visualization, power spectrum calculation, processing
+\end{itemize}
 
 Examples for single excitatory population, cortical population, corticothalamic model. Each example has a population diagram, and related results. All examples should preferably be published result?
+
+\begin{itemize}
+\item Plasticity results (Felix)
+\item Corticothalamic model, compare analytic and neurofield result (Romesh)
+\item Bursting populations (XL)
+\item Seizures (XL, Romesh)
+\end{itemize}
 
 \section{Discussion}
 \label{sec:discussion}
 
-Overview of any tricky issues with the problem being solved e.g. EEGLAB mentiones limitations of time/frequency decompsition. Discuss limitations or qualifiers on the usage of the code.
+Overview of any tricky issues with the problem being solved (for example, the EEGLAB code paper mentions limitations of time/frequency decomposition). Discuss limitations or qualifiers on the usage of the code.
 
+\begin{itemize}
+\item Discussion regarding spatial components, grid size, noise amplitude with regard to approximations
+\item CFL condition, automatically checked for. Also limitations on $\Delta x$ depending on $r_e$
+\item Incorporating volume conduction
+\end{itemize}
 % \section{Conclusion}
 % \label{sec:conclusion}
 % Summary.
