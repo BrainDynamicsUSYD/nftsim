@@ -42,7 +42,6 @@ function [f,P,V] = nf_spatial_spectrum(nf,p,kmax,n_windows,spatial_filter)
         end
     end
 
-
     if mod(size(data,1),2) || mod(size(data,2),2)
         error('In order to have a zero frequency component, you need an even number of grid edge nodes');
     end
