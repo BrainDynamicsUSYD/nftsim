@@ -38,7 +38,7 @@ void QResponse::Glu::init( Configf& configf )
 {
   Lambda = 0;
   tGlu = 0;
-  configf.optional("Lambda",Lambda); configf.optional("Glu",tGlu);
+  configf.optional("Lambda",Lambda); configf.optional("tGlu",tGlu);
   variables[0].resize(nodes,1e-6); variables[1].resize(nodes);
 }
 

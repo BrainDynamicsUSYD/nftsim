@@ -1,0 +1,44 @@
+\documentclass[12pt]{article}
+\usepackage[latin1]{inputenc}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows}
+\begin{document}
+\pagenumbering{gobble}
+\begin{figure}
+\tikzstyle{block} = [draw,text width=3em,text centered,minimum height=2em]
+\tikzstyle{line} = [draw, -latex']
+    
+\begin{tikzpicture}[node distance = 3em, auto]
+	\node[block] (epsilon) {$\epsilon$};
+	\node[right of=epsilon,node distance=4em](epsilone){};
+	\path[line](epsilon)--(epsilone);
+	\node[block, right of=epsilone] (e) {e};
+	\path[line] (epsilon) -- (e);
+
+	\node[right of=e](re){};
+	\draw(e)--(re);
+	\node[above of=re](are){};
+	\draw(re)--(are);
+	\node[left of=are](ae){};
+	\draw(are)--(ae);
+	\path[line] (ae) -| (e);
+
+	\node[block, below of=epsilon] (iota) {$\iota$};
+	\node[right of=iota,node distance=4em](iotai){};
+	\path[line](iota)--(iotai);
+	\node[block, right of=iotai] (i) {i};
+	\path[line] (iota) -- (i);
+
+	\node[right of=i](ri){};
+	\draw(i)--(ri);
+	\node[below of=ri](bri){};
+	\draw(ri)--(bri);
+	\node[left of=bri](bi){};
+	\draw(bri)--(bi);
+	\path[line] (bi) -| (i);
+
+	\path[line] (e) -- (i);
+	\path[line] (iotai) -- (epsilone);
+\end{tikzpicture}
+\end{figure}
+\end{document}
