@@ -25,7 +25,7 @@ Propag::~Propag(void)
 
 void Propag::step(void)
 {
-  p = prepop(tau);
+  p = prepop.Q(tau);
 }
 
 double Propag::phiinit( Configf& configf ) const

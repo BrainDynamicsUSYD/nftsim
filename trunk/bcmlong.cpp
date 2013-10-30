@@ -74,7 +74,7 @@ void BCMLong::step(void)
   for( int i=0; i<nodes; i++ )
     for( int j=0; j<nodes; j++ ) {
       (*de_2d[i])[0][j] = de_2d[0]->sig( postpop.glu()[i] -de_2d[0]->glu_0, de_2d[0]->B );
-      (*de_2d[i])[1][j] = (195e-3-postpop[j])*de_2d[0]->sig( postpop[j]-45.5e-3,62 );
+      (*de_2d[i])[1][j] = (195e-3-postpop.V()[j])*de_2d[0]->sig( postpop.V()[j]-45.5e-3,62 );
     }
 
   for( int i=0; i<nodes; i++ ) {
