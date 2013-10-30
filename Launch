@@ -73,8 +73,8 @@ if( scalar(@ARGV)<2 ) {
 		close PBS;
 		exec "qsub pbs" or die $!;
 	} else {
-		my $pv = `which pv`;
-		if( $pv =~ /^$/ ) {
+		my $pv = `which pv 2> /dev/null`;
+		if( $? =~ /256/ ) {
 			exec "time ./Release/NeuroField $arglist &";
 		} else {
 			my $time = $1 if( `grep Time neurofield.conf` =~ /Time:\s*([-\d\.e]+)/ );
