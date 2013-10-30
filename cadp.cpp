@@ -102,7 +102,7 @@ void CaDP::step(void)
 {
   for( int i=0; i<nodes; i++ ) {
     (*de)[0][i] = de->sig( postpop.glu()[i] -de->glu_0, de->B );
-    (*de)[1][i] = (195e-3-postpop[i])*de->sig( postpop[i]-45.5e-3,62 );
+    (*de)[1][i] = (195e-3-postpop.V()[i])*de->sig( postpop.V()[i]-45.5e-3,62 );
   }
   de->pot(); de->dep();
   rk4->step();

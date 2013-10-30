@@ -11,6 +11,10 @@
 \usepackage{multirow}
 \usepackage{amsmath}
 
+\usepackage{tocloft}
+\setlength\cftparskip{4pt}
+\setlength{\cftbeforesecskip}{4pt}
+
 \pagestyle{plain}
 \parindent=0.0cm
 \parskip=0.5cm
@@ -37,9 +41,6 @@ breakatwhitespace=tru,	% sets if automatic breaks should only happen at whitespa
 \begin{document}
 
 \maketitle
-%\abstract{\NF is a computer program (accompanied with helper scripts) that solves the neural field model of Robinson et al. This manual details its usage.}
-
-%\pagebreak
 
 \NF is a \type{C++} program (accompanied with helper scripts) that solves the neural field model of Robinson et al., where each of the simultaneous equations are handled by an object:
 \begin{align*}
@@ -60,7 +61,7 @@ breakatwhitespace=tru,	% sets if automatic breaks should only happen at whitespa
 
 This users guide covers the obtaining and setting up (Sec.~\ref{sec:obtain}), configuring (Sec.~\ref{sec:config}) and launching of \NF (Sec.~\ref{sec:launch}).
 
-Within this documentation, specific terminology as appeared in the computer is in \type{typwriter font}. Commands are denoted as
+Within this documentation, specific terminology as appeared in the computer is in \type{typewriter font}. Commands are denoted as
 \begin{lstlisting}
 Command to put in computer
 \end{lstlisting}
