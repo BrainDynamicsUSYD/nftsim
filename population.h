@@ -47,14 +47,4 @@ public:
   virtual void outputDendrite( int index, Output& output ) const;
 };
 
-const vector<double>& Population::operator()( const Tau& tau ) const
-{
-  return Q(tau);
-}
-
-double Population::operator[]( int node ) const
-{
-  return V()[node];
-}
-
 #endif
