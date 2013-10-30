@@ -4,4 +4,5 @@ Quick guide to NeuroField
 
 3. To delete temporary files, run 'make clean'.
 
-4. For further documentation, run 'make doc' to generate ./Documentation/doc.pdf.
+4. For further documentation, run 'make doc' to generate
+./Documentation/user.pdf and ./Documentation/developer.pdf.
