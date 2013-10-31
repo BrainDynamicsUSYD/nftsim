@@ -28,14 +28,11 @@ protected:
   vector< vector<double> > qhistory; // keyring of Q
   bool settled; // if true, forbids add2Dendrite and growHistory
   virtual void init( Configf& configf );
-  //virtual void restart( Restartf& restartf );
-  //virtual void dump( Dumpf& dumpf ) const;
 public:
   Population( int nodes, double deltat, int index );
   virtual ~Population();
   virtual void step(void);
-  virtual const vector<double>& Q( const Tau& tau = Tau() ) const;
-  inline const vector<double>& operator()( const Tau& tau = Tau() ) const;
+  virtual const vector<double>& Q( const Tau& tau ) const;
   double Qinit( Configf& configf ) const;
   virtual const vector<double>& V(void) const;
   inline double operator[]( int node ) const;
