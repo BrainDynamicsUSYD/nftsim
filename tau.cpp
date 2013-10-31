@@ -32,10 +32,6 @@ void Tau::init( Configf& configf )
   }
 }
 
-Tau::Tau(void) : NF(0,0,0), max(0), m(1,0)
-{
-}
-
 Tau::Tau( int nodes, double deltat, int index ) : NF(nodes,deltat,index), max(0)
 {
 }
@@ -46,33 +42,4 @@ Tau::~Tau()
 
 void Tau::step(void)
 {
-}
-
-Tau::operator int() const
-{
-  return max;
-}
-
-bool Tau::operator> ( const Tau& tau ) const
-{
-  return max>tau.max;
-}
-
-bool Tau::operator< ( const Tau& tau ) const
-{
-  return max<tau.max;
-}
-
-Tau& Tau::operator+= ( const Tau& tau )
-{
-  for( size_t i=0; i<m.size(); i++ )
-    m[i] += tau.m[i];
-  return *this;
-}
-
-Tau& Tau::operator-= ( const Tau& tau )
-{
-  for( size_t i=0; i<m.size(); i++ )
-    m[i] -= tau.m[i];
-  return *this;
 }
