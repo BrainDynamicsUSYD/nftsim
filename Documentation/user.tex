@@ -446,7 +446,7 @@ Map - phi: Steady Tau: 0
 
 	\item[Wave]\ \\
 	This propagator is the wave equation propagator governed by the equation
-	\[\left[\frac{1}{\gamma_{ab}^2}\frac{d^2}{d t^2}+\frac{2}{\gamma_{ab}}\frac{d} {d t}+1 \right] \phi_{ab}({\bf r},t) =Q_b({\bf r},t-\tau_{ab}).\]
+	\[\left[\frac{1}{\gamma_{ab}^2}\frac{d^2}{d t^2}+\frac{2}{\gamma_{ab}}\frac{d} {d t}+1 -r^2_{ab}\nabla^2 \right] \phi_{ab}({\bf r},t) =Q_b({\bf r},t-\tau_{ab}).\]
 	Its input is given by
 	\begin{lstlisting}
 Wave - phi: Steady Tau: 0 Deltax: 3.5e-3 Range: 80e-3 gamma: 116
@@ -458,12 +458,13 @@ Wave - phi: Steady Tau: 0 Deltax: 3.5e-3 Range: 80e-3 gamma: 116
 
 	\type{Range} is $r_{ab}$ in the wave equation.
 	
-	The final parameter can be \type{gamma} or \type{velocity} in the wave equation.
+	\type{gamma} is the damping coefficient. Alternatively, \type{velocity} may be specified, and \type{gamma} is calculated via \(\gamma_{ab}=\mathrm{v}_{ab}/r_{ab}\).
 
 	In case there is only one node, this degenerates into a \type{Harmonic} propagator.
 
 	\item[Harmonic]
-	This is a harmonic oscillator implementation of the damped wave equation, with no spatial variations. When \type{Node} = 1, \type{WaveEqn} degenerates into \type{Harmonic}.
+	This is a harmonic oscillator implementation of the damped wave equation, with no spatial variations:
+	\[\left[\frac{1}{\gamma_{ab}^2}\frac{d^2}{d t^2}+\frac{2}{\gamma_{ab}}\frac{d} {d t}+1 \right] \phi_{ab}({\bf r},t) =Q_b({\bf r},t-\tau_{ab}).\]
 
 	The input form is given by 
 	\begin{lstlisting}
