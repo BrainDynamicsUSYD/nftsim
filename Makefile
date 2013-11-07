@@ -4,7 +4,8 @@
 #COMP = CC
 
 # generic compile command, used in yossarian
-COMP = g++ -g -lm -Wall -Wextra -pedantic -std=c++11 -msse -msse2 -msse3 -mfpmath=sse -march=native -mtune=native -funroll-loops -flto # Debugging
+COMP = g++ -g -lm -Wall -Wextra -pedantic -std=c++11 -msse -msse2 -msse3 # Basic
+#COMP = g++ -g -lm -Wall -Wextra -pedantic -std=c++11 -msse -msse2 -msse3 -mfpmath=sse -march=native -mtune=native -funroll-loops -flto # Debugging
 #COMP = g++ -g -lm -Wall -O3 -Wextra -pedantic -std=c++11 -msse -msse2 -msse3 -mfpmath=sse -march=native -mtune=native -funroll-loops -flto -m64  # Performance
 #COMP = g++ -lm -Wall -O3 -Wextra -pedantic -std=c++11 -fopenmp # Performance, parallel
 LIBS = 
