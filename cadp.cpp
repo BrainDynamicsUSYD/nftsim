@@ -87,15 +87,12 @@ CaDP::CaDP( int nodes, double deltat, int index,
 {
   de = new CaDE(nodes,deltat);
   rk4 = new RK4(*de);
-  //pot_agent = new Cascades(10,deltat,5e-1,5e+1);
-  //dep_agent = new Cascades(10,deltat,5e-1,5e+1);
 }
 
 CaDP::~CaDP(void)
 {
   delete de;
   delete rk4;
-  delete pot_agent; delete dep_agent;
 }
 
 void CaDP::step(void)
@@ -106,10 +103,6 @@ void CaDP::step(void)
   }
   de->pot(); de->dep();
   rk4->step();
-  //pot_agent->step( (*de)[4][0] ); dep_agent->step( (*de)[5][0] );
-  //fpot_agent[0] = *pot_agent; fdep_agent[0] = *dep_agent;
-  //(*de)[7][0] = nu_init+*pot_agent-*dep_agent;
-  //if( (*de)[7][0] < 0 ) (*de)[7][0] = 0;
   for( int i=0; i<nodes; i++ )
     P[i] = (*de)[7][0]*prepropag[i];
 }
@@ -117,13 +110,11 @@ void CaDP::step(void)
 void CaDP::output( Output& output ) const
 {
   output.prefix("Couple",index+1);
-  //output("nutilde",(*de)[3]);
+  output("nutilde",(*de)[3]);
   output("nu",(*de)[7]);
   output("Ca",(*de)[2]);
   output("B", (*de)[0]);
   output("H", (*de)[1]);
   //output("x", (*de)[4]);
   //output("y", (*de)[5]);
-  output("x",fpot_agent);
-  output("y",fdep_agent);
 }
