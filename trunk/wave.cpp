@@ -40,12 +40,12 @@ void Wave::init( Configf& configf )
   exp1 = exp(-deltat*gamma);
   exp2 = exp(-2.*deltat*gamma);
 
-if( gamma/2.0 < deltat){
+  if( gamma/2.0 < deltat){
     cerr<<"gamma = " << gamma << " requires deltat < " << gamma/2.0 <<endl;
     exit(EXIT_FAILURE);
   }
 
-if(range/2.0 < deltax){
+  if(range/2.0 < deltax){
     cerr<<"range = " << range << " requires deltax < " << range/2.0 <<endl;
     exit(EXIT_FAILURE);
   }
