@@ -9,7 +9,7 @@ using std::vector;
 class Outlet
 {
 public: 
-  Outlet( const string& name, const vector<double>& field, bool single_output=false );
+  Outlet( const string& name, const vector<double>& field, bool single_output );
   const string name;
   const vector<double>& field;
   const bool single_output;
@@ -22,10 +22,13 @@ class Output
   string m_prefix;
 public:
   Output( const string& key );
-  void operator() ( const string& name, const vector<double>& field, bool single_output=false );
+  void operator() ( const string& name, const vector<double>& field );
   void prefix( const string& object, int index );
   void operator() ( const string& object, int index,
-          const string& name, const vector<double>& field, bool single_output=false );
+          const string& name, const vector<double>& field );
+  void singleNode( const string& name, const vector<double>& field );
+  void singleNode(
+      const string& object, int index, const string& name, const vector<double>& field );
   bool empty(void) const;
   operator vector<Outlet*>(void) const;
 };

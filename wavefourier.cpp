@@ -47,8 +47,8 @@ void WaveFourier::step(void)
 void WaveFourier::output(Output& output) const
 {
   output.prefix("WaveFourier",index+1);
-  output("Real",realpart,true);
-  output("Imag",imagpart,true);
+  output.singleNode("Real",realpart);
+  output.singleNode("Imag",imagpart);
 }
 
 
