@@ -28,7 +28,6 @@ using std::stringstream;
 #include"bcm.h"
 #include"bcmlong.h"
 //#include"fcap.h"
-#include"stp.h"
 
 #include"output.h"
 
@@ -181,9 +180,6 @@ void Solver::init( Configf& configf )
     //else if(ctype=="fCaP")
       //couples.add( new
         //fCaP(nodes,deltat,i, *propags[i], *pops[cnt.post[i]] ) );
-    else if(ctype=="STP")
-      couples.add( new
-        STP(nodes,deltat,i, *propags[i], *pops[cnt.post[i]] ) );
     else {
       cerr<<"Invalid couple type '"<<ctype<<"'."<<endl;
       exit(EXIT_FAILURE);

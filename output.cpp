@@ -12,10 +12,10 @@ Output::Output( const string& key )
 {
 }
 
-void Output::operator() ( const string& name, const vector<double>& field, bool single_output )
+void Output::operator() ( const string& name, const vector<double>& field )
 {
   if( key=="" || key==name )
-    outputs.push_back( new Outlet( m_prefix+name, field, single_output ) );
+    outputs.push_back( new Outlet( m_prefix+name, field, false ) );
 }
 
 void Output::prefix( const string& object, int index )
@@ -24,10 +24,23 @@ void Output::prefix( const string& object, int index )
 }
 
 void Output::operator() ( const string& object, int index,
-          const string& name, const vector<double>& field, bool single_output )
+          const string& name, const vector<double>& field )
 {
   prefix(object,index);
-  (*this)(name,field,single_output);
+  (*this)(name,field);
+}
+
+void Output::singleNode ( const string& name, const vector<double>& field )
+{
+  if( key=="" || key==name )
+    outputs.push_back( new Outlet( m_prefix+name, field, true ) );
+}
+
+void Output::singleNode ( const string& object, int index,
+          const string& name, const vector<double>& field )
+{
+  prefix(object,index);
+  singleNode(name,field);
 }
 
 bool Output::empty(void) const
