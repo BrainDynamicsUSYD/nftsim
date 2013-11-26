@@ -41,9 +41,6 @@ Dendrite::~Dendrite(void)
 void Dendrite::step(void)
 {
   // assume that alpha, beta are constant and nu*phi is linear for the time step
-  /*for( int i=0; i<nodes; i++ )
-    np[i] = precouple[i]*prepropag[i];*/
-
   if(alpha!=beta)
     for(int i=0; i<nodes; i++) {
       dpdt = ( precouple[i] -oldnp[i] )/deltat;
