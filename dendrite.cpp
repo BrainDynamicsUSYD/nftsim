@@ -66,8 +66,7 @@ void Dendrite::step(void)
 
 
 
-void Dendrite::output( int index, Output& output ) const
+void Dendrite::output( Output& output ) const
 {
-  if( this->index == index )
-    output("Dendrite",index+1,"V",v);
+  output("Dendrite",index+1,"V",v);
 }
