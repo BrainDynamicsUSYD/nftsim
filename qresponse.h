@@ -50,7 +50,7 @@ public:
   virtual ~QResponse(void);
   virtual void step(void);
   virtual void add2Dendrite( int index,
-          const Propag& prepropag, const Couple& precouple );
+          const Propag& prepropag, const Couple& precouple, Configf& configf );
   const vector<double>& glu(void) const;
 
   virtual void fire( vector<double>& Q ) const;

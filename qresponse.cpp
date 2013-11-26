@@ -1,8 +1,9 @@
 #include<cmath>
-#include"fmath.h"
-#include"qresponse.h"
 #include<iostream>
 using std::endl;
+#include"fmath.h"
+#include"qresponse.h"
+#include"dendriteramp.h"
 
 void QResponse::init( Configf& configf )
 {
@@ -84,9 +85,15 @@ void QResponse::step(void)
 }
 
 void QResponse::add2Dendrite( int index,
-    const Propag& prepropag, const Couple& precouple )
+    const Propag& prepropag, const Couple& precouple, Configf& configf )
 {
-  dendrites.add( new Dendrite(nodes,deltat,index,prepropag,precouple) );
+  string temp(configf.find( label("Dendrite ",this->index+1)+":" ));
+  // PUT YOUR DENDRITE HERE
+  if( temp == "Ramp" )
+    dendrites.add( new DendriteRamp(nodes,deltat,index,prepropag,precouple) );
+  // END PUT YOUR DENDRITE HERE
+  else
+    dendrites.add( new Dendrite(nodes,deltat,index,prepropag,precouple) );
 }
 
 const vector<double>& QResponse::glu(void) const
@@ -118,6 +125,5 @@ void QResponse::output( Output& output ) const
 
 void QResponse::outputDendrite( int index, Output& output ) const
 {
-  for( size_t i=0; i<dendrites.size(); i++ )
-    dendrites[i]->output(index,output);
+  dendrites[index]->output(output);
 }

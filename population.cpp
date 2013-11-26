@@ -96,7 +96,7 @@ void Population::add2Dendrite( int index,
     else
       qresponse = new QResponse(nodes,deltat,this->index);
   }
-  qresponse->add2Dendrite( index, prepropag, precouple );
+  qresponse->add2Dendrite( index, prepropag, precouple, configf );
 }
 
 const vector<double>& Population::Q( const Tau& tau) const
