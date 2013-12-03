@@ -30,6 +30,7 @@ protected:
   double a,b,c,d;
 
   Array<Dendrite> dendrites; // array of dendrites
+  vector<int> dendrite_index; // indices of dendrites
   vector<double> v; // soma potential for the population
 
   // glutamate concentration in synaptic cleft

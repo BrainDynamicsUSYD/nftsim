@@ -1,18 +1,15 @@
 # Makefile
 
-# compile command for sun
-#COMP = CC
-
-# generic compile command, used in yossarian
-COMP = g++ -g -lm -Wall -Wextra -pedantic -std=c++11 -msse -msse2 -msse3 # Basic
-#COMP = g++ -g -lm -Wall -Wextra -pedantic -std=c++11 -msse -msse2 -msse3 -mfpmath=sse -march=native -mtune=native -funroll-loops -flto # Debugging
-#COMP = g++ -g -lm -Wall -O3 -Wextra -pedantic -std=c++11 -msse -msse2 -msse3 -mfpmath=sse -march=native -mtune=native -funroll-loops -flto -m64  # Performance
-#COMP = g++ -lm -Wall -O3 -Wextra -pedantic -std=c++11 -fopenmp # Performance, parallel
 LIBS = 
-#COMP = x86_64-w64-mingw32-g++ -lm -Wall -O3 -std=c++11 -msse -msse2 -msse3 -mfpmath=sse -march=native -mtune=native -funroll-loops -flto # Cross compiling
 
-# compile command on intel
-#COMP = icpc -std=c++11 -fast -xSSE4.2 -ipo -no-prec-div -static -opt-prefetch -unroll-aggressive -m64 
+# Debugging
+COMP = g++ -g -lm -Wall -Wextra -pedantic -std=c++11 -msse -msse2 -msse3
+
+# Performance
+#COMP = g++ -g -lm -Wall -O3 -Wextra -pedantic -std=c++11 -msse -msse2 -msse3 -mfpmath=sse -march=native -mtune=native -funroll-loops -flto -m64
+
+# Performance, parallel
+#COMP = g++ -g -lm -Wall -O3 -Wextra -pedantic -std=c++11 -msse -msse2 -msse3 -mfpmath=sse -march=native -mtune=native -funroll-loops -flto -m64 -fopenmp
 
 HEADER = $(wildcard *.h)
 CPP = $(wildcard *.cpp)

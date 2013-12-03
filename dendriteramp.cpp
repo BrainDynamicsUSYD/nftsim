@@ -16,8 +16,8 @@ void DendriteRamp::init( Configf& configf )
 {
   Dendrite::init(configf);
 
-  configf.param("alpha1",alpha1);
-  configf.param("beta1",beta1);
+  //configf.param("alpha1",alpha1);
+  //configf.param("beta1",beta1);
   configf.param("alpha2",alpha2);
   configf.param("beta2",beta2);
   configf.param("t1",t1);
