@@ -87,7 +87,8 @@ void QResponse::step(void)
 void QResponse::add2Dendrite( int index,
     const Propag& prepropag, const Couple& precouple, Configf& configf )
 {
-  string temp(configf.find( label("Dendrite ",this->index+1)+":" ));
+  string temp(configf.find( label("Dendrite ",index+1)+":" ));
+  dendrite_index.push_back(index);
   // PUT YOUR DENDRITE HERE
   if( temp == "Ramp" )
     dendrites.add( new DendriteRamp(nodes,deltat,index,prepropag,precouple) );
@@ -125,5 +126,7 @@ void QResponse::output( Output& output ) const
 
 void QResponse::outputDendrite( int index, Output& output ) const
 {
-  dendrites[index]->output(output);
+  for( unsigned int i=0; i<dendrites.size(); i++ )
+    if( dendrite_index[i] == index )
+      dendrites[i]->output(output);
 }
