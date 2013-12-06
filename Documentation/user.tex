@@ -195,6 +195,24 @@ To write a configuration file, a user can follow these steps:
 \item Specify all output requests (Sec.~\ref{sec:output}).
 \end{enumerate}
 
+General rules on the entries within a configuration file:
+
+\begin{enumerate}
+	\item The structure of a configuration file is: 1) comment 2) global information 3) object specification 4) output specification.
+	\item Object specification involves first specifying the object type. The syntax is the object identifier, followed by its type, then a hyphen:
+		\begin{lstlisting}
+Object 1: Type -
+		\end{lstlisting}
+		Then the object parameters are specified, following this pattern:
+		\begin{lstlisting}
+Object parameter: value
+		\end{lstlisting}
+	\item Most parameters are essential. Failure to provide these parameters would result in \NF terminating with an error message. A minority of the parameters are optional.
+	\item The ordering of the parameters are important. Wrong parameter ordering results in \NF terminating with an error message.
+	\item With the exception of keywords, the configuration file is white-space independent, e.g., there can be either no spaces, many spaces, or new lines between the colon of \type{Integration steps: 10000} and 10000, but you cannot have two spaces between \type{Integration} and \type{steps}. For consistency and readability, users are encouraged to follow the existing white space scheme when reasonable.
+	\item Tip for \type{vi} users: \type{./helper\_scripts/neurofield.vim} implements syntax highlighting for configuration files in \type{vi}. See comments within for installation instructions.
+\end{enumerate}
+
 \begin{figure}[h!]\begin{center}
 \includegraphics{cortical-model.pdf}
 \hspace{3cm}\begin{tabular}{ l l l l l }
@@ -206,7 +224,6 @@ To write a configuration file, a user can follow these steps:
 \end{tabular}
 \caption{Left: schematic diagram of a purely cortical population model comprising excitatory and inhibitory populations, as well as two stimulus populations; each arrow indicates a connection between populations, so that each stimulus connects to a cortical population, and each cortical population connects to all cortical populations. Right: connection matrix indicating the connections between populations; zero indicates no connection, and a connection is indicated by a nonzero number, ordered top to bottom, left to right.}
 \label{fig:pop}\end{center}\end{figure}
-
 
 \begin{figure}\begin{center}
 	\begin{lstlisting}
@@ -264,16 +281,6 @@ Couple: 3.nu
 \end{center}
 \caption{An example configuration file, which can be found in \type{Configs/example.conf}.}
 \end{figure}
-
-In general, the entries in configuration file follow the following rules:
-
-\begin{enumerate}
-	\item Each entry generally follows a \type{Pamameter: value} pattern.
-	\item Most parameters are essential. Failure to provide these parameters would result in \NF terminating with an error message. A minority of the parameters are optional.
-	\item The ordering of the parameters are important. Wrong parameter ordering results in \NF terminating with an error message.
-	\item With the exception of keywords, the configuration file is white-space independent, e.g., there can be either no spaces, many spaces, or new lines between the colon of \type{Integration steps: 10000} and 10000, but you cannot have two spaces between \type{Integration} and \type{steps}. For consistency and readability, users are encouraged to follow the existing white space scheme when reasonable.
-	\item Tip for \type{vi} users: \type{./helper\_scripts/neurofield.vim} implements syntax highlighting for configuration files in \type{vi}. See comments within for installation instructions.
-\end{enumerate}
 
 \subsection{Global information}
 \label{sec:global}
