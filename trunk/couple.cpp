@@ -21,7 +21,8 @@ void Couple::init( Configf& configf )
     cerr<<"nu either has a homogeneous initial value or has one intial value per node."<<endl;
     exit(EXIT_FAILURE);
   }
-  //step();
+  for( int i=0; i<nodes; i++ )
+    P[i] = n[i]*prepropag[i];
 }
 
 Couple::Couple( int nodes, double deltat, int index,
