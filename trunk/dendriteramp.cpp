@@ -81,10 +81,6 @@ void DendriteRamp::step(void)
     de->alpha = alpha1;
 	de->beta = beta1;
  }
-   for( int i=0; i<nodes; i++ ) {
-    (*de)[2][i] = 0.0; //provide actual value
-  }
-  // P??
  rk4->step();
 }
 
