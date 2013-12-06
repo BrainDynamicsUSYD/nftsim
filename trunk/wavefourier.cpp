@@ -58,8 +58,3 @@ WaveFourier::~WaveFourier(void)
 }
 
 #endif
-
-
-
-
-
