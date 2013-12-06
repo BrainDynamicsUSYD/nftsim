@@ -4,12 +4,13 @@
 
 void DendriteRamp::DendriteDE::rhs( const vector<double>& y, vector<double>& dydt )
 {
-  // y = {dV/dt, V, nuphi}
-  dydt[0] = ( y[3] - 1 - (1/alpha + 1/beta) * y[1]) * (alpha * beta);
-  // V
-  dydt[1] = y[1]; 															
-  // d(nuphi)/dt from precouple
-  dydt[2] = 0;
+  // y = {V,W==dv/dt,nuphi}
+  // dydt = {dv/dt==W, dW/dt==d^2V/dt^2,dnuphi/dt}  d(nuphi)/dt from precouple
+  dydt[0] = y[1]; 
+    
+  dydt[1] = (y[2] - y[0] - (1.0/alpha + 1.0/beta) * y[1]) * (alpha * beta);
+    															
+  dydt[2] = 0.0;
 }
 
 void DendriteRamp::init( Configf& configf )
@@ -60,8 +61,8 @@ void DendriteRamp::step(void)
   // alpha and beta already initialized 
   if (time > t1 && time <= t2)				// ramp alpha, beta up
   {
-    de->alpha += de->alpha+deltat*alpha1;
-	de->beta += de->beta+deltat*beta1;
+    de->alpha = de->alpha+deltat*alpha1;
+	de->beta = de->beta+deltat*beta1;
 	//alpha[i] =  alpha1 + (time - t1) * (alpha2 - alpha1) / (t2 - t1);
 	//beta[i] = beta1 + (time -t1) * (beta2 - beta1) / (t2 -t1);
   }
@@ -80,12 +81,18 @@ void DendriteRamp::step(void)
     de->alpha = alpha1;
 	de->beta = beta1;
  }
+   for( int i=0; i<nodes; i++ ) {
+    (*de)[2][i] = 0.0;
+  }
+  // P??
  rk4->step();
 }
 
 void DendriteRamp::output( Output& output ) const
 {
-  output("Dendrite",index+1,"V",V());
-  //output.singleNode("Dendrite",index+1,"alpha",de->alpha); // single node hasn't been implemented
-  //output.singleNode("Dendrite",index+1,"beta",de->beta);
+  // output("Dendrite",index+1,"V",V());
+  // output.prefix("Dendrite", index+1);
+  vector<double> alpha_vector (1, de->alpha); // still not displaying in output file
+  output.singleNode("Dendrite", index+1,"alpha",alpha_vector);
+  // output.singleNode("beta",de->beta);
 }

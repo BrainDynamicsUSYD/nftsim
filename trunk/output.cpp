@@ -36,10 +36,9 @@ void Output::singleNode ( const string& name, const vector<double>& field )
     outputs.push_back( new Outlet( m_prefix+name, field, true ) );
 }
 
-void Output::singleNode ( const string& object, int index,
-          const string& name, const vector<double>& field )
+void Output::singleNode (const string& object, int index, const string& name, const vector<double>& field )
 {
-  prefix(object,index);
+  prefix(object, index);
   singleNode(name,field);
 }
 
