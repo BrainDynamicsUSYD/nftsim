@@ -3,6 +3,7 @@
 
 #include"dendrite.h"
 #include"de.h"
+using std::vector;
 
 class DendriteRamp : public Dendrite
 {
@@ -12,8 +13,9 @@ class DendriteRamp : public Dendrite
 protected:
   struct DendriteDE : public DE
   {
-    double alpha;
-    double beta;
+    vector<double> alpha_vec, beta_vec;
+    double alpha2, beta2;
+    double t1, t2, t3, t4;
     virtual void init( const double vinit);
     DendriteDE( int nodes, double deltat) : DE(nodes, deltat, 3) {}
     virtual ~DendriteDE(void) {}
@@ -23,9 +25,7 @@ protected:
   RK4* rk4;
   
   double time;
-  double alpha1, alpha2;
-  double beta1, beta2;
-  double t1, t2, t3, t4;
+  
 
   virtual void init( Configf& configf );
 public: 

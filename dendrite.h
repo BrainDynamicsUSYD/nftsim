@@ -16,9 +16,6 @@ class Dendrite : public NF
   Dendrite(void); // default constructor
   Dendrite(Dendrite& ); // no copy constructor
 
-  double alpha;
-  double beta;
-
   // variables that are intialized once to speed up computation
   double aminusb; // == alpha - beta
   double expa; // == exp(-alpha*deltat)
@@ -34,6 +31,10 @@ class Dendrite : public NF
   double C2expb;
   double C1dtplusC2;
 protected:
+  
+  double alpha; // needed here for DendriteRamp
+  double beta;
+
   vector<double> v;
   vector<double> dvdt;
   //vector<double> np;
