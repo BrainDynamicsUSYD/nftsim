@@ -12,8 +12,8 @@
 \usepackage{amsmath}
 
 \usepackage{tocloft}
-\setlength\cftparskip{2pt}
-\setlength{\cftbeforesecskip}{2pt}
+\setlength\cftparskip{4pt}
+\setlength{\cftbeforesecskip}{4pt}
 
 \pagestyle{plain}
 \parindent=0.0cm
@@ -74,9 +74,8 @@ Each object class may be overloaded for more sophisticated behaviour; for exampl
 
 \alert{A solid command of \underline{object-oriented programming} is an \underline{essential prerequisite} in developing \NF. Given the object-oriented nature of the neural field theory, and the inevitable complexity in class hierarchy, object-oriented programming principles \underline{MUST} be adhered to whenever reasonable.}
 
-In particular, \underline{code reuse} should be a high priority. Duplicated code, with subtle variations between them, is one of the best ways to introduce unintended results.
-
 \alert{\underline{NEVER} copy and paste code. EVER.}
+Duplicated code, with subtle variations between them, is one of the best ways to introduce unintended results. \underline{Code reuse} should be a high priority.
 
 When in doubt, read existing class implementations for examples, or contact Felix Fung (\url{f.fung@physics.usyd.edu.au}).
 
@@ -121,7 +120,7 @@ To make changes to the program, copy the trunk into a new subfolder within branc
 cp -r trunk ./branches/my_branch
 \end{lstlisting}
 	
-You can now modify the code in the branch, where Sec.~2 provides good documentation and methods.
+You can now modify the code in the branch, where Sec.~\ref{sec:extension} provides good documentation and methods.
 
 To submit your changes, do
 \begin{lstlisting}
@@ -132,6 +131,7 @@ and provide a descriptive log.
 Others can now obtain your code through the branch. If your modifications are accepted for the main program, your branch will then be merged into the trunk subject to appropriate testing.
 
 \section{Extending NeuroField via inheritance}
+\label{sec:extension}
 
 Most new functionalities may be introduced by inheriting existing classes and overloading appropriate functions, where the core classes are:
 

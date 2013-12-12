@@ -53,10 +53,9 @@ breakatwhitespace=tru,	% sets if automatic breaks should only happen at whitespa
 \NF generalizes the neural field theory by allowing users to:
 \begin{enumerate}
 	\item Specify an arbitrary population model: an arbitrary number of populations and connections them may be specified;
-	\item Specify the parameters for any objects, including populations, dendritic responses, firing responses, propagators, synapses, and stimulus pattern;
-	\item Choose alternative wave propagation types, i.e. choose different forms of \(\mathcal{D}_{ab}\);
-	\item Uses plastic synapses, i.e. \(\nu_{ab}=\nu_{ab}(\mathbf{r},t)\).
-	\item Use different firing responses, i.e. change \(S_a\).
+	\item Choose different types of populations, including neural or stimulus populations. For each neural population, the type of firing response, dendritic response type may be specified.
+	\item Choose different types of connections, including the type of axonal propagation, and synaptic coupling.
+	\item For each object, specify the parameter values.
 \end{enumerate}
 
 This users guide covers the obtaining and setting up (Sec.~\ref{sec:obtain}), configuring (Sec.~\ref{sec:config}) and launching of \NF (Sec.~\ref{sec:launch}).
@@ -586,9 +585,10 @@ Dendrite: 5
 Propag: 1 4.phi
 Couple: 3.nu
 \end{lstlisting}
-Specifying desired objects and fields to output. Enter the appropriate object indices after the labels.
 
-For each entry, a field name may be appended after the index with a \type{.}, so that only that field of the object is outputted. If no field name is specified for that entry, then all fields of that object is outputted.
+\NF allows the user to specify which objects to output, by entering the appropriate object indices after the labels. For each object, it has some intrinsic fields that will be outputted; for example, \type{Couple} outputs \type{nu}, whereas \type{CaDP} outputs \type{nu} and \type{Ca}.
+
+For each entry, a field name may be appended after the index with a dot, so that only that field of the object is outputted. If no field name is specified for that entry, then all fields of that object is outputted.
 
 If a specific field of an object is specified, but that field does not exist, \NF checks and returns an error.
 
