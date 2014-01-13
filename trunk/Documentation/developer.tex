@@ -72,10 +72,10 @@ Each object class may be overloaded for more sophisticated behaviour; for exampl
 
 \subsection{Object-oriented programming and code reuse}
 
-\alert{A solid command of \underline{object-oriented programming} is an \underline{essential prerequisite} in developing \NF. Given the object-oriented nature of the neural field theory, and the inevitable complexity in class hierarchy, object-oriented programming principles \underline{MUST} be adhered to whenever reasonable.}
+\alert{A solid command of \underline{object-oriented programming} is an \underline{essential prerequisite} in developing \NF. Given the inevitable complexity arising from many developers and class relationships, good code structure and object-oriented programming principles \underline{MUST} be adhered to whenever reasonable.}
 
 \alert{\underline{NEVER} copy and paste code. EVER.}
-Duplicated code, with subtle variations between them, is one of the best ways to introduce unintended results. \underline{Code reuse} should be a high priority.
+Duplicated code, with subtle variations between them, is one of the best ways to introduce \underline{undetected} \underline{numerical errors}. The ultimate consequence is erroneous publication and refactoring of the code. \underline{Code reuse} is one of the highest priorities.
 
 When in doubt, read existing class implementations for examples, or contact Felix Fung (\url{f.fung@physics.usyd.edu.au}).
 
@@ -128,7 +128,7 @@ svn ci
 \end{lstlisting}
 and provide a descriptive log.
 
-Others can now obtain your code through the branch. If your modifications are accepted for the main program, your branch will then be merged into the trunk subject to appropriate testing.
+Others can now obtain your code through the branch. If your modifications are accepted for the main program, your branch will then be merged into the trunk subject for appropriate testing.
 
 \section{Extending NeuroField via inheritance}
 \label{sec:extension}
@@ -220,6 +220,8 @@ To introduce more sophisticated axonal propagation, this class is inherited and 
 
 The \type{Propag} class provides a constant references to both presynaptic and postsynaptic populations.
 
+Object \type{Tau} provides the axonal delay latency of propagator.
+
 For spatially inhomogeneous propagators, class \type{Stencil} provides a Moore grid, as documented in Sec.~\ref{sec:stencil}.
 
 To ``register" your propagator, look for the
@@ -247,6 +249,10 @@ subsection in \type{solver.cpp}.
 
 To implement new firing response dynamics, inherit from class \type{QResponse}, where \type{init()} and \type{fire()} should be overloaded.
 
+Object \type{dendrites} is an array of presynaptic \type{Dendrite}.
+
+Objects \type{glu\_m} and \type{glu\_rk4} calculates glutamate concentration in the synaptic cleft, which is accessed via \type{glu()}.
+
 To ``register" your firing response, look for the
 \begin{lstlisting}
 // PUT YOUR QRESPONSE HERE
@@ -256,6 +262,8 @@ subsection in \type{population.cpp}.
 \subsection{Stimulus}
 
 To implement new stimulus pattern, inherit from class \type{Timeseries}, where \type{init()} and \type{fire()} should be overloaded.
+
+The time is provided via the variable \type{t}.
 
 To ``register" your stimulus, look for the
 \begin{lstlisting}
@@ -267,6 +275,8 @@ subsection in \type{timeseries.cpp}.
 \label{sec:dendrite}
 
 To implement new dendritic responses, inherit from class \type{Dendrite}.
+
+References are provided for the presynaptic coupling and propagator.
 
 To ``register" your dendritic response, look for the
 \begin{lstlisting}
@@ -311,7 +321,7 @@ where \type{field1}, and \type{field2} are \type{vector<double>} with size equal
 
 To output a single number, as opposed to a spatial field, use the function
 \begin{lstlisting}
-output("Object Name",index+1,"field1",field1);
+output.singleNode("Object Name",index+1,"field1",field1);
 \end{lstlisting}
 or
 \begin{lstlisting}
@@ -404,6 +414,8 @@ void NewClass::output( Output& output ) const
   output( "x",(*de)[1] );
 }
 \end{lstlisting}
+
+To extend an existing \type{DE} class, for example extend \type{NewDE} to \type{New2DE}, inherit \type{New2DE} from \type{NewDE}. The \type{extend()} function allows the introduction of new differential equations and field variables.
 
 \subsection{Stencil}
 \label{sec:stencil}
