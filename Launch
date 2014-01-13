@@ -75,7 +75,7 @@ if( scalar(@ARGV)<2 ) {
 	} else {
 		my $pv = `which pv 2> /dev/null`;
 		if( $? =~ /256/ ) {
-			exec "time ./Release/NeuroField $arglist &";
+			exec "time ./Release/NeuroField $arglist";
 		} else {
 			my $time = $1 if( `grep Time neurofield.conf` =~ /Time:\s*([-\d\.e]+)/ );
 			my $start = $1 if( `grep Start neurofield.conf` =~ /Start:\s*([-d\d\.e]+)/ );
