@@ -6,11 +6,11 @@ using std::endl;
 
 void Wave::init( Configf& configf )
 {
+  deltax = postpop.sheetlength()/sqrt(nodes);
+
   string buffer("Steady");
   configf.optional("phi",buffer);
   double Q = prepop.Qinit(configf);
-  configf.param("Tau",tau); prepop.growHistory(tau);
-  configf.param("Deltax",deltax);
   if( buffer != "Steady" ) {
     p.clear();
     p.resize(nodes,atof(buffer.c_str()));
@@ -19,6 +19,8 @@ void Wave::init( Configf& configf )
     p.clear();
     p.resize(nodes,Q);
   }
+
+  configf.optional("Tau",tau); prepop.growHistory(tau);
 
   configf.param("Range",range);
   if( !configf.optional("gamma",gamma) ) {

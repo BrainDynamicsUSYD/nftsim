@@ -7,7 +7,7 @@
 syn region error start='\%^' end='$'
 syn region error start='"' end='"'
 
-syn keyword preproc Time Deltat Nodes Topology Bath Glutamate dynamics Onset Cease Duration Output
+syn keyword preproc Time Deltat Nodes Topology Bath Glutamate dynamics Onset Cease Duration Output Length
 
 syn keyword CntKey From To nextgroup=CntI skipwhite skipnl skipempty
 syn match CntI '\d\+' contained

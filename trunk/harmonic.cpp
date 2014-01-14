@@ -12,12 +12,16 @@ void Harmonic::init( Configf& configf )
   oldp.resize(nodes,Q);
   oldQ.resize(nodes,Q);
   dpdt.resize(nodes,0.);
-  configf.param("Tau",tau); prepop.growHistory(tau);
-  double temp; configf.optional("Deltax",temp); // for compatibility with Wave
-  configf.optional("Range",temp);
+  configf.optional("Tau",tau); prepop.growHistory(tau);
+
+  // Range is either used when velocity is specified,
+  // or not used but read for compatibility with Wave propagator
+  double range;
+  configf.optional("Range",range);
+
   if( !configf.optional("gamma",gamma) ) {
     double velocity; configf.param("velocity",velocity);
-    gamma = velocity/temp;
+    gamma = velocity/range;
   }
   twoongamma = 2./gamma;
   expgamma = exp(-gamma*deltat);
