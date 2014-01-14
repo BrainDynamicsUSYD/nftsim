@@ -22,7 +22,7 @@ void Couple::init( Configf& configf )
     exit(EXIT_FAILURE);
   }
   for( int i=0; i<nodes; i++ )
-    P[i] = n[i]*prepropag[i];
+    P[i] = n[i]*prepropag.phiinit(configf);
 }
 
 Couple::Couple( int nodes, double deltat, int index,
