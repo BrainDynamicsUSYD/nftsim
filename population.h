@@ -27,6 +27,8 @@ protected:
   int qkey; // index to the present q in qhistory
   vector< vector<double> > qhistory; // keyring of Q
   bool settled; // if true, forbids add2Dendrite and growHistory
+  double length; // spatial length
+
   virtual void init( Configf& configf );
 public:
   Population( int nodes, double deltat, int index );
@@ -37,6 +39,7 @@ public:
   virtual const vector<double>& V(void) const;
   inline double operator[]( int node ) const;
   const vector<double>& glu(void) const;
+  inline double sheetlength(void) const { return length; }
   virtual void add2Dendrite( int index,
           const Propag& prepropag, const Couple& precouple, Configf& configf );
   virtual void growHistory( const Tau& tau );

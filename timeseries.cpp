@@ -123,8 +123,8 @@ void Pulse::fire( vector<double>& Q ) const
 void White::init( Configf& configf )
 {
   // Amplitude: 1 Mean: 1 Deltax: 1 Ranseed: 1
-  configf.param("Amplitude",amp);
   configf.param("Mean",mean);
+  configf.param("Std",amp);
   if(configf.optional("Deltax",deltax)) // If deltax is given, rescale amp
     amp = sqrt(4*pow(M_PI,3)*pow(amp,2)/deltat/deltax/deltax);
   if(configf.optional("Ranseed",seed))
