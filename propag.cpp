@@ -8,7 +8,7 @@ void Propag::init( Configf& configf )
   if( buffer != "Steady" )
     Q = atof(buffer.c_str());
   p.clear(); p.resize(nodes,Q);
-  configf.param("Tau",tau);
+  configf.optional("Tau",tau);
   prepop.growHistory(tau);
 }
 

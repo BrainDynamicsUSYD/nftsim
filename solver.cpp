@@ -197,20 +197,13 @@ void Solver::init( Configf& configf )
       if( cnt.post[j] == i )
         pops[i]->add2Dendrite( j, *propags[j], *couples[j], configf );
 
-  // read propags parameters
-  configf.go2("Propag 1");
-  for( int i=0; i<cnt.ncnt; i++ )
-    configf.param( label("Propag ",i+1), *propags[i] );
-
-  // read couples parameters
-  configf.go2("Couple 1");
-  for( int i=0; i<cnt.ncnt; i++ )
-    configf.param( label("Couple ",i+1), *couples[i] );
-
-  // read populations parameters
-  configf.go2("Population 1");
+  // read object parameters
   for( int i=0; i<cnt.npop; i++ )
     configf.param( label("Population ",i+1), *pops[i] );
+  for( int i=0; i<cnt.ncnt; i++ )
+    configf.param( label("Propag ",i+1), *propags[i] );
+  for( int i=0; i<cnt.ncnt; i++ )
+    configf.param( label("Couple ",i+1), *couples[i] );
 
   // initialize outputs
   configf.go2("Output"); configf.next("Output");

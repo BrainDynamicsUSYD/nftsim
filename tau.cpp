@@ -32,7 +32,7 @@ void Tau::init( Configf& configf )
   }
 }
 
-Tau::Tau( int nodes, double deltat, int index ) : NF(nodes,deltat,index), max(0)
+Tau::Tau( int nodes, double deltat, int index ) : NF(nodes,deltat,index), max(0), m(1,0)
 {
 }
 
