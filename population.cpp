@@ -7,6 +7,7 @@ using std::endl;
 
 void Population::init( Configf& configf )
 {
+  configf.param("Length",length);
   if( qresponse ) { // neural population
     double Qinit; configf.param("Q",Qinit);
     if( !qhistory.size() )
