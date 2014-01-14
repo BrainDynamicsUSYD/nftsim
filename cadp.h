@@ -9,13 +9,12 @@ class CaDP : public Couple
   CaDP();
   CaDP(CaDP&);
 protected:
-  vector<double> fpot_agent, fdep_agent;
   double nu_init;
   struct CaDE : public DE
   {
     double nu_init;
-    double alpha; // for fCaDE
-    double alpha_beta; // for fCaDE, == alpha -beta
+    //double alpha; // for fCaDE
+    //double alpha_beta; // for fCaDE, == alpha -beta
 
     double B; // 1/stanard deviation of glutamate binding
     double glu_0; // glutamte dose-response threshold
