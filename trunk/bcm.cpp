@@ -3,7 +3,7 @@
 
 void BCM::BCMDE::rhs( const vector<double>& y, vector<double>& dydt )
 {
-  // y == { binding, H, Ca, nu, x, y, gNMDA, d/dt(gNMDA) }
+  // y == { binding, H, Ca, nutilde, x, y, dnudt, nu, gNMDA }
   CaDE::rhs(y,dydt);
   // recalculate dCadt with NMDAR plasticity
 
