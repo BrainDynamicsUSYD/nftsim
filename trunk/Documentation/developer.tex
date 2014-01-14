@@ -75,7 +75,7 @@ Each object class may be overloaded for more sophisticated behaviour; for exampl
 \alert{A solid command of \underline{object-oriented programming} is an \underline{essential prerequisite} in developing \NF. Given the inevitable complexity arising from many developers and class relationships, good code structure and object-oriented programming principles \underline{MUST} be adhered to whenever reasonable.}
 
 \alert{\underline{NEVER} copy and paste code. EVER.}
-Duplicated code, with subtle variations between them, is one of the best ways to introduce \underline{undetected} \underline{numerical errors}. The ultimate consequence is erroneous publication and refactoring of the code. \underline{Code reuse} is one of the highest priorities.
+Duplicated code, with subtle variations between them, is one of the best ways to introduce \underline{undetected} \underline{numerical errors}. The ultimate consequence is erroneous publication and refactoring of the code. \underline{Code reuse} is one of the highest priorities. Sec.~\ref{sec:extension} contains methods for code reuse.
 
 When in doubt, read existing class implementations for examples, or contact Felix Fung (\url{f.fung@physics.usyd.edu.au}).
 
@@ -122,7 +122,13 @@ cp -r trunk ./branches/my_branch
 	
 You can now modify the code in the branch, where Sec.~\ref{sec:extension} provides good documentation and methods.
 
-To submit your changes, do
+To submit your changes, first perform make sure your code is numerically correct, by running in \type{MatLab}
+\begin{lstlisting}
+run Test/test_eirs_spectrum.m
+\end{lstlisting}
+And see that the new spectrum is in agreement with the existing ones.
+
+When you are ready, check the new code into \type{SVN} with
 \begin{lstlisting}
 svn ci
 \end{lstlisting}
@@ -208,6 +214,8 @@ In the former case, it contains the \type{QResponse} class and have a soma poten
 
 In either cases, the \type{Population} class has a keyring storing the firing rate history, coded as a 2D array plus an integer key.
 
+Functions \type{sheetlength()} and \type{glu()} provides access to the physical length and glutamate concentration in synaptic cleft, respectively.
+
 A population is ``settled" after \type{Population::init()} is called, after which no dendrites can be added, and the firing rate history cannot grow.
 
 \subsection{Propag}
@@ -237,7 +245,9 @@ The \type{Couple} class manages \(\nu_{ab}\), which is constant in space and tim
 
 To introduce synaptic plasticity, derive from this class.
 
-The \type{Couple} class provides a constant references to both presynaptic and postsynaptic populations. Glutamate concentration is also provided. \type{pos} is $+1$ or $-1$, depending on the sign of \(\nu_{ab}\).
+The \type{Couple} class provides a constant references to both presynaptic and postsynaptic populations. Glutamate concentration is also provided.
+
+Function \type{excite()} indicates whether this is an excitatory coupling. Protected variable \type{pos} is $+1$ or $-1$, depending on the sign of \(\nu_{ab}\).
 
 To ``register" your couple, look for the
 \begin{lstlisting}
@@ -291,10 +301,28 @@ Input via the configuration file is implemented in the \type{init()} function, v
 	\begin{enumerate}
 		%\item \type{next()}: go to the next keyword.
 		\item \type{param()}: go to the next keyword and reads in a variable. If the keyword is not found, barks and exits.
-		\item \type{optional()}: same as param, but does not bark nor exit.
+		\item \type{optional()}: same as param, but does not bark nor exit. The use of this function is discouraged, since it may introduce subtle bugs or human errors.
 		\item \type{numbers()}: reads an arbitrary number of white-space separated numbers, returned in a \type{vector}.
 		%\item \type{find()}: search a keyword and return the next variable as string.
 	\end{enumerate}
+
+	Sometimes the config file may search for either one parameter, OR another one. For example, \type{Wave} propagator accepts parameter \type{gamma} or \type{velocity} such that \type{gamma} = \type{velocity}/\type{range}, so that we may have either of these:
+\begin{lstlisting}
+Wave - Range: 80e-3 gamma: 116
+\end{lstlisting}
+
+\begin{lstlisting}
+Wave - Range: 80e-3 velocity: 9.28
+\end{lstlisting}
+	
+Then, we may use this pattern with \type{optional()} to achieve the desired effect:
+\begin{lstlisting}
+configf.param("Range",range);
+if( !configf.optional("gamma",gamma) ) {
+  double temp; configf.param("velocity",temp);
+  gamma = temp/range;
+}
+\end{lstlisting}
 
 %In restart mode, \type{init()} is called, followed by \type{restart()}. \type{Restartf} is identical to \type{Configf}.
 
