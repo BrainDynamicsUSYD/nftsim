@@ -131,8 +131,11 @@ void Population::growHistory( const Tau& tau )
     exit(EXIT_FAILURE);
   }*/
 
-  if( size_t(tau.max) > qhistory.size() )
+  if( size_t(tau.max) > qhistory.size() ) {
     qhistory.resize( tau.max+1 );
+    for( unsigned int i=0; i<qhistory.size(); i++ )
+      qhistory[i].resize(nodes,qhistory[0][0]);
+  }
 }
 
 void Population::output( Output& output ) const
