@@ -28,6 +28,7 @@ protected:
   vector< vector<double> > qhistory; // keyring of Q
   bool settled; // if true, forbids add2Dendrite and growHistory
   double length; // spatial length
+  double qinit; // initial firing rate
 
   virtual void init( Configf& configf );
 public:
