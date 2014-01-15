@@ -12,15 +12,16 @@ void Tau::init( Configf& configf )
       cerr<<"Value of tau not divisible by Deltat!"<<endl;
       exit(EXIT_FAILURE);
     }
-    m.resize(1,temp[0]/deltat);
+    m[0] = temp[0]/deltat;
     max = m[0];
   }
   else if( temp.size() == uint(nodes) ) {
+    if( remainder(temp[0],deltat) >deltat ) {
+      std::cerr<<"Value of tau not divisible by Deltat!"<<endl;
+      exit(EXIT_FAILURE);
+    }
+    m.resize(nodes);
     for( int i=0; i<nodes; i++ ) {
-      if( remainder(temp[0],deltat) >deltat ) {
-        std::cerr<<"Value of tau not divisible by Deltat!"<<endl;
-        exit(EXIT_FAILURE);
-      }
       m[i] = int(temp[i]/deltat);
       if( m[i]>max )
         max = m[i];
