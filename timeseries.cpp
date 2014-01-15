@@ -122,11 +122,14 @@ void Pulse::fire( vector<double>& Q ) const
 
 void White::init( Configf& configf )
 {
-  // Amplitude: 1 Mean: 1 Deltax: 1 Ranseed: 1
+  // Mean: 1 Std: 1 Ranseed: 1
+  // Mean: 1 Psd: 1 Ranseed: 1
   configf.param("Mean",mean);
   if( !configf.optional("Std",amp) ) {
     configf.param("Psd",amp);
-    configf.param("Deltax",deltax); // If deltax is given, rescale amp
+    // index of timeseries the same as that of population
+    deltax = atof(configf.find(
+        label("Population ",index+1)+"*Length").c_str()) /sqrt(nodes);
     amp = sqrt(4*pow(M_PI,3)*pow(amp,2)/deltat/pow(deltax,2));
   }
   if(configf.optional("Ranseed",seed))
@@ -143,9 +146,16 @@ void White::fire( vector<double>& Q ) const
 
 void WhiteCoherent::init( Configf& configf )
 {
-  // Amplitude: 1 Mean: 1 Ranseed: 1
-  configf.param("Amplitude",amp);
+  // Mean: 1 Std: 1 Ranseed: 1
+  // Mean: 1 Psd: 1 Ranseed: 1
   configf.param("Mean",mean);
+  if( !configf.optional("Std",amp) ) {
+    configf.param("Psd",amp);
+    // index of timeseries the same as that of population
+    double deltax = atof(configf.find(
+        label("Population ",index+1)+"*Length").c_str()) /sqrt(nodes);
+    amp = sqrt(4*pow(M_PI,3)*pow(amp,2)/deltat/pow(deltax,2));
+  }
   if(configf.optional("Ranseed",seed))
     random = new Random(seed,mean,amp);
   else

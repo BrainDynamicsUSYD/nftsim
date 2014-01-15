@@ -48,7 +48,7 @@ struct Pulse : public Timeseries
 
 struct White : public Timeseries
 {
-  double seed, amp, mean,deltax;
+  double seed, amp, mean, deltax;
   Random* random;
   White(int nodes,double deltat,int index) : Timeseries(nodes,deltat,index) {}
   virtual ~White(void) { delete random; }
