@@ -7,22 +7,16 @@ using std::endl;
 
 void Population::init( Configf& configf )
 {
+  qinit = Qinit(configf);
+  qhistory.push_back( vector<double>(nodes,qinit) );
+
   configf.param("Length",length);
+
   if( qresponse ) { // neural population
-    double Qinit; configf.param("Q",Qinit);
-    if( !qhistory.size() )
-      qhistory.push_back( vector<double>(nodes,Qinit) );
-    else
-      for( size_t i=0; i<qhistory.size(); i++ )
-        qhistory[i].resize(nodes,Qinit);
+    double temp; configf.param("Q",temp);
     configf.param( "Firing", *qresponse );
   }
   else { // stimulus population
-    if( !qhistory.size() )
-      qhistory.push_back( vector<double>(nodes,0) );
-    else
-      for( size_t i=0; i<qhistory.size(); i++ )
-        qhistory[i].resize(nodes,0);
     timeseries = new Timeseries(nodes,deltat,index);
     configf.param( "Stimulus", *timeseries );
   }
@@ -134,7 +128,7 @@ void Population::growHistory( const Tau& tau )
   if( size_t(tau.max) > qhistory.size() ) {
     qhistory.resize( tau.max+1 );
     for( unsigned int i=0; i<qhistory.size(); i++ )
-      qhistory[i].resize(nodes,qhistory[0][0]);
+      qhistory[i].resize( nodes, qinit );
   }
 }
 
