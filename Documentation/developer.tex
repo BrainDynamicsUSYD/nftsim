@@ -208,7 +208,7 @@ When appropriate, the default constructor, copy constructor, and \type{operator=
 \subsection{Population}
 \label{sec:pop}
 
-Models a neural population, which may be either a stimulus or normal population. If it has any dendrites, i.e. it has presynaptic connections, then it is a normal population, and it is a stimulus if it does not have dendrites.
+Models a neural population, which may be either a stimulus or normal population. If it has any \type{Dendrites}, i.e. it has presynaptic connections, then it is a normal population, and it is a stimulus if it does not have \type{Dendrites}.
 
 In the former case, it contains the \type{QResponse} class and have a soma potential; in the latter case it contains the \type{Timeseries} class, and does not have a soma potential.
 
@@ -536,7 +536,49 @@ To accommodate the coding interface for \type{NF::output}, the output routine of
 %\item[Random] Generates random numbers for Timeseries.
 %\end{description}
 
-\subsection{TODO}
+\section{About object-oriented programming}
+
+Working knowledge of object-oriented programming (and \type{C++}) is an essential prerequisite for developing \NF. While object-oriented programming is standard computing knowledge and material and references on the topic is abundant, here we outline the motivation behind object-oriented programming, and in particular the reason for using it on \NF.
+
+\subsection{Procedural programming}
+
+\begin{enumerate}
+
+\item \emph{Procedural programming} consists of \emph{variables} and \emph{functions}. Variables (and structs) are the ``nouns"; functions are the ``verbs."
+
+\item In procedural programming, there are no inherent \emph{code structure} in the code that is enforced by the language. Rather, code structure is given by, for example, file systems.
+\end{enumerate}
+
+\subsection{Object-oriented programming}
+
+\begin{enumerate}
+\item \emph{Object oriented programming} generalizes variables and structs to \emph{objects}, where an object is a collection of variables and functions.
+	
+\item While an object is a noun, it is capable of performing actions and having other objects perform actions on them.
+
+\item The idea of an object performing actions and being the recipient of actions lead to the idea of the \emph{interface} of an object.
+
+\item This separation between implementation (the actual algorithmic code) and interface gives rise to encapsulation, inheritance and polymorphism:
+	\begin{description}
+		\item [Encapsulation] is the \emph{hiding of the implementation} that is not part of the immediate interface.
+		\item [Inheritance] is where a class of objects \emph{reuses} and \emph{extends} the implementation and/or interface of a more fundamental class.
+		\item [Polymorphism] is where objects of the same interface perform their own appropriate actions. This gives rise to dynamic object types and behaviour.
+	\end{description}
+
+\item To summarize, some features brought forth are code structure and protection, code reuse and extension, dynamic allocation of object type, and (if applicable) coding-level object hierarchy.
+\end{enumerate}
+
+\subsection{NeuroField}
+
+\begin{enumerate}
+	\item \NF is naturally object oriented: firing response, propagators, couplings, dendrites naturally arise and form a network, where each class/object influences other ones.
+	\item The extension of simple objects to more sophisticated ones (e.g. from static to plastic synaptic coupling) may naturally be done via inheritance. In many cases, the interface is kept while the implementation is extended.
+	\item The object type is determined during \emph{runtime}, while reading the config file. Thus, \emph{polymorphism} comes into play.
+	\item All fundamental classes in \NF has already been inherited. Among the inherited classes, many have fundamental relationships with classes in the inheritance hierarchy, e.g. \type{Wave} propagator may degenerate to \type{Harmonic}, \type{BCM} couple extends \type{CaDP}.
+	\item Given these complexities, which will only increase in the future, object-oriented programming principles \underline{MUST} be adhered to whenever reasonable. Failure to do so will inevitably lead to unmaintainable (and unacceptable) code that may well introduce undetected numerical error.
+\end{enumerate}
+
+\section{TODO}
 \begin{enumerate}
 \item check numerical entry of connection matrix
 \end{enumerate}
