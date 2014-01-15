@@ -13,7 +13,8 @@ void Dendrite::init( Configf& configf )
   string buffer("Steady");
   configf.optional("V",buffer);
   if( buffer == "Steady" ) {
-    v = precouple.nuphi();
+    for( int i=0; i<nodes; i++ )
+      v[i] = precouple.nuinit(configf)*prepropag.phiinit(configf);
   }
   else
     v.resize(nodes,atof(buffer.c_str()));
