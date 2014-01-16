@@ -14,11 +14,10 @@ my $column;
 
 # if argument is "All", then plot all fields
 if( $name =~ /all/xi ) {
-	<F>; # throw away first line;
 	@fieldname = split( / +/, <F> );
+	<F>; # throw away second line;
 	foreach my $i (2..$#fieldname) {
-		system "gnuplot -e 'set nokey; plot \"$file\" using 1:$i with line' -p";
-		#if( $fieldname[$i] !~ /\|/x );
+		system "gnuplot -e 'set terminal wxt size 300,240; set nokey; set title \"$fieldname[$i]\"; set xlabel \"Time (s)\"; plot \"$file\" using 1:$i with line lt rgb \"black\"' -p";
 	}
 	exit;
 }
@@ -39,4 +38,4 @@ die("Node number incorrect!") if( $fieldname[$column+$node-2] !~ /$node/ );
 
 # plot appropriate column
 my $output = $column+$node-1;
-exec "gnuplot -e 'set nokey; plot \"$file\" using 1:$output with line' -p";
+exec "gnuplot -e 'set terminal wxt size 300,240; set nokey; set title \"$name\"; set xlabel \"Time (s)\"; plot \"$file\" using 1:$output with line lt rgb \"black\"' -p";
