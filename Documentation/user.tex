@@ -387,6 +387,8 @@ White - Mean: 1 Std: 20 Ranseed: 10
 White - Mean: 1 Psd: 20 Ranseed: 10
 	\end{lstlisting}
     
+    In general, it is preferable to specify the noise using PSD rather than Std. The magnitude of nonlinear effects and the total power in the spectrum both depend on the PSD rather than the Std.
+
 	The random number generator	may be specified in \type{Ranseed}. If a seed is not specified, an automatically-incremented seed will be used instead, so that multiple stimulus populations will have independent sequences. In general it is not necessary to set the seed manually unless different random numbers are required for otherwise identical runs. 
 
 	\vspace{5mm}
