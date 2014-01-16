@@ -7,7 +7,7 @@
 \usepackage{listings}
 \usepackage{hyperref}
 \usepackage{graphicx}
-\usepackage[top=2cm,bottom=2cm,left=1.3cm,right=1.3cm]{geometry}
+\usepackage[top=3cm,bottom=3cm,left=1.3cm,right=1.3cm]{geometry}
 \usepackage{multirow}
 \usepackage{amsmath}
 
@@ -19,7 +19,7 @@
 \parindent=0.0cm
 \parskip=0.5cm
 
-\footskip=1.3cm
+\footskip=1.0cm
 
 \lstset{
 basicstyle=\small\small\ttfamily,
@@ -362,16 +362,19 @@ Stimulus: Const - Onset: 0
 
 	Possible stimulus patterns:
 
+	\vspace{5mm}
 	\textbf{Constant}
 	\begin{lstlisting}
 Const - Mean: 5
 	\end{lstlisting}
 
+	\vspace{5mm}
 	\textbf{Pulse}
 	\begin{lstlisting}
 Pulse - Amplitude: 1 Width: 2e-2 Frequency: 1 Pulses: 1
 	\end{lstlisting}
 
+	\vspace{5mm}
 	\textbf{White}
 
 	Gaussian noise, characterized by the mean and standard deviation:
@@ -386,6 +389,7 @@ White - Mean: 1 Psd: 20 Ranseed: 10
     
 	The random number generator	may be specified in \type{Ranseed}. If a seed is not specified, an automatically-incremented seed will be used instead, so that multiple stimulus populations will have independent sequences. In general it is not necessary to set the seed manually unless different random numbers are required for otherwise identical runs. 
 
+	\vspace{5mm}
 	\textbf{Superimposing stimuli}
 
 	To superimpose 2 or more stimuli, begin with the keyword \type{Superimpose}, followed by the number of stimuli. Then list all the stimulus patterns and their parameters, with each stimulus pattern preceded by the keyword \type{Stimulus}.
@@ -629,7 +633,7 @@ It is also worth noting that traces will be written in the order that they are s
 
 \subsection{Quickplot}
 
-The data in \type{neurofield.output} may be plotted by \type{./Helper\_script/quickplot.pl} or in \type{MatLab} via the matlab scripts within \type{./Helper\_script/}.
+The data in \type{neurofield.output} may be plotted by \type{./Helper\_script/quickplot.pl} or in \type{MatLab} via the \type{MatLab} scripts within \type{./Helper\_script/}.
 
 To use \type{./Helper\_script\/quickplot.pl}, execute
 \begin{lstlisting}
@@ -646,9 +650,9 @@ or a shorthand to plot all fields and nodes is
 All these commands launches \type{gnuplot} plotting sessions.
 
 \subsection{Matlab}
-A number of Matlab functions are provided to make it easy to manipulate \NF data from within Matlab. The functions are generally self-documenting with comments at the start of the file.
+A number of \type{MatLab} functions are provided to make it easy to manipulate \NF data from within \type{MatLab}. The functions are generally self-documenting with comments at the start of the file.
 
-Essentially, an output file from \NF is read into a \type{nf} struct object in Matlab which simply contains all of the output from \NF in memory for easy access. Here is an example of a \type{nf} object:
+Essentially, an output file from \NF is read into a \type{nf} struct object in \type{MatLab} which simply contains all of the output from \NF in memory for easy access. Here is an example of a \type{nf} object:
 \begin{lstlisting}
      fields: {'Propag.1.phi'  'Propag.3.phi'}
       nodes: {[1]  [1]}
@@ -678,7 +682,7 @@ or you can use the \type{nf\_run} helper script to run the config file using \NF
 nf = nf_run('neurofield.conf')
 \end{lstlisting}
 
-Using \type{nf\_run} means you will need to add \NF to your shell search path.
+%Using \type{nf\_run} means you will need to add \NF to your shell search path.
 
 Several helper files are provided to manipulate the \type{nf} object. The two most important helpers are \type{nf\_extract} and \type{nf\_grid}. Often you want to extract a particular field from the \type{nf} object, for example, to examine the output from \type{Propag.3.phi}. To do this directly with the \type{nf} object, you would need to check the \type{fields} variable to find the index of the trace you wanted, and then extract it from the \type{data} field. In the previous example, \type{Propag.3.phi} is the second trace. These expressions are identical:
 \begin{lstlisting}
