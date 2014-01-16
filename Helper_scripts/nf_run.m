@@ -12,11 +12,21 @@ function nf = nf_run(fname)
     tic;
     fname = strrep(fname,'.conf','');
     fprintf(1,'Executing NeuroField: %s.conf...\n',fname);
-    sprintf('../Release/NeuroField -i %s.conf -d %s.dump -o %s.output',fname,fname,fname);
-    [status] = system(sprintf('../Release/NeuroField -i %s.conf -d %s.dump -o %s.output',fname,fname,fname));
-    if status ~= 0
-        error('An error occurred when running NeuroField. Make sure ''Release/NeuroField'' is on your path');
+
+    if ispc
+        nf_path = './NeuroField.exe';
+    else
+        nf_path = './NeuroField';
     end
+
+    nf_command = sprintf('%s -i %s.conf -o %s.output',nf_path,fname,fname);
+    fprintf('%s\n',nf_command);
+    [status] = system(nf_command);
+
+    if status ~= 0
+        error('An error occurred when running NeuroField!');
+    end
+
     fprintf(1,'took %.3f seconds\n',toc);
     
     if nargout > 0
