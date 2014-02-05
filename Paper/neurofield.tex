@@ -86,6 +86,7 @@
 \author{P.K. Fung\corref{ffung}}
 \ead{ffung@physics.usyd.edu.au}
 \author{R.G. Abeysuriya\corref{}}
+\author{X. Zhao\corref{}}
 
 \author{P.A. Robinson\corref{}}
 %\author{Anthony Krensel\corref{}}
@@ -117,68 +118,143 @@ EEG \sep neurophysiology \sep methods \sep modeling
 \label{sec:introduction}
 
 
-Motivation behind neural field theory: large-scale neural dynamics.
+Neural field modeling has proved to be a powerful technique for constructing relatively simple, physiologically based models of the brain that are capable of predicting EEG and correlate well with experimental data \cite{Deco2008,Pinotsis2012}. We have developed a neural field corticothalamic model of the brain \citep{Robinson2005,Rowe2004413,PhysRevE.63.021903,PhysRevE.65.041924} that we have previously used to investigate the alpha rhythm \citep{PhysRevE.68.021922,PhysRevE.70.011911}, age-related changes to the physiology of the brain \citep{VanAlbada2010}, and evoked response potentials \citep{Rennie2002}. \todo{alter text, this is from analytic spindles}
+
+The key features of the model are captured by the three key equations governing general neural field theory
 
 \begin{align*}
 	D_{ab}V_{ab}(\mathbf{r},t) &= \nu_{ab}\phi_{ab}(\mathbf{r},t),\\
 			Q_a(\mathbf{r},t) &= S_a \big[\sum_b V_{ab}(\mathbf{r},t) \big],\\
 	\mathcal{D}_{ab}\phi_{ab}(\mathbf{r},t) &= Q_b(\mathbf{r},t-\tau_{ab}).
 \end{align*}
+which represent synapto-dendritic smoothing, dendritic summation and firing response, and damped wave propagation, respectively. The differential operators are
+\begin{align*}
+	D_\alpha(t) &= \frac{1}{\alpha\beta}\frac{d^2}{dt^2} + \left( \frac{1}{\alpha} + \frac{1}{\beta}\right) \frac{d}{dt}+1,\\
+	\mathcal{D}_a(\mathbf{r},t) &= \frac{1}{\gamma_a^2}\frac{\partial^2}{\partial t^2} + \frac{2}{\gamma_a}\frac{\partial}{\partial t} + 1 - r_a^2\nabla^2,
+\end{align*}
 
-NeuroField: a general code to solve the neural field theory by allowing users to:
-\begin{enumerate}
-	\item Specify an arbitrary number of populations and connections between populations;
-	\item Specify the parameters for any objects, including populations, dendritic responses, firing responses, propagators, synapses, and stimulus pattern.
-	\item Choose alternative wave propagation types, i.e. choose different forms of \(\mathcal{D}_{ab}\);
-	\item Uses plastic synapses, i.e. \(\nu_{ab}=\nu_{ab}(\mathbf{r},t)\).
-	\item Use different firing responses, i.e. change \(S_a\).
-\end{enumerate}
+Several factors contribute to making neural field models difficult to implement. In particular, propagation delays between neural populations result in delay-differential equations that require special handling of temporal history in the implementation of the numerical integrator. Further, propagation of neural fields according to a damped wave equation adds two dimensions to the system, and requires a relative sophisticated finite-differencing scheme that takes into account the geometry of the system.
+
+The most challenging part of applying neural field theory is the implementation of the numerical solver. We have developed NeuroField to provide a software package that solves the neural field equations for arbitrary neural populations, and contains library code for analysis and visualization. The software is designed to be easily extensible with basic C++ programming skills, making it simple to expand upon the basic model to include new phenomena. 
+
 
 \section{Method and Results}
 \label{sec:theory}
 
-NeuroField solves each equation within the Robinson et al. model with an object:
+\subsection{Key features}
+As a general integrator for the neural field equations, Neurofield allows users to
+
+\begin{itemize}
+	\item Specify an arbitrary number of populations and connections between populations;
+	\item Specify the parameters for any part of the simulation, including populations, dendritic responses, firing responses, propagators, synapses, stimulus, and output.
+	% \item Choose alternative wave propagation types, i.e. choose different forms of \(\mathcal{D}_{ab}\);
+	% \item Uses plastic synapses, i.e. \(\nu_{ab}=\nu_{ab}(\mathbf{r},t)\).
+	% \item Use different firing responses, i.e. change \(S_a\).
+\end{itemize}
+
+
+NeuroField solves each part of the neural field model with an object:
 \begin{align*}
 	P &= \nu_{ab}\phi_{ab}, & \mathtt{Couple}\\
 	D_{ab}V_{ab} &= P, & \mathtt{Dendrite}\\
-	Q_a &= S_a \big[\sum_b V_{ab} \big], & \mathtt{QResponse}\\
+	Q_a &= S_a \big[\sum_b V_{ab} \big], & \mathtt{QResponse/Pop}\\
 	\mathcal{D}_{ab}\phi_{ab} &= Q_b,&  \mathtt{Propag}
 \end{align*}
-with an arbitrary number of these objects, with each object may be a different type (e.g. constant synaptic coupling vs plastic synaptic coupling), and all parameter values may be tailored.
+The behavior of each of these objects encapsulates the details of the neural field equations.
 
+\subsubsection{Populations}
+A population contains a QResponse object, which defines how the population potential is mapped to firing rate. The QResponse may return the sigmoid of the voltage, as written above. Alternatively it could be an arbitrary function, such as a linearized version of the sigmoid. Effects like bursting can also be included.
+
+\todo[inline]{Code snippets}
+
+\subsubsection{Propagators}
+The neural field generated by a population propagates according to the associated Propagator. For populations where spatial propagation effects are insignificant, this propagator may simply be unity. The propagator object takes into account the spatial geometry of the problem, so can be applied to both 2D sheets and spherical geometries. 
+
+\subsubsection{Couples}
+The coupling strength of a connection is typically constant, but can be an arbitrary function of a range of different factors, allowing modeling of a wide variety of plasticity effects including STDP and CaDP
+
+\subsection{Input and output}
 \begin{itemize}
-\item Populations, can have as many as required, different customizable firing responses, bursting. Stimulus populations, different noise processes, pulsed stimulus, TMS
-\item Propagators, wave propagator, spherical geometry
-\item Couples, incorporate different types of plasticity
-\item MATLAB helper scripts for visualization, power spectrum calculation, processing
+	\item  Mention structure of config and output files
+	\item Largely human readable, but relatively simple to construct and parse programatically
 \end{itemize}
 
-Examples for single excitatory population, cortical population, corticothalamic model. Each example has a population diagram, and related results. All examples should preferably be published result?
+\subsection{Helper scripts}
+NeuroField is packaged with several helper scripts written in MATLAB to assist with running, analyzing and visualizing models. 
+
+\subsubsection{Reading output files}
+nf\_read() allows users to parse the output file from NeuroField into a MATLAB struct object.
+nf\_grid reshapes the output for handling matrices. 
+
+\subsubsection{Writing config files}
+nf\_eirs() demonstrates writing a configuration file, running it with nf\_run(), and then reading it with nf\_read(). This demonstrates a complete MATLAB-based toolchain for using NeuroField
+
+\subsubsection{Calculating power spectra}
+The power spectrum can be obtained by FFT, but correct normalization and calculation of the power spectrum including multiple spatial modes can be challenging to implement. We have implemented a 3D FFT algorithm that correctly normalizes the output and includes volume conduction effects that selective attenuate spatial modes depending on their wavenumber. The result can be directly compared to analytical predictions.
+
+\subsubsection{Visualizing output}
+The nf\_extract() function makes it easy to select data for plotting from a NeuroField object.  
+nf\_movie can plot an animation of the output
+
+\section{Results}
+
+In this section, we present examples of NeuroField applied to recent research.
+
+\subsection{Corticothalamic model (Romesh)}
+
+\begin{figure}[!b]
+\begin{center}
+\includegraphics[width=0.40\columnwidth]{EIRS_clean}
+\caption{Wake EC, same params as already published}
+\label{fig:ct_schematic}
+\end{center}
+\end{figure}
+
+
+\begin{figure}[!b]
+\begin{center}
+\includegraphics[width=0.40\columnwidth]{corticothalamic_comparison}
+\caption{Wake EC, same params as already published}
+\label{fig:ct_spectrum}
+\end{center}
+\end{figure}
+
 
 \begin{itemize}
-\item Plasticity results (Felix)
-\item Corticothalamic model, compare analytic and neurofield result (Romesh)
-\item Bursting populations (XL)
-\item Seizures (XL, Romesh)
+	\item Sleep spindles
+	\item Wake alpha peak
+	\item Volume conduction
 \end{itemize}
+
+\subsection{Plasticity (Felix)}
+
+\subsection{Bursting (XL)}
+
+\subsection{Seizures (XL, Romesh)}
 
 \section{Discussion}
 \label{sec:discussion}
 
-Overview of any tricky issues with the problem being solved (for example, the EEGLAB code paper mentions limitations of time/frequency decomposition). Discuss limitations or qualifiers on the usage of the code.
+We have developed NeuroField to provide an extensible, reliable framework for integrating nonlinear delay differential equations including spatial propagation. NeuroField is aimed for use by researchers who have constructed neural field models of the brain that require numerical integration. In this section, we review some usage and performance considerations.
+
+\subsection{White noise stimulus}
+\begin{itemize}
+	\item White noise requires stocastic DE integrator, effectively Euler
+	\item Noise amplitude depends on grid resolution as this affects the possible bandwidth. Similar features depend on frequency domain power so noise needs to be normalized correctly
+\end{itemize}
+
+\subsection{Performance}
 
 \begin{itemize}
-\item Discussion regarding spatial components, grid size, noise amplitude with regard to approximations
-\item CFL condition, automatically checked for. Also limitations on $\Delta x$ depending on $r_e$
-\item Incorporating volume conduction
+\item Some numbers about the runtime and memory requirements of NeuroField
+\item Note that the memory requirements scale with the grid size, and the grid size depends on Lx and the propagator lengths (automatically enforced)
+\item Also that the delays in the system cause O(n) increases in memory usage
 \end{itemize}
-% \section{Conclusion}
-% \label{sec:conclusion}
-% Summary.
+
 
 \section{Acknowledgements}
 \label{sec:acknowledgements}
-To add.
+This work was supported by the Australian Research Council, National Health and Medical Research Council (through the Center for Integrated Research and Understanding of Sleep), and the Westmead Millennium Institute.
 
 \section{References}
 \bibliographystyle{elsarticle-harv}
