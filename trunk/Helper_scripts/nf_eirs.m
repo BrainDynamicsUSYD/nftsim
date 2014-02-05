@@ -161,6 +161,7 @@ function varargout = nf_eirs(p,file_id,firemode,int_time,grid_edge,fs,waves,rans
 
         for j = 1:4 % For each population
             fprintf(fid,'Population %d: %s\n',j,labels{j});
+            fprintf(fid,'Length: %.10g\n',Lx);
             fprintf(fid,'Q: %.10g\n',phivals(j));
             if firemode(j) == 1 % If population has been linearized
                 v0 = sinv(phivals(j),p);
@@ -199,36 +200,37 @@ function varargout = nf_eirs(p,file_id,firemode,int_time,grid_edge,fs,waves,rans
         end
 
         fprintf(fid,'Population 5: Stimulation\n');
+        fprintf(fid,'Length: %.10g\n',Lx);
         if isempty(ranseed)
-            fprintf(fid,' Stimulus: White - Onset: 0 Amplitude: %.10g Mean: 1 Deltax: %.10g\n',p.phin,deltax);
+            fprintf(fid,' Stimulus: White - Onset: 0 Mean: 1 Psd: %.10g\n',p.phin);
         else
-            fprintf(fid,' Stimulus: White - Onset: 0 Ranseed: %d Amplitude: %.10g Mean: 1 Deltax: %.10g\n',ranseed,p.phin,deltax);
+            fprintf(fid,' Stimulus: White - Onset: 0 Ranseed: %d Mean: 1 Psd: %.10g\n',ranseed,p.phin);
         end
 
         fprintf(fid,'\n');
         if waves
             fprintf(1,'Wave propagators in stimulus and relay\n');
-            fprintf(fid,'Propag 1: Wave - Tau: %.10g Deltax: %.10g Range: %.10g gamma: %.10g\n',0,deltax,p.re,p.gammae); %e CXe -> CXe
+            fprintf(fid,'Propag 1: Wave - Tau: %.10g Range: %.10g gamma: %.10g\n',0,p.re,p.gammae); %e CXe -> CXe
             fprintf(fid,'Propag 2: Map - Tau: %.10g\n',0);   %i CXi -> CXe
-            fprintf(fid,'Propag 3: Wave - Tau: %.10g Deltax: %.10g Range: %.10g gamma: %.10g\n',p.taues,deltax,p.rs,p.gammas); % S->R
-            fprintf(fid,'Propag 4: Wave - Tau: %.10g Deltax: %.10g Range: %.10g gamma: %.10g\n',0,deltax,p.re,p.gammae);%e CXe->CXi
+            fprintf(fid,'Propag 3: Wave - Tau: %.10g Range: %.10g gamma: %.10g\n',p.taues,p.rs,p.gammas); % S->R
+            fprintf(fid,'Propag 4: Wave - Tau: %.10g Range: %.10g gamma: %.10g\n',0,p.re,p.gammae);%e CXe->CXi
             fprintf(fid,'Propag 5:  Map - Tau: %.10g\n',0); %i CXi -> CXi
-            fprintf(fid,'Propag 6: Wave - Tau: %.10g Deltax: %.10g Range: %.10g gamma: %.10g\n',p.taues,deltax,p.rs,p.gammas); % S-> R
-            fprintf(fid,'Propag 7: Wave - Tau: %.10g Deltax: %.10g Range: %.10g gamma: %.10g\n',p.tause,deltax,p.re,p.gammae);%e CX
-            fprintf(fid,'Propag 8: Wave - Tau: %.10g Deltax: %.10g Range: %.10g gamma: %.10g\n',0,deltax,p.rs,p.gammas); % relay
-            fprintf(fid,'Propag 9: Wave - Tau: %.10g Deltax: %.10g Range: %.10g gamma: %.10g\n',p.tause,deltax,p.re,p.gammae);%e CX
+            fprintf(fid,'Propag 6: Wave - Tau: %.10g Range: %.10g gamma: %.10g\n',p.taues,p.rs,p.gammas); % S-> R
+            fprintf(fid,'Propag 7: Wave - Tau: %.10g Range: %.10g gamma: %.10g\n',p.tause,p.re,p.gammae);%e CX
+            fprintf(fid,'Propag 8: Wave - Tau: %.10g Range: %.10g gamma: %.10g\n',0,p.rs,p.gammas); % relay
+            fprintf(fid,'Propag 9: Wave - Tau: %.10g Range: %.10g gamma: %.10g\n',p.tause,p.re,p.gammae);%e CX
             fprintf(fid,'Propag 10: Map - Tau: %.10g\n',0);  % nRT
-            fprintf(fid,'Propag 11: Wave - Tau: %.10g Deltax: %.10g Range: %.10g gamma: %.10g\n',0,deltax,p.rn,p.gamman);   % STIM
+            fprintf(fid,'Propag 11: Wave - Tau: %.10g Range: %.10g gamma: %.10g\n',0,p.rn,p.gamman);   % STIM
         else
-            fprintf(fid,'Propag 1: Wave - Tau: %.10g Deltax: %.10g Range: %.10g gamma: %.10g\n',0,deltax,p.re,p.gammae);
+            fprintf(fid,'Propag 1: Wave - Tau: %.10g Range: %.10g gamma: %.10g\n',0,p.re,p.gammae);
             fprintf(fid,'Propag 2: Map - Tau: %.10g\n',0);   
             fprintf(fid,'Propag 3: Map - Tau: %.10g\n',p.taues);   
-            fprintf(fid,'Propag 4: Wave - Tau: %.10g Deltax: %.10g Range: %.10g gamma: %.10g\n',0,deltax,p.re,p.gammae);
+            fprintf(fid,'Propag 4: Wave - Tau: %.10g Range: %.10g gamma: %.10g\n',0,p.re,p.gammae);
             fprintf(fid,'Propag 5:  Map - Tau: %.10g\n',0);  
             fprintf(fid,'Propag 6:  Map - Tau: %.10g\n',p.tause); 
-            fprintf(fid,'Propag 7: Wave - Tau: %.10g Deltax: %.10g Range: %.10g gamma: %.10g\n',p.tause,deltax,p.re,p.gammae);
+            fprintf(fid,'Propag 7: Wave - Tau: %.10g Range: %.10g gamma: %.10g\n',p.tause,p.re,p.gammae);
             fprintf(fid,'Propag 8:  Map - Tau: %.10g\n',0);  
-            fprintf(fid,'Propag 9: Wave - Tau: %.10g Deltax: %.10g Range: %.10g gamma: %.10g\n',p.tause,deltax,p.re,p.gammae);
+            fprintf(fid,'Propag 9: Wave - Tau: %.10g Range: %.10g gamma: %.10g\n',p.tause,p.re,p.gammae);
             fprintf(fid,'Propag 10: Map - Tau: %.10g\n',0);  
             fprintf(fid,'Propag 11: Map - Tau: %.10g\n',0); % Stimulus wave
         end
