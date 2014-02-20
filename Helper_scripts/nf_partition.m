@@ -40,15 +40,14 @@ function r = nf_partition(n_items,pool,id,frac_overlap,evenlength,samesize)
         pool = n_items;
     end
     
-    window_length = n_items/((1+(pool-1)*(1-frac_overlap)));
+    window_length = floor(n_items/((1+(pool-1)*(1-frac_overlap))));
 
     if evenlength
         window_length = floor(window_length/2)*2;
     end 
 
-    window_start = 1:window_length*(1-frac_overlap):window_length*(1-frac_overlap)*pool;
-    window_start = floor(window_start);
-    window_stop = window_start+floor(window_length)-1;
+    window_start = floor(1:window_length*(1-frac_overlap):window_length*(1-frac_overlap)*pool);
+    window_stop = window_start+window_length-1;
     
     if samesize
         if window_stop(end) > n_items
