@@ -240,7 +240,7 @@ function varargout = nf_eirs(p,file_id,firemode,int_time,grid_edge,fs,waves,rans
         end
         fprintf(fid,'\n');
 
-        fprintf(fid,'Output: Node: All Start: 0 Interval: 0.5e-2\n');
+        fprintf(fid,'Output: Node: All Start: 0 \n');
         fprintf(fid,'Population: \n');
         fprintf(fid,'Dendrite:  \n');
         fprintf(fid,'Propag: 1\n');
