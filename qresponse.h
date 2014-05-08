@@ -1,13 +1,11 @@
 #ifndef QRESPONSE_H
 #define QRESPONSE_H
 
-#include<string>
-using std::string;
 #include"array.h"
 #include"dendrite.h"
-#include"configf.h"
-#include"nf.h"
 #include"de.h"
+
+using std::string;
 
 class Dendrite;
 class Propag;

@@ -1,21 +1,20 @@
 #ifndef POPULATION_H
 #define POPULATION_H
 
-#include"array.h"
+class Propag;
+class Couple;
+class Population;
+class QResponse;
+
+#include"nf.h"
+#include"qresponse.h"
+#include"couple.h"
+#include"tau.h" // Must be included before propag.h
+#include"propag.h"
+#include"timeseries.h"
+
 using std::vector;
 
-#include"output.h"
-#include"tau.h"
-#include"qresponse.h"
-//#include"burst.h"
-#include"timeseries.h"
-#include"propag.h"
-#include"couple.h"
-#include"configf.h"
-#include"nf.h"
-
-class Propag;
-class QResponse;
 
 class Population : public NF
 {

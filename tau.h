@@ -1,9 +1,9 @@
 #ifndef TAU_H
 #define TAU_H
 
-#include<vector>
-using std::vector;
 #include"nf.h"
+using std::vector;
+class Population;
 
 class Tau : public NF
 {

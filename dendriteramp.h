@@ -2,7 +2,7 @@
 #define DENDRITERAMP_H
 
 #include"dendrite.h"
-#include"de.h"
+//#include"de.h"
 using std::vector;
 
 class DendriteRamp : public Dendrite

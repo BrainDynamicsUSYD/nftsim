@@ -1,15 +1,7 @@
 #ifndef COUPLE_H
 #define COUPLE_H
 
-#include"array.h"
 #include"population.h"
-#include"propag.h"
-#include"output.h"
-#include"configf.h"
-#include"nf.h"
-
-class Propag;
-class Population;
 
 class Couple : public NF
 {
