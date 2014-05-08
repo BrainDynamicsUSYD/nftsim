@@ -2,6 +2,7 @@
 #define COUPLE_H
 
 #include"population.h"
+#include"tau.h" // Must be included before propag.h
 
 class Couple : public NF
 {
