@@ -1,8 +1,7 @@
 #ifndef DENDRITICR_H
 #define DENDRITICR_H
-//#include<vector>
 
-#include"population.h"
+#include "population.h"
 
 using std::vector;
 

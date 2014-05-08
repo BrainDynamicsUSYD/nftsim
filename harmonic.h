@@ -1,9 +1,8 @@
 #ifndef HARMONIC_H
 #define HARMONIC_H
 
-#include<vector>
+#include"population.h"
 using std::vector;
-#include"propag.h"
 
 class Harmonic : public virtual Propag
 {
