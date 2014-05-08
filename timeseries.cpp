@@ -1,7 +1,7 @@
-#include<iostream>
+#include"timeseries.h"
+
 using std::cerr;
 using std::endl;
-#include"timeseries.h"
 
 void Timeseries::init( Configf& configf )
 {
