@@ -1,15 +1,9 @@
-#include"configf.h"
+#include<cstring>
 #include"solver.h"
 
-//#include <iostream>
 using std::cerr;
 using std::endl;
-// #include<cstdlib>
-#include<cstring>
-// #include<string>
 using std::string;
-
-
 
 int main(int argc, char* argv[])
 {
