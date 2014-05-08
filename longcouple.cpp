@@ -1,7 +1,6 @@
-#include<iostream>
+#include"longcouple.h"
 using std::cerr;
 using std::endl;
-#include"longcouple.h"
 
 void LongCouple::init( Configf& configf )
 {
