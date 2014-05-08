@@ -6,12 +6,12 @@ class Couple;
 class Population;
 class QResponse;
 
-#include"nf.h"
+#include"timeseries.h"
 #include"qresponse.h"
 #include"couple.h"
 #include"tau.h" // Must be included before propag.h
 #include"propag.h"
-#include"timeseries.h"
+
 
 using std::vector;
 

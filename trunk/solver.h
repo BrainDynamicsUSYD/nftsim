@@ -1,15 +1,10 @@
 #ifndef SOLVER_H
 #define SOLVER_H
 
-#include<vector>
-using std::vector;
 
-#include"array.h"
-#include"propag.h"
-#include"couple.h"
-#include"output.h"
-#include"de.h"
-//#include"nf.h"
+#include"population.h"
+
+using std::vector;
 
 class Propag;
 class Couple;
