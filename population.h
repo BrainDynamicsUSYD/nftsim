@@ -10,7 +10,6 @@ class QResponse;
 #include"qresponse.h"
 #include"dendrite.h"
 #include"couple.h"
-#include"tau.h" // Must be included before propag.h
 #include"propag.h"
 
 
