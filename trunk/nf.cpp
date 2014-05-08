@@ -1,4 +1,3 @@
-#include"configf.h"
 #include"nf.h"
 
 Configf& operator>> ( Configf& configf, NF& nf )

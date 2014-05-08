@@ -1,8 +1,5 @@
-#include<cstdlib>
-#include<iostream>
-using std::endl;
-#include<cmath>
 #include"dendrite.h"
+using std::endl;
 
 void Dendrite::init( Configf& configf )
 {
