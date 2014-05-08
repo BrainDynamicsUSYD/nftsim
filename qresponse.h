@@ -1,8 +1,8 @@
 #ifndef QRESPONSE_H
 #define QRESPONSE_H
 
+#include"population.h"
 #include"array.h"
-#include"dendrite.h"
 #include"de.h"
 
 using std::string;
