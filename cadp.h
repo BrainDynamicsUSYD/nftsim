@@ -1,7 +1,7 @@
 #ifndef CADP_H
 #define CADP_H
 
-#include"population.h"
+#include"couple.h"
 
 class CaDP : public Couple
 {
