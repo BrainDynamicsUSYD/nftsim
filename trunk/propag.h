@@ -1,17 +1,9 @@
 #ifndef PROPAG_H
 #define PROPAG_H
 
-#include<string>
-using std::string;
-#include"array.h"
-#include"output.h"
 #include"population.h"
-#include"tau.h"
-#include"configf.h"
-#include"nf.h"
 
-class Population;
-class Tau;
+using std::string;
 
 class Propag : public NF
 {

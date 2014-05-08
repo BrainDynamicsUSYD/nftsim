@@ -1,15 +1,10 @@
 #ifndef DENDRITICR_H
 #define DENDRITICR_H
+//#include<vector>
 
-#include<vector>
+#include"population.h"
+
 using std::vector;
-#include"propag.h"
-#include"couple.h"
-#include"configf.h"
-#include"nf.h"
-
-class Propag;
-class Couple;
 
 class Dendrite : public NF
 {

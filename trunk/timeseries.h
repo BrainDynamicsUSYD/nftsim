@@ -1,13 +1,13 @@
 #ifndef TIMESERIES_H
 #define TIMESERIES_H
 
-#include<string>
-using std::string;
-#include<vector>
-using std::vector;
-#include<cmath>
+//#include<string>
+//#include<vector>
+//#include<cmath>
 #include"nf.h"
 #include"random.h"
+using std::string;
+using std::vector;
 
 class Timeseries : public NF
 {

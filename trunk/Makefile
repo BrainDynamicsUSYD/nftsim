@@ -11,6 +11,9 @@ COMP = g++ -g -lm -Wall -O3 -Wextra -pedantic -std=c++11 -msse -msse2 -msse3 -mf
 # Performance, parallel
 #COMP = g++ -g -lm -Wall -O3 -Wextra -pedantic -std=c++11 -msse -msse2 -msse3 -mfpmath=sse -march=native -mtune=native -funroll-loops -flto -m64 -fopenmp
 
+# Cross-compiling
+#COMP = x86_64-w64-mingw32-g++ -lm -Wall -O3 -msse -msse2 -msse3 -mfpmath=sse -funroll-loops -flto -m64
+
 HEADER = $(wildcard *.h)
 CPP = $(wildcard *.cpp)
 OBJ = $(CPP:.cpp=.o)

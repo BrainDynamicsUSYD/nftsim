@@ -1,7 +1,7 @@
 #include<iostream>
 using std::cerr;
 using std::endl;
-#include"population.h"
+//#include"population.h"
 #include"burst.h"
 //#include"fs.h"
 
