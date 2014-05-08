@@ -1,9 +1,6 @@
-#include<iostream>
+#include"burst.h"
 using std::cerr;
 using std::endl;
-//#include"population.h"
-#include"burst.h"
-//#include"fs.h"
 
 void Population::init( Configf& configf )
 {

@@ -1,8 +1,7 @@
-#include <iostream>
-using std::cerr;
-using std::endl;
 #include<cmath>
 #include"wave.h"
+using std::cerr;
+using std::endl;
 
 void Wave::init( Configf& configf )
 {

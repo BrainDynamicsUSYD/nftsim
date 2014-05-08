@@ -1,10 +1,9 @@
 #ifndef BURST_H
 #define BURST_H
 
-#include"qresponse.h"
-#include"output.h"
+#include"population.h"
 #include <math.h>
-#include <vector>
+
 using std::vector;
 
 class BurstResponse : public QResponse //derived class; constructor initializer

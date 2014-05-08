@@ -1,16 +1,11 @@
-#include <iostream>
-using std::cerr;
-#include <sstream>
-#include<cstdlib>
-#include<string>
-using std::string;
-#include<vector>
-using std::vector;
 #include<list>
-using std::list;
-#include"configf.h"
 #include"nf.h"
+
 using std::endl;
+using std::list;
+using std::vector;
+using std::cerr;
+using std::string;
 
 template void Configf::param
   <double>(const string& param, double& ret, int delim=':' );

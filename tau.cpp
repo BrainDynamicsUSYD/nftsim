@@ -1,8 +1,7 @@
-#include<iostream>
-using std::cerr;
-using std::endl;
 #include<cmath>
 #include"tau.h"
+using std::cerr;
+using std::endl;
 
 void Tau::init( Configf& configf )
 {

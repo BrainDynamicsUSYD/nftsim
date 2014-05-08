@@ -1,10 +1,10 @@
-#include<cmath>
-#include<iostream>
-using std::endl;
+//#include<cmath>
+//#include<iostream>
+
 #include"fmath.h"
-#include"qresponse.h"
 #include"dendriteramp.h"
 
+using std::endl;
 void QResponse::init( Configf& configf )
 {
   vector<string> temp = configf.arb("-"); mode = temp[0];
