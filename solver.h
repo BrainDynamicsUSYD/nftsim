@@ -9,7 +9,7 @@ using std::vector;
 #include"couple.h"
 #include"output.h"
 #include"de.h"
-#include"nf.h"
+//#include"nf.h"
 
 class Propag;
 class Couple;

@@ -1,36 +1,40 @@
-#include<cmath>
-#include<string>
-using std::string;
-#include<iostream>
-using std::cerr;
-using std::endl;
-#include<sstream>
-using std::stringstream;
+//#include<cmath>
+//#include<string>
+
+//#include<iostream>
+
+//#include<sstream>
+
 
 #include"solver.h"
-#include"population.h"
+//#include"population.h"
 //#include"single.h"
-#include"array.h"
-#include"configf.h"
+//#include"array.h"
+//#include"configf.h"
 
-#include"propag.h"
+//#include"propag.h"
 #include"wave.h"
 #include"harmonic.h"
 #ifdef WAVEFOURIER
 #include"wavefourier.h"
 #endif
 
-#include"couple.h"
+//#include"couple.h"
 #include"longcouple.h"
-#include"cadp.h"
+//#include"cadp.h"
 //#include"cascade.h"
 //#include"ca2.h"
-#include"bcm.h"
+//#include"bcm.h"
 #include"bcmlong.h"
 //#include"fcap.h"
 //#include"epilepsy.h"
 
-#include"output.h"
+//#include"output.h"
+
+using std::cerr;
+using std::endl;
+using std::stringstream;
+using std::string;
 
 void Solver::CntMat::init( Configf& configf )
 {

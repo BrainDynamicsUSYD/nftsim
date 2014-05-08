@@ -17,7 +17,7 @@ function [f,s,P] = rfft(y,fs,NFFT,windowed)
     end
     
     if nargin < 3 || isempty(NFFT)
-        NFFT = 2^nextpow2(length(y)); % Next power of 2 from length of y
+        NFFT = length(y); % Use the same length as the input array by default so that normalization is correct
     end
     %NFFT = length(y);
     
@@ -39,7 +39,7 @@ function [f,s,P] = rfft(y,fs,NFFT,windowed)
     end
     
     % P now contains properly normalized spectral power
-    f = fs/2*linspace(0,1,NFFT/2+1)';
+    f = 0:fs/NFFT:fs/2;
     P = P/f(2); % Divide by frequency bin size to get power density
     
 end
