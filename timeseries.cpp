@@ -16,21 +16,20 @@ void Timeseries::init( Configf& configf )
       if( configf.optional("Cease",cease) )
         cease += t;
 
-  vector<double> temp_node;
-  if( configf.next("Node") )
-    temp_node = configf.numbers();
-  if( temp_node.empty() )
-    for( int i=1; i<=nodes; i++ )
-      temp_node.push_back(i);
-
-  for( size_t i=0; i<temp_node.size(); i++ )
-    if( temp_node[i] > nodes ) {
-      cerr<<"Trying to plot node number "<<temp_node[i]
-          <<", which is bigger than the highest node index."<<endl;
-      exit(EXIT_FAILURE);
-    }
-    else
-      node.push_back( temp_node[i]-1 );
+    vector<double> temp_node;
+    if( configf.next("Node") )
+      temp_node = configf.numbers();
+    if( temp_node.empty() )
+      for( int j=1; j<=nodes; j++ )
+        temp_node.push_back(j);
+    for( size_t j=0; j<temp_node.size(); j++ )
+      if( temp_node[j] > nodes ) {
+        cerr<<"Trying to plot node number "<<temp_node[j]
+            <<", which is bigger than the highest node index."<<endl;
+        exit(EXIT_FAILURE);
+      }
+      //else
+        //node.push_back( temp_node[j]-1 );
 
     // PUT YOUR TIMEFUNCTION HERE
     if( mode[0]=="Const" )
@@ -51,6 +50,8 @@ void Timeseries::init( Configf& configf )
     }
     // END PUT YOUR TIMEFUNCTION HERE
     series[i]->t = t; series[i]->cease = cease;
+    for( size_t j=0; j<temp_node.size(); j++ )
+      series[i]->node.push_back( temp_node[j]-1 );
     series[i]->init(configf);
   }
 
@@ -69,14 +70,13 @@ Timeseries::~Timeseries(void)
 
 void Timeseries::fire( vector<double>& Q ) const
 {
-  static vector<double> temp;
-  temp.clear(); temp.resize(nodes,0);
+  vector<double> temp(nodes,0);
   Q.clear(); Q.resize(nodes,0);
   for( size_t i=0; i<series.size(); i++ )
     if( series[i]->t>=0 && series[i]->t<series[i]->cease ) {
       series[i]->fire(temp);
-      for( size_t i=0; i<node.size(); i++ )
-        Q[node[i]] += temp[node[i]];
+      for( size_t i=0; i<series[i]->node.size(); i++ )
+        Q[series[i]->node[i]] += temp[series[i]->node[i]];
     }
 }
 
