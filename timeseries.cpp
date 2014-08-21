@@ -72,11 +72,13 @@ void Timeseries::fire( vector<double>& Q ) const
 {
   vector<double> temp(nodes,0);
   Q.clear(); Q.resize(nodes,0);
-  for( size_t i=0; i<series.size(); i++ )
-    if( series[i]->t>=0 && series[i]->t<series[i]->cease ) {
-      series[i]->fire(temp);
-      for( size_t i=0; i<series[i]->node.size(); i++ )
-        Q[series[i]->node[i]] += temp[series[i]->node[i]];
+  for( size_t i=0; i<series.size(); i++ ) // For each timeseries
+    if( series[i]->t>=0 && series[i]->t<series[i]->cease ) { // If the timeseries is active
+      series[i]->fire(temp); // Call the fire function in place (update temp array)
+
+      // Then copy the temporary firing to the final firing
+      for( size_t j=0; j<series[i]->node.size(); j++ )
+        Q[series[i]->node[j]] += temp[series[i]->node[j]];
     }
 }
 
