@@ -6,6 +6,7 @@ function nf_movie( nf, field, normalize, fname )
     %   - field is a string of a field name e.g. "Propag.2.phi"
     %   - normalize is an integer value 0 = raw data, 1 = subtract mean
     %                                   2 = subtract mean and rescale
+    %                                   3 = subtract mean, rescale over entire duration
     %   - avi is optionally a string filename to save the movie 
     % 
     % Felix Fung 120322
@@ -20,6 +21,10 @@ function nf_movie( nf, field, normalize, fname )
     end
     
     plotdata = data;
+
+    figure; h = surf( X, Y, plotdata(:,:,1) ); title('','Interpreter','none');
+
+
     switch normalize
         case 1
             plotdata = bsxfun(@minus,data,datamean);
@@ -32,9 +37,14 @@ function nf_movie( nf, field, normalize, fname )
                 norm(norm == 0 ) = 1; % Don't change the normalization if there is no spatial variation               
                 plotdata(:,:,t) = ( data(:,:,t)-threshold(t) )./norm(t);
             end
+            set(gca,'CLim',[0 1])
+        case 3
+            % Choose the normalization based on all the data
+            plotdata = bsxfun(@minus,data,datamean);
+            plotdata = plotdata./max(plotdata(:));
+            set(gca,'CLim',[0 0.1])
     end
 
-    figure; h = surf( X, Y, plotdata(:,:,1) ); title('','Interpreter','none');
 
     if min(plotdata(:)) == max(plotdata(:)) && abs(min(plotdata(:)) - max(plotdata(:))) < 1e-10
             zlim([-1 1]);

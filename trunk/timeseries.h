@@ -46,6 +46,15 @@ struct Pulse : public Timeseries
   void fire( vector<double>& Q ) const;
 };
 
+struct PulseNode : public Timeseries
+{
+  double amp, width, period, pulses;
+  int stim_node;
+  PulseNode(int nodes,double deltat,int index) : Timeseries(nodes,deltat,index) {}
+  void init( Configf& configf );
+  void fire( vector<double>& Q ) const;
+};
+
 struct White : public Timeseries
 {
   double seed, amp, mean, deltax;
