@@ -36,8 +36,11 @@ public:
   int get(void) const; // get ptr
 
   inline double operator() ( Moore moore=c ) const {
-    return m[ ptr +longside*(moore/3) +(moore%3) ];
+    int arr[9] =   {ptr-longside-2-1,ptr-longside-2,ptr-longside-2+1,ptr-1,ptr,ptr+1,ptr+longside+2-1,ptr+longside+2,ptr+longside+2+1};
+    return m[arr[moore+4]];
+    //return m[ ptr +longside*(moore/3) +(moore%3) ]; // Pre r379 broken implementation. This implementation is probably a fraction faster, but the indexes are clearly wrong.
   }
+
   inline operator double (void) const {
     return (*this)(c);
   }
@@ -52,9 +55,9 @@ public:
 void Stencil::operator++ (int) const
 {
   ptr++;
-  if( ( ptr%(longside+2)==longside+1 ) )
+  if( ( ptr%(longside+2)==longside+1 ) ) // Move stencil from far side to near side
     ptr += 2;
-  if( ptr == (longside+1)*(shortside+2)+1 )
+  if( ptr == (longside+1)*(shortside+2)+1 ) // Move stencil from very end of the array to the
     set(0);
 }
 
