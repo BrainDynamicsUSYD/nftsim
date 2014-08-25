@@ -38,17 +38,11 @@ public:
   inline double operator() ( Moore moore=c ) const {
     int arr[9] =   {ptr-longside-2-1,ptr-longside-2,ptr-longside-2+1,ptr-1,ptr,ptr+1,ptr+longside+2-1,ptr+longside+2,ptr+longside+2+1};
     return m[arr[moore+4]];
-    //return m[ ptr +longside*(moore/3) +(moore%3) ]; // Pre r379 broken implementation. This implementation is probably a fraction faster, but the indexes are clearly wrong.
   }
 
   inline operator double (void) const {
     return (*this)(c);
   }
-
-  // get Moore grid values
-  //double nw() const; double n() const; double ne() const;
-  //double  w() const; double c() const; double  e() const;
-  //double sw() const; double s() const; double se() const;
 };
 
 
