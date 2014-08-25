@@ -36,8 +36,6 @@ void Timeseries::init( Configf& configf )
       series.push_back( new TIMESERIES::Const(nodes,deltat,index) );
     else if( mode[0]=="Pulse" )
       series.push_back( new TIMESERIES::Pulse(nodes,deltat,index) );
-    else if( mode[0]=="PulseNode" )
-      series.push_back( new TIMESERIES::PulseNode(nodes,deltat,index) );
     else if( mode[0]=="White" )
       series.push_back( new TIMESERIES::White(nodes,deltat,index) );
     else if( mode[0]=="WhiteCoherent" )
@@ -122,25 +120,6 @@ void Pulse::fire( vector<double>& Q ) const
   if( fmod(t,period)>=0 && fmod(t,period)<width && t/period<pulses )
     for( int i=0; i<nodes; i++ )
       Q[i] = amp;
-}
-
-void PulseNode::init( Configf& configf )
-{
-  period = 1000; pulses = 1;
-  // Amplitude: 1 Width: .5e-3 Node: 1 "Period/Frequency": 1 "Pulses": 1
-  configf.param("Amplitude",amp);
-  configf.param("Width",width);
-  configf.param("Node",stim_node);
-  if( !configf.optional("Period",period) )
-    if( configf.optional("Frequency",period) )
-      period = 1/period;
-  configf.optional("Pulses",pulses);
-}
-
-void PulseNode::fire( vector<double>& Q ) const
-{
-  if( fmod(t,period)>=0 && fmod(t,period)<width && t/period<pulses )
-      Q[stim_node] = amp;
 }
 
 void White::init( Configf& configf )
