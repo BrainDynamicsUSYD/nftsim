@@ -12,7 +12,7 @@ void LongCouple::init( Configf& configf )
       n2d[i].resize(nodes,temp[0]);
     pos = (temp[0]>0)?1:-1;
   }
-  else if( temp.size() == uint(pow(nodes,2)) ) {
+  else if( temp.size() == size_t(pow(nodes,2)) ) {
     n2d.resize(nodes);
     for( int i=0; i<nodes; i++ ) {
       n2d[i].resize(nodes);

@@ -1,4 +1,4 @@
-function nf = nf_run(fname)
+function nf = nf_run(fname,nf_path)
     % Function to run NeuroField and return a NF struct
     % Provide the filename WITHOUT .conf
     % Program will
@@ -13,12 +13,14 @@ function nf = nf_run(fname)
     fname = strrep(fname,'.conf','');
     fprintf(1,'Executing NeuroField: %s.conf...\n',fname);
 
-    if ispc
-        nf_path = './NeuroField.exe';
-    else
-        nf_path = './NeuroField';
+    if nargin < 2 || isempty(nf_path)
+        if ispc
+            nf_path = './NeuroField.exe';
+        else
+            nf_path = './NeuroField';
+        end
     end
-
+    
     nf_command = sprintf('%s -i %s.conf -o %s.output',nf_path,fname,fname);
     fprintf('%s\n',nf_command);
     [status] = system(nf_command);
