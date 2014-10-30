@@ -1,7 +1,7 @@
 #include"burst.h"
 using std::cerr;
 using std::endl;
-
+using std::cout;
 void Population::init( Configf& configf )
 {
   qinit = Qinit(configf);
@@ -97,9 +97,11 @@ const vector<double>& Population::Q( const Tau& tau) const
     return qhistory[(qkey-tau.m[0]+qhistory.size())%qhistory.size()];
   else { // tau.m.size() == nodes, inhomogeneous tau
     static vector<double> temp(nodes);
-    for( int i=0; i<nodes; i++ )
-      temp[i] = qhistory
-        [ tau.m[i]<=qkey ? qhistory.size()+qkey-tau.m[i] : qkey-tau.m[i] ][i];
+    for( int i=0; i<nodes; i++ ){
+      //temp[i] = qhistory
+      //  [ tau.m[i]<=qkey ? qhistory.size()+qkey-tau.m[i] : qkey-tau.m[i] ][i];
+      temp[i] = qhistory[(qkey-tau.m[i]+qhistory.size())%qhistory.size()][i];
+    }
     return temp;
   }
 }
