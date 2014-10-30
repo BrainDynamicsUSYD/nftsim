@@ -24,7 +24,7 @@ void BCMLong::init( Configf& configf )
       (*de_2d[i])[7][i] = (*de_2d[i])[3][i] = temp[0];
     pos = (temp[0]>0)?1:-1;
   }
-  else if( temp.size() == uint(pow(nodes,2)) ) {
+  else if( temp.size() == size_t(pow(nodes,2)) ) {
     for( int i=0; i<nodes; i++ )
       for( int j=0; j<nodes; j++ )
         (*de_2d[i])[7][j] = (*de_2d[i])[3][j] = temp[i+j*nodes];

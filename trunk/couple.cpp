@@ -11,7 +11,7 @@ void Couple::init( Configf& configf )
     n.clear(); n.resize(nodes,temp[0]);
     pos = (temp[0]>0)?1:-1;
   }
-  else if( temp.size() == uint(nodes) ) {
+  else if( temp.size() == size_t(nodes) ) {
     n.clear(); n.resize(nodes);
     for( int i=0; i<nodes; i++ )
       n[i] = temp[i];
