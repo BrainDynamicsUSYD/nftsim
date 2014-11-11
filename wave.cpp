@@ -5,7 +5,7 @@ using std::endl;
 
 void Wave::init( Configf& configf )
 {
-  deltax = postpop.sheetlength()/sqrt(nodes);
+  deltax = prepop.sheetlength()/sqrt(nodes);
 
   string buffer("Steady");
   configf.optional("phi",buffer);
