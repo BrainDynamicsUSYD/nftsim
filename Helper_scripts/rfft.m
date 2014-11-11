@@ -19,8 +19,7 @@ function [f,s,P] = rfft(y,fs,NFFT,windowed)
     if nargin < 3 || isempty(NFFT)
         NFFT = length(y); % Use the same length as the input array by default so that normalization is correct
     end
-    %NFFT = length(y);
-    
+
     %y = detrend(y,'constant'); % Remove constant offset and discontinuity at endpoints
     if windowed
         y = y(:).*hamming(length(y));
@@ -31,15 +30,19 @@ function [f,s,P] = rfft(y,fs,NFFT,windowed)
 
     s = s(1:NFFT/2+1); % This can be returned as the single sided FFT
     P = abs(s).^2; % single sided spectrum 
-    if rem(NFFT, 2) % Multiply by 2 to get correct energy, excluding zero and 
-    % Nyquist frequencies
+    if rem(NFFT, 2) % Multiply by 2 to get correct energy, excluding zero and Nyquist frequencies
+        % If there is an odd number of points, then there is no frequency component at the Nyquist frequency
+        % Therefore, the last frequency component is doubled
         P(2:end) = P(2:end)*2;
     else
+        % With an even number of points, there is a Nyquist frequency component which is not duplicated
+        % Therefore the last frequency component is NOT doubled
         P(2:end -1) = P(2:end -1)*2;
     end
     
     % P now contains properly normalized spectral power
-    f = 0:fs/NFFT:fs/2;
+    %f = fs/2*linspace(0,1,NFFT/2+1)';
+    f = 0:fs/NFFT:fs/2; % I think this is more correct
     P = P/f(2); % Divide by frequency bin size to get power density
     
 end

@@ -25,8 +25,9 @@ Release/NeuroField: $(addprefix Release/,$(OBJ))
 	$(COMP) $(addprefix Release/,$(OBJ)) -o $@ $(LIBS)
 
 $(addprefix Release/,$(OBJ)): Release/%.o: %.cpp %.h
-	mkdir -p Release
-	$(COMP) -c $< -o $@
+	@mkdir -p Release
+	@$(COMP) -c $< -o $@
+	@echo "CC $<"
 
 Documentation/user.pdf: Documentation/user.tex
 	cd Documentation && pdflatex user && pdflatex user
@@ -47,7 +48,7 @@ clean:
 	echo Delete Release/ Documentation/doc
 	-rm -r Release Documentation/{user,developer}.{aux,log,out,toc} Documentation/x.log
 
-.SILENT:
+#.SILENT:
 
 .INTERMEDIATE: main.h
 
