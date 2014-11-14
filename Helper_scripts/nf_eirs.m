@@ -214,9 +214,9 @@ function varargout = nf_eirs(p,file_id,firemode,int_time,grid_edge,fs,waves,rans
             [grid_x,grid_y] = meshgrid(x,y);
 
             spec_t0 = p.spatial_t0(grid_x,grid_y);
-            taustr = sprintf('%.10g ',spec_t0);
+            taustr = sprintf('%.10g ',spec_t0/2);
         else
-            taustr = sprintf('%.10g ',p.t0);
+            taustr = sprintf('%.10g ',p.t0/2);
         end
 
         fprintf(fid,'\n');
