@@ -207,33 +207,35 @@ function varargout = nf_eirs(p,file_id,firemode,int_time,grid_edge,fs,waves,rans
             fprintf(fid,' Stimulus: White - Onset: 0 Ranseed: %d Mean: 1 Psd: %.10g\n',ranseed,p.phin);
         end
 
+        if isfunction(p.spatial_t0)
+            % Vectors for the distance in each direction
+            x = deltax*(0:grid_edge-1);
+            y = deltax*(0:grid_edge-1);
+            [grid_x,grid_y] = meshgrid(x,y);
+
+            spec_t0 = p.spatial_t0(grid_x,grid_y);
+            taustr = sprintf('%.10g ',spec_t0);
+        else
+            taustr = sprintf('%.10g ',p.t0);
+        end
+
         fprintf(fid,'\n');
         if waves
-            fprintf(1,'Wave propagators in stimulus and relay\n');
-            fprintf(fid,'Propag 1: Wave - Tau: %.10g Range: %.10g gamma: %.10g\n',0,p.re,p.gammae); %e CXe -> CXe
-            fprintf(fid,'Propag 2: Map - Tau: %.10g\n',0);   %i CXi -> CXe
-            fprintf(fid,'Propag 3: Wave - Tau: %.10g Range: %.10g gamma: %.10g\n',p.taues,p.rs,p.gammas); % S->R
-            fprintf(fid,'Propag 4: Wave - Tau: %.10g Range: %.10g gamma: %.10g\n',0,p.re,p.gammae);%e CXe->CXi
-            fprintf(fid,'Propag 5:  Map - Tau: %.10g\n',0); %i CXi -> CXi
-            fprintf(fid,'Propag 6: Wave - Tau: %.10g Range: %.10g gamma: %.10g\n',p.taues,p.rs,p.gammas); % S-> R
-            fprintf(fid,'Propag 7: Wave - Tau: %.10g Range: %.10g gamma: %.10g\n',p.tause,p.re,p.gammae);%e CX
-            fprintf(fid,'Propag 8: Wave - Tau: %.10g Range: %.10g gamma: %.10g\n',0,p.rs,p.gammas); % relay
-            fprintf(fid,'Propag 9: Wave - Tau: %.10g Range: %.10g gamma: %.10g\n',p.tause,p.re,p.gammae);%e CX
-            fprintf(fid,'Propag 10: Map - Tau: %.10g\n',0);  % nRT
-            fprintf(fid,'Propag 11: Wave - Tau: %.10g Range: %.10g gamma: %.10g\n',0,p.rn,p.gamman);   % STIM
+            error('placeholder')
         else
             fprintf(fid,'Propag 1: Wave - Tau: %.10g Range: %.10g gamma: %.10g\n',0,p.re,p.gammae);
             fprintf(fid,'Propag 2: Map - Tau: %.10g\n',0);   
-            fprintf(fid,'Propag 3: Map - Tau: %.10g\n',p.taues);   
+            fprintf(fid,'Propag 3: Map - Tau: %s\n',taustr);   
             fprintf(fid,'Propag 4: Wave - Tau: %.10g Range: %.10g gamma: %.10g\n',0,p.re,p.gammae);
             fprintf(fid,'Propag 5:  Map - Tau: %.10g\n',0);  
-            fprintf(fid,'Propag 6:  Map - Tau: %.10g\n',p.tause); 
-            fprintf(fid,'Propag 7: Wave - Tau: %.10g Range: %.10g gamma: %.10g\n',p.tause,p.re,p.gammae);
+            fprintf(fid,'Propag 6:  Map - Tau: %s\n',taustr); 
+            fprintf(fid,'Propag 7: Wave - Tau: %s Range: %.10g gamma: %.10g\n',taustr,p.re,p.gammae);
             fprintf(fid,'Propag 8:  Map - Tau: %.10g\n',0);  
-            fprintf(fid,'Propag 9: Wave - Tau: %.10g Range: %.10g gamma: %.10g\n',p.tause,p.re,p.gammae);
+            fprintf(fid,'Propag 9: Wave - Tau: %s Range: %.10g gamma: %.10g\n',taustr,p.re,p.gammae);
             fprintf(fid,'Propag 10: Map - Tau: %.10g\n',0);  
             fprintf(fid,'Propag 11: Map - Tau: %.10g\n',0); % Stimulus wave
         end
+
         fprintf(fid,'\n');
         for j = 1:length(id_map)
             fprintf(fid,'Couple %d:  Map - nu: %.10g\n',j,p.nus(id_map(j)));

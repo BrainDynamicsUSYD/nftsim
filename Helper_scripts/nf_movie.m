@@ -66,8 +66,9 @@ function nf_movie( nf, field, normalize, fname )
 
     % Output a movie if an avi filename was specified
     if ~(nargin < 4 || isempty(fname))
-        avi = avifile(fname);
-        avi = addframe( avi, F );
-        avi = close(avi);
+        writerObj = VideoWriter(fname,'MPEG-4');
+        open(writerObj);
+        writeVideo(writerObj,F);
+        close(writerObj);
     end
 end
