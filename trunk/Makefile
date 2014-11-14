@@ -5,6 +5,7 @@ LIBS =
 
 # Performance
 COMP = g++ -g -lm -Wall -O3 -Wextra -pedantic -std=c++11 -msse -msse2 -msse3 -mfpmath=sse -march=native -mtune=native -funroll-loops -flto #-m64
+COMP = g++-4.9 -lm -O3 -std=c++11
 
 # Debugging
 #COMP = g++ -g -lm -Wall -Wextra -pedantic -std=c++11 -msse -msse2 -msse3
