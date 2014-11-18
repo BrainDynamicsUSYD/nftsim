@@ -91,7 +91,7 @@ function varargout = nf_eirs(p,file_id,firemode,int_time,grid_edge,fs,waves,rans
 
     if nargout > 0
         varargout{1} = nf_run(confname);
-        varargout{1}.params = p;
+        varargout{1}.params = p.copy();
     else
         nf_run(confname);
     end
@@ -206,15 +206,15 @@ function varargout = nf_eirs(p,file_id,firemode,int_time,grid_edge,fs,waves,rans
         else
             fprintf(fid,' Stimulus: White - Onset: 0 Ranseed: %d Mean: 1 Psd: %.10g\n',ranseed,p.phin);
         end
+        x = deltax*(0:grid_edge-1);
+        y = deltax*(0:grid_edge-1);
+        [grid_x,grid_y] = meshgrid(x,y);
 
         if isfunction(p.spatial_t0)
             % Vectors for the distance in each direction
-            x = deltax*(0:grid_edge-1);
-            y = deltax*(0:grid_edge-1);
-            [grid_x,grid_y] = meshgrid(x,y);
-
             spec_t0 = p.spatial_t0(grid_x,grid_y);
             taustr = sprintf('%.10g ',spec_t0/2);
+            fprintf('Spatial variations active\n');
         else
             taustr = sprintf('%.10g ',p.t0/2);
         end
@@ -238,13 +238,22 @@ function varargout = nf_eirs(p,file_id,firemode,int_time,grid_edge,fs,waves,rans
 
         fprintf(fid,'\n');
         for j = 1:length(id_map)
-            fprintf(fid,'Couple %d:  Map - nu: %.10g\n',j,p.nus(id_map(j)));
+            couplestr = '';
+            if ~isempty(p.spatial_nus) && isfunction(p.spatial_nus{id_map(j)})
+                couple_values = p.spatial_nus{id_map(j)}(grid_x,grid_y);
+                fprintf('Spatial variations in Couple %d\n',j);
+            else
+                couple_values = p.nus(id_map(j));
+            end
+            couplestr = sprintf('%.10g ',couple_values);
+
+            fprintf(fid,'Couple %d:  Map - nu: %s\n',j,couplestr);
         end
         fprintf(fid,'\n');
 
         fprintf(fid,'Output: Node: All Start: 5 Interval: 0.5e-2 \n');
         %fprintf(fid,'Output: Node: All Start: 0  \n');
-        fprintf(fid,'Population: 4\n');
+        fprintf(fid,'Population: 1\n');
         fprintf(fid,'Dendrite:  \n');
         fprintf(fid,'Propag: 1\n');
         fprintf(fid,'Couple:  \n');

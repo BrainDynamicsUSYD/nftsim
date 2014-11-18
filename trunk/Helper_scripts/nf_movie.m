@@ -10,7 +10,10 @@ function nf_movie( nf, field, normalize, fname )
     %   - avi is optionally a string filename to save the movie 
     % 
     % Felix Fung 120322
-
+    if nargin < 2 || isempty(field)
+        field = 'propag.1.phi';
+    end
+    
     [data,side] = nf_grid(nf,field);
     [X,Y] = meshgrid(1:side,1:side);
 
@@ -19,7 +22,8 @@ function nf_movie( nf, field, normalize, fname )
     if nargin < 3 || isempty(normalize)
         normalize = 0;
     end
-    
+
+
     plotdata = data;
 
     figure; h = surf( X, Y, plotdata(:,:,1) ); title('','Interpreter','none');
