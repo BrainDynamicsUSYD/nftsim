@@ -54,4 +54,4 @@ clean:
 .INTERMEDIATE: main.h
 
 main.h:
-	touch main.h
+	@touch main.h
