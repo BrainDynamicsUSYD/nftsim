@@ -115,16 +115,13 @@ function varargout = nf_eirs(p,file_id,firemode,int_time,grid_edge,fs,waves,rans
         end
         set(gca,'XLim',[1 45]);
 
-        try
-            [f_a,P_a] = analytic_spectrum(p,0);
-            P_a = interp1(f_a,P_a,f,'pchip','extrap');
-            hold on
-            loglog(f,P_a,'r--');
-            legend('NeuroField','Analytic');
-            hold off
-        catch
-            kdb
-        end
+        [f_a,P_a] = p.spectrum;
+        P_a = interp1(f_a,P_a,f,'pchip','extrap');
+        hold on
+        loglog(f,P_a,'r--');
+        legend('NeuroField','Analytic');
+        hold off
+
     end
 
 
@@ -238,7 +235,6 @@ function varargout = nf_eirs(p,file_id,firemode,int_time,grid_edge,fs,waves,rans
 
         fprintf(fid,'\n');
         for j = 1:length(id_map)
-            couplestr = '';
             if ~isempty(p.spatial_nus) && isfunction(p.spatial_nus{id_map(j)})
                 couple_values = p.spatial_nus{id_map(j)}(grid_x,grid_y);
                 fprintf('Spatial variations in Couple %d\n',j);
