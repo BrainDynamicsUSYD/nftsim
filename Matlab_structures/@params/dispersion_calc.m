@@ -98,6 +98,7 @@ function [stab,f,P,stab_w,q2] = dispersion_calc(p,check_stability)
             %         %plot(f,fn(A.*(1-Jsrs))+fn(-Jese),'k--');
             % end
             this_phie = Jesn.*p.phin./(A.*(1-Jsrs) - Jese - Jesre);
+            
             %this_phie = Jsn.*Jes.*p.phin./(A.*(1-Jsrs) - Jesre);
             %this_phie = Jsn.*Jes.*p.phin./(A.*(1-Jsrs));
 
