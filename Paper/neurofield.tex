@@ -247,10 +247,16 @@ The coupling strength $\nu_{ab}$ scales the incoming signals, weighting the cont
 \todo[inline]{More from Felix about this}
 
 \subsubsection{Input and output}
-NeuroField input and output are written in plain text files, which are human readable and simple to construct and parse programatically. An abridged 
+NeuroField input and output are written in plain text files, which are human readable and simple to construct and parse programatically. An simple configuration file is shown in Fig.~\ref{fig:config_text}.  
+
+The configuration file first starts with a specification of the simulation duration and time step. The total number of nodes is specified, and assumed to correspond to a square grid - in this case, 30x30 nodes. It is also possible to specify a rectangular grid at this point. 
+
+Next, a list of connections is provided, formatted as a human-readable connection matrix. Each connection is assigned a number at this point. The dimension of the matrix corresponds to the number of populations being simulated, and the number of nonzero entries in the matrix corresponds to the number of couplings, propagators and dendrites.
+
+Following the connection matrix is a detailed specification for each population. The spatial grid resolution is determined based on the 
 
 
-\begin{figure}[!b]
+\begin{figure}[!htbp]
 \begin{center}
 \begin{lstlisting}
 Time: 0.15 Deltat: 0.0001
@@ -286,7 +292,7 @@ Propag: 1
 Couple:  
 \end{lstlisting}
 \caption{Example config file from NeuroField, for a simple system consisting of one neural population, and a stimulus. This configuration was used to generate Fig.~\ref{fig:wave_comparison}.}
-\label{fig:eirs_cycle}
+\label{fig:config_text}
 \end{center}
 \end{figure}
 
@@ -299,7 +305,7 @@ Couple:
 1.00e-02  | -1.020386100890e-03  |  2.589927678842e-02  |
 \end{lstlisting}
 \caption{Example output from NeuroField, showing two time series from different parts of the system. The plain text file contains a row for each time, and a column for each quantity requested.}
-\label{fig:eirs_cycle}
+\label{fig:output_text}
 \end{center}
 \end{figure}
 
@@ -350,7 +356,7 @@ In this section, we present examples of NeuroField applied to recent research.
 \begin{center}
 \includegraphics[width=0.40\columnwidth]{corticothalamic_comparison}
 \caption{Wake EC, same params as already published}
-\label{fig:ct_spectrum}
+\label{fig:ct_spectrum_1}
 \end{center}
 \end{figure}
 
