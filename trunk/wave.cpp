@@ -5,7 +5,7 @@ using std::endl;
 
 void Wave::init( Configf& configf )
 {
-  deltax = prepop.sheetlength()/sqrt(nodes);
+  deltax = postpop.sheetlength()/sqrt(nodes);
 
   string buffer("Steady");
   configf.optional("phi",buffer);
@@ -76,17 +76,23 @@ Wave::~Wave(void)
 
 void Wave::step(void)
 {
+  Stencil& stencilp = *oldp[key]; Stencil& stencil_oldp = *oldp[!key];
+  Stencil& stencilQ = *oldQ[key]; Stencil& stencil_oldQ = *oldQ[!key];
   for( int i=0; i<nodes; i++,
-          (*oldp[0])++, (*oldQ[0])++, (*oldp[1])++, (*oldQ[1])++ ) {
-    sump    = (*oldp[key]) (n) +(*oldp[key]) (s) +(*oldp[key]) (w) +(*oldp[key]) (e);
-    diagsump= (*oldp[key])(nw) +(*oldp[key])(ne) +(*oldp[key])(sw) +(*oldp[key])(se);
-    sumQ    = (*oldQ[key]) (n) +(*oldQ[key]) (s) +(*oldQ[key]) (w) +(*oldQ[key]) (e);
-    diagsumQ= (*oldQ[key])(nw) +(*oldQ[key])(ne) +(*oldQ[key])(sw) +(*oldQ[key])(se);
-    drive = dfact*( tenminus3p2*exp1* (*oldQ[key]) +prepop.Q(tau)[i] +exp2* (*oldQ[!key]) +exp1*.5*p2*(sumQ+.5*diagsumQ) );
-    p[i] = twominus3p2*exp1 *(*oldp[key]) +exp1*.5*p2*(sump+.5*diagsump) -exp2 *(*oldp[!key]) +drive;
+          stencilp++, stencilQ++, stencil_oldp++, stencil_oldQ++ ) {
+    sump     = stencilp(n)  +stencilp(s)  +stencilp(w)  +stencilp(e) ;
+    diagsump = stencilp(nw) +stencilp(ne) +stencilp(sw) +stencilp(se);
+    sumQ     = stencilQ(n)  +stencilQ(s)  +stencilQ(w)  +stencilQ(e) ;
+    diagsumQ = stencilQ(nw) +stencilQ(ne) +stencilQ(sw) +stencilQ(se);
+    drive    = dfact*( tenminus3p2*exp1* stencilQ +prepop.Q(tau)[i]
+                 +exp2* stencil_oldQ +exp1*.5*p2*(sumQ+.5*diagsumQ) );
+    p[i]     = twominus3p2*exp1 *stencilp +exp1*.5*p2*(sump+.5*diagsump)
+                 -exp2 *stencil_oldp +drive;
   }
 
   key = !key;
-  *oldp[key] = p;
-  *oldQ[key] = prepop.Q(tau);
+  //*oldp[key] = p;
+  //*oldQ[key] = prepop.Q(tau);
+  stencil_oldp = p;
+  stencil_oldQ = prepop.Q(tau);
 }
