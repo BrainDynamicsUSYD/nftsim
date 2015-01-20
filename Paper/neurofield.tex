@@ -358,27 +358,22 @@ NeuroField has been extensively tested with a recent neural field corticothalami
 \end{center}
 \end{figure}
 
-The structure of the model is shown in Fig.~\ref{fig:ct_schematic}. Much of our work is in the linear regime and utilizes analytic results for small perturbations to steady states. In the steady state, we have
-
-We thus obtain the equation for the steady state firing rate equal to $\phi_e^{(0)}$ \cite{Robinson:04aa}
+The structure of the model is shown in Fig.~\ref{fig:ct_schematic}. Much of our work is in the linear regime and utilizes analytic results for small perturbations to steady states. Steady states can be obtained by setting the differential operators \eqref{eq:dendrite} and \eqref{eq:wave} to unity, and solving for the the steady state firing rate $\phi_e^{(0)}$ \cite{Robinson:04aa}
 \begin{align}
 	\label{eqn:ve_root}
 	\begin{split}
 	S^{-1}&(\phi_e^{(0)})-(\nu_{ee}+\nu_{ei})\phi_e^{(0)} = \\ &\nu_{es}S\left\{\nu_{se}\phi_e^{(0)}+\nu_{sr}S\left[\nu_{re}\phi_e^{(0)}+(\nu_{rs}/\nu_{es})\left(S^{-1}(\phi_e^{(0)})-(\nu_{ee}+\nu_{ei})\phi_e^{(0)}\right)\right]+\nu_{sn}\phi_n^{(0)}\right\}, 
 \end{split}\\[16pt]
-	\label{eqn:ve_root_numeric}
-	\begin{split}
+%	\label{eqn:ve_root_numeric}
+%	\begin{split}
 	V_e^{(0)}&-(\nu_{ee}+\nu_{ei})S(V_e^{(0)})=\\ &\nu_{es}S\left\{\nu_{se}S(V_e^{(0)})+\nu_{sr}S\left[\nu_{re}S(V_e^{(0)})+(\nu_{rs}/\nu_{es})\left(V_e^{(0)}-(\nu_{ee}+\nu_{ei})S(V_e^{(0)})\right)\right]+\nu_{sn}\phi_n^{(0)}\right\},
-\end{split}
+%\end{split}
 \end{align}
-where \eqref{eqn:ve_root} and \eqref{eqn:ve_root_numeric} are equivalent.
-
-In the linear regime, we have
+where $S^{-1}$ denotes the inverse sigmoid function. To linearize the model, we consider a Taylor expansion of the sigmoid around the steady state:
 \begin{align}
 Q_a(\mathbf{r},t) = Q_a^{(0)} + S'\left(V_a^{(0)}\right) \left[V_a(\mathbf{r},t)-V_a^{(0)}\right] \\
 + \frac{S''\left(V_a^{(0)}\right)}{2!} \left[V_a(\mathbf{r},t)-V_a^{(0)}\right]^2 \cdots ,
 \end{align}
-
 which can be written in terms of a perturbation by relabeling $Q_a-Q_a^{(0)} \rightarrow Q_a $, $V_a-V_a^{(0)} \rightarrow V_a$, yielding
 
 \begin{align}
