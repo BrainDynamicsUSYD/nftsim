@@ -78,8 +78,10 @@ EEG \sep neurophysiology \sep methods \sep modeling
 Neural field modeling has proved to be a powerful technique for constructing relatively simple, physiologically based models of the brain that are capable of predicting EEG and correlate well with experimental data \cite{Deco2008,Pinotsis2012}. The key features of neural field models are captured by the three key equations governing general neural field theory
 
 \begin{align}
+	\label{eq:summation}
 	D_{ab}V_{ab}(\mathbf{r},t) &= \nu_{ab}\phi_{ab}(\mathbf{r},t),\\
-			Q_a(\mathbf{r},t) &= S_a \big[\sum_b V_{ab}(\mathbf{r},t) \big],\\
+	\label{eq:sigm_sum}
+	Q_a(\mathbf{r},t) &= S_a \big[\sum_b V_{ab}(\mathbf{r},t) \big],\\
 	\mathcal{D}_{ab}\phi_{ab}(\mathbf{r},t) &= Q_b(\mathbf{r},t-\tau_{ab}).
 \end{align}
 which represent synapto-dendritic smoothing, dendritic summation and firing response, and damped wave propagation, respectively. The differential operators are
@@ -363,26 +365,29 @@ The structure of the model is shown in Fig.~\ref{fig:ct_schematic}. Much of our 
 	\label{eqn:ve_root}
 	\begin{split}
 	S^{-1}&(\phi_e^{(0)})-(\nu_{ee}+\nu_{ei})\phi_e^{(0)} = \\ &\nu_{es}S\left\{\nu_{se}\phi_e^{(0)}+\nu_{sr}S\left[\nu_{re}\phi_e^{(0)}+(\nu_{rs}/\nu_{es})\left(S^{-1}(\phi_e^{(0)})-(\nu_{ee}+\nu_{ei})\phi_e^{(0)}\right)\right]+\nu_{sn}\phi_n^{(0)}\right\}, 
-\end{split}\\[16pt]
+\end{split}
 %	\label{eqn:ve_root_numeric}
 %	\begin{split}
-	V_e^{(0)}&-(\nu_{ee}+\nu_{ei})S(V_e^{(0)})=\\ &\nu_{es}S\left\{\nu_{se}S(V_e^{(0)})+\nu_{sr}S\left[\nu_{re}S(V_e^{(0)})+(\nu_{rs}/\nu_{es})\left(V_e^{(0)}-(\nu_{ee}+\nu_{ei})S(V_e^{(0)})\right)\right]+\nu_{sn}\phi_n^{(0)}\right\},
+	%V_e^{(0)}&-(\nu_{ee}+\nu_{ei})S(V_e^{(0)})=\\ &\nu_{es}S\left\{\nu_{se}S(V_e^{(0)})+\nu_{sr}S\left[\nu_{re}S(V_e^{(0)})+(\nu_{rs}/\nu_{es})\left(V_e^{(0)}-(\nu_{ee}+\nu_{ei})S(V_e^{(0)})\right)\right]+\nu_{sn}\phi_n^{(0)}\right\},
 %\end{split}
 \end{align}
-where $S^{-1}$ denotes the inverse sigmoid function. To linearize the model, we consider a Taylor expansion of the sigmoid around the steady state:
+where $S^{-1}$ denotes the inverse sigmoid function. To linearize the model, we take a Taylor expansion of the sigmoid and retain only the first term:
 \begin{align}
-Q_a(\mathbf{r},t) = Q_a^{(0)} + S'\left(V_a^{(0)}\right) \left[V_a(\mathbf{r},t)-V_a^{(0)}\right] \\
-+ \frac{S''\left(V_a^{(0)}\right)}{2!} \left[V_a(\mathbf{r},t)-V_a^{(0)}\right]^2 \cdots ,
+Q_a(\mathbf{r},t) = Q_a^{(0)} + S'\left(V_a^{(0)}\right) \left[V_a(\mathbf{r},t)-V_a^{(0)}\right]
 \end{align}
-which can be written in terms of a perturbation by relabeling $Q_a-Q_a^{(0)} \rightarrow Q_a $, $V_a-V_a^{(0)} \rightarrow V_a$, yielding
-
+This can be written in terms of a perturbation by relabeling $Q_a-Q_a^{(0)} \rightarrow Q_a $, $V_a-V_a^{(0)} \rightarrow V_a$, yielding
 \begin{align}
-\label{eqn:q_series}
-Q_a(\mathbf{r},t) &= \rho_a^{(1)} V_a(\mathbf{r},t) + \frac{\rho_a^{(2)}}{2} V_a(\mathbf{r},t)^2 \cdots .
+\label{eqn:q_linear}
+Q_a(\mathbf{r},t) &= \rho_a^{(1)} V_a(\mathbf{r},t),
 \end{align}
+where $\rho_a^{(n)} = S^{(n)}\left(V_a^{(0)}\right)$ and $S^{(n)}$ is the $n$th derivative of the sigmoid function at the steady state value of $Q_a$. Taking the Fourier transform of Eqs.~\ref{eq:summation}--\ref{eq:wave},\ref{eqn:q_linear} and solving for $\phi_e/\phi_n$ yields a transfer function that maps stimlus to cortical response in the frequency domain
+\begin{align}
+\label{eqn:transfer_unsimplified}
+T = \frac{\phi_e(\mathbf{k},\omega)}{\phi_n(\mathbf{k},\omega)}  =  \left( D_{e}(\mathbf{k},\omega) - \frac{1}{1-G_{ei}L(\omega)} \left\lbrace L(\omega) G_{ee} + \frac{\left[ L(\omega)^2 G_{ese}  + L(\omega^3 G_{erse}\right]e^{i\omega t_0}}{1 - L(\omega^2 G_{srs}}  \right\rbrace \right)^{-1} \frac{L(\omega^2G_{esn}e^{i\omega t_0 /2}}{(1 - L(\omega)^2 G_{srs})(1-G_{ei}L(\omega)}
+\end{align}
+where the gains $G_{ab}$ are given by $G_{ab}=\rho_a\nu_{ab}$, $G_{ese} = G_{es}G_{se}$, $G_{erse} = G_{es}G_{sr}G_{re}$, $G_{srs} = G_{sr}G_{rs}$, and $G_{esn} = G_{es}G_{sn}$.
 
-
-where $\rho_a^{(n)} = S^{(n)}\left(V_a^{(0)}\right)$ and $S^{(n)}$ is the $n$th derivative of the sigmoid function at the steady state value of $Q_a$. 
+The transfer function can be related to the EEG power spectrum 
 
 However, some phenomena are strongly nonlinear, and these must be solved by numerical integration. We have used NeuroField to model results relating to seizures \citep{Roberts2008}, visually evoked potentials \citep{Roberts2012a}, and sleep spindles \citep{Abeysuriya2013,Abeysuriya2013a}. 
 
