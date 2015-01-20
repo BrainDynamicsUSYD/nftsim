@@ -44,6 +44,8 @@ void Timeseries::init( Configf& configf )
       series.push_back( new TIMESERIES::PAS(nodes,deltat,index) );
     else if( mode[0]=="Burst" )
       series.push_back( new TIMESERIES::Burst(nodes,deltat,index) );
+    else if( mode[0]=="Sine" )
+      series.push_back( new TIMESERIES::Sine(nodes,deltat,index) );
 	else {
       cerr<<"Stimulus mode "<<mode[0].c_str()<<" not found"<<endl;
       exit(EXIT_FAILURE);
@@ -72,11 +74,11 @@ void Timeseries::fire( vector<double>& Q ) const
 {
   vector<double> temp(nodes,0);
   Q.clear(); Q.resize(nodes,0);
-  for( size_t i=0; i<series.size(); i++ ) // For each timeseries
-    if( series[i]->t>=0 && series[i]->t<series[i]->cease ) { // If the timeseries is active
-      series[i]->fire(temp); // Call the fire function in place (update temp array)
-
-      // Then copy the temporary firing to the final firing
+  for( size_t i=0; i<series.size(); i++ ) // for each timeseries
+    // if the timeseries is active
+    if( series[i]->t>=0 && series[i]->t<series[i]->cease ) {
+      series[i]->fire(temp);
+      // then copy the temporary firing to the final firing
       for( size_t j=0; j<series[i]->node.size(); j++ )
         Q[series[i]->node[j]] += temp[series[i]->node[j]];
     }
@@ -229,6 +231,23 @@ void Burst::fire( vector<double>& Q ) const
       fmod(t,1/freq)>=0 && fmod(t,1/freq)<width )
     for( int i=0; i<nodes; i++ )
       Q[i] = amp;
+}
+
+void Sine::init( Configf& configf )
+{
+  // Amp: 1 Width: .5 Period: 1 Phase: 0
+  configf.param("Amp",amp);
+  configf.param("Width",width);
+  period = 1; configf.optional("Period",period);
+  phase  = 0; configf.optional("Phase",phase);
+  pulses = 1; configf.optional("Pulses",pulses);
+}
+
+void Sine::fire( vector<double>& Q ) const
+{
+  if( fmod(t,period)>=0 && fmod(t,period)<width && t/period<pulses )
+    for( int i=0; i<nodes; i++ )
+      Q[i] = amp*sin( 2*3.14159*( fmod(t,period)/width -phase/360 ) );
 }
 
 } // this bracket closes namespace TIMESERIES, do not touch
