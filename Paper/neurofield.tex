@@ -328,6 +328,7 @@ nf\_grid reshapes the output for handling matrices.
 nf\_eirs() demonstrates writing a configuration file, running it with nf\_run(), and then reading it with nf\_read(). This demonstrates a complete MATLAB-based toolchain for using NeuroField.
 
 \subsubsection{Calculating power spectra}
+\label{sec:spectrum_3d}
 The power spectrum can be obtained by FFT, but correct normalization and calculation of the power spectrum including multiple spatial modes can be challenging to implement. We have implemented a 3D FFT algorithm that correctly normalizes the output and includes volume conduction effects that selective attenuate spatial modes depending on their wavenumber. The result can be directly compared to analytical predictions.
 
 \begin{figure}[!b]
@@ -387,25 +388,22 @@ T = \frac{\phi_e(\mathbf{k},\omega)}{\phi_n(\mathbf{k},\omega)}  =  \left( D_{e}
 \end{align}
 where the gains $G_{ab}$ are given by $G_{ab}=\rho_a\nu_{ab}$, $G_{ese} = G_{es}G_{se}$, $G_{erse} = G_{es}G_{sr}G_{re}$, $G_{srs} = G_{sr}G_{rs}$, and $G_{esn} = G_{es}G_{sn}$.
 
-The transfer function can be related to the EEG power spectrum 
-
-However, some phenomena are strongly nonlinear, and these must be solved by numerical integration. We have used NeuroField to model results relating to seizures \citep{Roberts2008}, visually evoked potentials \citep{Roberts2012a}, and sleep spindles \citep{Abeysuriya2013,Abeysuriya2013a}. 
-
-
-
+The transfer function can be related to the EEG power spectrum by integration over $\mathbf{k}$. When periodic boundary conditions are imposed, this becomes a summation:
 \begin{align}
 \label{eqn:power_sum}
 P(\omega) &= \sum_{m = -\infty}^{\infty}\sum_{n = -\infty}^{\infty} \Delta k_x \Delta k_y |T(\mathbf{k},\omega)|^2||\phi_n(\mathbf{k},\omega)|^2F(k)\\
 k^2 &=  \left( \frac{2\pi m}{L_x} \right)^2 + \left( \frac{2\pi n}{L_y}\right)^2 
 \end{align}
-where the size of the two-dimensional rectangular cortex is $L_x \times L_y$. 
-
+where the size of the two-dimensional rectangular cortex is $L_x \times L_y$. In practice, modes with large $\mathbf{k}$ are strongly damped \citep{OConnor2002}. The filter function $F(k)$ approximates the low-pass spatial filtering that arises due to volume conduction by the cerebrospinal fluid, skull and scalp, which serves as a low-pass spatial filter whose $k$ dependence is well fitted by the form \citep{PhysRevE.63.021903,Rowe2004413,alb06a,VanAlbada2010}
 \begin{align}
 F(k) &= e^{-k^2/k_0^2},
 \end{align}
+with a low-pass cutoff at $k_0 \approx 10$\,m$^{-1}$ based on the spherical harmonic head transfer function developed by \cite{Srinivasan1998}. \todo{duplicate wording}. 
 
+The linear approximation is suitable to model a wide range of brain activity. However, some phenomena are strongly nonlinear, and these must be solved by numerical integration. We have used NeuroField to model results relating to seizures \citep{Roberts2008}, visually evoked potentials \citep{Roberts2012a}, and sleep spindles \citep{Abeysuriya2013,Abeysuriya2013a}. 
 
-Prediction of the EEG power spectrum involves two additional steps - first, summation over 
+Matching NeuroField to the analytic spectrum requires implementation of the summation over spatial modes, and incorporation of the volume conduction filter. This is achieved by following the procedure described in Sec.~\ref{sec:spectrum_3d}, as implemented in the NeuroField toolbox. As shown in Fig.~\ref{fig:ct_spectrum}, there is an excellent match between NeuroField and the analytic spectrum when nonlinear effects are insignificant, providing strong validation of our implementation of our numerical integrator. 
+
 \begin{figure}[!b]
 \begin{center}
 \includegraphics[width=0.40\columnwidth]{corticothalamic_comparison}
@@ -414,11 +412,9 @@ Prediction of the EEG power spectrum involves two additional steps - first, summ
 \end{center}
 \end{figure}
 
-\begin{itemize}
-	\item Sleep spindles
-	\item Wake alpha peak
-	\item Volume conduction
-\end{itemize}
+We can also consider modeling spatial variation of the parameters. 
+
+\missingfigure{spatial spectrum comparison}
 
 \subsection{Plasticity (Felix)}
 
