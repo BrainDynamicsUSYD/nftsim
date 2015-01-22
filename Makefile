@@ -36,8 +36,8 @@ Documentation/user.pdf: Documentation/user.tex
 Documentation/developer.pdf: Documentation/developer.tex
 	cd Documentation && pdflatex developer && pdflatex developer
 
-Paper/neurofield.pdf: Paper/neurofield.tex
-	cd Paper && pdflatex neurofield && pdflatex neurofield
+Paper/neurofield.pdf: Paper/felix.tex
+	cd Paper && pdflatex felix #&& pdflatex felix
 
 .PHONY: clean doc paper
 
