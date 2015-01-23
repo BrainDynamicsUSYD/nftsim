@@ -149,10 +149,6 @@ To solve Eqs~(1)--(6), NeuroField creates objects to handle the time integration
 \end{align}
 which can be schematically summarized in Fig.~\ref{fig:components}.
 
-All numerical integrations involves explicit direct integration, except for Eqs.~(10), which uses y explicit finite differences integration.
-
-Importantly, NeuroField uses the object-oriented feature of C++, so that these classes of objects may be extended or replaced. For example, while in the standard theory of \citet{Robinson2005} the synaptic coupling strength \(\nu_{ab}\) is constant, we may extend the synaptic coupling class via inheritance to implement synaptic plasticity, which will be elaborated in Sec.~\ref{sec:cadp}. Another example is to introduce a non-sigmoidal firing response to introduce burst firing, to be elaborated in Sec.~\ref{sec:burst}. In addition, a generic 4\textsuperscript{th} order Runge-Kutta solver is implemented for all NeuroField objects, and a generic 9-point stencil for numerical integration involving spatial dependency is available. Thus, extension of the neural field theoretic equations is very simple in NeuroField, where the development time may be in the order of only a few hours.
-
 \begin{figure}
 \begin{center}
 \tikzstyle{pop_style} = [rectangle, draw, text width=6em, text centered, minimum height=4em]
@@ -172,6 +168,10 @@ Importantly, NeuroField uses the object-oriented feature of C++, so that these c
 \label{fig:components}
 \end{center}
 \end{figure}
+
+All numerical integrations involves explicit direct integration, except for Eqs.~(10), which uses y explicit finite differences integration.
+
+Importantly, NeuroField uses the object-oriented feature of C++, so that these classes of objects may be extended or replaced. For example, while in the standard theory of \citet{Robinson2005} the synaptic coupling strength \(\nu_{ab}\) is constant, we may extend the synaptic coupling class via inheritance to implement synaptic plasticity, which will be elaborated in Sec.~\ref{sec:cadp}. Another example is to introduce a non-sigmoidal firing response to introduce burst firing, to be elaborated in Sec.~\ref{sec:burst}. In addition, a generic 4\textsuperscript{th} order Runge-Kutta solver is implemented for all NeuroField objects, and a generic 9-point stencil for numerical integration involving spatial dependency is available. A developer's guideline is bundled with the NeuroField package, which provide a complete document on the algorithm and code structure of NeuroField, as well as guideline for code development. Thus, extension of the neural field theoretic equations is very simple in NeuroField, where the development time may be in the order of only a few hours.
 
 %\subsubsection{Populations}
 %A \texttt{Population} object represents a neural population, which is primarily characterized by a firing rate. A stimulus population is one that has no incoming connections, instead firing according to a pre-programmed selection (e.g., white noise, or pulsed activity). Other populations recieve connections from of other populations, which are specified as a set of \texttt{Couple} objects. Each population contains two subsidiary objects, an array of \texttt{Dendrite} objects (one for each \texttt{Couple}), and a \texttt{QResponse}. The signal arriving through a \texttt{Couple} object is passed to a corresponding \texttt{Dendrite} which implements the synaptodendritic effects in Eq.~\eqref{eq:dendrite}. The contribution $V_{ab}$ from each presynaptic population is then summed to provide the soma potential $V_a$. The population's \texttt{QResponse} object then provides the implementation of Eq.~\ref{eq:sigmoid} which calculates the population's resulting firing rate. Another common alternative for the firing response is a linear function, which is suitable for small perturbations to a steady state. These behaviours are all specified within the \texttt{QResponse} object. 
@@ -200,6 +200,8 @@ Importantly, NeuroField uses the object-oriented feature of C++, so that these c
 
 \subsection{User interfaces}
 \label{sec:interface}
+
+As shown in Fig.~\ref{fig:workflow}, the core NeuroField C++ program takes in a plain text configuration file (abbreviated as the config file), where the user specifies all the simulation information. A separate user manual, that is bundled with the software package, exhaustively documents all the options for the config file, so that it will not be repeated here. Figure~\ref{fig:config_text} is an example config file for the neural field model to be discussed in Sec.~\ref{sec:wave}. After a brief comment, temporal and spatial parameters of the simulation is specified, followed by the specification of a square connection matrix, where a non-zero entry indicate a connection between two populations, so that each connection consists of a axonal propagation from the presynaptic neural population, and a dendritic and firing response from the postsynaptic population. Then, each neural field object, which include firing response ({\tt Firing}), dendritic response ({\tt Dendrite}), axonal propagation ({\tt Propag}) and synaptic coupling ({\tt Couple}), is specified via a {\tt identifier: type - } syntax, followed by the designated parameter values, which follow a {\tt parameter: value} syntax. In the example of Fig.~\ref{fig:config_text}, the axonal propagation of the excitatory-excitatory self-coupling ({\tt Propag 1}) is a ``wave" type propagation, that has a characteristic spatial range of 0.2 m and a damping coefficient of 30 s\textsuperscript{-1}.
 
 \begin{figure}[!htbp]
 \begin{center}
@@ -240,9 +242,11 @@ Couple:
 \end{center}
 \end{figure}
 
-As shown in Fig.~\ref{fig:workflow}, the core NeuroField C++ program takes in a plain text configuration file (abbreviated as the config file), where the user specifies all the simulation information. A separate user manual, that is bundled with the software package, exhaustively documents all the options for the config file, so that it will not be repeated here. Figure~\ref{fig:config_text} is an example config file for the neural field model to be discussed in Sec.~\ref{sec:wave}. After a brief comment, temporal and spatial parameters of the simulation is specified, followed by the specification of a square connection matrix, where a non-zero entry indicate a connection between two populations, so that each connection consists of a axonal propagation from the presynaptic neural population, and a dendritic and firing response from the postsynaptic population. Then, each neural field object, which include firing response ({\tt Firing}), dendritic response ({\tt Dendrite}), axonal propagation ({\tt Propag}) and synaptic coupling ({\tt Couple}), is specified via a {\tt identifier: type - } syntax, followed by the designated parameter values, which follow a {\tt parameter: value} syntax. In the example of Fig.~\ref{fig:config_text}, the axonal propagation of the excitatory-excitatory self-coupling ({\tt Propag 1}) is a ``wave" type propagation, that has a characteristic spatial range of 0.2 m and a damping coefficient of 30 s\textsuperscript{-1}.
-
 NeuroField creates an output file, where the simulation results are specified in the end of the config file. In Fig.~\ref{fig:config_text}, the excitatory population and the excitatory-excitatory axonal propagation is specified to be outputted, so that these two objects will output the time series of their neural dynamical quantities.
+
+\subsubsection{Manual read/write}
+
+NeuroField
 
 %NeuroField input and output are written in plain text files, which are human readable and simple to construct and parse programatically. An simple configuration file is shown in Fig.~\ref{fig:config_text}.  
 %
