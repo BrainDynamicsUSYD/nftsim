@@ -6,7 +6,7 @@
 \usepackage{amssymb}
 \usepackage{booktabs} % Nicer tables
 \usepackage{multirow} % Table cells spanning multiple rows
-\usepackage{lineno}
+%\usepackage{lineno}
 \usepackage[latin1]{inputenc}
 \usepackage{tikz}
 \usepackage[noperiod]{jabbrv}
@@ -56,8 +56,10 @@ breakatwhitespace=tru,	% sets if automatic breaks should only happen at whitespa
 
 
 \begin{abstract}
-%% Text of abstract
-Neural field models are a powerful, computationally efficient approach to modeling large-scale brain activity. NeuroField is an extensible software package to simulate neural field equations in a wide range of models. The basic element of neural field theory (population activity, wave propagation, and synaptic effects) can be assembled into arbitrary networks and integrated numerically to predict brain activity. NeuroField also includes MATLAB and Python routines for higher-level analysis including the power spectrum. NeuroField is implemented in C++ and has been tested on a range of Linux distributions, Microsoft Windows, and Mac OS X. Extensive user documentation and examples are provided, and typical use of NeuroField does not require C++ experience. NeuroField is open-source and available (http://physics.usyd.edu.au/brain/neurofield) under the GNU license for non-commercial use. 
+
+Neural field theories are powerful, computationally efficient approach to modeling large-scale brain phenomena. In particular, the versatile neural field theory of Robinson et. al. addresses questions on brain physiology and matches them with experimental observables including the EEG spectra, evoked response potentials, age-related changes to the physiology of the brain, seizures, and synaptic plasticity phenomena. This paper presents NeuroField as a user-friendly, extensible, portable, well-documented software package applicable to simulate a wide range of neural field phenomena, packaged with MATLAB and Python routines for higher-level analysis. NeuroField is %open-source and 
+available for non-commercial use at \url{http://physics.usyd.edu.au/brain/neurofield}%under the GNU license 
+. 
 \end{abstract}
 
 \begin{keyword}
@@ -70,222 +72,154 @@ EEG \sep neurophysiology \sep methods \sep modeling
 
 \end{frontmatter}
 
-\linenumbers
+%\linenumbers
 
-%% main text
 \section{Introduction}
 \label{sec:introduction}
-Neural field modeling has proved to be a powerful technique for constructing relatively simple, physiologically based models of the brain that are capable of predicting EEG and correlate well with experimental data \cite{Deco2008,Pinotsis2012}. The key features of neural field models are captured by the three key equations governing general neural field theory
 
+Neural field theory modeling is a powerful technique for constructing relatively simple, physiologically based models of the brain that are capable of predicting EEG and correlate well with experimental data \cite{Deco2008,Pinotsis2012}. In particular, the neural field theory of Robinson et. al. is a well established theory that addresses the EEG spectra, evoked response potentials, age-related changes to the physiology of the brain, seizures, and synaptic plasticity phenomena \citep{Robinson2005,Rowe2004413,PhysRevE.63.021903,PhysRevE.65.041924,Robinson:04aa,PhysRevE.68.021922,PhysRevE.70.011911,VanAlbada2010,Rennie2002,ker11,Breakspear2006}. In this neural field theory, we make a continuum approximation in which neural properties are averaged over spatial scales of an mm or so: sufficient to contain large numbers of neurons, but small enough to resolve fine structures in brain activities. Within this mean field context, rather than looking at individual neurons, we classify neural populations by the type of neuron (e.g. pyramidal excitatory neurons or inhibitory interneurons), and mean field quantities are label by their spatial position. In each modeling task, we specify the neural populations, stimulations, and synapto-dendritic connections between them (self-connection within a population is allowed), so that each neural population receives local dendritic voltage input and influences other populations via its action potential firing, measured via its instantaneous axonal action potential firing rate. Figure~\ref{fig:ct_schematic} is an example of such a ``population model," where we have two cortical populations and two thalamic populations, with intracortical, intrathalamic, and corticothalamic connections; details about this particular population model can be found in Sec.~\ref{sec:ct}.
+
+\begin{figure}[ht]
+\begin{center}
+\includegraphics[width=0.50\columnwidth]{EIRS_clean}
+\caption{Schematic illustration of the corticothalamic model, which contain excitatory and inhibitory cortical populations (\(e\) and \(i\), respectively), and reticular and relay thalamic populations (\(r\) and \(s\), respectively), where the relay population receives subthalamic stimulation. Arrows indicate excitatory connections, while roundheaded arrows indicate inhibitory connections. This population model is capable of capturing the alpha rhythm, age-related changes to the physiology of the brain, evoked response potentials, seizures, and many other phenomena, as elaborated in Sec.~\ref{sec:ct}.}
+\label{fig:ct_schematic}
+\end{center}
+\end{figure}
+
+The standard theory \citep{Robinson2005} is represented by three equations, which are schematically illustrated in Fig.~\ref{fig:eirs_cycle}.:
 \begin{align}
-	\label{eq:summation}
 	D_{ab}V_{ab}(\mathbf{r},t) &= \nu_{ab}\phi_{ab}(\mathbf{r},t),\\
-	\label{eq:sigm_sum}
-	Q_a(\mathbf{r},t) &= S_a \big[\sum_b V_{ab}(\mathbf{r},t) \big],\\
+			Q_a(\mathbf{r},t) &= S_a \big[\sum_b V_{ab}(\mathbf{r},t) \big],\\
 	\mathcal{D}_{ab}\phi_{ab}(\mathbf{r},t) &= Q_b(\mathbf{r},t-\tau_{ab}).
 \end{align}
-which represent synapto-dendritic smoothing, dendritic summation and firing response, and damped wave propagation, respectively. The differential operators are
+whre the operators \(D_{ab}\), \(S_{a}\), and \(\mathcal{D}_{ab}\) capture synapto-dendritic smoothing, soma response, and axonal propagation of action potentials, respectively, given by
+
 \begin{align}
-\label{eq:dendrite}
 	D_\alpha(t) &= \frac{1}{\alpha\beta}\frac{d^2}{dt^2} + \left( \frac{1}{\alpha} + \frac{1}{\beta}\right) \frac{d}{dt}+1,\\
-\label{eq:wave}
+	S(V_a) &= \frac{Q_{\textrm{max}}}{1+\exp[-(V_a - \theta)/\sigma']},\\
 	\mathcal{D}_a(\mathbf{r},t) &= \frac{1}{\gamma_a^2}\frac{\partial^2}{\partial t^2} + \frac{2}{\gamma_a}\frac{\partial}{\partial t} + 1 - r_a^2\nabla^2,
 \end{align}
-and the sigmoid population response $S_a$ is given by
-\begin{align}
-\label{eq:sigmoid}
-	Q_a = S(V_a) = \frac{Q_{\textrm{max}}}{1+\exp[-(V_a - \theta)/\sigma']},
-\end{align}
-The relationship between these quantities is schematically illustrated in Fig.~\ref{fig:eirs_cycle}.
 
-\begin{figure}[!b]
+In these equations, all dynamical quantities and operations are subscripted with population indices \(a\) (if it is associated with population \(a\)) or \(ab\) (if it is associated with the connection from \(b\) to \(a\)). The mathematical symbol \(\phi\) represents the axonal firing rate, \(\nu\) represents local somato-dendritic coupling strength, \(V_{ab}\) denotes the connection \(ab\)'s contribution to the soma voltage potential, which is summed via \(\sum_b V_{ab}\) to give the population soma voltage potential \(V_a\); \(Q\) is the population firing rate, which feeds into the axonal firing rate with a time delay \(\tau\). All neural quantities carry spatial and temporal dependencies. The operator parameters \(\alpha\) and \(\beta\) are the rise and decay rates of dendritic response, \(Q_\textrm{max}\) is the maximum firing rate, \(\theta\) is the mean firing threshold, \(\sigma'\) is the population standard deviation of the soma voltage relative to threshold, \(\gamma\) is the temporal damping coefficient, and \(r\) is the spatial effective range of axonal propagation. This can be schematically summarized in Fig.~\ref{fig:eirs_cycle}.
+
+\begin{figure}[ht]
 \begin{center}
 \includegraphics[width=0.40\columnwidth]{EIRS_cycle}
-\caption{Schematic overview of the key dynamic quantities of neural field models, and the relationships between them.}
+\caption{Schematic overview of the key dynamic quantities \(V_a\), \(Q_a\) \(\phi_{ab}\) in the neural field model, as governed by Eqs~(1)--(3).}
 \label{fig:eirs_cycle}
 \end{center}
 \end{figure}
 
-The most challenging part of applying neural field theory is the implementation of the numerical solver. Several factors contribute to making the numerical integration of neural field equations difficult. In particular, propagation delays between neural populations result in delay-differential equations that require special handling of temporal history. Further, propagation of neural fields according to a damped wave equation adds two dimensions to the system, and requires a relative sophisticated finite-differencing scheme that takes into account the geometry of the system. In addition, periodic boundary conditions must be correctly handled during the integration. 
+Of course, one of the major strengths of the neural field theory of \citet{Robinson2005} is its versatility: by choosing the appropriate neural population model, we may model cortical phenomena \citep{}, the corticothalamic system \citep{}, or even hemispheric interactions \citep{}. Moreover, we may replace the operators above with more sophisticated ones, so as to model additional phenomena. For example, by replacing the constant synapto-dendritic coupling strength \(\nu\) with a dynamic one, we may model synaptic plasticity (see Sec.~\ref{sec:cadp}). Or, by replacing the sigmoidal soma firing response with differential equations, we can capture bursting firing rates (see Sec.~\ref{sec:burst}).
 
-We have developed NeuroField to provide a software package that solves the neural field equations for arbitrary neural populations, and contains library code for analysis and visualization, thus removing the barriers to quickly testing and analyzing neural field models. The software is designed to be easily extensible with basic C++ programming skills, making it simple to expand upon the basic model to include new phenomena. 
+This versatility and extensibility of the theory presents a challenge in the implementation of the numerical solver. First, we need a program that takes an arbitrary number of neural populations, with possibly different population types and parameters for each population, and arbitrary connections between the populations, where again each connection may be of different types and is described by different parameter values. Several factors contribute to making the numerical integration of equations difficult: propagation delays between neural populations result in delay-differential equations that require special handling of temporal history; propagation of action potentials according to a damped wave equation adds two spatial dimensions to the system; periodic boundary conditions must be correctly handled during the integration. The popularity and extensibility of the theory means that the program will involve many developers, who extend and reuse previous code independently; coding level structure needs to be in place to ensure proper collaborative effort and minimizing the chance of error.
 
-\section{Method and Results}
-\label{sec:theory}
+We have developed NeuroField as a software package that solves the neural field equations for arbitrary neural population models that is user-friendly and easily extensible. Written in C++, this code has been tested on a range of Linux distributions, Microsoft Windows, and Mac OS X. Front-ends written in MATLAB and Python are also provided for analysis and visualization. In this paper, we present the software as a solution to quickly testing and analyzing neural field models. This paper is structured as follows: in Sec.~\ref{sec:method}, we present the usage of NeuroField, including the MATLAB and Python interfaces, as well as the numerical algorithm of NeuroField; in Sec.~\ref{sec:results}, we present example usages of NeuroField in published neural field theory as a showcase of the capabilities of NeuroField. Separate manuals that provide documentations to all user options, extension procedures and coding algorithms are bundled with the NeuroField package.
 
-\subsection{Key features/Basic functions}
-The essential role of NeuroField is to take as input a model and its initial conditions, and to output one or more time series corresponding to the result of integrating the neural field equations. A model is a specification of neural populations (amounting to defining their firing response to input from other populations including synapto-dendritic effects), and connections between the populations including how neural signals propagate through space. Sensory or other stimulus is implemented as a neural population that recieves no input from other populations, and has a pre-defined firing pattern. Integration of the neural field equations provides several quantities of interest. Most notably, the signals from populations can be associated with local field potentials (LFP) or EEG depending, and these predictions can be directly compared against experimental data. The soma potential or firing rate of the neural populations can be compared to individual neuron data. Changes to synaptic strength can be monitored when simulating neural plasticity. When simulating spatially extended populations, spatial correlations and patterns of activity can also be analyzed. 
+\section{Method}
+\label{sec:method}
 
-The core of NeuroField is a C++ program that accept a human-readable plain text configuration file. The output from NeuroField is a plain text output file containing all of the requested simulation variables for each time step. The syntax of the output file has been designed to be simple to parse, and the NeuroField package includes reference parsers for Matlab and Python. These parsers may also help serve as a starting point for implementation of parsers other programming languages. 
+We present NeuroField, a C++ program bundled with MATLAB and Python scripts as a flexible numerical package specialized in solving Eqs~(1)--(6). The program reads a human readable configuration file (abbreviated as the config file), which specifies all the simulation information, including an arbitrary population model, (i.e., the number of populations and the connections between them,) and the type and parameter values of each population and connection. Given the config file, NeuroField creates a human readable output file, which stores the time series of the neural quantities as requested by the user. Optional MATLAB and Python scripts are packaged with NeuroField to aid the launching and output analysis of the simulation. Figure~\ref{fig:workflow} is a flow diagram summarizing the workflow of NeuroField usage. Ample documentation of all usage options, config file options and scripting interfaces are bundled with the software package, so that we will not exhaust these information in this paper. Below, we first explain the structure and algorithm of the program in Sec.~\ref{sec:neurofield}, and in Sec.~\ref{sec:interface}, we provide a brief overview of the interfaces of NeuroField.
 
-There are a number of common ways to analyze the output from neural field models. First, plots of the time series are useful for directly viewing neural oscillations, evoked responses, seizures, monitoring plasticiity, and verifying stability. Second, calculation of the power spectrum, which is often compared to experimental EEG. This can also involve detection of multiple spatial modes of activity and incorporation of volume conduction, to account for effects introduced by electrodes in real-world recordings. Finally, spatial patterns of activity and propagation of waves of activity can be visualized on a surface plot. All of these basic analyses are included as Matlab programs in the NeuroField toolbox. 
-
-\subsection{Data structures}
-NeuroField is an object-oriented program where classes are used to encapsulate different components of the simulation. This structure makes it simple to write new components to customize parts of the simulation, that can be easily integrated into the rest of the simulation engine. An overview of the class structure is illustrated in Fig.~\ref{fig:class_hierarchy}. 
-
-\begin{figure}[!h]
-\tikzstyle{block} = [draw,text width=3em,text centered,minimum height=2em]
-\tikzstyle{line} = [draw, -latex']    
-\begin{tikzpicture}[node distance = 3em, auto]
-	\node[] (solver) {\type{Solver}};
-    \node[below of=solver,node distance=3em] (vsolver) {};
-
-	\node[left of=vsolver,node distance=5em] (vpropag) {};
-	\node[left of=vpropag,node distance=10em] (vpop) {};
-	\node[right of=vsolver,node distance=5em] (vcouple) {};
-	\node[right of=vcouple,node distance=10em] (voutput) {};
-
-    \draw (solver) -- (vsolver.center);
-    \draw (vcouple.center) -- (voutput.center);
-    \draw (vsolver.center) -- (vcouple.center);
-    \draw (vpropag.center) -- (vpop.center);
-    \draw (vsolver.center) -- (vpropag.center);
-
-
-	\node[below of=vpropag] (apropag) {\type{Array[Propag]}};
-	\node[below of=vpop]    (apop) {\type{Array[Population]}};
-	\node[below of=vcouple] (acouple) {\type{Array[Couple]}};
-	\node[below of=voutput] (aoutput) {\type{Array[Outlet]}};
-    
-    \draw (vpropag.center) -| (apropag);
-    \draw (vpop.center) -| (apop);
-    \draw (vcouple.center) -| (acouple);
-    \draw (voutput.center) -- (aoutput);
-
-	\node[below of=apropag] (propag) {\type{Propag} $\rightarrow \phi_{ab}$};
-	\node[below of=apop]    (pop) {\type{Population} $\rightarrow Q_a$};
-	\node[below of=acouple] (couple) {\type{Couple} $\rightarrow \nu_{ab}$};
-	\node[below of=aoutput] (output) {\type{Outlet}};
-    \draw (apropag) -- (propag);
-    \draw (apop) -- (pop);
-    \draw (acouple) -- (couple);
-    \draw (aoutput) -- (output);
-
-	\node[below of=pop,node distance=3em](vpop){};
-	\node[left of=vpop,node distance=4em](vs){};
-	\node[right of=vpop,node distance=4em](vq){};
-    \draw (pop) |- (vpop);
-    \draw (vpop.center) |- (vs.center);
-    \draw (vpop.center) |- (vq.center);
-
-	\node[below of=vs,node distance=3em](ts){\type{Timeseries}};
-	\node[below of=vq,node distance=3em](qr){\type{QResponse} $\rightarrow V_a$};
-    \draw (vs.center) -- (ts);
-    \draw (vq.center) -- (qr);
-
-	\node[below of=qr](adendrite){\type{Array[Dendrite]}};
-	\node[below of=adendrite](dendrite){\type{Dendrite} $\rightarrow V_{ab}$};
-    \draw (qr) -- (adendrite);
-    \draw (adendrite) -- (dendrite);
-
-	\node[below of=propag,node distance=3em](tau){\type{Tau} $\rightarrow \tau_{ab}$};
-	\draw(propag)--(tau);
-\end{tikzpicture}
-\caption{Schematic diagram showing key NeuroField objects, their hierarchical relationships, and their principal associated dynamic quantities.}
-\label{fig:class_hierarchy}
-\end{figure}
-
-The high-level classes \texttt{Solver} and \texttt{Array} serve as containers to drive the simulation, and to store collections of simulation elements, respectively. The \texttt{outlet} object serves as a modular container for writing variables into the output file. Creating an \texttt{outlet} object enables any variable (including new user-defined quantities) to be included in the output. 
-
-The main objects (\texttt{Couple}, \texttt{Dendrite}, \texttt{Qresponse}, \texttt{Population} and \texttt{Propag}) are each responsible for one part of the neural field model. 
-\begin{align}
-	P &= \nu_{ab}\phi_{ab}, & \mathtt{Couple}\\
-	D_{ab}V_{ab} &= P, & \mathtt{Dendrite}\\
-	Q_a &= S_a \big[\sum_b V_{ab} \big], & \mathtt{QResponse/Pop}\\
-	\mathcal{D}_{ab}\phi_{ab} &= Q_b,&  \mathtt{Propag}
-\end{align}
-
-\begin{figure}
-\tikzstyle{pop_style} = [rectangle, draw, text width=6em, text centered, minimum height=4em]
-\tikzstyle{couple_style} = [rectangle, draw, text width=6em, text centered, minimum height=4em,fill=gray!10]
-\tikzstyle{line} = [draw, -latex']    
-\begin{tikzpicture}[node distance = 2.7cm, auto]
-    \node[pop_style] (qresponse) {\texttt{QResponse}\\$V_a \rightarrow Q_a$};
-    \node[pop_style,right of=qresponse] (pop) {\texttt{Population}\\$Q_b$};
-    \node[couple_style,right of=pop] (propag) {\texttt{Propag}\\ $Q_b \rightarrow \phi_{ab}$};
-    \node[couple_style,right of=propag] (couple) {\texttt{Couple}\\$\phi_{ab} \rightarrow \nu_{ab}\phi_{ab}$};
-    \node[couple_style,right of=couple] (dendrite) {\texttt{Dendrite}\\$\nu_{ab}\phi_{ab}\rightarrow V_{ab}$};
-    \draw[line] (pop) -- (propag);
-    \draw[line] (propag) -- (couple);
-    \draw[line] (couple) -- (dendrite);
-    \draw[line] (qresponse) -- (pop);
-\end{tikzpicture}
-\caption{Schematic diagram showing the relationship between fundamental NeuroField objects. The white blocks conceptually relate to neural populations, and the shaded blocks relate to connections.}
-\label{fig:components}
-\end{figure}
-
-\subsubsection{Populations}
-A \texttt{Population} object represents a neural population, which is primarily characterized by a firing rate. A stimulus population is one that has no incoming connections, instead firing according to a pre-programmed selection (e.g., white noise, or pulsed activity). Other populations recieve connections from of other populations, which are specified as a set of \texttt{Couple} objects. Each population contains two subsidiary objects, an array of \texttt{Dendrite} objects (one for each \texttt{Couple}), and a \texttt{QResponse}. The signal arriving through a \texttt{Couple} object is passed to a corresponding \texttt{Dendrite} which implements the synaptodendritic effects in Eq.~\eqref{eq:dendrite}. The contribution $V_{ab}$ from each presynaptic population is then summed to provide the soma potential $V_a$. The population's \texttt{QResponse} object then provides the implementation of Eq.~\ref{eq:sigmoid} which calculates the population's resulting firing rate. Another common alternative for the firing response is a linear function, which is suitable for small perturbations to a steady state. These behaviours are all specified within the \texttt{QResponse} object. 
-
-Finally, populations may be further customized to provide additional functionality. One notable example is the inclusion of bursting, which introduces two new dynamic properties of the population that are integrated at each time step. NeuroField includes a basic fourth-order Runge-Kutta integrator that is suitable for these types of additions. The modular nature of NeuroField enables this integrator to be easily substituted with a user-defined function. 
-
-\todo[inline]{More from XL about this}
-
-\subsubsection{Propagators}
-The neural field generated by a population propagates according to Eq.~\ref{eq:wave}, which is encapsulated in a \texttt{Propag} object. There are as many \texttt{Propag} objects as there are connections in the model. There are three fundamental possibilities for the propagator. First, the propagator may simply be a direct mapping, with $\mathcal{D}_a(\mathbf{r},t) = 1$. This is commonly used for short-range local connections. Second, for spatially localized activity we can include only the time derivaties in Eq.~\ref{eq:wave}, which gives a \emph{harmonic} propagator. Finally, we can consider the full expression in Eq.~\ref{eq:wave}, which is the full wave propagator.
-
-Much of the complexity of NeuroField lies in the solution to the wave equation. NeuroField uses an explicit finite difference (9 point) algorithm on a regular square grid with periodic boundary conditions to solve the wave equation. Implementation of the periodic boundary conditions requires that the 9 point stencil correctly wrap around the edges of the grid at every time step. Correct, efficient implementation of this step tends to be the biggest hurdle to implementing a neural field model. 
-
-\todo[inline]{Do we have a derivation or something for the actual stencil equation? (FELIX)}
-
-\begin{figure}[!b]
+\begin{figure}[th]
 \begin{center}
-\includegraphics[width=1\columnwidth]{wave_comparison}
-\caption{Effect of wave propagation in a single-population model. The stimulus is a single short pulse at the center node. The left panel shows population voltage $V_a$, which shows the spatial localization of the input signal. The right panel shows the signal $\phi_a$ after wave propagation.}
-\label{fig:wave_comparison}
+\includegraphics[scale=.8]{flow.pdf}
+\caption{Flow diagram illustrating typical NeuroField usage workflow, which can be categorized into three broad phrases: launching, simulation, and postprocessing. The core is the simulation phase, where NeuroField reads the configuration file (or config file for short), and generates the output file, which stores the simulation results. In the postprocessing phase, the simulation results are further analyzed and useful data, plots, figures may be generated. MATLAB and Python routines are provided to aid postprocessing. Similarly, MATLAB and Python wrapper scripts are provided to aid the creating and running of config files. Since both the config file and output file are human readable, they may be processed manually, and the use of any MATLAB and Python scripts are optional. Section~\ref{sec:neurofield} elaborates on the simulation phase, while Sec.~\ref{sec:interface} elaborates on the launching and postprocessing phases.}
+\label{fig:workflow}
 \end{center}
 \end{figure}
 
-The propagator also takes into account the spatial geometry of the problem. By default, NeuroField solves the wave equation on a flat grid. However, by considering a wave propagator of the form $\mathcal{D}_a(\mathbf{r},\mathbf{r'},t)$, arbitrary metric tensors may be implemented. This type of propagator enables wave propagation on curved surfaces, which may be as simple as a sphere or as detailed as a surface based on structural MRI. 
+\subsection{Simulation algorithms}
+\label{sec:neurofield}
 
-\todo[inline]{More from XL/John about this}
+The NeuroField program uses standard C++ features including object-oriented programming, templates programming, and the C++ standard library, and has been tested on a range of Linux distributions, Microsoft Windows, and Mac OS X.
+% history: Peter Drysdale wrote the first version, Felix Fung rewrote the entire code, but all the algorithm is still Peter Drysdale's.
 
-Finally, the propagator object also encapsulates any time delays, which typically arise due to spatial separation of neural populations (for example, between cortical and thalamic populations). By storing the time delay internally in the \texttt{Propag} object, all other parts of the simulation are able to simply query the \texttt{Propag} to obtain $\phi_b$, and the \texttt{Propag} will return the retarded value where applicable. Thus customizing other parts of the model requires no special handling of time delays. The delays may also vary spatially, so that different parts of the system have different time delays. 
+To solve Eqs~(1)--(6), NeuroField creates objects to handle the time integration of neural dynamical quantities. Each population is associated with a firing response to handle Eqs~(2) and (5), while each connection between two populations is associated with the axonal propagation of the instantaneous firing rate of the presynaptic neural population (to handle Eq.~(3) and (6)), and the synaptic and dendritic coupling of the postsynaptic population (to handle Eqs~(1) and (4)). We may rearrange Eqs (1)--(3) into this form to illustrate the division of the system of partial differential equations:
+\begin{align}
+	P &= \nu_{ab}\phi_{ab}, & \text{Synaptic coupling}\\
+	D_{ab}V_{ab} &= P, & \text{Dendritic response}\\
+	Q_a &= S_a \big[\sum_b V_{ab} \big], & \text{Firing response}\\
+	\mathcal{D}_{ab}\phi_{ab} &= Q_b,&  \text{Axonal propagation}
+\end{align}
+which can be schematically summarized in Fig.~\ref{fig:components}.
 
-\subsubsection{Couples}
-The coupling strength $\nu_{ab}$ scales the incoming signals, weighting the contribution from different presynaptic sources. The strength of the synapse is stored in a \texttt{Couple} object. Typically the strength is constant, reflecting the number and strength of the relevant synaptic connections. However, modulation of the coupling strengths forms the basis of neural plasticity. In NeuroField, this is achieved by modifying the \texttt{Couple} to take into account time-varying connections. We have used this functionality in previous studies to model a wide range of plasticity effects including spike-timing dependent plasticity (STDP) and calcium dependent plasticity (CaDP). 
+\begin{figure}
+\begin{center}
+\tikzstyle{pop_style} = [rectangle, draw, text width=6em, text centered, minimum height=4em]
+\tikzstyle{couple_style} = [rectangle, draw, text width=6em, text centered, minimum height=4em,fill=gray!30]
+\tikzstyle{line} = [draw, -latex']    
+\begin{tikzpicture}[node distance = 2.7cm, auto]
+	\node[pop_style] (qresponse) {Firing response\\$\sum_bV_{ab} \rightarrow Q_a$};
+    %\node[pop_style,right of=qresponse] (pop) {\texttt{Population}\\$Q_b$};
+    \node[couple_style,right of=qresponse] (propag) {Axonal propagation\\ $Q_b \rightarrow \phi_{ab}$};
+    \node[couple_style,right of=propag] (couple) {Synaptic coupling\\$\phi_{ab} \rightarrow \nu_{ab}\phi_{ab}$};
+    \node[couple_style,right of=couple] (dendrite) {Dendritic response\\$\nu_{ab}\phi_{ab}\rightarrow V_{ab}$};
+    \draw[line] (qresponse) -- (propag);
+    \draw[line] (propag) -- (couple);
+    \draw[line] (couple) -- (dendrite);
+\end{tikzpicture}
+\caption{Flow diagram illustrating the NeuroField algorithm, where each equation of \citet{Robinson2005} is handled by a C++ object. Here, a firing response (white fill) is associated with each neural population, while each gray-filled objects are associated with each connection between two populations. Compare with Fig.~\ref{fig:eirs_cycle}. Importantly, each object may be extended or replaced via C++ inheritance, so that new object types provide extension to the standard \citet{Robinson2005} theory.}
+\label{fig:components}
+\end{center}
+\end{figure}
 
-\todo[inline]{More from Felix about this}
+All numerical integrations involves explicit direct integration, except for Eqs.~(10). Much of the complexity of NeuroField lies in the solving of this delay-partial differential equation with spatial dependence. Correct, efficient implementation of this step tends to be the biggest hurdle to implementing a neural field model. NeuroField solves by storing the neural firing rate  histories and uses explicit finite differences integration. By default, Euclidean geometry with toroidal topology is used. However, non-Euclidean geometry or alternative boundary conditions may be implemented, so that simulation may be performed on surfaces such those found in structural MRI in the future.
 
-\subsubsection{Input and output}
-NeuroField input and output are written in plain text files, which are human readable and simple to construct and parse programatically. An simple configuration file is shown in Fig.~\ref{fig:config_text}.  
+Importantly, NeuroField uses the object-oriented feature of C++, so that these classes of objects may be extended or replaced. For example, while in the standard theory of \citet{Robinson2005} the synaptic coupling strength \(\nu_{ab}\) is constant, we may extend the synaptic coupling class via inheritance to implement synaptic plasticity, which will be elaborated in Sec.~\ref{sec:cadp}. Another example is to introduce a non-sigmoidal firing response to introduce burst firing, to be elaborated in Sec.~\ref{sec:burst}. In addition, a generic 4\textsuperscript{th} order Runge-Kutta solver is implemented for all NeuroField objects, and a generic 9-point stencil for numerical integration involving spatial dependency is available. A developer's guideline is bundled with the NeuroField package, which provide a complete document on the algorithm and code structure of NeuroField, as well as guideline for code development. Thus, extension of the neural field theoretic equations is very simple in NeuroField, where the development time may be in the order of only a few hours.
 
-The configuration file first starts with a specification of the simulation duration and time step. The total number of nodes is specified, and assumed to correspond to a square grid - in this case, 30x30 nodes. It is also possible to specify a rectangular grid at this point. 
+\subsection{User interfaces}
+\label{sec:interface}
 
-Next, a list of connections is provided, formatted as a human-readable connection matrix. Each connection is assigned a number at this point. The dimension of the matrix corresponds to the number of populations being simulated, and the number of nonzero entries in the matrix corresponds to the number of couplings, propagators and dendrites.
+As shown in Fig.~\ref{fig:workflow}, the core NeuroField C++ program takes in a plain text configuration file (abbreviated as the config file), where the user specifies all the simulation information, and write the simulation result into a output file. A separate user manual, that is bundled with the software package, exhaustively documents all the options for the user interface, so that it will not be repeated here. Rather, we provide a brief overview of the interface below, and Sec.~\ref{sec:results} presents illustrative results.
 
-Following the connection matrix is a detailed specification for each population. The spatial grid resolution is determined automatically based on the number of nodes and the physical dimensions of the population. The Courant condition for numerical stability is automatically checked. The firing response is specified for each population, with parameters delegated to the appropriate \texttt{QResponse} object. The parameters for each afferent dendrite are specified at this point as well. Stimulus populations have no dendrites. Instead, the stimulus is specified by a \texttt{TimeSeries} object, a container that returns a firing rate as a function of time. In Fig.~\ref{fig:config_text}, the stimulus is of type \texttt{Pulse}, and acts at only a single node of the simulation. Different stimuli can be applied at different times, and multiple stimulus populations can be used to investigate the effect of superimposing stimuli. 
+Table~\ref{tab:task} tabulates typical NeuroField usage tasks, and the corresponding work required. Most tasks involve only editing the config file, and then postprocessing the simulations results, so that only the launching and postprocessing phase in Fig.~\ref{fig:workflow} requires attention. Even so, ample helper scripts exist to aid both the launching and postprocessing phase.
 
-For each connection, the propagator and coupling type need to be specified. In Fig.~\ref{fig:config_text}, one of the propagators is given by the wave equation, and the other is a direct mapping. The time delay, axonal range, and damping rate are all specified independently for each propagator. 
+\begin{table}
+	\begin{tabular}{ p{4.5cm} l p{4.5cm} }
+	\hline
+	Task & File & action \\
+	\hline
+	Parameter exploration & Config file & change parameter value \\
+	Use alternative object type & Config file & change object type \\
+	Use alternative population model & Config file & change the population model \\
+	Create new object type & Source code & write new C++ class\\
+	\hline
+\end{tabular}
+\caption{NeuroField tasks requirements, in roughly ascending order of difficulty, so that a task lower in the table often involve also doing the tasks above the entry. Most simulations require only editing of the config file; only the creation of new object types require code writing. Even so, ample documentation, guidelines and working examples minimizes the coding workload. See also Fig.~\ref{fig:workflow} for NeuroField usage workflow and interface.}
+\label{tab:task}
+\end{table}
 
-The final block in the configuration file selects the output from NeuroField. The output can include all of the nodes, or a user-defined subset of nodes. The start of the output can be delayed to remove transients from the output. To ensure numerical stability, the equations need to be integrated with a very small time step (e.g., $1\times10^{-4}$\,s$=10000$\,Hz). This is much smaller than typically required for analysis; EEG is typically sampled at just 500\,Hz or less. To reduce file size and make handling the output less computationally intensive, an output sampling interval can be specified, downsampling the output from NeuroField. 
+\subsubsection{Input}
+
+Figure~\ref{fig:config_text} is an example config file for the neural field model to be discussed in Sec.~\ref{sec:wave}. The config file starts with a descriptive comment. Then, simulation parameters including simulation duration and time step size, and the number of spatial nodes are specified. This is followed by the specification of a square connection matrix, where a non-zero entry indicate a connection between two populations, so that each connection consists of a axonal propagation from the presynaptic neural population, and a dendritic and firing response from the postsynaptic population. Then, each neural field object, which include firing response ({\tt Firing}), dendritic response ({\tt Dendrite}), axonal propagation ({\tt Propag}) and synaptic coupling ({\tt Couple}), is specified via a {\tt identifier: type - } syntax, followed by the designated parameter values, which follow a {\tt parameter: value} syntax. In the example of Fig.~\ref{fig:config_text}, the axonal propagation of the excitatory-excitatory self-coupling ({\tt Propag 1}) is a ``wave" type propagation, that has a characteristic spatial range of 0.2 m and a damping coefficient of 30 s\textsuperscript{-1}.
 
 \begin{figure}[!htbp]
 \begin{center}
 \begin{lstlisting}
-Time: 0.15 Deltat: 0.0001
+Example config file for one-population neural field model
+Time: 0.15 Deltat: 1e-4
 Nodes: 900
 
-    Connection matrix:
+Connection matrix:
 From:  1  2 
 To 1:  1  2  
 To 2:  0  0  
 
-
 Population 1: Excitatory
-Length: 0.5
-Q: 10.98
-Firing: Sigmoid - Theta: 0.01292 Sigma: 0.0038 Qmax: 340
- Dendrite 1: alpha: 83.33333333 beta: 769.2307692
- Dendrite 2: alpha: 83.33333333 beta: 769.2307692
+ Length: 0.5
+ Q: 10.98
+ Firing: Sigmoid - Theta: 0.013 Sigma: 0.0038 Qmax: 340
+  Dendrite 1: alpha: 83 beta: 769
+  Dendrite 2: alpha: 83 beta: 769
 
 Population 2: Stimulation
-Length: 0.5
+ Length: 0.5
  Stimulus: Pulse - Onset: 0 Node: 465 Amplitude: 1 Width: 1e-3 
 
-Propag 1: Wave - Tau: 0 Range: 0.2 gamma: 30
-Propag 2: Map - Tau: 0
-
+Propag 1: Wave - Range: 0.2 gamma: 30
+Propag 2:  Map -
 Couple 1:  Map - nu: 1e-4
 Couple 2:  Map - nu: 1e-4
 
@@ -295,14 +229,12 @@ Dendrite:
 Propag: 1
 Couple:  
 \end{lstlisting}
-\caption{Example config file from NeuroField, for a simple system consisting of one neural population, and a stimulus. This configuration was used to generate Fig.~\ref{fig:wave_comparison}.}
+\caption{Example config file, for a one-population model receiving a pulse stimulus. Details and result of this system can be found in Sec.~\ref{sec:wave}.}
 \label{fig:config_text}
 \end{center}
 \end{figure}
 
-\todo[inline]{Stuff about the output file}
-
-\begin{figure}[!b]
+\begin{figure}[th]
 \begin{center}
 \begin{lstlisting}
     Time  |             Pop.1.V  |        Dendrite.1.V  |
@@ -310,26 +242,133 @@ Couple:
 5.00e-03  | -1.020386100923e-03  |  2.589927678839e-02  |
 1.00e-02  | -1.020386100890e-03  |  2.589927678842e-02  |
 \end{lstlisting}
-\caption{Example output from NeuroField, showing two time series from different parts of the system. The plain text file contains a row for each time, and a column for each quantity requested.}
+\caption{Example output file from NeuroField, where the time series of two neural dynamic quantities are outputted in columns. The first line provides the column heading, while the second line provides the spatial node index. Each subsequent line is outputted at a simulation time interval as the user dictated in the config file.}
 \label{fig:output_text}
 \end{center}
 \end{figure}
 
-\subsection{Visualization and analysis}
+\subsubsection{Output}
 
-\subsubsection{Helper scripts}
-NeuroField is packaged with several helper scripts written in MATLAB to assist with running, analyzing and visualizing models. 
+The outputting of simulation results are specified in the end of the config file. In Fig.~\ref{fig:config_text}, the excitatory population and the excitatory-excitatory axonal propagation is specified to be outputted, so that these two objects will output the time series of their neural dynamical quantities, which in this case will be population soma voltage and axonal firing rate, respectively. To ensure numerical stability, the equations need to be integrated with a very small time step (e.g., $1\times10^{-4}$\,s$=10000$\,Hz). This is much smaller than typically required for analysis; EEG is typically sampled at just 500~Hz or less. To reduce output file size and avoid unnecessarily long postprocessing computation, an output sampling interval can be specified, downsampling the output from NeuroField.
 
-\subsubsection{Reading output files}
-nf\_read() allows users to parse the output file from NeuroField into a MATLAB struct object.
-nf\_grid reshapes the output for handling matrices. 
+Figure~\ref{fig:output_text} shows an example output file; given it is human readable, standard tools may be used to analyze these data, in addition to the provided MATLAB and Python scripts. In Sec.~\ref{sec:postprocess-manual}, we explain that users can manually edit the human-readable interfaces to use NeuroField, and in Sec.~\ref{sec:postprocess-matlab}, we provide an overview on the MATLAB helper scripts that is bundled with NeuroField as additional interface.
 
-\subsubsection{Writing config files}
-nf\_eirs() demonstrates writing a configuration file, running it with nf\_run(), and then reading it with nf\_read(). This demonstrates a complete MATLAB-based toolchain for using NeuroField.
+\todo[inline]{Python scripts? John Griffiths}
 
-\subsubsection{Calculating power spectra}
-\label{sec:spectrum_3d}
-The power spectrum can be obtained by FFT, but correct normalization and calculation of the power spectrum including multiple spatial modes can be challenging to implement. We have implemented a 3D FFT algorithm that correctly normalizes the output and includes volume conduction effects that selective attenuate spatial modes depending on their wavenumber. The result can be directly compared to analytical predictions.
+\subsubsection{Manual read/write}
+\label{sec:postprocess-manual}
+
+Given that both the config file and output file are human readable (see Fig.~\ref{fig:config_text} and Fig.~\ref{fig:output_text}), manually writing the config file and reading the output file is possible in NeuroField, particularly as ample documentation and working example config files exist. Indeed, one convenient way of starting a simulation involves editing an existing config file until it matches the intended simulation environment, and running NeuroField. Since the output file is plain-text, it is very easy to use standard tools to perform postprocessing analysis on the simulation results.
+
+\subsubsection{MATLAB helper scripts}
+\label{sec:postprocess-matlab}
+
+In addition to manually editing the plain-text files, NeuroField is packaged with MATLAB helper scripts that assists with both the launching of NeuroField and postprocessing of simulation results.
+
+The usage of these MATLAB scripts involves first reading the simulated results from the NeuroField output file into an ``NF" MATLAB object, via an {\tt nf\_read()} function, and then using the {\tt nf\_extract()} function to extract neural dynamic quantities. Then, numerous scripts are provided for visualization, including plotting routines and animation routines, and also routines for the calculation of power spectra. In Sec.~\ref{sec:results}, we provide numerous examples of NeuroField simulations results, where the generation of these figures rely heavily on these helper scripts.
+
+\begin{figure}[th]
+\begin{center}
+\begin{lstlisting}
+function nf_example_plot(fname)
+  % read simulation result into NF object
+  NF = nf_read( [fname,'.output'] );
+  % extract simulation time points
+  time = nf.time;
+  % extract population voltage
+  v = nf_extract( nf, 'Pop.1.V' );
+  % plot the result
+  plot( time, phi );
+\end{lstlisting}
+\caption{Example MATLAB postprocessing, utilizing the {\tt nf\_read()} and {\tt nf\_extract()} functions provided by NeuroField to plot simulation data. In addition to 2D plotting, other functions including animation and spectral plots are also included.}
+\label{fig:matlab_eg}
+\end{center}
+\end{figure}
+
+%There are a number of common ways to analyze the output from neural field models. First, plots of the time series are useful for directly viewing neural oscillations, evoked responses, seizures, monitoring plasticiity, and verifying stability. Second, calculation of the power spectrum, which is often compared to experimental EEG. This can also involve detection of multiple spatial modes of activity and incorporation of volume conduction, to account for effects introduced by electrodes in real-world recordings. Finally, spatial patterns of activity and propagation of waves of activity can be visualized on a surface plot. All of these basic analyses are included as Matlab programs in the NeuroField toolbox. 
+%
+%The nf\_extract() function makes it easy to select data for plotting from a NeuroField object. nf\_movie can plot an animation of the output
+%
+%NeuroField is packaged with several helper scripts written in MATLAB to assist with running, analyzing and visualizing models. 
+%
+%nf\_read() allows users to parse the output file from NeuroField into a MATLAB struct object.
+%nf\_grid reshapes the output for handling matrices. 
+%
+%nf\_eirs() demonstrates writing a configuration file, running it with nf\_run(), and then reading it with nf\_read(). This demonstrates a complete MATLAB-based toolchain for using NeuroField.
+%
+
+\section{Results}
+\label{sec:results}
+
+In this section, we present examples of NeuroField applied to recent research.
+
+\subsection{Single excitatory population model}
+\label{sec:wave}
+
+\begin{figure}[!b]
+\begin{center}
+\includegraphics[width=1\columnwidth]{wave_comparison}
+\caption{Effect of wave propagation in a single-population model. The stimulus is a single short pulse at the center node. The left panel shows population voltage $V_a$, which shows the spatial localization of the input signal. The right panel shows the signal $\phi_a$ after wave propagation.}
+\label{fig:wave_comparison}
+\end{center}
+\end{figure}
+
+\subsection{Single population with synaptic plasticity}
+\label{sec:cadp}
+
+\subsection{Corticothalamic model (Romesh)}
+\label{sec:ct}
+
+NeuroField has been extensively tested with a recent neural field corticothalamic model of the brain \citep{Robinson2005,Rowe2004413,PhysRevE.63.021903,PhysRevE.65.041924,Robinson:04aa} that we have previously used to investigate the alpha rhythm \citep{PhysRevE.68.021922,PhysRevE.70.011911}, age-related changes to the physiology of the brain \citep{VanAlbada2010}, evoked response potentials \citep{Rennie2002,ker11}, seizures \citep{Breakspear2006}, and many other phenomena. 
+
+The structure of the model is shown in Fig.~\ref{fig:ct_schematic}. Much of our work is in the linear regime and utilizes analytic results for small perturbations to steady states. In the steady state, we have
+
+We thus obtain the equation for the steady state firing rate equal to $\phi_e^{(0)}$ \cite{Robinson:04aa}
+\begin{align}
+	\label{eqn:ve_root}
+	\begin{split}
+	S^{-1}&(\phi_e^{(0)})-(\nu_{ee}+\nu_{ei})\phi_e^{(0)} = \\ &\nu_{es}S\left\{\nu_{se}\phi_e^{(0)}+\nu_{sr}S\left[\nu_{re}\phi_e^{(0)}+(\nu_{rs}/\nu_{es})\left(S^{-1}(\phi_e^{(0)})-(\nu_{ee}+\nu_{ei})\phi_e^{(0)}\right)\right]+\nu_{sn}\phi_n^{(0)}\right\}, 
+\end{split}\\[16pt]
+	\label{eqn:ve_root_numeric}
+	\begin{split}
+	V_e^{(0)}&-(\nu_{ee}+\nu_{ei})S(V_e^{(0)})=\\ &\nu_{es}S\left\{\nu_{se}S(V_e^{(0)})+\nu_{sr}S\left[\nu_{re}S(V_e^{(0)})+(\nu_{rs}/\nu_{es})\left(V_e^{(0)}-(\nu_{ee}+\nu_{ei})S(V_e^{(0)})\right)\right]+\nu_{sn}\phi_n^{(0)}\right\},
+\end{split}
+\end{align}
+where \eqref{eqn:ve_root} and \eqref{eqn:ve_root_numeric} are equivalent.
+
+In the linear regime, we have
+\begin{align}
+Q_a(\mathbf{r},t) = Q_a^{(0)} + S'\left(V_a^{(0)}\right) \left[V_a(\mathbf{r},t)-V_a^{(0)}\right] \\
++ \frac{S''\left(V_a^{(0)}\right)}{2!} \left[V_a(\mathbf{r},t)-V_a^{(0)}\right]^2 \cdots ,
+\end{align}
+
+which can be written in terms of a perturbation by relabeling $Q_a-Q_a^{(0)} \rightarrow Q_a $, $V_a-V_a^{(0)} \rightarrow V_a$, yielding
+
+\begin{align}
+\label{eqn:q_series}
+Q_a(\mathbf{r},t) &= \rho_a^{(1)} V_a(\mathbf{r},t) + \frac{\rho_a^{(2)}}{2} V_a(\mathbf{r},t)^2 \cdots .
+\end{align}
+
+
+where $\rho_a^{(n)} = S^{(n)}\left(V_a^{(0)}\right)$ and $S^{(n)}$ is the $n$th derivative of the sigmoid function at the steady state value of $Q_a$. 
+
+However, some phenomena are strongly nonlinear, and these must be solved by numerical integration. We have used NeuroField to model results relating to seizures \citep{Roberts2008}, visually evoked potentials \citep{Roberts2012a}, and sleep spindles \citep{Abeysuriya2013,Abeysuriya2013a}. 
+
+
+
+\begin{align}
+\label{eqn:power_sum}
+P(\omega) &= \sum_{m = -\infty}^{\infty}\sum_{n = -\infty}^{\infty} \Delta k_x \Delta k_y |T(\mathbf{k},\omega)|^2||\phi_n(\mathbf{k},\omega)|^2F(k)\\
+k^2 &=  \left( \frac{2\pi m}{L_x} \right)^2 + \left( \frac{2\pi n}{L_y}\right)^2 
+\end{align}
+where the size of the two-dimensional rectangular cortex is $L_x \times L_y$. 
+
+\begin{align}
+F(k) &= e^{-k^2/k_0^2},
+\end{align}
+
+
+Prediction of the EEG power spectrum involves two additional steps - first, summation over 
 
 \begin{figure}[!b]
 \begin{center}
@@ -339,93 +378,38 @@ The power spectrum can be obtained by FFT, but correct normalization and calcula
 \end{center}
 \end{figure}
 
-\subsubsection{Visualizing output}
-The nf\_extract() function makes it easy to select data for plotting from a NeuroField object.  
-nf\_movie can plot an animation of the output
-
-\clearpage
-
-\section{Results}
-
-In this section, we present examples of NeuroField applied to recent research.
-
-\subsection{Corticothalamic model (Romesh)}
-
-NeuroField has been extensively tested with a recent neural field corticothalamic model of the brain \citep{Robinson2005,Rowe2004413,PhysRevE.63.021903,PhysRevE.65.041924,Robinson:04aa} that we have previously used to investigate the alpha rhythm \citep{PhysRevE.68.021922,PhysRevE.70.011911}, age-related changes to the physiology of the brain \citep{VanAlbada2010}, evoked response potentials \citep{Rennie2002,ker11}, seizures \citep{Breakspear2006}, and many other phenomena. 
-
 \begin{figure}[!b]
 \begin{center}
-\includegraphics[width=0.40\columnwidth]{EIRS_clean}
-\caption{Schematic overview of the corticothalamic model.}
-\label{fig:ct_schematic}
-\end{center}
-\end{figure}
-
-The structure of the model is shown in Fig.~\ref{fig:ct_schematic}. Much of our work is in the linear regime and utilizes analytic results for small perturbations to steady states. Steady states can be obtained by setting the differential operators \eqref{eq:dendrite} and \eqref{eq:wave} to unity, and solving for the the steady state firing rate $\phi_e^{(0)}$ \cite{Robinson:04aa}
-\begin{align}
-	\label{eqn:ve_root}
-	\begin{split}
-	S^{-1}&(\phi_e^{(0)})-(\nu_{ee}+\nu_{ei})\phi_e^{(0)} = \\ &\nu_{es}S\left\{\nu_{se}\phi_e^{(0)}+\nu_{sr}S\left[\nu_{re}\phi_e^{(0)}+(\nu_{rs}/\nu_{es})\left(S^{-1}(\phi_e^{(0)})-(\nu_{ee}+\nu_{ei})\phi_e^{(0)}\right)\right]+\nu_{sn}\phi_n^{(0)}\right\}, 
-\end{split}
-%	\label{eqn:ve_root_numeric}
-%	\begin{split}
-	%V_e^{(0)}&-(\nu_{ee}+\nu_{ei})S(V_e^{(0)})=\\ &\nu_{es}S\left\{\nu_{se}S(V_e^{(0)})+\nu_{sr}S\left[\nu_{re}S(V_e^{(0)})+(\nu_{rs}/\nu_{es})\left(V_e^{(0)}-(\nu_{ee}+\nu_{ei})S(V_e^{(0)})\right)\right]+\nu_{sn}\phi_n^{(0)}\right\},
-%\end{split}
-\end{align}
-where $S^{-1}$ denotes the inverse sigmoid function. To linearize the model, we take a Taylor expansion of the sigmoid and retain only the first term:
-\begin{align}
-Q_a(\mathbf{r},t) = Q_a^{(0)} + S'\left(V_a^{(0)}\right) \left[V_a(\mathbf{r},t)-V_a^{(0)}\right]
-\end{align}
-This can be written in terms of a perturbation by relabeling $Q_a-Q_a^{(0)} \rightarrow Q_a $, $V_a-V_a^{(0)} \rightarrow V_a$, yielding
-\begin{align}
-\label{eqn:q_linear}
-Q_a(\mathbf{r},t) &= \rho_a^{(1)} V_a(\mathbf{r},t),
-\end{align}
-where $\rho_a^{(n)} = S^{(n)}\left(V_a^{(0)}\right)$ and $S^{(n)}$ is the $n$th derivative of the sigmoid function at the steady state value of $Q_a$. Taking the Fourier transform of Eqs.~\ref{eq:summation}--\ref{eq:wave},\ref{eqn:q_linear} and solving for $\phi_e/\phi_n$ yields a transfer function that maps stimlus to cortical response in the frequency domain
-\begin{align}
-\label{eqn:transfer_unsimplified}
-T = \frac{\phi_e(\mathbf{k},\omega)}{\phi_n(\mathbf{k},\omega)}  =  \left( D_{e}(\mathbf{k},\omega) - \frac{1}{1-G_{ei}L(\omega)} \left\lbrace L(\omega) G_{ee} + \frac{\left[ L(\omega)^2 G_{ese}  + L(\omega^3 G_{erse}\right]e^{i\omega t_0}}{1 - L(\omega^2 G_{srs}}  \right\rbrace \right)^{-1} \frac{L(\omega^2G_{esn}e^{i\omega t_0 /2}}{(1 - L(\omega)^2 G_{srs})(1-G_{ei}L(\omega)}
-\end{align}
-where the gains $G_{ab}$ are given by $G_{ab}=\rho_a\nu_{ab}$, $G_{ese} = G_{es}G_{se}$, $G_{erse} = G_{es}G_{sr}G_{re}$, $G_{srs} = G_{sr}G_{rs}$, and $G_{esn} = G_{es}G_{sn}$.
-
-The transfer function can be related to the EEG power spectrum by integration over $\mathbf{k}$. When periodic boundary conditions are imposed, this becomes a summation:
-\begin{align}
-\label{eqn:power_sum}
-P(\omega) &= \sum_{m = -\infty}^{\infty}\sum_{n = -\infty}^{\infty} \Delta k_x \Delta k_y |T(\mathbf{k},\omega)|^2||\phi_n(\mathbf{k},\omega)|^2F(k)\\
-k^2 &=  \left( \frac{2\pi m}{L_x} \right)^2 + \left( \frac{2\pi n}{L_y}\right)^2 
-\end{align}
-where the size of the two-dimensional rectangular cortex is $L_x \times L_y$. In practice, modes with large $\mathbf{k}$ are strongly damped \citep{OConnor2002}. The filter function $F(k)$ approximates the low-pass spatial filtering that arises due to volume conduction by the cerebrospinal fluid, skull and scalp, which serves as a low-pass spatial filter whose $k$ dependence is well fitted by the form \citep{PhysRevE.63.021903,Rowe2004413,alb06a,VanAlbada2010}
-\begin{align}
-F(k) &= e^{-k^2/k_0^2},
-\end{align}
-with a low-pass cutoff at $k_0 \approx 10$\,m$^{-1}$ based on the spherical harmonic head transfer function developed by \cite{Srinivasan1998}. \todo{duplicate wording}. 
-
-The linear approximation is suitable to model a wide range of brain activity. However, some phenomena are strongly nonlinear, and these must be solved by numerical integration. We have used NeuroField to model results relating to seizures \citep{Roberts2008}, visually evoked potentials \citep{Roberts2012a}, and sleep spindles \citep{Abeysuriya2013,Abeysuriya2013a}. 
-
-Matching NeuroField to the analytic spectrum requires implementation of the summation over spatial modes, and incorporation of the volume conduction filter. This is achieved by following the procedure described in Sec.~\ref{sec:spectrum_3d}, as implemented in the NeuroField toolbox. As shown in Fig.~\ref{fig:ct_spectrum}, there is an excellent match between NeuroField and the analytic spectrum when nonlinear effects are insignificant, providing strong validation of our implementation of our numerical integrator. 
-
-\begin{figure}[!b]
-\begin{center}
-\includegraphics[width=0.40\columnwidth]{corticothalamic_comparison}
+\includegraphics[width=0.80\columnwidth]{corticothalamic_comparison}
 \caption{Wake EC, same params as already published}
 \label{fig:ct_spectrum_1}
 \end{center}
 \end{figure}
 
-We can also consider modeling spatial variation of the parameters. 
+\begin{itemize}
+	\item Sleep spindles
+	\item Wake alpha peak
+	\item Volume conduction
+\end{itemize}
 
-\missingfigure{spatial spectrum comparison}
-
-\subsection{Plasticity (Felix)}
-
-\subsection{Bursting (XL)}
+The power spectrum can be obtained by FFT, but correct normalization and calculation of the power spectrum including multiple spatial modes can be challenging to implement. We have implemented a 3D FFT algorithm that correctly normalizes the output and includes volume conduction effects that selective attenuate spatial modes depending on their wavenumber. The result can be directly compared to analytical predictions.
 
 \subsection{Seizures (XL)}
+\label{sec:seizures}
+
+\subsection{Corticothalamic model with bursting dynamics (XL)}
+\label{sec:burst}
+
+\subsection{Wilson-Cowan model}
+
+\subsection{Jansen-Rit model}
 
 \section{Discussion}
 \label{sec:discussion}
 
 We have developed NeuroField to provide an extensible, reliable framework for integrating nonlinear delay differential equations including spatial propagation. NeuroField is aimed for use by researchers who have constructed neural field models of the brain that require numerical integration. In this section, we review some usage and performance considerations.
+
+Most notably, the signals from populations can be associated with local field potentials (LFP) or EEG depending, and these predictions can be directly compared against experimental data. The soma potential or firing rate of the neural populations can be compared to individual neuron data. Changes to synaptic strength can be monitored when simulating neural plasticity. When simulating spatially extended populations, spatial correlations and patterns of activity can also be analyzed. 
 
 \subsection{White noise stimulus}
 \begin{itemize}
