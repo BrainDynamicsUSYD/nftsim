@@ -125,7 +125,7 @@ We present NeuroField, a C++ program bundled with MATLAB and Python scripts as a
 \begin{figure}[th]
 \begin{center}
 \includegraphics[scale=.8]{flow.pdf}
-\caption{Flow diagram illustrating typical NeuroField usage workflow, which can be categorized into three broad phrases: launching, simulation, and postprocessing. The core is the simulation phase, where NeuroField reads the configuration file (or config file for short), and generates the output file, which stores the simulation results. In the postprocessing phase, the simulation results are further analyzed and useful data, plots, figures may be generated. MATLAB and Python routines are provided to aid postprocessing. Similarly, MATLAB and Python wrapper scripts are provided to aid the creating and running of config files. Since both the config file and output file are human readable, they may be processed manually, and the use of any MATLAB and Python scripts are optional. Section~\ref{sec:neurofield} elaborates on the simulation phase, while Sec.~\ref{sec:interface} elaborates on the launching and postprocessing phases.}
+\caption{Flow diagram illustrating typical NeuroField usage workflow, which can be categorized into three broad phrases: launching, simulation, and postprocessing. The core is the simulation phase, where NeuroField reads the configuration file (or config file for short), and generates the output file, which stores the simulation results. In the postprocessing phase, the simulation results are further analyzed and useful data, plots, figures may be generated. MATLAB and Python routines are provided to aid postprocessing. Similarly, MATLAB and Python wrapper scripts are provided to aid the creating and running of config files. Since both the config file and output file are human readable, they may be processed manually, and the use of any MATLAB and Python scripts are optional. Section~\ref{sec:neurofield} elaborates on the simulation phase, while Sec.~\ref{sec:interface} elaborates on the launching and postprocessing phases. In Sec.~\ref{sec:results} we present illustrative examples of NeuroField simulation results applied onto recent research.}
 \label{fig:workflow}
 \end{center}
 \end{figure}
@@ -177,17 +177,19 @@ As shown in Fig.~\ref{fig:workflow}, the core NeuroField C++ program takes in a 
 Table~\ref{tab:task} tabulates typical NeuroField usage tasks, and the corresponding work required. Most tasks involve only editing the config file, and then postprocessing the simulations results, so that only the launching and postprocessing phase in Fig.~\ref{fig:workflow} requires attention. Even so, ample helper scripts exist to aid both the launching and postprocessing phase.
 
 \begin{table}
-	\begin{tabular}{ p{4.5cm} l p{4.5cm} }
+	\begin{tabular}{ p{4.2cm} p{4.5cm} l }
 	\hline
-	Task & File & action \\
+	Task & Action & File \\
 	\hline
-	Parameter exploration & Config file & change parameter value \\
-	Use alternative object type & Config file & change object type \\
-	Use alternative population model & Config file & change the population model \\
-	Create new object type & Source code & write new C++ class\\
+	Perform simulation & Run NeuroField manually, or via helper scripts & --- \\
+	%Visualize/analyze results & --- & MATLAB and Python helper scripts \\
+	Parameter exploration & Change parameter value & In config file \\
+	Use alternative object type & Change object type & In config file \\
+	Use alternative population model & Change connection matrix and objects & In config file \\
+	Create new object type & Write new C++ class & In source code \\
 	\hline
 \end{tabular}
-\caption{NeuroField tasks requirements, in roughly ascending order of difficulty, so that a task lower in the table often involve also doing the tasks above the entry. Most simulations require only editing of the config file; only the creation of new object types require code writing. Even so, ample documentation, guidelines and working examples minimizes the coding workload. See also Fig.~\ref{fig:workflow} for NeuroField usage workflow and interface.}
+\caption{NeuroField tasks requirements, in roughly ascending order of difficulty, so that a task lower in the table often involve also doing the tasks above the entry. Most simulations require only editing of the config file; only the creation of new object types require code writing. Even for the latter, ample documentation, guidelines and working examples minimizes the coding workload. See also Fig.~\ref{fig:workflow} for NeuroField usage workflow and interface.}
 \label{tab:task}
 \end{table}
 
@@ -253,12 +255,10 @@ The outputting of simulation results are specified in the end of the config file
 
 Figure~\ref{fig:output_text} shows an example output file; given it is human readable, standard tools may be used to analyze these data, in addition to the provided MATLAB and Python scripts. In Sec.~\ref{sec:postprocess-manual}, we explain that users can manually edit the human-readable interfaces to use NeuroField, and in Sec.~\ref{sec:postprocess-matlab}, we provide an overview on the MATLAB helper scripts that is bundled with NeuroField as additional interface.
 
-\todo[inline]{Python scripts? John Griffiths}
-
 \subsubsection{Manual read/write}
 \label{sec:postprocess-manual}
 
-Given that both the config file and output file are human readable (see Fig.~\ref{fig:config_text} and Fig.~\ref{fig:output_text}), manually writing the config file and reading the output file is possible in NeuroField, particularly as ample documentation and working example config files exist. Indeed, one convenient way of starting a simulation involves editing an existing config file until it matches the intended simulation environment, and running NeuroField. Since the output file is plain-text, it is very easy to use standard tools to perform postprocessing analysis on the simulation results.
+Given that both the config file and output file are human readable (see Fig.~\ref{fig:config_text} and Fig.~\ref{fig:output_text}), manual usage of NeuroField without any helper scripts is possible, by writing the config file and reading the output file. This is particularly true as ample documentation and working example config files exist. Indeed, one convenient way of starting a simulation involves editing an existing config file until it matches the intended simulation environment, and running NeuroField. Since the output file is plain-text, it is very easy to use standard tools to perform postprocessing analysis on the simulation results. For example, a simple PERL script that calls gnuplot exists for simple time series plotting.
 
 \subsubsection{MATLAB helper scripts}
 \label{sec:postprocess-matlab}
@@ -266,6 +266,8 @@ Given that both the config file and output file are human readable (see Fig.~\re
 In addition to manually editing the plain-text files, NeuroField is packaged with MATLAB helper scripts that assists with both the launching of NeuroField and postprocessing of simulation results.
 
 The usage of these MATLAB scripts involves first reading the simulated results from the NeuroField output file into an ``NF" MATLAB object, via an {\tt nf\_read()} function, and then using the {\tt nf\_extract()} function to extract neural dynamic quantities. Then, numerous scripts are provided for visualization, including plotting routines and animation routines, and also routines for the calculation of power spectra. In Sec.~\ref{sec:results}, we provide numerous examples of NeuroField simulations results, where the generation of these figures rely heavily on these helper scripts.
+
+\todo[inline]{More from Romesh}
 
 \begin{figure}[th]
 \begin{center}
@@ -297,24 +299,62 @@ function nf_example_plot(fname)
 %nf\_eirs() demonstrates writing a configuration file, running it with nf\_run(), and then reading it with nf\_read(). This demonstrates a complete MATLAB-based toolchain for using NeuroField.
 %
 
+\todo[inline]{Python scripts? John Griffiths}
+
 \section{Results}
 \label{sec:results}
 
-In this section, we present examples of NeuroField applied to recent research.
+In this section, we present examples of NeuroField simulation results applied to recent research as a showcase of the capabilities of NeuroField. All plots and figures are simulation results of NeuroField, where the plots are generated by the helper scripts explained in Sec.~\ref{sec:postprocess-matlab}.
 
 \subsection{Single excitatory population model}
 \label{sec:wave}
 
-\begin{figure}[!b]
+\begin{figure}[t]
 \begin{center}
-\includegraphics[width=1\columnwidth]{wave_comparison}
-\caption{Effect of wave propagation in a single-population model. The stimulus is a single short pulse at the center node. The left panel shows population voltage $V_a$, which shows the spatial localization of the input signal. The right panel shows the signal $\phi_a$ after wave propagation.}
+\includegraphics[width=0.50\columnwidth]{one-pop}
+\caption{Schematic diagram of a single excitatory population model, which feeds back to itself and receive an external stimulus. This constitutes the simplest neural field model that conforms to Eqs~(1)--(6).}
+\label{fig:ct_schematic}
+\end{center}
+\end{figure}
+
+We first present the simplest neural field model possible, consisting of a single excitatory population that feeds back to itself, and receiving an external stimulus. All neural dynamics are as Eqs~(1)--(6), so that this model conforms to the standard \citet{Robinson2005} theory. The config file is shown in Fig.~\ref{fig:config_text}, and no extension of NeuroField coding is required. All parameters are taken from \citet{Robinson:04aa}, with the exception of the axonal propagation parameters, which are tuned to emphasize wave propagation properties for illustrative purposes.
+
+Figure~\ref{fig:wave_comparison} presents the neural dynamics of the system in two snapshots, as generated by the MATLAB helper scripts presented in Sec.~\ref{sec:postprocess-matlab}. Here, the \(x\) and \(y\) coordinates are spatial coordinates, and the vertical axis plots the axonal firing rate as a measure of neural activity. Figure~\ref{fig:wave_comparison}~(a) show that the neural dynamics of the population is in a steady state and has achieved spatial homogeneity, while receiving a stimulus in the middle. Figure~\ref{fig:wave_comparison}~(b) shows the neural dynamics at a later time instance, and we see that the stimulus spread according to damped wave propagation. In addition to generating plots, one MATLAB helper script (see Sec.~\ref{sec:postprocess-matlab}) also generates movies, which would aid the analysis of wave propagation in this example.
+
+\todo[inline]{Romesh please check transient vs stable state and stimulation onset (and why are we plotting V and phi?)}
+
+\begin{figure}[t]
+\begin{center}
+\includegraphics[width=.9\textwidth]{wave_comparison}
+\caption{Two plots on the neural activity of the one-population model first introduced in Fig.~\ref{fig:one-pop}. The \(x\) and \(y\) coordinates are spatial coordinates, while the vertical axis is the axonal firing rate, which serves as a measure of neural activity. (a) Neural activity is in a steady state, where the firing rate is spatially homogeneous, while receiving a stimulus in the middle. (b) Neural activity propagates radially outwards, as governed by the damped wave equation~(6).}
 \label{fig:wave_comparison}
 \end{center}
 \end{figure}
 
+\todo[inline]{Put labels (a) and (b) into figure.}
+
 \subsection{Single population with synaptic plasticity}
 \label{sec:cadp}
+
+The single-excitatory population model of Sec.~\ref{sec:wave} may be extended to model synaptic plasticity. \citet{fung13} and \citet{fung14} extended the standard theory of \citet{Robinson2005} by introducing time dependence on the synapto-dendritic coupling strength \(\nu\) in Eq.~(7), to model the experimental results found in transcranial magnetic stimulation (TMS). The coding implementation is done by inheriting the synaptic coupling class, and using the generic 4\textsuperscript{th} order Runge-Kutta solver provided in NeuroField.
+
+Figure~\ref{fig:cadp} shows a schematic diagram for the synaptic plasticity theory of \citet{fung13} and \citet{fung14}, illustrating how neural activity leads to intraneuronal calcium influx, which signals synaptic plasticity expression, which in turn is modulated by metaplasticity on a longer timescale. Figure~\ref{fig:cadp-window} presents a comparison between experimental results and NeuroField simulation results in paired associative stimulation (PAS), a variation of TMS experiment. The reproduction of experimental result via the introduction of mean field calcium level and synaptic plasticity into neural field theory demonstrates the flexibility and extensibility of NeuroField.
+
+\begin{figure}[t]
+\begin{center}
+\includegraphics[width=.7\textwidth]{bcm-schematic}
+\caption{Schematic diagram illustrating the plasticity theory used in \citet{fung13} and \citet{fung14}. Within the context of neural field theory, we introduce mean field intraneuronal calcium and non-static synaptic coupling strength, so that neural activity leads to intraneuronal calcium influx, which signals synaptic plasticity, which in turn is modulated by metaplasticity. Expression of synaptic plasticity feeds back into neural activity, introducing a loop. This is implemented into NeuroField via C++ inheritance on the synaptic coupling object, and using the generic 4\textsuperscript{th} order Runge-Kutta solver provided. Figure reproduced from \citet{fung14}.}
+\label{fig:cadp}
+\end{center}
+\end{figure}
+
+\begin{figure}[t]
+\begin{center}
+\includegraphics[width=.8\textwidth]{window}
+\caption{Experimental and simulation results of paired associative stimulation (PAS), where transcranial magnetic stimulation and peripheral electric stimulation is applied with an inter-stimulus interval (ISI) in between. Depending on the size and ordering of the ISI, different size and direction of synaptic plasticity may be induced. Dots and error bars: mean and standard deviation from experiments; line: NeuroField simulation result. Figure reproduced from \citet{fung13}.}
+\label{fig:cadp-window}
+\end{center}
+\end{figure}
 
 \subsection{Corticothalamic model (Romesh)}
 \label{sec:ct}
