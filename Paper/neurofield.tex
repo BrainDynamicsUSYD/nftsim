@@ -11,8 +11,9 @@
 \usepackage{tikz}
 \usepackage[noperiod]{jabbrv}
 \usepackage{listings}
+\usepackage{matlab-prettifier}
 
-% 
+% Handle missing figures
 \usepackage{etoolbox}
 \makeatletter
 \patchcmd{\Gin@ii}
@@ -120,7 +121,7 @@ In these equations, all dynamical quantities and operations are subscripted with
 \end{center}
 \end{figure}
 
-Of course, one of the major strengths of the neural field theory of \citet{Robinson2005} is its versatility: by choosing the appropriate neural population model, we may model cortical phenomena \citep{}, the corticothalamic system \citep{}, or even hemispheric interactions \citep{}. Moreover, we may replace the operators above with more sophisticated ones, so as to model additional phenomena. For example, by replacing the constant synapto-dendritic coupling strength \(\nu\) with a dynamic one, we may model synaptic plasticity (see Sec.~\ref{sec:cadp}). Or, by replacing the sigmoidal soma firing response with differential equations, we can capture bursting firing rates (see Sec.~\ref{sec:burst}).
+Of course, one of the major strengths of the neural field theory of \citet{Robinson2005} is its versatility: by choosing the appropriate neural population model, we may model cortical phenomena ()\todo{refs}, the corticothalamic system ()\todo{refs}, or even hemispheric interactions ()\todo{refs}. Moreover, we may replace the operators above with more sophisticated ones, so as to model additional phenomena. For example, by replacing the constant synapto-dendritic coupling strength \(\nu\) with a dynamic one, we may model synaptic plasticity (see Sec.~\ref{sec:cadp}). Or, by replacing the sigmoidal soma firing response with differential equations, we can capture bursting firing rates (see Sec.~\ref{sec:burst}).
 
 This versatility and extensibility of the theory presents a challenge in the implementation of the numerical solver. First, we need a program that takes an arbitrary number of neural populations, with possibly different population types and parameters for each population, and arbitrary connections between the populations, where again each connection may be of different types and is described by different parameter values. Several factors contribute to making the numerical integration of equations difficult: propagation delays between neural populations result in delay-differential equations that require special handling of temporal history; propagation of action potentials according to a damped wave equation adds two spatial dimensions to the system; periodic boundary conditions must be correctly handled during the integration. The popularity and extensibility of the theory means that the program will involve many developers, who extend and reuse previous code independently; coding level structure needs to be in place to ensure proper collaborative effort and minimizing the chance of error.
 
@@ -280,23 +281,20 @@ The usage of these MATLAB scripts involves first reading the simulated results f
 
 \begin{figure}[th]
 \begin{center}
-\begin{lstlisting}
-function nf_example_plot(fname)
-  % read simulation result into NF object
-  NF = nf_read( [fname,'.output'] );
-  % extract simulation time points
-  time = nf.time;
-  % extract population voltage
-  v = nf_extract( nf, 'Pop.1.V' );
-  % plot the result
-  plot( time, phi );
+\begin{lstlisting}[style=Matlab-editor]
+nf_object = nf_run('neurofield.conf')
+time = nf.time;
+V = nf_extract( nf, 'Pop.1.V' );
+plot(time,V);
+grid = nf_grid(nf,'Pop.1.V');
+surf(grid(:,:,1));
 \end{lstlisting}
-\caption{Example MATLAB postprocessing, utilizing the {\tt nf\_read()} and {\tt nf\_extract()} functions provided by NeuroField to plot simulation data. In addition to 2D plotting, other functions including animation and spectral plots are also included.}
+\caption{Example usage of MATLAB helper scripts. The {\tt nf\_run()} function is used to execute a NeuroField configuration file and read the data into a MATLAB struct.  A plot of the time series is generated using the {\tt nf\_extract()} function. A surface plot showing spatial variations in potential is generated using the {\tt nf\_grid()} function.  Other functions including animation and spectral plots are also available.}
 \label{fig:matlab_eg}
 \end{center}
 \end{figure}
 
-%There are a number of common ways to analyze the output from neural field models. First, plots of the time series are useful for directly viewing neural oscillations, evoked responses, seizures, monitoring plasticiity, and verifying stability. Second, calculation of the power spectrum, which is often compared to experimental EEG. This can also involve detection of multiple spatial modes of activity and incorporation of volume conduction, to account for effects introduced by electrodes in real-world recordings. Finally, spatial patterns of activity and propagation of waves of activity can be visualized on a surface plot. All of these basic analyses are included as Matlab programs in the NeuroField toolbox. 
+%There are a number of common ways to analyze the output from neural field models. First, plots of the time series are useful for directly viewing neural oscillations, evoked responses, seizures, monitoring plasticiity, and verifying stability. Second, calculation of the power spectrum, which is often compared to experimental EEG. This can also involve detection of multiple spatial modes of activity and incorporation of volume conduction, to account for effects introduced by electrodes in real-world recordings. Finally, spatial patterns of activity and propagation of waves of activity can be visualized on a surface plot. All of these basic analyses are included as MATLAB programs in the NeuroField toolbox. 
 %
 %The nf\_extract() function makes it easy to select data for plotting from a NeuroField object. nf\_movie can plot an animation of the output
 %
@@ -342,6 +340,8 @@ Figure~\ref{fig:wave_comparison} presents the neural dynamics of the system in t
 
 \todo[inline]{Put labels (a) and (b) into figure.}
 
+\clearpage
+
 \subsection{Single population with synaptic plasticity}
 \label{sec:cadp}
 
@@ -365,83 +365,63 @@ Figure~\ref{fig:cadp} shows a schematic diagram for the synaptic plasticity theo
 \end{center}
 \end{figure}
 
+\clearpage
+
 \subsection{Corticothalamic model (Romesh)}
 \label{sec:ct}
 
 NeuroField has been extensively tested with a recent neural field corticothalamic model of the brain \citep{Robinson2005,Rowe2004413,PhysRevE.63.021903,PhysRevE.65.041924,Robinson:04aa} that we have previously used to investigate the alpha rhythm \citep{PhysRevE.68.021922,PhysRevE.70.011911}, age-related changes to the physiology of the brain \citep{VanAlbada2010}, evoked response potentials \citep{Rennie2002,ker11}, seizures \citep{Breakspear2006}, and many other phenomena. 
 
-The structure of the model is shown in Fig.~\ref{fig:ct_schematic}. Much of our work is in the linear regime and utilizes analytic results for small perturbations to steady states. In the steady state, we have
-
-We thus obtain the equation for the steady state firing rate equal to $\phi_e^{(0)}$ \cite{Robinson:04aa}
+The structure of the model is shown in Fig.~\ref{fig:ct_schematic}. Much of our work is in the linear regime and utilizes analytic results for small perturbations to steady states. Steady states can be obtained by setting the differential operators \eqref{eq:dendrite} and \eqref{eq:wave} to unity, and solving for the the steady state firing rate $\phi_e^{(0)}$ \cite{Robinson:04aa}
 \begin{align}
 	\label{eqn:ve_root}
 	\begin{split}
 	S^{-1}&(\phi_e^{(0)})-(\nu_{ee}+\nu_{ei})\phi_e^{(0)} = \\ &\nu_{es}S\left\{\nu_{se}\phi_e^{(0)}+\nu_{sr}S\left[\nu_{re}\phi_e^{(0)}+(\nu_{rs}/\nu_{es})\left(S^{-1}(\phi_e^{(0)})-(\nu_{ee}+\nu_{ei})\phi_e^{(0)}\right)\right]+\nu_{sn}\phi_n^{(0)}\right\}, 
-\end{split}\\[16pt]
-	\label{eqn:ve_root_numeric}
-	\begin{split}
-	V_e^{(0)}&-(\nu_{ee}+\nu_{ei})S(V_e^{(0)})=\\ &\nu_{es}S\left\{\nu_{se}S(V_e^{(0)})+\nu_{sr}S\left[\nu_{re}S(V_e^{(0)})+(\nu_{rs}/\nu_{es})\left(V_e^{(0)}-(\nu_{ee}+\nu_{ei})S(V_e^{(0)})\right)\right]+\nu_{sn}\phi_n^{(0)}\right\},
 \end{split}
 \end{align}
-where \eqref{eqn:ve_root} and \eqref{eqn:ve_root_numeric} are equivalent.
-
-In the linear regime, we have
+where $S^{-1}$ denotes the inverse sigmoid function. To linearize the model, we take a Taylor expansion of the sigmoid and retain only the first term:
 \begin{align}
-Q_a(\mathbf{r},t) = Q_a^{(0)} + S'\left(V_a^{(0)}\right) \left[V_a(\mathbf{r},t)-V_a^{(0)}\right] \\
-+ \frac{S''\left(V_a^{(0)}\right)}{2!} \left[V_a(\mathbf{r},t)-V_a^{(0)}\right]^2 \cdots ,
+Q_a(\mathbf{r},t) = Q_a^{(0)} + S'\left(V_a^{(0)}\right) \left[V_a(\mathbf{r},t)-V_a^{(0)}\right]
 \end{align}
-
-which can be written in terms of a perturbation by relabeling $Q_a-Q_a^{(0)} \rightarrow Q_a $, $V_a-V_a^{(0)} \rightarrow V_a$, yielding
-
+This can be written in terms of a perturbation by relabeling $Q_a-Q_a^{(0)} \rightarrow Q_a $, $V_a-V_a^{(0)} \rightarrow V_a$, yielding
 \begin{align}
-\label{eqn:q_series}
-Q_a(\mathbf{r},t) &= \rho_a^{(1)} V_a(\mathbf{r},t) + \frac{\rho_a^{(2)}}{2} V_a(\mathbf{r},t)^2 \cdots .
+\label{eqn:q_linear}
+Q_a(\mathbf{r},t) &= \rho_a^{(1)} V_a(\mathbf{r},t),
 \end{align}
+where $\rho_a^{(n)} = S^{(n)}\left(V_a^{(0)}\right)$ and $S^{(n)}$ is the $n$th derivative of the sigmoid function at the steady state value of $Q_a$. Taking the Fourier transform of Eqs.~\ref{eq:summation}--\ref{eq:wave},\ref{eqn:q_linear} and solving for $\phi_e/\phi_n$ yields a transfer function that maps stimlus to cortical response in the frequency domain
+\begin{align}
+\label{eqn:transfer_unsimplified}
+T = \frac{\phi_e(\mathbf{k},\omega)}{\phi_n(\mathbf{k},\omega)}  =  \left( D_{e}(\mathbf{k},\omega) - \frac{1}{1-G_{ei}L(\omega)} \left\lbrace L(\omega) G_{ee} + \frac{\left[ L(\omega)^2 G_{ese}  + L(\omega^3 G_{erse}\right]e^{i\omega t_0}}{1 - L(\omega^2 G_{srs}}  \right\rbrace \right)^{-1} \frac{L(\omega^2G_{esn}e^{i\omega t_0 /2}}{(1 - L(\omega)^2 G_{srs})(1-G_{ei}L(\omega)}
+\end{align}
+where the gains $G_{ab}$ are given by $G_{ab}=\rho_a\nu_{ab}$, $G_{ese} = G_{es}G_{se}$, $G_{erse} = G_{es}G_{sr}G_{re}$, $G_{srs} = G_{sr}G_{rs}$, and $G_{esn} = G_{es}G_{sn}$.
 
-
-where $\rho_a^{(n)} = S^{(n)}\left(V_a^{(0)}\right)$ and $S^{(n)}$ is the $n$th derivative of the sigmoid function at the steady state value of $Q_a$. 
-
-However, some phenomena are strongly nonlinear, and these must be solved by numerical integration. We have used NeuroField to model results relating to seizures \citep{Roberts2008}, visually evoked potentials \citep{Roberts2012a}, and sleep spindles \citep{Abeysuriya2013,Abeysuriya2013a}. 
-
-
-
+The transfer function can be related to the EEG power spectrum by integration over $\mathbf{k}$. When periodic boundary conditions are imposed, this becomes a summation:
 \begin{align}
 \label{eqn:power_sum}
 P(\omega) &= \sum_{m = -\infty}^{\infty}\sum_{n = -\infty}^{\infty} \Delta k_x \Delta k_y |T(\mathbf{k},\omega)|^2||\phi_n(\mathbf{k},\omega)|^2F(k)\\
 k^2 &=  \left( \frac{2\pi m}{L_x} \right)^2 + \left( \frac{2\pi n}{L_y}\right)^2 
 \end{align}
-where the size of the two-dimensional rectangular cortex is $L_x \times L_y$. 
-
+where the size of the two-dimensional rectangular cortex is $L_x \times L_y$. In practice, modes with large $\mathbf{k}$ are strongly damped \citep{OConnor2002}. The filter function $F(k)$ approximates the low-pass spatial filtering that arises due to volume conduction by the cerebrospinal fluid, skull and scalp, which serves as a low-pass spatial filter whose $k$ dependence is well fitted by the form \citep{PhysRevE.63.021903,Rowe2004413,alb06a,VanAlbada2010}
 \begin{align}
 F(k) &= e^{-k^2/k_0^2},
 \end{align}
+with a low-pass cutoff at $k_0 \approx 10$\,m$^{-1}$ based on the spherical harmonic head transfer function developed by \cite{Srinivasan1998}. \todo{duplicate wording}. 
 
+The linear approximation is suitable to model a wide range of brain activity. However, some phenomena are strongly nonlinear, and these must be solved by numerical integration. We have used NeuroField to model results relating to seizures \citep{Roberts2008}, visually evoked potentials \citep{Roberts2012a}, and sleep spindles \citep{Abeysuriya2013,Abeysuriya2013a}. 
 
-Prediction of the EEG power spectrum involves two additional steps - first, summation over 
-
-\begin{figure}[!b]
-\begin{center}
-\includegraphics[width=0.80\columnwidth]{corticothalamic_comparison}
-\caption{Comparision of linear analytic spectrum with the power spectrum computed using the NeuroField package analysis tools.}
-\label{fig:ct_spectrum}
-\end{center}
-\end{figure}
+Matching NeuroField to the analytic spectrum requires implementation of the summation over spatial modes, and incorporation of the volume conduction filter. This is achieved by following the procedure described in Sec.~\ref{sec:spectrum_3d}, as implemented in the NeuroField toolbox. As shown in Fig.~\ref{fig:ct_spectrum}, there is an excellent match between NeuroField and the analytic spectrum when nonlinear effects are insignificant, providing strong validation of our implementation of our numerical integrator. 
 
 \begin{figure}[!b]
 \begin{center}
-\includegraphics[width=0.80\columnwidth]{corticothalamic_comparison}
+\includegraphics[width=0.70\columnwidth]{corticothalamic_comparison}
 \caption{Wake EC, same params as already published}
 \label{fig:ct_spectrum_1}
 \end{center}
 \end{figure}
 
-\begin{itemize}
-	\item Sleep spindles
-	\item Wake alpha peak
-	\item Volume conduction
-\end{itemize}
+The power spectrum can be obtained by FFT, but correct normalization and calculation of the power spectrum including multiple spatial modes can be challenging to implement. We have implemented a 3D FFT algorithm that correctly normalizes the output and includes volume conduction effects that selective attenuate spatial modes depending on their wavenumber. The result can be directly compared to analytical predictions. \todo{Felix text, to be incorporated}
 
-The power spectrum can be obtained by FFT, but correct normalization and calculation of the power spectrum including multiple spatial modes can be challenging to implement. We have implemented a 3D FFT algorithm that correctly normalizes the output and includes volume conduction effects that selective attenuate spatial modes depending on their wavenumber. The result can be directly compared to analytical predictions.
+\clearpage
 
 \subsection{Seizures (XL)}
 \label{sec:seizures}
