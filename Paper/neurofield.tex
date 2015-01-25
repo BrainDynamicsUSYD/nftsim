@@ -12,6 +12,15 @@
 \usepackage[noperiod]{jabbrv}
 \usepackage{listings}
 
+% 
+\usepackage{etoolbox}
+\makeatletter
+\patchcmd{\Gin@ii}
+  {\begingroup}% <search>
+  {\begingroup\renewcommand{\@latex@error}[2]{\includegraphics[width=0.5\columnwidth]{dummy}}}% <replace>
+  {}% <success>
+  {}% <failure>
+\makeatother
 
 \lstset{
 basicstyle=\small\small\ttfamily,
