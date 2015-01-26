@@ -1,6 +1,7 @@
 #include<cstring>
 #include"solver.h"
 
+using std::cout;
 using std::cerr;
 using std::endl;
 using std::string;
@@ -12,68 +13,49 @@ int main(int argc, char* argv[])
     for( int i=1; i<argc; i++ )
       if( strcmp(argv[i],"-?")==0 || strcmp(argv[i],"-h")==0
         || strcmp(argv[i],"--help")==0 ) {
-      cerr << "NeuroField usage: " << endl
-        << "NeuroField [optional switches]" << endl
-        << "where the optional switches are:" << endl
-        //<< "-d alternate.dump" << endl
-        << "-i alternate.conf" << endl
-        << "-o alternate.output" << endl
-        //<< "-s for not producing dump file (overrides -d switch)" << endl
-        << "-v for outputting to standard output"
-        << endl;
+      cout << endl << "Usage: NeuroField [optional switches]" << endl
+        << endl
+        << "  Numerical integrator for neural field models." << endl
+        << "  By default NeuroField will read neurofield.conf and write output" << endl
+        << "  to neurofield.output" << endl
+        << endl
+        << "Options:" << endl
+        << "  -i, --input [FILE]          Read from a particular configuration" << endl
+        << "  -o, --output [FILE]         Write to a particular output file" << endl
+        << "  -h, -?, --help              Print this message" << endl
+        << "  -v, --verbose               Send output to stdout" << endl << endl
+        << "Examples:" << endl
+        << "  NeuroField " << endl
+        << "  NeuroField -i alternate.conf -o alternate.output" << endl
+        << endl
+        << "Copyright University of Sydney 2015" << endl;
         return 0;
       }
 
-  // if find keyword "restart" in the argument list, use restart mode
-  /*bool restart = false;
-  for( int i=0; i<argc-1; i++ )
-    if( strcmp(argv[i],"--restart")==0 )
-      restart = true;*/
-
   // open conf file - default is neurofield.conf
+  //conditional operator syntax: condition? if_true:if_false
   int iconfarg = 0;
   if( argc>2 )
     for( int i=1; i<argc-1; i++)
-      if( strcmp(argv[i],"-i") == 0 )
+      if( strcmp(argv[i],"-i") == 0  || strcmp(argv[i],"--input") == 0 )
         iconfarg = i + 1;
   const char* confname = iconfarg?argv[iconfarg]:"neurofield.conf";
-  //conditional operator condition? if_true:if_false
-  
-  // initialize inputf, the stream of the configuration file
-  Configf* inputf = 0;
-  /*if(restart) {
-    std::cerr<<"Restart mode is not implemented yet!"<<endl;
-    exit(EXIT_FAILURE);
-    // istrm = new Restartf(confname);
+  if(!iconfarg){
+      cerr << "Warning: Using neurofield.conf for input by default" << endl;
   }
-  else*/
-    inputf = new Configf(confname);
-
-  // open file for dumping data for restart - default is neurofield.dump
-  /*Dumpf* dumpf = 0;
-  int idumparg = 0;
-  if( argc>2 )
-    for( int i=1; i<argc-1; i++)
-      if( strcmp(argv[i],"-d") == 0 )
-        idumparg = i + 1;
-  dumpf = new Dumpf; dumpf->open(idumparg?argv[idumparg]:"neurofield.dump");*/
-
-  // if given "-s" or "--silent", suppress dumpfile
-  /*if( argc>1 )
-    for( int i=1; i<argc-1; i++ )
-      if( strcmp(argv[i],"-s")==0 || strcmp(argv[i],"--silent")==0 ) {
-        if(dumpf) delete dumpf;
-        dumpf = 0;
-      }*/
-
+  Configf* inputf = new Configf(confname);
+  
   // open file for outputting data - default is neurofield.output
   Dumpf dumpf;
   int ioutarg = 0;
   if( argc>2 )
     for( int i=1; i<argc-1; i++)
-      if( strcmp(argv[i],"-o") == 0 )
+      if( strcmp(argv[i],"-o") == 0 || strcmp(argv[i],"--output") == 0)
         ioutarg = i + 1;
   dumpf.open(string(ioutarg?argv[ioutarg]:"neurofield.output"));
+  if(!ioutarg){
+      cerr << "Warning: Using neurofield.output for output by default" << endl;
+  }
 
   if( argc>1 )
     for( int i=1; i<=argc-1; i++)
