@@ -275,7 +275,7 @@ Given that both the config file and output file are human readable (see Fig.~\re
 
 In addition to manually editing the plain-text files, NeuroField is packaged with MATLAB helper scripts that assists with both the launching of NeuroField and postprocessing of simulation results.
 
-The usage of these MATLAB scripts involves first reading the simulated results from the NeuroField output file into an ``NF" MATLAB object, via an {\tt nf\_read()} function, and then using the {\tt nf\_extract()} function to extract neural dynamic quantities. Then, numerous scripts are provided for visualization, including plotting routines and animation routines, and also routines for the calculation of power spectra. In Sec.~\ref{sec:results}, we provide numerous examples of NeuroField simulations results, where the generation of these figures rely heavily on these helper scripts.
+The usage of these MATLAB scripts involves first reading the simulated results from the NeuroField output file into an ``NF" MATLAB object, via an {\tt nf\_read()} function, and then using the {\tt nf\_extract()} function to extract neural dynamic quantities. A number of functions are provided for visualization, including plotting routines and animation routines, and for the calculation of power spectra. In Sec.~\ref{sec:results}, we provide numerous examples of NeuroField simulations results, where the generation of these figures rely heavily on these helper scripts.
 
 \todo[inline]{More from Romesh}
 
@@ -367,67 +367,49 @@ Figure~\ref{fig:cadp} shows a schematic diagram for the synaptic plasticity theo
 
 \clearpage
 
-\subsection{Corticothalamic model (Romesh)}
+\subsection{Corticothalamic model}
 \label{sec:ct}
 
 NeuroField has been extensively tested with a recent neural field corticothalamic model of the brain \citep{Robinson2005,Rowe2004413,PhysRevE.63.021903,PhysRevE.65.041924,Robinson:04aa} that we have previously used to investigate the alpha rhythm \citep{PhysRevE.68.021922,PhysRevE.70.011911}, age-related changes to the physiology of the brain \citep{VanAlbada2010}, evoked response potentials \citep{Rennie2002,ker11}, seizures \citep{Breakspear2006}, and many other phenomena. 
 
-The structure of the model is shown in Fig.~\ref{fig:ct_schematic}. Much of our work is in the linear regime and utilizes analytic results for small perturbations to steady states. Steady states can be obtained by setting the differential operators \eqref{eq:dendrite} and \eqref{eq:wave} to unity, and solving for the the steady state firing rate $\phi_e^{(0)}$ \cite{Robinson:04aa}
-\begin{align}
-	\label{eqn:ve_root}
-	\begin{split}
-	S^{-1}&(\phi_e^{(0)})-(\nu_{ee}+\nu_{ei})\phi_e^{(0)} = \\ &\nu_{es}S\left\{\nu_{se}\phi_e^{(0)}+\nu_{sr}S\left[\nu_{re}\phi_e^{(0)}+(\nu_{rs}/\nu_{es})\left(S^{-1}(\phi_e^{(0)})-(\nu_{ee}+\nu_{ei})\phi_e^{(0)}\right)\right]+\nu_{sn}\phi_n^{(0)}\right\}, 
-\end{split}
-\end{align}
-where $S^{-1}$ denotes the inverse sigmoid function. To linearize the model, we take a Taylor expansion of the sigmoid and retain only the first term:
-\begin{align}
-Q_a(\mathbf{r},t) = Q_a^{(0)} + S'\left(V_a^{(0)}\right) \left[V_a(\mathbf{r},t)-V_a^{(0)}\right]
-\end{align}
-This can be written in terms of a perturbation by relabeling $Q_a-Q_a^{(0)} \rightarrow Q_a $, $V_a-V_a^{(0)} \rightarrow V_a$, yielding
-\begin{align}
-\label{eqn:q_linear}
-Q_a(\mathbf{r},t) &= \rho_a^{(1)} V_a(\mathbf{r},t),
-\end{align}
-where $\rho_a^{(n)} = S^{(n)}\left(V_a^{(0)}\right)$ and $S^{(n)}$ is the $n$th derivative of the sigmoid function at the steady state value of $Q_a$. Taking the Fourier transform of Eqs.~\ref{eq:summation}--\ref{eq:wave},\ref{eqn:q_linear} and solving for $\phi_e/\phi_n$ yields a transfer function that maps stimlus to cortical response in the frequency domain
-\begin{align}
-\label{eqn:transfer_unsimplified}
-T = \frac{\phi_e(\mathbf{k},\omega)}{\phi_n(\mathbf{k},\omega)}  =  \left( D_{e}(\mathbf{k},\omega) - \frac{1}{1-G_{ei}L(\omega)} \left\lbrace L(\omega) G_{ee} + \frac{\left[ L(\omega)^2 G_{ese}  + L(\omega^3 G_{erse}\right]e^{i\omega t_0}}{1 - L(\omega^2 G_{srs}}  \right\rbrace \right)^{-1} \frac{L(\omega^2G_{esn}e^{i\omega t_0 /2}}{(1 - L(\omega)^2 G_{srs})(1-G_{ei}L(\omega)}
-\end{align}
-where the gains $G_{ab}$ are given by $G_{ab}=\rho_a\nu_{ab}$, $G_{ese} = G_{es}G_{se}$, $G_{erse} = G_{es}G_{sr}G_{re}$, $G_{srs} = G_{sr}G_{rs}$, and $G_{esn} = G_{es}G_{sn}$.
+The structure of the model is shown in Fig.~\ref{fig:ct_schematic}. 
+Our model predictions are often tested against EEG measures, with $\phi_e(\mathbf{r},t)$ (as marked in Fig.~\ref{fig:ct_schematic}) being associated with the measured EEG signal at position $\mathbf{r}$. 
+Much of our work is in the linear regime and utilizes analytic results for small perturbations to steady states. Steady states can be obtained by setting the differential operators \eqref{eq:dendrite} and \eqref{eq:wave} to unity, and solving for the the steady state firing rate $\phi_e^{(0)}$ \cite{Robinson:04aa}. 
+However, some phenomena are strongly nonlinear, and these must be solved by numerical integration. We have used NeuroField to model results relating to seizures \citep{Roberts2008}, visually evoked potentials \citep{Roberts2012a}, and sleep spindles \citep{Abeysuriya2013,Abeysuriya2013a}.  
 
-The transfer function can be related to the EEG power spectrum by integration over $\mathbf{k}$. When periodic boundary conditions are imposed, this becomes a summation:
+The EEG time series is directly produced by NeuroField. 
+The power spectrum can be obtained by FFT, but correct normalization and calculation of the power spectrum including multiple spatial modes can be challenging to implement. With periodic boundary conditions, the EEG power spectrum is given by the summation
 \begin{align}
 \label{eqn:power_sum}
-P(\omega) &= \sum_{m = -\infty}^{\infty}\sum_{n = -\infty}^{\infty} \Delta k_x \Delta k_y |T(\mathbf{k},\omega)|^2||\phi_n(\mathbf{k},\omega)|^2F(k)\\
-k^2 &=  \left( \frac{2\pi m}{L_x} \right)^2 + \left( \frac{2\pi n}{L_y}\right)^2 
+P(\omega) &= \sum_{m = -\infty}^{\infty}\sum_{n = -\infty}^{\infty} \Delta k_x \Delta k_y |\phi_e(\mathbf{k},\omega)|^2|F(k)\\
+k^2 &=  \left( \frac{2\pi m}{L_x} \right)^2 + \left( \frac{2\pi n}{L_y}\right)^2
 \end{align}
-where the size of the two-dimensional rectangular cortex is $L_x \times L_y$. In practice, modes with large $\mathbf{k}$ are strongly damped \citep{OConnor2002}. The filter function $F(k)$ approximates the low-pass spatial filtering that arises due to volume conduction by the cerebrospinal fluid, skull and scalp, which serves as a low-pass spatial filter whose $k$ dependence is well fitted by the form \citep{PhysRevE.63.021903,Rowe2004413,alb06a,VanAlbada2010}
+where the size of the two-dimensional rectangular cortex is $L_x \times L_y$. In practice, modes with large $\mathbf{k}$ are strongly damped, so only a small number of spatial modes need to be included \citep{OConnor2002}. Volume conduction by the cerebrospinal fluid, skull and scalp serves as a low-pass spatial filter whose $k$ dependence is well fitted by the form \citep{PhysRevE.63.021903,Rowe2004413,alb06a,VanAlbada2010}
 \begin{align}
 F(k) &= e^{-k^2/k_0^2},
 \end{align}
-with a low-pass cutoff at $k_0 \approx 10$\,m$^{-1}$ based on the spherical harmonic head transfer function developed by \cite{Srinivasan1998}. \todo{duplicate wording}. 
+with a low-pass cutoff $k_0 \approx 10$\,m$^{-1}$ based on the spherical harmonic head transfer function developed by \cite{Srinivasan1998}.
 
-The linear approximation is suitable to model a wide range of brain activity. However, some phenomena are strongly nonlinear, and these must be solved by numerical integration. We have used NeuroField to model results relating to seizures \citep{Roberts2008}, visually evoked potentials \citep{Roberts2012a}, and sleep spindles \citep{Abeysuriya2013,Abeysuriya2013a}. 
+Both summation over spatial modes and volume conduction filtering are implemented in MATLAB helper scripts in the NeuroField toolbox. Figure.~\ref{fig:spindle_comparison} shows a three-way comparison between the linear analytic prediction, the nonlinear spectrum generated by NeuroField, and the linear spectrum generated by NeuroField. The model parameters are drawn from \citet{Abeysuriya2013} and correspond to sleep spindles. The linear NeuroField spectrum is computed by changing the population \texttt{qresponse} to a linear function, which can simply be selected in the configuration file. There is an excellent match between the linear analytic spectrum and the linear NeuroField spectrum, verifying our implementation of the numerical integrator and power spectrum helper scripts. The nonlinear spectrum shows an additional harmonic peak not present in the linear model. 
 
-Matching NeuroField to the analytic spectrum requires implementation of the summation over spatial modes, and incorporation of the volume conduction filter. This is achieved by following the procedure described in Sec.~\ref{sec:spectrum_3d}, as implemented in the NeuroField toolbox. As shown in Fig.~\ref{fig:ct_spectrum}, there is an excellent match between NeuroField and the analytic spectrum when nonlinear effects are insignificant, providing strong validation of our implementation of our numerical integrator. 
-
-\begin{figure}[!b]
+\begin{figure}[!htbp]
 \begin{center}
-\includegraphics[width=0.70\columnwidth]{corticothalamic_comparison}
-\caption{Wake EC, same params as already published}
-\label{fig:ct_spectrum_1}
+\includegraphics[width=0.85\columnwidth]{spindle_comparison}
+\caption{EEG power spectrum for sleep spindles, for parameters in \citet{Abeysuriya2013}. The linear analytic spectrum and linear NeuroField spectrum are an excellent match. The nonlinear NeuroField spectrum shows additional features that arise due to nonlinear effects in the model, in this case corresponding to a nonlinear sleep spindle harmonic \citep{Abeysuriya2013a}.}
+\label{fig:spindle_comparison}
 \end{center}
 \end{figure}
 
-The power spectrum can be obtained by FFT, but correct normalization and calculation of the power spectrum including multiple spatial modes can be challenging to implement. We have implemented a 3D FFT algorithm that correctly normalizes the output and includes volume conduction effects that selective attenuate spatial modes depending on their wavenumber. The result can be directly compared to analytical predictions. \todo{Felix text, to be incorporated}
-
 \clearpage
 
-\subsection{Seizures (XL)}
+\subsection{Seizures}
 \label{sec:seizures}
+\todo[inline]{Content from Xuelong}
 
-\subsection{Corticothalamic model with bursting dynamics (XL)}
+\subsection{Corticothalamic model with bursting dynamics}
 \label{sec:burst}
+\todo[inline]{Content from Xuelong}
+
 
 \subsection{Wilson-Cowan model}
 
@@ -445,6 +427,27 @@ Most notably, the signals from populations can be associated with local field po
 	\item White noise requires stocastic DE integrator, effectively Euler (FELIX)
 	\item Noise amplitude depends on grid resolution as this affects the possible bandwidth. Similar features depend on frequency domain power so noise needs to be normalized correctly (ROMESH)
 \end{itemize}
+
+Many neural simulations drive the system using spatially uncorrelated white noise, which is typically denoted in our model as $\phi_n(\mathbf{r},t)$. This noise signal can be efficiently generated by sampling from a normal distribution $\mathcal{N}(\mu,\sigma^2)$ at each grid point and time step. However, the power spectrum of this noise signal $\phi_n(\mathbf{k},\omega)$ depends on $\sigma$, the time step $\Delta t$, and grid resolution $\Delta x$ and $\Delta y$. Intuitively, the standard deviation $\sigma$ represents the sum of all of the frequency components $\phi_n(\mathbf{k},\omega)$ at each point in space and time. In a discrete system, decreasing $\Delta t$, $\Delta x$ or $\Delta y$ increases the number of frequency components present in the Fourier transform. However, if $\sigma$ is not adjusted accordingly, the effect will be a decrease in magnitude of each frequency component, changing the normalization of the power spectrum. 
+
+Typically we are interested in preserving the value of $|\phi_n(\mathbf{k},\omega)|^2$, so that the normalization of the power spectrum is invariant when the numerical resolution is changed. From Parseval's theorem, we find that the sum of the discrete Fourier components must equal the expectation value of the original function in the time domain, which is $\sigma^{2}$ for white noise from the Wiener-Khinchin theorem. We therefore obtain 
+\begin{align}
+\label{eqn:parseval}
+\sigma^{2}&=\sum_{M,N,P}|\phi_n(\mathbf{k},f)|^2\Delta f\Delta k_{x}\Delta k_{y}\\
+&=\frac{4\pi^{2}|\phi_n(\mathbf{k},f)|^2}{\Delta T\Delta x\Delta y}
+\end{align}
+where
+\begin{align}
+\Delta k_x=\frac{2\pi}{L_{x}}=\frac{2\pi}{M\Delta x}
+\end{align}
+and there are $M$, $N$, and $P$ grid points in each dimension $x$, $y$ and $t$, respectively. In our model formulation, the analytic power spectrum is single-sided (positive frequencies only) and depends on $|\phi_n(\mathbf{k},\omega)|^2$. This quantity is equal to $\pi |\phi_n(\mathbf{k},f)|^2$  noting that Eq.~\eqref{eqn:parseval} refers to both positive and negative frequencies. Thus we finally have the result
+\begin{align}
+\sigma=\sqrt{\frac{4\pi^{3}|\phi_n(\mathbf{k},\omega)|^2}{\Delta T\Delta x\Delta y}}
+\end{align}
+which relates the standard deviation of the Gaussian distribution used to generate the noise in the time domain, to the power spectral density of the noise in the frequency domain. This enables the power spectral density to be correctly matched between the analytic spectrum and NeuroField, as shown in Fig.~\ref{fig:spindle_comparison}. 
+
+For ease of use, users can specify the desired power spectral density of the white noise stimulus in the configuration file, as well as the physical dimensions of each population. NeuroField will then automatically calculate the appropriate Gaussian distribution to correctly match the desired power spectral density. 
+
 
 \subsection{Performance}
 
@@ -465,76 +468,3 @@ This work was supported by the Australian Research Council, National Health and 
 \bibliography{neurofield}
 
 \end{document}
-
-%% References
-%%
-%% Following citation commands can be used in the body text:
-%%
-%%  \citet{key}  ==>>  Jones et al. (1990)
-%%  \citep{key}  ==>>  (Jones et al., 1990)
-%%
-%% Multiple citations as normal:
-%% \citep{key1,key2}         ==>> (Jones et al., 1990; Smith, 1989)
-%%                            or  (Jones et al., 1990, 1991)
-%%                            or  (Jones et al., 1990a,b)
-%% \citep{key} is the equivalent of \citet{key} in author-year mode
-%%
-%% Full author lists may be forced with \citet* or \citep*, e.g.
-%%   \citep*{key}            ==>> (Jones, Baker, and Williams, 1990)
-%%
-%% Optional notes as:
-%%   \citep[chap. 2]{key}    ==>> (Jones et al., 1990, chap. 2)
-%%   \citep[e.g.,][]{key}    ==>> (e.g., Jones et al., 1990)
-%%   \citep[see][pg. 34]{key}==>> (see Jones et al., 1990, pg. 34)
-%%  (Note: in standard LaTeX, only one note is allowed, after the ref.
-%%   Here, one note is like the standard, two make pre- and post-notes.)
-%%
-%%   \citealt{key}          ==>> Jones et al. 1990
-%%   \citealt*{key}         ==>> Jones, Baker, and Williams 1990
-%%   \citealp{key}          ==>> Jones et al., 1990
-%%   \citealp*{key}         ==>> Jones, Baker, and Williams, 1990
-%%
-%% Additional citation possibilities
-%%   \citeauthor{key}       ==>> Jones et al.
-%%   \citeauthor*{key}      ==>> Jones, Baker, and Williams
-%%   \citeyear{key}         ==>> 1990
-%%   \citeyearpar{key}      ==>> (1990)
-%%   \citetext{priv. comm.} ==>> (priv. comm.)
-%%   \citenum{key}          ==>> 11 [non-superscripted]
-%% Note: full author lists depends on whether the bib style supports them;
-%%       if not, the abbreviated list is printed even when full requested.
-%%
-%% For names like della Robbia at the start of a sentence, use
-%%   \Citet{dRob98}         ==>> Della Robbia (1998)
-%%   \Citep{dRob98}         ==>> (Della Robbia, 1998)
-%%   \Citeauthor{dRob98}    ==>> Della Robbia
-
-
-%% References with bibTeX database:
-
-%% Authors are advised to submit their bibtex database files. They are
-%% requested to list a bibtex style file in the manuscript if they do
-%% not want to use elsarticle-harv.bst.
-
-%% References without bibTeX database:
-
-% \begin{thebibliography}{00}
-
-%% \bibitem must have one of the following forms:
-%%   \bibitem[Jones et al.(1990)]{key}...
-%%   \bibitem[Jones et al.(1990)Jones, Baker, and Williams]{key}...
-%%   \bibitem[Jones et al., 1990]{key}...
-%%   \bibitem[\protect\citeauthoryear{Jones, Baker, and Williams}{Jones
-%%       et al.}{1990}]{key}...
-%%   \bibitem[\protect\citeauthoryear{Jones et al.}{1990}]{key}...
-%%   \bibitem[\protect\astroncite{Jones et al.}{1990}]{key}...
-%%   \bibitem[\protect\citename{Jones et al., }1990]{key}...
-%%   \harvarditem[Jones et al.]{Jones, Baker, and Williams}{1990}{key}...
-%%
-
-% \bibitem[ ()]{}
-
-% \end{thebibliography}
-
-%%
-%% End of file `elsarticle-template-harv.tex'.
