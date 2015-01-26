@@ -457,6 +457,24 @@ For ease of use, users can specify the desired power spectral density of the whi
 \item Also that the delays in the system cause O(n) increases in memory usage (FELIX)
 \end{itemize}
 
+\begin{table*}[!t]
+\begin{center}
+\begin{tabular}{l c c c }
+\toprule
+{\bf Platform}    & {\bf Processor}                   & {\bf Clock speed}       & {\bf Runtime} \\
+\midrule
+Windows	& i5-2500k & 4.8\,GHz & 14.3\,s \\
+Arch Linux & i5-760 & 2.8\,GHz& 12.0\,s \\
+RHEL6 & Xeon E5-2698 & 2.3\,GHz & 10\,s \\
+Mac OS 10.10 & i5-4260U & 1.4\,GHz & 11.4\.s \\
+\bottomrule
+\end{tabular} 
+\caption{Example NeuroField run times for a typical NeuroField run. The configuration file corresponds to the corticothalamic model, simulating 15 seconds sampled at 10000\,Hz with 144 grid points and outputting $\phi_e$ at 200\,Hz for all nodes. NeuroField was compiled natively on each platform using GCC 4.8 or higher with all applicable performance flags selected, with the exception of Windows where the MinGW was used for cross-compiling. TODO: Double check with John Palmer how to interpret these - to me these seem like they are memory-bound rather than CPU bound. Tests were run using eirs\_eyes\_closed.conf from the repository}
+\label{table:params} 
+\end{center} 
+\end{table*}
+
+
 \todo[inline]{Additional considerations?}
 
 \section{Acknowledgements}
