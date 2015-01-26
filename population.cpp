@@ -133,7 +133,8 @@ void Population::growHistory( const Tau& tau )
 
 void Population::output( Output& output ) const
 {
-  if(qresponse) return qresponse->output(output);
+  output("Pop",index+1,"Q",qhistory[qkey]);
+ if(qresponse) return qresponse->output(output);
   else return timeseries->output(output);
 }
 
