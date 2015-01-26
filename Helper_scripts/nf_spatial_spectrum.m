@@ -57,7 +57,7 @@ function [f,P,Kx,Ky,Pkf,x,y,Prf] = nf_spatial_spectrum(nf,p,kmax,n_windows,spati
     Lx = 0.5; % linear cortex dimension (m)
     Ly = 0.5;
 
-    [f,Kx,Ky,x,y] = get_frequencies(data(:,:,window_idx(1,1):window_idx(1,2)),fs,Lx,Ly);
+    [f,Kx,Ky,x,y,df,dk,dx] = get_frequencies(data(:,:,window_idx(1,1):window_idx(1,2)),fs,Lx,Ly);
 
     k2 = Kx.^2+Ky.^2; % Matrix of k-squared values
     if isempty(kmax)
@@ -91,7 +91,6 @@ function [f,P,Kx,Ky,Pkf,x,y,Prf] = nf_spatial_spectrum(nf,p,kmax,n_windows,spati
     Pkf = Pkf/n_windows;
     Prf = Prf/n_windows;
 
-    dk = 2*pi/Lx;
     P = squeeze(sum(sum(Pkf,1),2))*dk*dk;
 
 
