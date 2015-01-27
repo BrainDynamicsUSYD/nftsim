@@ -1,9 +1,6 @@
 #include"solver.h"
 #include"wave.h"
 #include"harmonic.h"
-#ifdef WAVEFOURIER
-#include"wavefourier.h"
-#endif
 #include"longcouple.h"
 #include"bcmlong.h"
 
@@ -122,16 +119,6 @@ void Solver::init( Configf& configf )
       propags.add( new
         Wave(nodes,deltat,i, *pops[cnt.pre[i]], *pops[cnt.post[i]], longside, topology));
     }
-    #ifdef WAVEFOURIER
-    else if(ptype=="WaveFourier") {
-      if( nodes==1 )
-      propags.add( new
-        Harmonic(nodes,deltat,i, *pops[cnt.pre[i]], *pops[cnt.post[i]], longside, topology));
-      else
-      propags.add( new
-        WaveFourier(nodes,deltat,i, *pops[cnt.pre[i]], *pops[cnt.post[i]], longside, topology));
-    }
-    #endif
     else if(ptype=="Harmonic")
       propags.add( new
         Harmonic(nodes,deltat,i, *pops[cnt.pre[i]], *pops[cnt.post[i]], longside, topology));
