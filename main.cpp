@@ -13,7 +13,7 @@ int main(int argc, char* argv[])
     for( int i=1; i<argc; i++ )
       if( strcmp(argv[i],"-?")==0 || strcmp(argv[i],"-h")==0
         || strcmp(argv[i],"--help")==0 ) {
-      cerr << endl << "Usage: NeuroField [optional switches]" << endl
+      cout << endl << "Usage: NeuroField [optional switches]" << endl
         << endl
         << "  Numerical integrator for neural field models." << endl
         << "  By default NeuroField will read neurofield.conf and write output" << endl

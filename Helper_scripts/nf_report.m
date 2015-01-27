@@ -1,7 +1,7 @@
 function nf_report(nf)
     % Given a nf output object, print some information about it
     % Romesh Abeysuriya 120322
-    fprintf(1,'NEUROFIELD OUTPUT INFORMATION\n')
+    fprintf(1,'NeuroField output\n')
     fprintf(1,'Traces: ');
     for j = 1:length(nf.fields)
         fprintf(1,'%s ',nf.fields{j});
