@@ -26,6 +26,7 @@ class Population : public NF
 protected:
   int qkey; // index to the present q in qhistory
   vector< vector<double> > qhistory; // keyring of Q
+  vector<double> q; // current Q, only for output purpose
   bool settled; // if true, forbids add2Dendrite and growHistory
   double length; // spatial length
   double qinit; // initial firing rate

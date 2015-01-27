@@ -6,6 +6,7 @@ void Population::init( Configf& configf )
 {
   qinit = Qinit(configf);
   qhistory.push_back( vector<double>(nodes,qinit) );
+  q.resize(nodes,qinit);
 
   configf.param("Length",length);
 
@@ -44,6 +45,10 @@ void Population::step(void)
     timeseries->step();
     timeseries->fire( qhistory[qkey] );
   }
+
+  // q is the current Q, only for output purpose
+  for( int i=0; i<nodes; i++ )
+    q[i] = qhistory[qkey][i];
 }
 
 double Population::Qinit( Configf& configf ) const
@@ -98,8 +103,6 @@ const vector<double>& Population::Q( const Tau& tau) const
   else { // tau.m.size() == nodes, inhomogeneous tau
     static vector<double> temp(nodes);
     for( int i=0; i<nodes; i++ ){
-      //temp[i] = qhistory
-      //  [ tau.m[i]<=qkey ? qhistory.size()+qkey-tau.m[i] : qkey-tau.m[i] ][i];
       temp[i] = qhistory[(qkey-tau.m[i]+qhistory.size())%qhistory.size()][i];
     }
     return temp;
@@ -133,8 +136,12 @@ void Population::growHistory( const Tau& tau )
 
 void Population::output( Output& output ) const
 {
- if(qresponse) return qresponse->output(output);
-  else return timeseries->output(output);
+  if(qresponse) {
+    output("Pop",index+1,"Q",q);
+    qresponse->output(output);
+  }
+  else
+    timeseries->output(output);
 }
 
 void Population::outputDendrite( int index, Output& output ) const
