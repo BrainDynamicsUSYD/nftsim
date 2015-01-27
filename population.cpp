@@ -10,7 +10,7 @@ void Population::init( Configf& configf )
 
   configf.param("Length",length);
 
-  if( qresponse ) { // neural population
+if( qresponse ) { // neural population
     double temp; configf.param("Q",temp);
     configf.param( "Firing", *qresponse );
   }
@@ -136,8 +136,8 @@ void Population::growHistory( const Tau& tau )
 
 void Population::output( Output& output ) const
 {
+  output("Pop",index+1,"Q",q);
   if(qresponse) {
-    output("Pop",index+1,"Q",q);
     qresponse->output(output);
   }
   else
