@@ -17,6 +17,22 @@ Dumpf::~Dumpf(void)
   file.close();
 }
 
+void Dumpf::outputConfig( Configf& configf ) {
+  /*size_t filesize;
+  configf.seekg(0,std::ios::end);
+  filesize = configf.tellg();
+  configf.seekg(0,std::ios::beg);
+  char* buffer = new char[filesize];
+  buffer[filesize] = '\0';*/
+  int sp = configf.tellg();
+  configf.seekg(0,std::ios::beg);
+  configf.read(configf.buffer,configf.filesize);
+  configf.seekg(sp);
+  *s << configf.buffer << "123456789012345678901234567890";
+  *this<<endl<<endl
+      <<"============================================="<<endl<<endl;
+}
+
 void Dumpf::open( const string& filename )
 {
   this->filename = filename;
@@ -71,7 +87,7 @@ Dumpf& Dumpf::operator<< ( ostream& (*pf)(ostream&) )
 
 ostream& septor( ostream& os )
 {
-  os<<"|";
+  //os<<"|";
   return os;
 }
 
