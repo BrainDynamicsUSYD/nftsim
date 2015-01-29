@@ -48,23 +48,13 @@ public:
 
   int tell(void) { return std::ifstream::tellg(); }
   void seek( int position ) { std::ifstream::seekg(position); }
+
+  friend class Dumpf;
 };
 
 // global function that returns string=="Object#" for config file parsing
 // also useful in naming outputf "solution.phi.#"
 string label( const string& prefix, int index );
-
-// Restartf does nothing new
-class Restartf : public Configf // derived from Configf also a ifstream
-{
-  Restartf(const Restartf&);
-  Restartf();
-  Restartf& operator=(Restartf&);
-public:
-  Restartf( const char* filename );
-  virtual ~Restartf(void);
-};
-//class Restartf;
 
 template<class T> void Configf::param(const string& param, T& ret, int delim )
 {

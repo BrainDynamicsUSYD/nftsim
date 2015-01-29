@@ -7,10 +7,13 @@ using std::istream;
 using std::string;
 
 #include<fstream>
+using std::ifstream;
 using std::ofstream;
 using std::ostream;
 #include<string>
 using std::string;
+
+#include"configf.h"
 
 class Dumpf
 {
@@ -23,6 +26,7 @@ class Dumpf
 public:
   Dumpf(void);
   ~Dumpf(void);
+  void outputConfig( Configf& configf );
   void open( const string& filename );
   void verbose(void);
   Dumpf& operator<< ( double f );
