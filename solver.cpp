@@ -344,6 +344,9 @@ void Solver::Outputs::init( Configf& configf )
     add(output);
   }
 
+  // repeat config file into output
+  dumpf.outputConfig(configf);
+
   // write out first row
   dumpf<<space<<"Time"<<space<<space<<septor;
   for( size_t i=0; i<outlets.size(); i++ )
