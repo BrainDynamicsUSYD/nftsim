@@ -209,6 +209,9 @@ void Solver::Outputs::step(void)
 }
 void Solver::Outputs::init( Configf& configf )
 {
+  // repeat config file into output
+  dumpf.outputConfig(configf);
+
   double tempf; string temps; vector<double> temp_node;
   // read in nodes to output
   //int position = tellg();
@@ -343,9 +346,6 @@ void Solver::Outputs::init( Configf& configf )
     }
     add(output);
   }
-
-  // repeat config file into output
-  dumpf.outputConfig(configf);
 
   // write out first row
   dumpf<<space<<"Time"<<space<<space<<septor;
