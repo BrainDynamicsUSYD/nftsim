@@ -20,7 +20,20 @@ Dumpf::~Dumpf(void)
 void Dumpf::outputConfig( Configf& configf ) {
   int sp = configf.tellg();
   configf.seekg(0,std::ios::beg);
+  std::fill(configf.buffer,configf.buffer+configf.filesize,'a');
+
+  // Should be 'aaaaaaaa'
+  for(size_t i =0; i<configf.filesize;i++)
+    cout << configf.buffer[i];
+  cout << endl << endl;
+
   configf.read(configf.buffer,configf.filesize);
+
+  // Should be the config file. It prints 'aaaaa' for me
+  for(size_t i =0; i<configf.filesize;i++)
+    cout << configf.buffer[i];
+  cout << endl << endl;
+
   configf.seekg(sp);
   s->write(configf.buffer,configf.filesize);
   *this<<endl<<"============================================="<<endl<<endl;
