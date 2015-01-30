@@ -327,7 +327,10 @@ void Solver::Outputs::init( Configf& configf )
 
   // read in couples to output
   configf.next("Couple");
-  temp = configf.arb("EOF"); // config files do not contain "EOF", reads to end of file
+  // config files do not contain "EOF", reads to end of file
+  // this raises the error flag in configf
+  // and forbids any further reading of the config file
+  temp = configf.arb("EOF");
   for( size_t i=0; i<temp.size(); i++ ) {
     int obj_index = atoi(temp[i].c_str());
     if( obj_index > cnt.ncnt || obj_index<1 ) {
