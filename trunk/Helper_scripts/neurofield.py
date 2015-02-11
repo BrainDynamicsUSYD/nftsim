@@ -2,29 +2,36 @@ import os,sys
 import numpy as np
 import matplotlib.pyplot as plt
 
-
 class NF:
 
 	def __init__(self,nf_output_file):
 		with open(nf_output_file,'rU') as outfile:
+			[conf,skip] = self.read_conf(outfile)
+
 			headers = outfile.readline()
 			nodes = outfile.readline()
-
 			self.fields = []
-			[self.fields.append(x.strip())  for x in headers.lower().split() if (x not in ['','|','time'] and x.strip() not in self.fields) ]
-			node_idx = [[int(y) for y in x.split()] for x in nodes.split('|')[1:-1]]
 
+			field_list = [x.strip() for x in headers.lower().split()]
+			[self.fields.append(x.strip())  for x in headers.lower().split() if (x not in ['','|','time'] and x.strip() not in self.fields) ]
+			
+			node_idx = [int(y) for y in nodes.split()]
+			
+			
 			self.nodes = {}
-			for i in range(0,len(self.fields)):
-				self.nodes[self.fields[i]] = node_idx[i]
+			for i in range(1,len(field_list)):
+				if field_list[i] in self.nodes:
+					self.nodes[field_list[i]].append(node_idx[i-1])
+				else:
+					self.nodes[field_list[i]] = [node_idx[i-1]]
+
 
 			regexp = r"\s([+-.e\d]+)"
 			for i in range(0,len(self.fields)):
 				regexp += r"  \|"
 				for j in range(0,len(self.nodes[self.fields[i]])):
 					regexp += r"  ([+-.e\d]+)"
-
-		data = np.fromregex(nf_output_file,regexp,dtype=np.float64)
+		data = np.loadtxt(nf_output_file,dtype=np.float64,skiprows=skip)
 
 		self.time = data[:,0]
 		start_idx = 1
@@ -62,6 +69,19 @@ class NF:
 		plt.plot(self.time,self.data[trace])
 		plt.show()
 
+	def read_conf(self,fid):
+		l = fid.readline()
+		skiprows = 0
+		while not(l.startswith('=======================')):
+			if 'Time  |' in l:
+				print('Did you try to open an old style output file?')
+				sys.exit()
+			l = fid.readline()
+			skiprows+=1
+		fid.readline()
+		skiprows+=4 # blank line, traces, node list
+		conf = {}
+		return (conf,skiprows)
 
 def run(filename,neurofield_path='./NeuroField'):
 	filename = filename.replace('.conf','')
@@ -71,6 +91,12 @@ def run(filename,neurofield_path='./NeuroField'):
 		sys.exit()
 	nf = NF('%s.output' % (filename))
 	return nf
+
+#print os.listdirgetcwd()
+nf = NF('./output_test.output')
+
+nf.plot('pop.1.q')
+
 
 
 
