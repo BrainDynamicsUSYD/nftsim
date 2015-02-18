@@ -1,0 +1,24 @@
+NEUROFIELD
+
+(c) Copyright Complex Systems Group, University of Sydney 2015
+
+Using NeuroField indicates your acceptance of the present terms and conditions.
+
+This is the beta-test version of NeuroField, a code for modelling sleep. NeuroField is NOT available for general use at this time. It is currently experimental software for use in a research setting. Users take full responsibility for any application of research outcomes obtained using NeuroField. The developers are not responsible for misuse or improper use of any NeuroField components.
+
+You must not
+
+- Redistribute this program to other individuals or organizations - they should download NeuroField directly so as to have the most recent correction;
+- Rent, lease, transfer, modify, translate, reverse engineer, de-compile, disassemble or create derivative - works based on this program;
+- Use this program for commercial or industrial purposes;
+- Publish or present the outcomes of the software application without citation of NeuroField (the relevant methods paper when it is published).
+
+You are strongly encouraged to
+
+-Use this program for research, educational, and presentation purposes (provided you cite the NeuroField methods paper when published);
+-Discuss your specific applications with us to help us determine future development of NeuroField;
+-Convey any comments, requests, criticisms, suggestions, etc., regarding this code and improvements that -could be made to it. This will enable us to release improved versions for wider use, or potentially to -incorporate features required for your research.
+
+We also strongly encourage collaboration on interdisciplinary projects involving NeuroField, especially those combining experimental and modeling expertise.
+
+If you wish to suggest or request uses beyond those permitted above, please contact the developers at r.abeysuriya@physics.usyd.edu.au

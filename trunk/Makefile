@@ -23,8 +23,14 @@ OBJ = $(CPP:.cpp=.o)
 default: Release/NeuroField
 
 Release/NeuroField: $(addprefix Release/,$(OBJ))
-	$(COMP) $(addprefix Release/,$(OBJ)) -o $@ $(LIBS)
+	@echo "$(COMP) $(addprefix Release/,$(OBJ)) -o $@ $(LIBS)"
+	@$(COMP) $(addprefix Release/,$(OBJ)) -o $@ $(LIBS) || (echo "mycommand failed $$?"; exit 1)
+	@echo "====="
+	@cat license.txt
+	@echo "====="
+	@echo "YOUR USAGE OF NEUROFIELD CONSTITUTES ACCEPTANCE OF THE LICENSE CONDITIONS"
 
+ 
 $(addprefix Release/,$(OBJ)): Release/%.o: %.cpp %.h
 	@mkdir -p Release
 	@$(COMP) -c $< -o $@
