@@ -1,2 +1,0 @@
-Copyright: (C) 2012 Peter Drysdale, Felix Fung
-email: F.Fung@physics.usyd.edu.au
