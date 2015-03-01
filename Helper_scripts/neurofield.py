@@ -1,3 +1,15 @@
+# Neurofield Python helper scripts
+# Development in progress
+# Executing and parsing of output file is fully functional
+# Analysis routines are incomplete
+#
+# Example usage:
+#
+#	import neurofield
+#	nf = neurofield.run('filename.conf','path_to_NeuroField')
+#	print(nf)
+#	nf.plot('pop.1.q')
+
 import os,sys
 import numpy as np
 import matplotlib.pyplot as plt
@@ -25,12 +37,6 @@ class NF:
 				else:
 					self.nodes[field_list[i]] = [node_idx[i-1]]
 
-
-			regexp = r"\s([+-.e\d]+)"
-			for i in range(0,len(self.fields)):
-				regexp += r"  \|"
-				for j in range(0,len(self.nodes[self.fields[i]])):
-					regexp += r"  ([+-.e\d]+)"
 		data = np.loadtxt(nf_output_file,dtype=np.float64,skiprows=skip)
 
 		self.time = data[:,0]
@@ -52,7 +58,7 @@ class NF:
 		out += 'Stop time: %f\n' % (self.time[-1])
 		out += 'deltat: %f\n' % (self.deltat)
 		out += 'npoints: %d\n' % (len(self.time))
-		out += 'Nodes: %s' % (' '.join([str(x) for x in self.nodes[self.fields[1]]]))
+		out += 'Nodes: %s' % (' '.join([str(x) for x in self.nodes[self.fields[0]]]))
 		return out
 
 	def extract(self,trace,t=[],nodes=[]):
@@ -92,16 +98,4 @@ def run(filename,neurofield_path='./NeuroField'):
 	nf = NF('%s.output' % (filename))
 	return nf
 
-#print os.listdirgetcwd()
-nf = NF('./output_test.output')
 
-nf.plot('pop.1.q')
-
-
-
-
-
-
-
-
-# NF.data['pop.1.v'] -> data matrix
