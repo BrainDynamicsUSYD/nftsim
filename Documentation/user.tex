@@ -1,13 +1,13 @@
 \documentclass[12pt,a4paper]{article} 
 
 \title{NeuroField User Manual}
-\author{Felix Fung \and Romesh Abeysuriya}
+\author{Complex Systems\\School of Physics\\University of Sydney}
 \date{\today}
 
 \usepackage{listings}
 \usepackage{hyperref}
 \usepackage{graphicx}
-\usepackage[top=3cm,bottom=3cm,left=1.3cm,right=1.3cm]{geometry}
+\usepackage[top=3cm,bottom=3cm,left=2.2cm,right=2.2cm]{geometry}
 \usepackage{multirow}
 \usepackage{amsmath}
 
@@ -73,25 +73,24 @@ Command to put in computer
 
 \subsection{Obtaining NeuroField}
 
-The code for \NF is managed by version control system \type{subversion}, which provides a single place to obtain the latest copy of the code, as well as storing the entire history of the program. To access the repository, contact Romesh Abeysuriya (\url{r.abeysuriya@physics.usyd.edu.au}) or Sue Yang (\url{xue.yang@sydney.edu.au}).
+The code for \NF is managed by the version control system \type{git}, and is presently hosted on GitHub together with documentation, bug reports and feature requests. To obtain access to the repository, please send an email to Romesh Abeysuriya (\url{r.abeysuriya@physics.usyd.edu.au}).
 
-To set up the latest version of \NF in the current directory within the School of Physics, execute
+To set up the latest version of \NF, execute
 \begin{lstlisting}
-svn co http://silliac.physics.usyd.edu.au:18080/svn/neurofield/trunk neurofield --username=<your SVN username>
+git clone git@github.com:RomeshA/neurofield.git
 \end{lstlisting}
-
-To obtain a copy of \NF from a computer which is not connected to the School of Physics network (e.g. personal laptops at home), you will require a version of \type{SVN} higher than 1.6. However, you may need to have your IP address/network domain registered for remote access. If you are unable to access the repository remotely, please contact Sebastian Juraszek to request this (ideally by logging a helpdesk request at \url{http://physics.usyd.edu.au/itsupport} - only available within the School of Physics). 
+after having added your SSH key to your GitHub account. Alternatively, you can install the GitHub desktop client and click the `Clone in Desktop' on the GitHub website. For additional instructions, check the GitHub tutorials for downloading repositories - the NeuroField repository can be downloaded following GitHub standard procedures. 
 
 \subsection{Directory layout}
 
-The canonical directory is \type{neurofield/trunk}. Within this directory, the user can find:
+Within the main directory, the user can find:
 
 \begin{tabular}{l p{14.4cm}}
 \type{*.h, *.cpp}& C++ source code.\\
 \type{Configs/}& Stores configuration files for \NF.\\
 \type{Documentation/}& Contains documentations \type{Documentation/user.pdf} and \type{Documentation/developer.pdf}. Running \type{make doc} generates these documentations.\\
 \type{Helper\_scripts/}& Stores helper scripts, including plotting routines and other post-processing of data procedures.\\
-\type{Launch}& A launcher script that handles compilation and launching of \NF, capable of automating parameter sweeps and submitting jobs in \type{yossarian}.\\
+\type{Launch}& A launcher script that handles compilation and launching of \NF, capable of automating parameter sweeps and submitting jobs on the Complex Systems cluster \type{yossarian}.\\
 \type{Output/}& When using the launcher script to sweep over parameters, the launcher script produces this directory, which stores all output files \type{neurofield.*} in independent subdirectories.\\
 \type{Release/}& All compiled files, including the object files and the \NF executable is stored here. This directory will be deleted by \type{make clean}, so user data should not be stored here.\\
 \type{Test/}& Directory for unit testing and is irrelevant for users.\\
@@ -636,14 +635,15 @@ If a specific field of an object is specified, but that field does not exist, \N
 
 When the launcher script runs with only one set of parameters, all output files are also in the present working directory. However, if the launcher script sweeps over parameters, each parameter set has its own subdirectory inside \type{Output/}, and each set of \type{neurofield.*} files are stored in its subdirectory.
 
-Example content in \type{neurofield.output} is
+The output file starts with a copy of the input file, to enable the output file to serve as a complete representation of the simulation. The simulation results follow a series of \type{=} characters. Example content in \type{neurofield.output} is
 \begin{lstlisting}
-                Time  |          Propag.2.phi
-                      |                     0
-1.00000000000000e-04  |  8.87145000000000e+00
+=============================================
+                Time            Propag.2.phi
+                                           0
+1.00000000000000e-04    8.87145000000000e+00
 \end{lstlisting}
 
-Each column is a time series with its name indicated in the first line. The first column is always time, and in this example, the second column is \type{Propag.2.phi}, indicating that it is $\phi_{ee}$ (when checked against connection matrix). The delimiter \type{|} indicates that the two columns are different fields, rather than different nodes of the same field. The node number is indicated in the second line.
+Each column is a time series with its name indicated in the first line. The first column is always time, and in this example, the second column is \type{Propag.2.phi}, indicating that it is $\phi_{ee}$ (when checked against connection matrix). The node number is indicated in the second line.
 
 It is also worth noting that traces will be written in the order that they are specified. For example, if you write \type{Population: 3 1} then the columns in the output file will be arranged in this order. 
 
