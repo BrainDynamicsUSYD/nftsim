@@ -50,6 +50,11 @@ class NF:
 		self.deltat = self.time[1]-self.time[0]
 		self.npoints = len(self.time)
 
+                self.data_dict = {}
+                for k, v in self.nodes.items():
+                  self.data_dict[k] = {vv: self.data[k][:,vv_it] for vv_it, vv in enumerate(v)}
+                   
+
 	def __repr__(self):
 		out = ''
 		out += 'NeuroField output\n'
@@ -91,11 +96,17 @@ class NF:
 
 def run(filename,neurofield_path='./NeuroField'):
 	filename = filename.replace('.conf','')
-	result = os.system('%s -i %s.conf -o %s.output' % (neurofield_path,filename,filename))
+	cmd = '%s -i %s.conf -o %s.output' % (neurofield_path,filename,filename)
+        print '\n\nRunning neurofield with command: \n %s \n' %cmd
+        result = os.system(cmd)
+
 	if result:
 		print('Error! NeuroField did not exit cleanly')
 		sys.exit()
-	nf = NF('%s.output' % (filename))
+	else: 
+          print '\n...finished. Output written to %s.output\n' %filename 
+       
+        nf = NF('%s.output' % (filename))
 	return nf
 
 
