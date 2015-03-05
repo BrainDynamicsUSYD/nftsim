@@ -1,0 +1,4 @@
+Release/
+*.o
+# Ignore NeuroField output files
+*.output
