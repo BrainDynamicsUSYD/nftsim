@@ -28,7 +28,7 @@ Release/NeuroField: $(addprefix Release/,$(OBJ))
 	@echo "====="
 	@cat license.txt
 	@echo "====="
-	@echo "YOUR USAGE OF NEUROFIELD CONSTITUTES ACCEPTANCE OF THE LICENSE CONDITIONS"
+	@echo "USE OF NEUROFIELD CONSTITUTES ACCEPTANCE OF THE LICENSE CONDITIONS ABOVE"
 
  
 $(addprefix Release/,$(OBJ)): Release/%.o: %.cpp %.h
