@@ -6,14 +6,16 @@
 # Generated using Autoscan, added C++11 check and AC_LANG manually
 AC_PREREQ([2.69])
 AC_INIT([FULL-PACKAGE-NAME], [VERSION], [BUG-REPORT-ADDRESS])
-AC_CONFIG_SRCDIR([array.h])
-AC_CONFIG_HEADERS([config.h])
+AC_CONFIG_SRCDIR([src/array.h])
+AC_CONFIG_HEADERS([src/config.h])
 
 # Checks for programs
 AC_LANG(C++)
 AC_PROG_CXX
 AC_PROG_CC
 AC_PROG_CPP
+
+AC_PROG_INSTALL
 
 # Checks for libraries.
 # FIXME: Replace `main' with a function in `-lm':
@@ -36,6 +38,4 @@ AC_FUNC_ERROR_AT_LINE
 AC_CHECK_FUNCS([floor pow sqrt])
 
 AC_CONFIG_FILES([Makefile])
-AC_CONFIG_SUBDIRS([.git/logs/refs/heads
-                   .git/refs/heads])
 AC_OUTPUT
