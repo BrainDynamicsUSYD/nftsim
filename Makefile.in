@@ -6,7 +6,7 @@
 #COMP = g++ -g -lm -Wall -O3 -Wextra -pedantic -std=c++11 -msse -msse2 -msse3 -mfpmath=sse -march=native -mtune=native -funroll-loops -flto #-m64
 
 CC = g++-4.9
-CFLAGS = -lm -O3 -std=c++11 # Use on Mac OS. The above command has errors due to unknown instructions. Seems SSE-related?
+CFLAGS = -lm -Wall -O3 -std=c++11 # Use on Mac OS. The above command has errors due to unknown instructions. Seems SSE-related?
 
 # Debugging
 #COMP = g++ -g -lm -Wall -Wextra -pedantic -std=c++11 -msse -msse2 -msse3
@@ -43,13 +43,12 @@ obj/%.o: src/%.cpp
 	@$(CC) -MM $(CFLAGS) $< > obj/$*.d
 	@echo "CC $<"
 
+	# And create the dependency files
 	@mv -f obj/$*.d obj/$*.d.tmp
 	@sed -e 's|.*:|$@:|' < obj/$*.d.tmp > obj/$*.d
 	@sed -e 's/.*://' -e 's/\\$$//' < obj/$*.d.tmp | fmt -1 | \
 	  sed -e 's/^ *//' -e 's/$$/:/' >> obj/$*.d
 	@rm -f obj/$*.d.tmp
-
-
 
 Documentation/user.pdf: Documentation/user.tex
 	cd Documentation && pdflatex user && pdflatex user
@@ -68,10 +67,3 @@ paper: Paper/neurofield.pdf
 
 clean:
 	@-rm -rf bin obj Documentation/{user,developer}.{aux,log,out,toc} Documentation/x.log
-
-#.SILENT:
-
-# .INTERMEDIATE: main.h
-
-# src/main.h:
-# 	@touch src/main.h

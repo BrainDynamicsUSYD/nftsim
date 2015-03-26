@@ -6,8 +6,7 @@
 # Generated using Autoscan, added C++11 check and AC_LANG manually
 AC_PREREQ([2.69])
 AC_INIT([FULL-PACKAGE-NAME], [VERSION], [BUG-REPORT-ADDRESS])
-AC_CONFIG_SRCDIR([src/array.h])
-AC_CONFIG_HEADERS([src/config.h])
+#AC_CONFIG_SRCDIR([config.h.in])
 
 # Checks for programs
 AC_LANG(C++)
