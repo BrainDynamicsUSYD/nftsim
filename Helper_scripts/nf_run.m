@@ -15,9 +15,9 @@ function nf = nf_run(fname,nf_path)
 
     if nargin < 2 || isempty(nf_path)
         if ispc
-            nf_path = 'NeuroField.exe';
+            nf_path = 'neurofield.exe';
         else
-            nf_path = './NeuroField';
+            nf_path = './bin/neurofield';
         end
     end
     
