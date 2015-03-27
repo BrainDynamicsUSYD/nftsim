@@ -1,10 +1,10 @@
-# Performance
-# CC = g++
-# CFLAGS = -g -lm -Wall -O3 -Wextra -pedantic -std=c++11 -msse -msse2 -msse3 -mfpmath=sse -march=native -mtune=native -funroll-loops -flto #-m64
+# Standard Linux, performance
+CC = g++
+CFLAGS = -g -lm -Wall -O3 -Wextra -pedantic -std=c++11 -msse -msse2 -msse3 -mfpmath=sse -march=native -mtune=native -funroll-loops -flto #-m64
 
 # Mac OS
-CC = g++-4.9
-CFLAGS = -lm -Wall -O3 -std=c++11 
+# CC = g++-4.9
+# CFLAGS = -lm -Wall -O3 -std=c++11 
 
 
 # Windows
