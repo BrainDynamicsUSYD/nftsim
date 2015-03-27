@@ -69,13 +69,13 @@ if( scalar(@ARGV)<2 ) {
 		truncate(PBS, $addr);
 		close PBS; open PBS, ">>pbs" or die $!;
 		my $pwd = `pwd`; chomp $pwd;
-		print PBS "cd ".$pwd." && time ./Release/NeuroField";
+		print PBS "cd ".$pwd." && time ./bin/neurofield";
 		close PBS;
 		exec "qsub pbs" or die $!;
 	} else {
 		my $pv = `which pv 2> /dev/null`;
 		if( $? =~ /256/ ) {
-			exec "time ./Release/NeuroField $arglist";
+			exec "time ./bin/neurofield $arglist";
 		} else {
 			my $time = $1 if( `grep Time neurofield.conf` =~ /Time:\s*([-\d\.e]+)/ );
 			my $start = $1 if( `grep Start neurofield.conf` =~ /Start:\s*([-d\d\.e]+)/ );
@@ -83,7 +83,7 @@ if( scalar(@ARGV)<2 ) {
 			my $interval = $1 if( `grep Deltat neurofield.conf` =~ /Deltat:\s*([-\d\.e]+)/ );
 			$interval = $1 if( `grep Interval neurofield.conf` =~ /Interval:\s*([-\d\.e]+)/ );
 			my $steps = $time/$interval +2;
-			exec "./Release/NeuroField $arglist -v | pv -pte -ls $steps >neurofield.output";
+			exec "./bin/neurofield $arglist -v | pv -pte -ls $steps >neurofield.output";
 		}
 	}
 }
