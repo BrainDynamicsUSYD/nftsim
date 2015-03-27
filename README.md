@@ -1,7 +1,7 @@
 ### Quick start
 
     make
-    ./Release/NeuroField -i Configs/example.conf -o example.output
+    ./bin/neurofield -i Configs/example.conf -o example.output
    
 
 ### Setup guide
@@ -13,6 +13,10 @@
 3. The user guide is contained in [Documentation/user.pdf](https://github.com/BrainDynamicsUSYD/neurofield/blob/master/Documentation/user.pdf) which contains detailed information on how to use NeuroField.
 
 4. Example configurations including examples for published results are available in the `Configs` folder
+
+### Troubleshooting
+
+Problems compiling? Check [the wiki](https://github.com/BrainDynamicsUSYD/neurofield/wiki/Troubleshooting) for the latest information.
 
 ### Guidelines for contributing code
 
