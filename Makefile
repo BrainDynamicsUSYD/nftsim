@@ -20,6 +20,7 @@ HEADER = $(wildcard src/*.h)
 CPP = $(wildcard src/*.cpp)
 OBJ = $(addprefix obj/,$(notdir $(CPP:.cpp=.o)))
 
+# target: default - compile bin/neurofield 
 default: bin/neurofield
 
 bin/neurofield: $(OBJ)
@@ -48,10 +49,16 @@ obj/%.o: src/%.cpp
 
 Documentation/neurofield.pdf: Documentation/neurofield.tex
 	cd Documentation && pdflatex neurofield && pdflatex neurofield
-	
-.PHONY: clean doc
 
+.PHONY: clean doc help
+
+# target: help - Print this message
+help:
+	@egrep "^# target:" Makefile
+
+# target: doc - compile Documentation/neurofield.pdf
 doc: Documentation/neurofield.pdf
 
+# target: clean - Delete ./bin/, ./obj/, and LaTeX temporary files in ./Documentation/
 clean:
 	@-rm -rf bin obj Documentation/{user,developer}.{aux,log,out,toc} Documentation/x.log
