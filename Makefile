@@ -31,8 +31,10 @@ bin/neurofield: $(OBJ)
 	@echo "====="
 	@echo "USE OF NEUROFIELD CONSTITUTES ACCEPTANCE OF THE LICENSE CONDITIONS ABOVE"
 
+# Include any existing dependencies in the build
 -include $(OBJ:.o=.d)
 
+# Build object code and also create obj/*.d header dependencies
 obj/%.o: src/%.cpp
 	@mkdir -p obj
 	@$(CC) $(CFLAGS) -c $< -o $@
@@ -44,20 +46,12 @@ obj/%.o: src/%.cpp
 	  sed -e 's/^ *//' -e 's/$$/:/' >> obj/$*.d
 	@rm -f obj/$*.d.tmp
 
-Documentation/user.pdf: Documentation/user.tex
-	cd Documentation && pdflatex user && pdflatex user
+Documentation/neurofield.pdf: Documentation/neurofield.tex
+	cd Documentation && pdflatex neurofield && pdflatex neurofield
+	
+.PHONY: clean doc
 
-Documentation/developer.pdf: Documentation/developer.tex
-	cd Documentation && pdflatex developer && pdflatex developer
-
-Paper/neurofield.pdf: Paper/neurofield.tex
-	cd Paper && pdflatex neurofield #&& pdflatex neurofield
-
-.PHONY: clean doc paper
-
-doc: Documentation/user.pdf Documentation/developer.pdf
-
-paper: Paper/neurofield.pdf
+doc: Documentation/neurofield.pdf
 
 clean:
 	@-rm -rf bin obj Documentation/{user,developer}.{aux,log,out,toc} Documentation/x.log
