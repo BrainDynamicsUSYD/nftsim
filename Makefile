@@ -1,40 +1,48 @@
-# Makefile
+# Standard Linux, performance
+CC = g++
+CFLAGS = -g -lm -Wall -O3 -Wextra -pedantic -std=c++11 -msse -msse2 -msse3 -mfpmath=sse -march=native -mtune=native -funroll-loops -flto #-m64
 
-LIBS = 
+# Mac OS
+# CC = g++-4.9
+# CFLAGS = -lm -Wall -O3 -std=c++11 
 
 
-# Performance
-COMP = g++ -g -lm -Wall -O3 -Wextra -pedantic -std=c++11 -msse -msse2 -msse3 -mfpmath=sse -march=native -mtune=native -funroll-loops -flto #-m64
-#COMP = g++-4.9 -lm -O3 -std=c++11 # Use on Mac OS. The above command has errors due to unknown instructions. Seems SSE-related?
+# Windows
+# CC = g++
+# CFLAGS = x86_64-w64-mingw32-g++ -lm -Wall -O3 -msse -msse2 -msse3 -mfpmath=sse -funroll-loops -flto -m64 -std=gnu++11 -static -static-libgcc -static-libstdc++
 
 # Debugging
-#COMP = g++ -g -lm -Wall -Wextra -pedantic -std=c++11 -msse -msse2 -msse3
+# CC = g++
+# CFLAGS = g++ -g -lm -Wall -Wextra -pedantic -std=c++11 -msse -msse2 -msse3
 
-# Performance, parallel
-#COMP = g++ -g -lm -Wall -O3 -Wextra -pedantic -std=c++11 -msse -msse2 -msse3 -mfpmath=sse -march=native -mtune=native -funroll-loops -flto -m64 -fopenmp
 
-# Cross-compiling
-#COMP = x86_64-w64-mingw32-g++ -lm -Wall -O3 -msse -msse2 -msse3 -mfpmath=sse -funroll-loops -flto -m64 -std=gnu++11 -static -static-libgcc -static-libstdc++
+HEADER = $(wildcard src/*.h)
+CPP = $(wildcard src/*.cpp)
+OBJ = $(addprefix obj/,$(notdir $(CPP:.cpp=.o)))
 
-HEADER = $(wildcard *.h)
-CPP = $(wildcard *.cpp)
-OBJ = $(CPP:.cpp=.o)
+default: bin/neurofield
 
-default: Release/NeuroField
-
-Release/NeuroField: $(addprefix Release/,$(OBJ))
-	@echo "$(COMP) $(addprefix Release/,$(OBJ)) -o $@ $(LIBS)"
-	@$(COMP) $(addprefix Release/,$(OBJ)) -o $@ $(LIBS) || (echo "mycommand failed $$?"; exit 1)
+bin/neurofield: $(OBJ)
+	@mkdir -p bin
+	@echo "$(CC) $(CFLAGS) $(OBJ) -o $@"
+	@$(CC) $(CFLAGS) $(OBJ) -o $@ || (echo "mycommand failed $$?"; exit 1)
 	@echo "====="
 	@cat license.txt
 	@echo "====="
 	@echo "USE OF NEUROFIELD CONSTITUTES ACCEPTANCE OF THE LICENSE CONDITIONS ABOVE"
 
- 
-$(addprefix Release/,$(OBJ)): Release/%.o: %.cpp %.h
-	@mkdir -p Release
-	@$(COMP) -c $< -o $@
+-include $(OBJ:.o=.d)
+
+obj/%.o: src/%.cpp
+	@mkdir -p obj
+	@$(CC) $(CFLAGS) -c $< -o $@
+	@$(CC) -MM $(CFLAGS) $< > obj/$*.d
 	@echo "CC $<"
+	@mv -f obj/$*.d obj/$*.d.tmp
+	@sed -e 's|.*:|$@:|' < obj/$*.d.tmp > obj/$*.d
+	@sed -e 's/.*://' -e 's/\\$$//' < obj/$*.d.tmp | fmt -1 | \
+	  sed -e 's/^ *//' -e 's/$$/:/' >> obj/$*.d
+	@rm -f obj/$*.d.tmp
 
 Documentation/user.pdf: Documentation/user.tex
 	cd Documentation && pdflatex user && pdflatex user
@@ -52,12 +60,4 @@ doc: Documentation/user.pdf Documentation/developer.pdf
 paper: Paper/neurofield.pdf
 
 clean:
-	echo Delete Release/ Documentation/doc
-	-rm -r Release Documentation/{user,developer}.{aux,log,out,toc} Documentation/x.log
-
-#.SILENT:
-
-.INTERMEDIATE: main.h
-
-main.h:
-	@touch main.h
+	@-rm -rf bin obj Documentation/{user,developer}.{aux,log,out,toc} Documentation/x.log
