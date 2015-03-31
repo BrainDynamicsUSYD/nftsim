@@ -5,6 +5,7 @@ obj/
 
 # Ignore NeuroField output files
 *.output
+*.mat
 
 # Ignore LaTeX files
 *.aux
