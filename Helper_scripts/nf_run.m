@@ -25,7 +25,7 @@ function nf = nf_run(fname,nf_path)
     end
     
     if ~exist(nf_path) 
-        error('NeuroField could not be found. Please make a symlink to neurofield in the current directory');
+        error('neurofield could not be found. Please make a symlink to neurofield in the current directory');
     end
 
     nf_command = sprintf('%s -i %s.conf -o %s.output',nf_path,fname,fname);

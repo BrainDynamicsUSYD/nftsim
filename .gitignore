@@ -1,4 +1,16 @@
-Release/
-*.o
+# Ignore files associated with compiling
+bin/
+obj/
+
+
 # Ignore NeuroField output files
 *.output
+*.mat
+
+# Ignore LaTeX files
+*.aux
+*.fdb_latexmk
+*.log
+*.out
+*.synctex.gz
+*.toc

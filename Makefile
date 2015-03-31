@@ -20,6 +20,7 @@ HEADER = $(wildcard src/*.h)
 CPP = $(wildcard src/*.cpp)
 OBJ = $(addprefix obj/,$(notdir $(CPP:.cpp=.o)))
 
+# target: default - compile bin/neurofield 
 default: bin/neurofield
 
 bin/neurofield: $(OBJ)
@@ -31,8 +32,10 @@ bin/neurofield: $(OBJ)
 	@echo "====="
 	@echo "USE OF NEUROFIELD CONSTITUTES ACCEPTANCE OF THE LICENSE CONDITIONS ABOVE"
 
+# Include any existing dependencies in the build
 -include $(OBJ:.o=.d)
 
+# Build object code and also create obj/*.d header dependencies
 obj/%.o: src/%.cpp
 	@mkdir -p obj
 	@$(CC) $(CFLAGS) -c $< -o $@
@@ -44,20 +47,18 @@ obj/%.o: src/%.cpp
 	  sed -e 's/^ *//' -e 's/$$/:/' >> obj/$*.d
 	@rm -f obj/$*.d.tmp
 
-Documentation/user.pdf: Documentation/user.tex
-	cd Documentation && pdflatex user && pdflatex user
+Documentation/neurofield.pdf: Documentation/neurofield.tex
+	cd Documentation && pdflatex neurofield && pdflatex neurofield
 
-Documentation/developer.pdf: Documentation/developer.tex
-	cd Documentation && pdflatex developer && pdflatex developer
+.PHONY: clean doc help
 
-Paper/neurofield.pdf: Paper/neurofield.tex
-	cd Paper && pdflatex neurofield #&& pdflatex neurofield
+# target: help - Print this message
+help:
+	@egrep "^# target:" Makefile
 
-.PHONY: clean doc paper
+# target: doc - compile Documentation/neurofield.pdf
+doc: Documentation/neurofield.pdf
 
-doc: Documentation/user.pdf Documentation/developer.pdf
-
-paper: Paper/neurofield.pdf
-
+# target: clean - Delete ./bin/, ./obj/, and LaTeX temporary files in ./Documentation/
 clean:
 	@-rm -rf bin obj Documentation/{user,developer}.{aux,log,out,toc} Documentation/x.log

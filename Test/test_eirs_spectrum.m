@@ -9,21 +9,19 @@ function test_output(save_new)
 	for j = 1:length(fnames)
 		nf = nf_run(fnames{j});
 		[f1,P1] = nf_spatial_spectrum(nf);
-		s = load(fnames{j});
-		figure
-		loglog(s.fa,s.Pa,'g');
-		hold on
-		loglog(s.f,s.P,'b','LineWidth',2);
-		loglog(f1,P1,'r--');
-		legend('Analytic','Expected result','Current result','Location','SouthWest');
-		title(sprintf('Test case: %s',fnames{j}),'Interpreter','none');
-		drawnow
-		if save_new
-			p = s.p;
-			fa = s.fa;
-			Pa = s.Pa;
+		if ~exist([fnames{j},'.mat'])
 			f = f1;
 			P = P1;
 			save(fnames{j});
+			continue
 		end
+		s = load(fnames{j});
+		figure
+		%loglog(s.fa,s.Pa,'g');
+		loglog(s.f,s.P,'b','LineWidth',1);
+		hold on
+		loglog(f1,P1,'r--');
+		%legend('Analytic','Expected result','Current result','Location','SouthWest');
+		title(sprintf('Test case: %s',fnames{j}),'Interpreter','none');
+		drawnow
 	end
