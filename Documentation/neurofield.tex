@@ -302,19 +302,19 @@ Couple: 3.nu
 \label{sec:global}
 \begin{itemize}
 
-\item
+\item {\em Initial comments}
 \begin{lstlisting}
 Example config file of cortical model with excitatory and inhibitory neurons
 \end{lstlisting}
-Any text before the entry, \type{Time:}, is disregarded by \NF and serves as comment, which is strongly recommended for all configuration files.
-\item
+Any text before the text \type{Time:}, is disregarded by \NF and serves as comment, which is strongly recommended for all configuration files.
+\item  {\em Integration time and timestep}
 \begin{lstlisting}
 Time: 10 Deltat: 1e-4
 \end{lstlisting}
 \type{Time} is the simulation duration in seconds.
 
 \type{Deltat} is the time increment for each time step.
-\item
+\item  {\em Grid size}
 \begin{lstlisting}
 Nodes: 4 Longside: 2
 \end{lstlisting}
@@ -323,7 +323,10 @@ Nodes: 4 Longside: 2
 \type{Longside} is an optional parameter, specifying the longside of the rectangular grid. If it is not supplied, it is assumed to be a square.
 
 Both spatial dimensions have periodic boundary conditions, so that populations have the topology of a torus.
-\item
+
+{\bf Note that the physical size of each neural population is specified in the definition of the population - see Sec.~\ref{sec:pop}. For each population, $\Delta x$ is automatically computed based on the number of grid points and the physical size of the population.} This ensures that the physical size of the system does not change when the number of grid points is changed. When a wave propagator is included, the value of $\Delta x$ is automatically selected from the presynaptic population. 
+
+\item {\em Specifying connectivity}
 \begin{lstlisting}
 Connection matrix:
 From: 1 2 3 4
@@ -332,11 +335,9 @@ To 2: 0 0 0 0
 To 3: 1 0 2 3
 To 4: 0 4 5 6
 \end{lstlisting}
-We specify an arbitrarily sized square connection matrix, where each entry is the connection from the column population to the row population.
+We next specify a square connection matrix, where each entry is the connection from the column population to the row population. Zero indicates no connection, while a nonzero number indicates a connection. This number must be indexed from top to bottom, left to right.
 
-Zero indicates no connection.
-
-A nonzero number indicates connection. This number must be indexed from top to bottom, left to right.
+The size of this matrix determines the number of neural populations in the simulation. The number of nonzero connections determines the number of dendrites, couplings and propagators that will be present in the configuration file.
 \end{itemize}
 
 \subsection{Population data}
@@ -358,7 +359,7 @@ Population 1: Stimulation
 	\begin{lstlisting}
 Length: .5
 	\end{lstlisting}
-	The physical (1D) length of the population (which is a 2D sheet), in mitres. This is used in \type{Wave} propagators and the \type{Psd} of \type{White} stimulus.
+	The physical edge length of the population (which is a 2D sheet), in metres. This is used in \type{Wave} propagators and the \type{Psd} of \type{White} stimulus.
 	\item
 	\begin{lstlisting}
 Stimulus: Const - Onset: 0
