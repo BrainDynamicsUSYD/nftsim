@@ -20,6 +20,10 @@ HEADER = $(wildcard src/*.h)
 CPP = $(wildcard src/*.cpp)
 OBJ = $(addprefix obj/,$(notdir $(CPP:.cpp=.o)))
 
+mac: 
+	CC = g++-4.9
+	CFLAGS = -lm -Wall -O3 -std=c++11 
+
 # target: default - compile bin/neurofield 
 default: bin/neurofield
 
