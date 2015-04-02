@@ -11,6 +11,10 @@
 \usepackage[top=3cm,bottom=3cm,left=2.2cm,right=2.2cm]{geometry}
 \usepackage{multirow}
 \usepackage{amsmath}
+\usepackage{tikz}
+\usepackage{placeins}
+
+\usetikzlibrary{shapes,arrows,positioning}
 
 \usepackage{tocloft}
 \setlength\cftparskip{4pt}
@@ -158,7 +162,7 @@ will use the configuration file \type{example.conf} within the \type{Configs} fo
 
 A list of available switches can be displayed by using the \type{-h} or \type{--help} option i.e., \type{./bin/neurofield -h}
 
-\section{Writing a configuration file}
+\subsection{Writing a configuration file}
 \label{sec:config}
 
 \NF allows an arbitrary number of populations and connections between them, with all objects taking arbitrary parameter values. These are all configured via a configuration file. This section documents the specifications of configuration files, where we use \type{Configs/example.conf} as an illustrative example.
@@ -193,23 +197,49 @@ Object parameter: value
 	\item Tip for \type{vi} users: \type{./Helper\_scripts/neurofield.vim} implements syntax highlighting for configuration files in \type{vi}. See comments within for installation instructions.
 \end{enumerate}
 
-\begin{figure}[h!]\begin{center}
-\includegraphics{cortical-model.pdf}
-\hspace{3cm}\begin{tabular}{ l l l l l }
+\subsubsection{Example configuration}
+The remainder of this section refers to an example configuration for the illustrative example system shown in Fig.~\ref{fig:cortical}. The corresponding configuration file is also shown below. This configuration file is included in the repository as \type{Configs/cortex.conf} and can be run from the \NF repository root using
+
+\begin{lstlisting}
+./bin/neurofield -i Configs/cortex.conf -o cortex.output
+\end{lstlisting}
+
+\begin{figure}[h!]
+\begin{center}
+\tikzstyle{block} = [draw,text width=3em,text centered,minimum height=2em]
+\tikzstyle{line} = [draw, -latex']
+\begin{tikzpicture}[node distance = 1cm and 2cm, auto]
+	\node[block] (epsilon) {$\epsilon$};
+	\node[block, below= of epsilon] (iota) {$\iota$};
+	\node[block, right= of epsilon] (e) {e};
+	\node[block, right= of iota] (i) {i};
+	\draw [->] (epsilon)--(e) node[midway] {1};
+	\draw [->] (e) to[loop right] node[midway] {2} (e);
+	\draw [->] ([xshift=-0.3cm]i.north)--([xshift=-0.3cm]e.south) node[midway] {3};
+	\draw [->] (iota)--(i) node[midway] {4};
+	\draw [->] ([xshift=0.3cm]e.south)--([xshift=0.3cm]i.north) node[midway] {5};
+	\draw [->] (i) to[loop right] node[midway] {6} (i);
+\end{tikzpicture}
+\end{center}
+\vspace{0.2cm}
+\begin{center}
+\begin{tabular}{ l l l l l }
 	From:& $\epsilon$ & $\iota$ & e & i \\
 	To $\epsilon$:& 0 & 0 & 0 & 0 \\
 	To $\iota$:& 0 & 0 & 0 & 0 \\
 	To e:& 1 & 0 & 2 & 3 \\
 	To i:& 0 & 4 & 5 & 6
 \end{tabular}
-\caption{Left: schematic diagram of a purely cortical population model comprising excitatory and inhibitory populations, as well as two stimulus populations; each arrow indicates a connection between populations, so that each stimulus connects to a cortical population, and each cortical population connects to all cortical populations. Right: connection matrix indicating the connections between populations; zero indicates no connection, and a connection is indicated by a nonzero number, ordered top to bottom, left to right.}
-\label{fig:pop}\end{center}\end{figure}
+\end{center}
+\caption{Top: schematic diagram of a purely cortical population model comprising excitatory and inhibitory populations, as well as two stimulus populations; each arrow indicates a connection between populations, so that each stimulus connects to a cortical population, and each cortical population connects to all cortical populations. Bottom: connection matrix indicating the connections between populations; zero indicates no connection, and a connection is indicated by a nonzero number, ordered top to bottom, left to right.}
+\label{fig:cortical}
+\end{figure}
 
 \begin{figure}\begin{center}
 	\begin{lstlisting}
 Example config file of cortical model with excitatory and inhibitory neurons
 Time: 1 Deltat: 1e-4
-Nodes: 4 Longside: 2
+Nodes: 400 Longside: 2
 
 Connection matrix:
 From: 1 2 3 4
@@ -266,23 +296,25 @@ Couple: 3.nu
 \caption{An example configuration file, which can be found in \type{Configs/example.conf}.}
 \end{figure}
 
+\FloatBarrier
+
 \subsection{Global information}
 \label{sec:global}
 \begin{itemize}
 
-\item
+\item {\em Initial comments}
 \begin{lstlisting}
 Example config file of cortical model with excitatory and inhibitory neurons
 \end{lstlisting}
-Any text before the entry, \type{Time:}, is disregarded by \NF and serves as comment, which is strongly recommended for all configuration files.
-\item
+Any text before the text \type{Time:}, is disregarded by \NF and serves as comment, which is strongly recommended for all configuration files.
+\item  {\em Integration time and timestep}
 \begin{lstlisting}
 Time: 10 Deltat: 1e-4
 \end{lstlisting}
 \type{Time} is the simulation duration in seconds.
 
 \type{Deltat} is the time increment for each time step.
-\item
+\item  {\em Grid size}
 \begin{lstlisting}
 Nodes: 4 Longside: 2
 \end{lstlisting}
@@ -291,7 +323,10 @@ Nodes: 4 Longside: 2
 \type{Longside} is an optional parameter, specifying the longside of the rectangular grid. If it is not supplied, it is assumed to be a square.
 
 Both spatial dimensions have periodic boundary conditions, so that populations have the topology of a torus.
-\item
+
+{\bf Note that the physical size of each neural population is specified in the definition of the population - see Sec.~\ref{sec:pop}. For each population, $\Delta x$ is automatically computed based on the number of grid points and the physical size of the population.} This ensures that the physical size of the system does not change when the number of grid points is changed. When a wave propagator is included, the value of $\Delta x$ is automatically selected from the presynaptic population. 
+
+\item {\em Specifying connectivity}
 \begin{lstlisting}
 Connection matrix:
 From: 1 2 3 4
@@ -300,11 +335,9 @@ To 2: 0 0 0 0
 To 3: 1 0 2 3
 To 4: 0 4 5 6
 \end{lstlisting}
-We specify an arbitrarily sized square connection matrix, where each entry is the connection from the column population to the row population.
+We next specify a square connection matrix, where each entry is the connection from the column population to the row population. Zero indicates no connection, while a nonzero number indicates a connection. This number must be indexed from top to bottom, left to right.
 
-Zero indicates no connection.
-
-A nonzero number indicates connection. This number must be indexed from top to bottom, left to right.
+The size of this matrix determines the number of neural populations in the simulation. The number of nonzero connections determines the number of dendrites, couplings and propagators that will be present in the configuration file.
 \end{itemize}
 
 \subsection{Population data}
@@ -326,7 +359,7 @@ Population 1: Stimulation
 	\begin{lstlisting}
 Length: .5
 	\end{lstlisting}
-	The physical (1D) length of the population (which is a 2D sheet), in mitres. This is used in \type{Wave} propagators and the \type{Psd} of \type{White} stimulus.
+	The physical edge length of the population (which is a 2D sheet), in metres. This is used in \type{Wave} propagators and the \type{Psd} of \type{White} stimulus.
 	\item
 	\begin{lstlisting}
 Stimulus: Const - Onset: 0
@@ -679,7 +712,7 @@ Here is a list of training resources:
 	\item OOP resource
 \end{itemize}
 
-\subsection{Development workflow}
+\subsubsection{Development workflow}
 
 We have adopted the {\em fork and pull} development model using GitHub. If you would like to contribute to \NF, set up your repository as follows:
 
@@ -697,7 +730,7 @@ As discussed at the start of manual, \NF encapsulates each component of the mode
 
 Each object class may be overloaded for more sophisticated behaviour; for example, \type{Propag} may be overloaded to perform wave propagation, or \type{Couple} may be overloaded for synaptic plasticity.
 
-\subsection{Coding style}
+\subsubsection{Coding style}
 
 To maintain consistency within the \NF code base, we strongly encourage you to adhere to these programming conventions used throughout the project: 
 
@@ -716,7 +749,7 @@ When using the \type{C++} standard library, use the \type{using} directive to ex
 using std::vector;
 \end{lstlisting}
 
-\section{Extending NeuroField via inheritance}
+\subsection{Extending NeuroField via inheritance}
 \label{sec:extension}
 
 Most new functionalities may be introduced by inheriting existing classes and overloading appropriate functions, where the core classes are:
@@ -743,23 +776,92 @@ Examples where these classes are inherited to provided new functionalities inclu
 	\type{LongCouple}&\type{Couple}&Nonlocal synapse.
 \end{tabular}
 
-\subsection{Procedure}
+\subsubsection{Class hierarchy}
+The diagram in Figure \ref{fig:classes} shows the inheritance hierarchy for the base NeuroField objects. Note that the \type{Array} class is a container object, and it is not necessary to interact with it directly. See Sec.~\ref{sec:array} for details.
 
-The writing of a new class may be done by following this procedure:
+\begin{figure}[h]
+\label{fig:classes}
+\tikzstyle{block} = [draw,text width=3em,text centered,minimum height=2em]
+\tikzstyle{line} = [draw, -latex']
+    
+\begin{tikzpicture}[node distance = 3em, auto]
+	\node[] (solver) {\type{Solver}};
+    \coordinate[below of=solver,node distance=3em] (vsolver) {};
+    \draw (solver) |- (vsolver);
+
+	\coordinate[left of=vsolver,node distance=5em] (vpropag) {};
+    \draw (vsolver) -- (vpropag);
+	\coordinate[left of=vpropag,node distance=10em] (vpop) {};
+    \draw (vpropag) -- (vpop);
+	\coordinate[right of=vsolver,node distance=5em] (vcouple) {};
+    \draw (vsolver) -- (vcouple);
+	\coordinate[right of=vcouple,node distance=10em] (voutput) {};
+    \draw (vcouple) -- (voutput);
+
+	\node[below of=vpropag] (apropag) {\type{Array$\langle$Propag$\rangle$}};
+    \draw (vpropag) -| (apropag);
+	\node[below of=vpop]    (apop) {\type{Array$\langle$Population$\rangle$}};
+    \draw (vpop) -| (apop);
+	\node[below of=vcouple] (acouple) {\type{Array$\langle$Couple$\rangle$}};
+    \draw (vcouple) -| (acouple);
+	\node[below of=voutput] (aoutput) {\type{Array$\langle$Outlet$\rangle$}};
+    \draw (voutput) -- (aoutput);
+
+	\node[below of=apropag] (propag) {\type{Propag} $\ni \phi_{ab}$};
+    \draw (apropag) -- (propag);
+	\node[below of=apop]    (pop) {\type{Population} $\ni Q_a$};
+    \draw (apop) -- (pop);
+	\node[below of=acouple] (couple) {\type{Couple} $\ni \nu_{ab}$};
+    \draw (acouple) -- (couple);
+	\node[below of=aoutput] (output) {\type{Outlet}};
+    \draw (aoutput) -- (output);
+
+	\coordinate[below of=pop,node distance=3em](vpop){};
+    \draw (pop) |- (vpop);
+	\coordinate[left of=vpop,node distance=4em](vs){};
+    \draw (vpop) |- (vs);
+	\coordinate[right of=vpop,node distance=4em](vq){};
+    \draw (vpop) |- (vq);
+
+	\node[below of=vs,node distance=3em](s){\type{Timeseries}};
+    \draw (vs) -- (s);
+	\node[below of=vq,node distance=3em](q){\type{QResponse} $\ni V_a$};
+    \draw (vq) -- (q);
+
+	\node[below of=q](adendrite){\type{Array$\langle$Dendrite$\rangle$}};
+    \draw (q) -- (adendrite);
+	\node[below of=adendrite](dendrite){\type{Dendrite} $\ni V_{ab}$};
+    \draw (adendrite) -- (dendrite);
+
+	\node[below of=propag,node distance=3em](tau){\type{Tau} $\ni \tau_{ab}$};
+	\draw(propag)--(tau);
+\end{tikzpicture}
+\tikzstyle{block} = [draw,text width=3em,text centered,minimum height=2em]
+\tikzstyle{line} = [draw, -latex']
+\caption{Schematic of the main class structures in \NF. Each line indicates that the bottom class is a member of the top class. The \type{a} $\ni b$ symbol indicates that the dynamical field $b(\mathbf{r},t)$ is a member of the class \type{a}. Inheritance structures are NOT illustrated.}
+\end{figure}
+
+\subsubsection{Procedure}
+
+Implementing a new class may be done using the following procedure:
 \begin{enumerate}
 	\item Identifying the core class to inherit (see above tables). Then look up the documentation of the appropriate base class from Sec.~\ref{sec:pop}--\ref{sec:dendrite}.
 	\item Decide on the name of the class. Generally, it may be advantageous for the new name to refer to the base name, plus a terse description. For example, \type{LongCouple} refers to its base class \type{Couple}, with the additional description indicating that the new class has long range coupling. The file names should be the same as the class name, but all in lower case, for consistency.
-	\item Overload appropriately the \type{init()} (see Sec.~\ref{sec:init}), \type{output()} (see Sec.~\ref{sec:output}), and \type{step()} functions. NEVER copy and paste code. Rather, use
+	\item Overload appropriately the \type{init()} (see Sec.~\ref{sec:init}), \type{output()} (see Sec.~\ref{sec:output}), and \type{step()} functions. {\bf Do not} copy and paste code. Rather, use
 		\begin{lstlisting}
 BaseClass::function();
 		\end{lstlisting}
+	which will utilize the existing function in the base class. This will ensure that your derived class is updated if the base class changes. 
 	\item It is likely that differential equations are solved in the new class. \NF provides two classes, \type{DE} and \type{Stencil}, that solves spatially homogeneous differential equations, and spatially inhomogeneous equations, respectively. See Sec.~\ref{sec:diffeqn}.
 	\item Register the new class as documented in Sec.~\ref{sec:pop}--\ref{sec:dendrite}.
 	\item Write a configuration file that uses the new class. Or if the object may exhibit different types of behaviour under different parameter values, having one configuration file for each type of behaviour may be advantageous. Make sure that the configuration file has an appropriate comment.
-	\item After debugging, check the code in. See Sec.~\ref{sec:submission}.
 \end{enumerate}
 
-\subsection{Class NF}
+\subsection{NeuroField classes}
+
+This section contains an overview of all of the base classes in NeuroField.
+
+\subsubsection{Class NF}
 \label{sec:nf}
 
 All core classes are derived from the \type{NF} object. This abstract base class contains 3 member variables, and 3 interface methods:
@@ -785,7 +887,7 @@ All \type{NF} classes automatically handles the \type{ofstream::<<} and \type{if
 
 When appropriate, the default constructor, copy constructor, and \type{operator=} should be made inaccessible by declaring them to be private.
 
-\subsection{Population}
+\subsubsection{Population}
 \label{sec:pop}
 
 Models a neural population, which may be either a stimulus or normal population. If it has any \type{Dendrites}, i.e. it has presynaptic connections, then it is a normal population, and it is a stimulus if it does not have \type{Dendrites}.
@@ -798,7 +900,7 @@ Functions \type{sheetlength()} and \type{glu()} provides access to the physical 
 
 A population is ``settled" after \type{Population::init()} is called, after which no dendrites can be added, and the firing rate history cannot grow.
 
-\subsection{Propag}
+\subsubsection{Propag}
 \label{sec:propag}
 
 The \type{Propag} class implements the axonal propagation as an identity map, i.e.
@@ -818,7 +920,7 @@ To ``register" your propagator, look for the
 \end{lstlisting}
 subsection in \type{solver.cpp}.
 
-\subsection{Couple}
+\subsubsection{Couple}
 \label{sec:couple}
 
 The \type{Couple} class manages \(\nu_{ab}\), which is constant in space and time.
@@ -835,7 +937,7 @@ To ``register" your couple, look for the
 \end{lstlisting}
 subsection in \type{solver.cpp}.
 
-\subsection{QResponse}
+\subsubsection{QResponse}
 
 To implement new firing response dynamics, inherit from class \type{QResponse}, where \type{init()} and \type{fire()} should be overloaded.
 
@@ -849,7 +951,7 @@ To ``register" your firing response, look for the
 \end{lstlisting}
 subsection in \type{population.cpp}.
 
-\subsection{Stimulus}
+\subsubsection{Stimulus}
 
 To implement new stimulus pattern, inherit from class \type{Timeseries}, where \type{init()} and \type{fire()} should be overloaded.
 
@@ -861,7 +963,7 @@ To ``register" your stimulus, look for the
 \end{lstlisting}
 subsection in \type{timeseries.cpp}.
 
-\subsection{Dendrite}
+\subsubsection{Dendrite}
 \label{sec:dendrite}
 
 To implement new dendritic responses, inherit from class \type{Dendrite}.
@@ -874,10 +976,10 @@ To ``register" your dendritic response, look for the
 \end{lstlisting}
 subsection in \type{qresponse.cpp}.
 
-\subsection{Reading from configuration file}
+\subsection{Adding variables to the configuration file}
 \label{sec:init}
 
-Input via the configuration file is implemented in the \type{init()} function, via \type{Configf}, which provides the following functions:
+Your new class might require additional parameters in the configuration file. Input via the configuration file is implemented in the \type{init()} function, via \type{Configf}, which provides the following functions:
 	\begin{enumerate}
 		%\item \type{next()}: go to the next keyword.
 		\item \type{param()}: go to the next keyword and reads in a variable. If the keyword is not found, barks and exits.
@@ -904,9 +1006,7 @@ if( !configf.optional("gamma",gamma) ) {
 }
 \end{lstlisting}
 
-%In restart mode, \type{init()} is called, followed by \type{restart()}. \type{Restartf} is identical to \type{Configf}.
-
-\subsection{Output}
+\subsection{Adding variables to the output file}
 \label{sec:output}
 
 \NF outputs field variables at every timestep, where the user chooses which object to output via the configuration file, and the object chooses which fields to output in the \type{output()} function.
@@ -937,12 +1037,12 @@ output.singleNode("field1",field1);
 \end{lstlisting}
 where \type{field1} is a \type{vector<double>} of size 1.
 
-\section{Tools for solving differential equations}
+\subsection{Tools for solving differential equations}
 \label{sec:diffeqn}
 
 Classes \type{DE} and \type{Integrator} (currently RK4 is implemented) are used to solve generic systems of ODEs, where the dynamical variables are homogeneous fields. For inhomogeneous DEs and spatial dependency, a 9-point stencil is provided in \type{Stencil}.
 
-\subsection{Class DE}
+\subsubsection{Class DE}
 \label{sec:de}
 
 Class \type{DE} and \type{RK4} together solves ODEs of homogeneous fields.
@@ -1025,7 +1125,7 @@ void NewClass::output( Output& output ) const
 
 To extend an existing \type{DE} class, for example extend \type{NewDE} to \type{New2DE}, inherit \type{New2DE} from \type{NewDE}. The \type{extend()} function allows the introduction of new differential equations and field variables.
 
-\subsection{Stencil}
+\subsubsection{Stencil}
 \label{sec:stencil}
 
 Class \type{Stencil} provides Moore grid for spatially inhomogeneous calculations.
@@ -1044,36 +1144,36 @@ stencil( w); stencil(c); stencil( e);
 stencil(sw); stencil(s); stencil(se);
 \end{lstlisting}
 
-\section{Core logic}
+\subsection{Core logic}
 
-\alert{Normal extension of \NF does \underline{NOT} involve any modification of the core logic. Do \underline{NOT} touch the core logic unless you are certain what you are doing. And when you do, contact Felix Fung (\url{f.fung@physics.usyd.edu.au}).}
+{\em Normal extension of \NF does not involve any modification of the core logic. Proposed to the core logic are unlikely to be accepted. This section is intended to provide context to understand the design of the base objects.}
 
-One integration step of the model implements the following stages: 1) Dendritic response 2) Afferent summation. 3) Firing response/stimulus response. 4) Wave equation integration step which includes Q delay processing 5) Coupling response.
+One integration step of the model implements the following stages: 
 
-Most of the computational load comes from integrating wave equations and harmonic oscillators within the dendritic responses. Most computational time is probably on outputting.
+\begin{enumerate}
+	\item  Dendritic response
+	\item  Afferent summation. 
+	\item  Firing response/stimulus response. 
+	\item  Wave equation integration step which includes Q delay processing 
+	\item  Coupling response.
+\end{enumerate}
+
+Most of the computational {\em load} comes from integrating wave equations and harmonic oscillators within the dendritic responses. Most of the execution {\em time} is probably spent writing the output file.
 
 Wave equations are integrated by explicit finite differences integration. A nine point spatial stencil is used to reduce high frequency spatial instabilities when driven by random noise. Other parts of code are unaffected by spatial geometry so this can be switched to irregular gridding easily.
 
 Harmonic oscillators with dendritic rseponse are integrated using a heavily strength reduced explicit direct integration assuming constant drive. This was more efficient than a constant drive RK4 algorithm which would not be fourth order in any case due to the constant drive. Rennie used a constant drive RK4 for his 1997 code.
 
-\subsection{Class diagram}
-
-\begin{figure}[htbp]\begin{center}
-\includegraphics{class-hierarchy.pdf}
-\caption{Schematic of the main class structures in \NF. Each line indicates that the bottom class is a member of the top class. The \type{a} $\ni b$ symbol indicates that the dynamical field $b(\mathbf{r},t)$ is a member of the class \type{a}. Inheritance structures are NOT illustrated.}
-\label{fig:class}
-\end{center}\end{figure}
-
-\subsection{Class Array}
+\subsubsection{Class Array}
 \label{sec:array}
 
-\type{Array} is a container array to store objects that supports the \type{ofstream::<<} and \type{ifstream::>>} operators, as well as a \type{step(void)} function. This object typically is, but not necessarily has to be an \type{NF} object.
+\type{Array} is a container array to store objects that supports the \type{ofstream::<<} and \type{ifstream::>>} operators, as well as a \type{step(void)} function. This object typically is, but is not required to be, an \type{NF} object.
 
 The \type{step(void)} function is equivalent to a \type{foreach(element).step()} in pseudocode. This function is encouraged over the use of \type{empty()}, \type{size()}, and \type{operator[]()}, which are discouraged to be used.
 
-\subsection{Program flow}
+\subsubsection{Program flow}
 
-Essentially, the program flow can be read from Fig.~\ref{fig:class}, so that objects take priority from top to bottom, left to right, both in terms of initialization and stepping through each timestep. A more detailed description is given below, and the reader is referred to the source code for complete description.
+Essentially, the program flow can be read from Fig.~\ref{fig:classes}, so that objects take priority from top to bottom, left to right, both in terms of initialization and stepping through each timestep. A more detailed description is given below, and the reader is referred to the source code for complete description.
 
 We use the semicolon to denote a succession of functions/procedures, and \type{a()} $\Rightarrow$ \type{b()} symbol to denote function \type{b()} as content of function \type{a()}.
 
@@ -1116,11 +1216,11 @@ To accommodate the coding interface for \type{NF::output}, the output routine of
 %\item[Random] Generates random numbers for Timeseries.
 %\end{description}
 
-\section{About object-oriented programming}
+\subsection{About object-oriented programming}
 
 Working knowledge of object-oriented programming (and \type{C++}) is an essential prerequisite for developing \NF. While object-oriented programming is standard computing knowledge and material and references on the topic is abundant, here we outline the motivation behind object-oriented programming, and in particular the reason for using it on \NF.
 
-\subsection{Procedural programming}
+\subsubsection{Procedural programming}
 
 \begin{enumerate}
 
@@ -1129,7 +1229,7 @@ Working knowledge of object-oriented programming (and \type{C++}) is an essentia
 \item In procedural programming, there are no inherent \emph{code structure} in the code that is enforced by the language. Rather, code structure is given by, for example, file systems.
 \end{enumerate}
 
-\subsection{Object-oriented programming}
+\subsubsection{Object-oriented programming}
 
 \begin{enumerate}
 \item \emph{Object oriented programming} generalizes variables and structs to \emph{objects}, where an object is a collection of variables and functions.
@@ -1148,7 +1248,7 @@ Working knowledge of object-oriented programming (and \type{C++}) is an essentia
 \item To summarize, some features brought forth are code structure and protection, code reuse and extension, dynamic allocation of object type, and (if applicable) coding-level object hierarchy.
 \end{enumerate}
 
-\subsection{NeuroField}
+\subsubsection{NeuroField}
 
 \begin{enumerate}
 	\item \NF is naturally object oriented: firing response, propagators, couplings, dendrites naturally arise and form a network, where each class/object influences other ones.
