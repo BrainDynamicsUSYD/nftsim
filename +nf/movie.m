@@ -1,8 +1,8 @@
-function movie( nf, field, normalize, fname )
+function movie( obj, field, normalize, fname )
     % Script to generate a movie of a field with spatial variation
     % This script assumes the nodes are continuous, and the grid is a square
     %
-    % nf_movie( nf, field, normalize, avi )
+    % nf.movie( nf, field, normalize, avi )
     %   - field is a string of a field name e.g. "Propag.2.phi"
     %   - normalize is an integer value 0 = raw data, 1 = subtract mean
     %                                   2 = subtract mean and rescale
@@ -14,7 +14,7 @@ function movie( nf, field, normalize, fname )
         field = 'propag.1.phi';
     end
     
-    [data,side] = nf_grid(nf,field);
+    [data,side] = nf.grid(obj,field);
     [X,Y] = meshgrid(1:side,1:side);
 
     datamean = mean(mean(data,1),2);
@@ -33,9 +33,9 @@ function movie( nf, field, normalize, fname )
         case 1
             plotdata = bsxfun(@minus,data,datamean);
         case 2
-            for t = 1:nf.npoints
-                threshold = zeros(1,nf.npoints);
-                norm = zeros(1,nf.npoints);
+            for t = 1:obj.npoints
+                threshold = zeros(1,obj.npoints);
+                norm = zeros(1,obj.npoints);
                 threshold(t) = min(min(data(:,:,t)));
                 norm(t) = max(max(data(:,:,t)-threshold(t)));
                 norm(norm == 0 ) = 1; % Don't change the normalization if there is no spatial variation               
@@ -57,13 +57,11 @@ function movie( nf, field, normalize, fname )
     end
 
     shading interp; lighting gouraud; camlight;
-    F(nf.npoints) = getframe(gcf); % Trick to preallocate F
+    F(obj.npoints) = getframe(gcf); % Trick to preallocate F
 
-    for t = 1:nf.npoints
+    for t = 1:obj.npoints
         set( h, 'ZData', plotdata(:,:,t) );
-        title( [field,...
-            ': Time: ',num2str(nf.deltat * t),...
-            ', Mean: ',num2str(datamean(t))],'Interpreter','none' );
+        title(sprintf('%s: Time = %.03f, Mean= %.03f',field,obj.deltat * t,datamean(t)),'Interpreter','none' );
         pause(.05);
         if ~(nargin < 4 || isempty(fname)) F(t) = getframe(gcf); end
     end

@@ -1,5 +1,5 @@
-function [f,P,Kx,Ky,Pkf,x,y,Prf] = spatial_spectrum(nf,p,kmax,n_windows,spatial_filter)
-    % [f,P,t,V] = nf_spatial_spectrum(nf,p,kmax,n_windows,spatial_filter)
+function [f,P,Kx,Ky,Pkf,x,y,Prf] = spatial_spectrum(obj,p,kmax,n_windows,spatial_filter)
+    % [f,P,t,V] = nf.spatial_spectrum(nf,p,kmax,n_windows,spatial_filter)
     % Given a grid of voltages, applies a spatial filter   
     % Returns the spatially summed spectrum
     %  nf - nf object
@@ -15,14 +15,14 @@ function [f,P,Kx,Ky,Pkf,x,y,Prf] = spatial_spectrum(nf,p,kmax,n_windows,spatial_
     % spatial_filter - set to 1 to enable the usual exponential k filter
     
     % First, work out the sampling rate in pixels per metre
-    if isstruct(nf)
+    if isstruct(obj)
         if nargin < 2 || isempty(p)
             p = 'propag.1.phi'; % Try the phi propagator first
         end
-        data = nf_grid(nf,p);
-        fs = 1/nf.deltat;
+        data = nf.grid(obj,p);
+        fs = 1/obj.deltat;
     else
-        data = nf;
+        data = obj;
         fs = p;
     end
 
@@ -51,7 +51,7 @@ function [f,P,Kx,Ky,Pkf,x,y,Prf] = spatial_spectrum(nf,p,kmax,n_windows,spatial_
 
     % Calculate the temporal windows
     frac_overlap = 0.5;
-    window_idx = nf_partition(size(data,3),n_windows,[],frac_overlap,1,1);
+    window_idx = nf.partition(size(data,3),n_windows,[],frac_overlap,1,1);
 
     % Calculate the Fourier f and k values
     Lx = 0.5; % linear cortex dimension (m)

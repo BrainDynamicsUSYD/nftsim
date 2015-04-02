@@ -1,5 +1,5 @@
-function nf = read(fname,himem);
-    % nf_read = read_nf(fname);
+function obj = read(fname,himem);
+    % nf.read = read_nf(fname);
     % himem = 1 uses slower method that can avoid out of memory errors in some cases
     % Read a neurofield output file and return a neurofield output struct
     % for use with other helper scripts
@@ -33,10 +33,10 @@ function nf = read(fname,himem);
     nodes = fgetl(fid);
 
     
-    nf.fields = strsplit(headers);
-    nf.fields = nf.fields(2:end-1);
+    obj.fields = strsplit(headers);
+    obj.fields = obj.fields(2:end-1);
 
-    [nf.nodes,base_index] = get_nodes(nodes,nf.fields);
+    [obj.nodes,base_index] = get_nodes(nodes,obj.fields);
 
 
     % if himem
@@ -47,11 +47,11 @@ function nf = read(fname,himem);
     %     end
     % else
     data = textscan(fid,'%f','CollectOutput',true);
-    data = reshape(data{1},length(nf.fields),[]).';
+    data = reshape(data{1},length(obj.fields),[]).';
     %end
 
-    for j = 1:length(nf.nodes)
-        nf.data{j} = data(:,base_index{j});
+    for j = 1:length(obj.nodes)
+        obj.data{j} = data(:,base_index{j});
     end
 
     % idx_start = 1;
@@ -62,13 +62,13 @@ function nf = read(fname,himem);
     fclose(fid);
     
     % Finally, move the time to an array of its own
-    nf.time = nf.data{1};
-    nf.data = nf.data(2:end);
-    nf.fields = unique(nf.fields(2:end),'stable');
-    nf.nodes = nf.nodes(2:end);
+    obj.time = obj.data{1};
+    obj.data = obj.data(2:end);
+    obj.fields = unique(obj.fields(2:end),'stable');
+    obj.nodes = obj.nodes(2:end);
     
-    nf.deltat = nf.time(2)-nf.time(1);
-    nf.npoints = length(nf.time);
+    obj.deltat = obj.time(2)-obj.time(1);
+    obj.npoints = length(obj.time);
 end
 
 

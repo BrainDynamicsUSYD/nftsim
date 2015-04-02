@@ -1,4 +1,4 @@
-function nf = run(fname,nf_path)
+function obj = run(fname,neurofield_path)
     % Function to run NeuroField and return a NF struct
     % Provide the filename WITHOUT .conf
     % Program will
@@ -13,24 +13,24 @@ function nf = run(fname,nf_path)
     fname = strrep(fname,'.conf','');
     fprintf(1,'Executing NeuroField: %s.conf...\n',fname);
 
-    if nargin < 2 || isempty(nf_path)
+    if nargin < 2 || isempty(neurofield_path)
         if ispc
-            nf_path = 'neurofield.exe';
+            neurofield_path = 'neurofield.exe';
         else
-            nf_path = './bin/neurofield';
-            if ~exist(nf_path) 
-                nf_path = 'neurofield'; % Legacy functionality
+            neurofield_path = './bin/neurofield';
+            if ~exist(neurofield_path) 
+                neurofield_path = 'neurofield'; % Legacy functionality
             end
         end
     end
     
-    if ~exist(nf_path) 
+    if ~exist(neurofield_path) 
         error('neurofield could not be found. Please make a symlink to neurofield in the current directory');
     end
 
-    nf_command = sprintf('%s -i %s.conf -o %s.output',nf_path,fname,fname);
-    fprintf('%s\n',nf_command);
-    [status] = system(nf_command);
+    neurofield_cmd = sprintf('%s -i %s.conf -o %s.output',neurofield_path,fname,fname);
+    fprintf('%s\n',neurofield_cmd);
+    [status] = system(neurofield_cmd);
 
     if status ~= 0
         error('An error occurred when running NeuroField!');
@@ -40,6 +40,6 @@ function nf = run(fname,nf_path)
     
     if nargout > 0
         fprintf(1,'Parsing output...');
-        nf = nf_read(sprintf('%s.output',fname));   
+        obj = nf.read(sprintf('%s.output',fname));   
         fprintf(1,'done!\n');
     end

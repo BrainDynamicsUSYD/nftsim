@@ -3,7 +3,7 @@ function r = partition(n_items,pool,id,frac_overlap,evenlength,samesize)
 	% Use this function to calculate the boundaries of each group
 	% e.g 16 elements with pool=4 means that id=1,2,3,4 returns
 	% [1 4] [5 8] [9 12] and [13 16] respectively
-    % r = nf_partition(n_items,pool,id,frac_overlap,evenlength,samesize)
+    % r = nf.partition(n_items,pool,id,frac_overlap,evenlength,samesize)
     %   total- total number of items (single number) OR a list of the items
     %   pool - total number of partitions
     %   id - the ID of this partition - leave empty to return all the indices
