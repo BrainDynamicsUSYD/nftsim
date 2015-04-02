@@ -1,4 +1,4 @@
-function ret = nf_field( prefix, index, postfix )
+function ret = field( prefix, index, postfix )
     % returns field name according to the pre-/postfix and array of indices
     ret = '';
     for ii = 1:length(index)

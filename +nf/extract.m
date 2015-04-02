@@ -1,4 +1,4 @@
-function [data,t2] = nf_extract(nf,traces,t,nodes)
+function [data,t2] = extract(nf,traces,t,nodes)
     % output = nf_extract(nf,traces,t,nodes)
     % Given an nf object, return data from certain traces at particular times
     % nf - nf object

@@ -1,4 +1,4 @@
-function [f,P,Kx,Ky,Pkf,x,y,Prf] = nf_spatial_spectrum(nf,p,kmax,n_windows,spatial_filter)
+function [f,P,Kx,Ky,Pkf,x,y,Prf] = spatial_spectrum(nf,p,kmax,n_windows,spatial_filter)
     % [f,P,t,V] = nf_spatial_spectrum(nf,p,kmax,n_windows,spatial_filter)
     % Given a grid of voltages, applies a spatial filter   
     % Returns the spatially summed spectrum

@@ -1,4 +1,4 @@
-function nf_movie( nf, field, normalize, fname )
+function movie( nf, field, normalize, fname )
     % Script to generate a movie of a field with spatial variation
     % This script assumes the nodes are continuous, and the grid is a square
     %

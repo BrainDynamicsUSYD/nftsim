@@ -1,4 +1,4 @@
-function nf = nf_read(fname,himem);
+function nf = read(fname,himem);
     % nf_read = read_nf(fname);
     % himem = 1 uses slower method that can avoid out of memory errors in some cases
     % Read a neurofield output file and return a neurofield output struct

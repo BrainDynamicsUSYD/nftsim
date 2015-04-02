@@ -1,4 +1,4 @@
-function r = nf_partition(n_items,pool,id,frac_overlap,evenlength,samesize)
+function r = partition(n_items,pool,id,frac_overlap,evenlength,samesize)
 	% Suppose you have 1:n and want to partition into m groups 
 	% Use this function to calculate the boundaries of each group
 	% e.g 16 elements with pool=4 means that id=1,2,3,4 returns

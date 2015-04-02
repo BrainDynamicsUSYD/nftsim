@@ -1,4 +1,4 @@
-function [f,P] = nf_spectrum( nf, data )
+function [f,P] = spectrum( nf, data )
     % return the frequency and frequency spectrum of given data
     % nf is parsed for information on sampling time
     % data can be a string specifying a trace, or a vector

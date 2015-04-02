@@ -1,4 +1,4 @@
-function nf_report(nf)
+function report(nf)
     % Given a nf output object, print some information about it
     % Romesh Abeysuriya 120322
     fprintf(1,'NeuroField output\n')

@@ -1,4 +1,4 @@
-function nf = nf_run(fname,nf_path)
+function nf = run(fname,nf_path)
     % Function to run NeuroField and return a NF struct
     % Provide the filename WITHOUT .conf
     % Program will
