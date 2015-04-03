@@ -13,16 +13,21 @@
 \usepackage{amsmath}
 \usepackage{tikz}
 \usepackage{placeins}
-
+\usepackage{fancyhdr}
+\usepackage{textcomp}
 \usetikzlibrary{shapes,arrows,positioning}
 
 \usepackage{tocloft}
 \setlength\cftparskip{4pt}
 \setlength{\cftbeforesecskip}{4pt}
 
-\pagestyle{plain}
+\pagestyle{fancy}
 \parindent=0.0cm
 \parskip=0.5cm
+\fancyhf{}
+\lhead{{\em NeuroField} User Guide}
+\rfoot{\thepage}
+\lfoot{{\scriptsize \textcopyright\ Brain Dynamics Group, University of Sydney 2015}}
 
 \footskip=1.0cm
 
@@ -32,7 +37,8 @@ frame=single,	        % adds a frame around the code
 breaklines=true,		% sets automatic line breaking
 breakatwhitespace=tru,	% sets if automatic breaks should only happen at whitespace
 aboveskip=12pt,
-belowskip=0pt
+belowskip=0pt,
+xleftmargin=1ex
 }
 
 \newcommand{\type}[1]{{\small\small\tt #1} }
@@ -44,19 +50,23 @@ belowskip=0pt
 \newcommand{\alert}[1]{ \colorbox{pink}{\parbox{\textwidth}{#1} } }
 
 \renewcommand{\familydefault}{\sfdefault}
+
+
+\definecolor{skyblue}{hsb:rgb}{0.95,0.97,1}
+\newsavebox{\mybox}
+\newenvironment{worked_example}
+{\begin{lrbox}{\mybox}\begin{minipage}{\textwidth}}
+{\end{minipage}\end{lrbox}\fcolorbox{black}{skyblue}{\parbox{\textwidth}{{\bf Worked example}\\\\\usebox{\mybox}}}}
+
+
 \begin{document}
 
-\maketitle
+\section*{NeuroField User Guide}
 
-\NF is a \type{C++} program (accompanied with helper scripts) that solves the neural field model of Robinson et al., where each of the simultaneous equations are handled by an object:
-\begin{align*}
-	P &= \nu_{ab}\phi_{ab}, & \mathtt{Couple}\\
-	D_{ab}V_{ab} &= P, & \mathtt{Dendrite}\\
-	Q_a &= S_a \big[\sum_b V_{ab} \big], & \mathtt{QResponse}\\
-	\mathcal{D}_{ab}\phi_{ab} &= Q_b.&  \mathtt{Propag}
-\end{align*}
+\NF is a \type{C++} program developed by the Brain Dynamics Group at the University of Sydney, which solves the neural field model of Robinson et al. It is one of a core group of software analysis packages we have developed for our research.
 
-\NF generalizes the neural field theory by allowing users to:
+The role of \NF is to integrate neural field equations to predict neural activity in neural field models with arbitrary numbers of populations and connections between them. As such, \NF can be viewed as a generalized neural field integrator that enables users to:
+
 \begin{enumerate}
 	\item Specify an arbitrary population model: an arbitrary number of populations and connections them may be specified;
 	\item Choose different types of populations, including neural or stimulus populations. For each neural population, the type of firing response, dendritic response type may be specified.
@@ -71,32 +81,41 @@ Within this documentation, specific terminology as appeared in the computer is i
 Command to put in computer
 \end{lstlisting}
 
-\pagebreak
-\tableofcontents
+% \begin{worked_example}
+% If this is your first time setting up \NF, follow along with the worked examples in the shaded boxes. This will walk you through setting up and testing \NF. 
+% \end{worked_example}
+
+\subsection*{Assumed knowledge}
+To get the most out of \NF, you will require a working knowledge of neural field theory. In \NF, each neural field component is handled by an object:
+\begin{align*}
+	P &= \nu_{ab}\phi_{ab}, & \mathtt{Couple}\\
+	D_{ab}V_{ab} &= P, & \mathtt{Dendrite}\\
+	Q_a &= S_a \big[\sum_b V_{ab} \big], & \mathtt{QResponse}\\
+	\mathcal{D}_{ab}\phi_{ab} &= Q_b.&  \mathtt{Propag}
+\end{align*}
+A detailed understanding of these equations is not essential to use \NF. However, you should be familiar with the roles of these components in neural field models. TODO - GO HERE TO FIND OUT MORE
+
+\NF input and output files are both written in plain text, with syntax detailed in this manual. The analysis routines included with \NF are written in Matlab, and this documentation assumes that you are already familiar with basic use of Matlab. TODO - GO HERE TO FIND OUT MORE
+%\pagebreak
+%\tableofcontents
 
 \section{Obtaining and setting up NeuroField}
 \label{sec:obtain}
 
 \subsection{Obtaining NeuroField}
 
-The code for \NF is managed by the version control system \type{git}, and is presently hosted on GitHub together with documentation, bug reports and feature requests. To obtain access to the repository, please send an email to Romesh Abeysuriya (\url{r.abeysuriya@physics.usyd.edu.au}).
-
-To set up the latest version of \NF, execute
-\begin{lstlisting}
-git clone git@github.com:RomeshA/neurofield.git
-\end{lstlisting}
-after having added your SSH key to your GitHub account. Alternatively, you can install the GitHub desktop client and click the `Clone in Desktop' on the GitHub website. For additional instructions, check the GitHub tutorials for downloading repositories - the NeuroField repository can be downloaded following GitHub standard procedures. 
+\NF can be obtained from our website, \url{http://sydney.edu.au/science/physics/research/complex-systems/brain-dynamics/software.shtml}. As per the license agreement, users are not permitted to redistribute this program to other individuals or organizations - they should download NeuroField directly so as to have the most recent version, including any corrections. 
 
 \subsection{Directory layout}
 
-After downloading NeuroField, the user can find:
+All of the files associated with \NF are contained in a folder called \type{neurofield}. This folder is referred to as the `root directory', and it contains the following:
 
-\begin{tabular}{l p{12.5cm}}
-\type{src/}& C++ source code.\\
-\type{(obj/)}& This folder is created during compilation and stores the intermediate object code.\\
+\begin{tabular}{l p{13cm}}
+\type{src/}& \type{C++} source code.\\
+\type{(obj/)}& This folder is created during compilation and stores intermediate object code.\\
 \type{(bin/)}& The compiled binary \type{neurofield} is created here.\\
 \type{Configs/}& Stores example configuration files for \NF.\\
-\type{Documentation/}& Contains the manual\\
+\type{Documentation/}& Contains this manual.\\
 \type{+nf/}& Matlab package folder containing \NF helper scripts.\\
 \type{Test/}& Directory for development testing and is irrelevant for users.\\
 \end{tabular}
@@ -109,35 +128,29 @@ You can compile NeuroField simply by running
 make
 \end{lstlisting}
 
-from the root directory containing all of the source files. The compiler command is specified in \type{Makefile} and should be edited if you wish to use a different compiler, or if your compiler does not support some of the compiler flags.
+from the root directory. The compiler command is specified in \type{Makefile} and should be edited if you wish to use a different compiler, or if your compiler does not support some of the compiler flags. To run \NF on Windows, we suggest cross-compiling using MinGW on a Unix-like system. Example compiler flags for this are included in \type{Makefile}. Compiling with the Microsoft Visual \type{C++} compiler has not been tested. 
 
-If you are compiling on Windows, the suggested route is to cross-compile using MinGW on a Unix-like system, and then copy across any missing DLLs from the Unix system into the same directory as the executable file on the Windows machine. Compiling with the Visual C++ compiler has not been tested.
-
-Other build targets are available:
-\begin{itemize}
-\item To delete the binary files and temporary \LaTeX\ files, run
-\begin{lstlisting}
-make clean
-\end{lstlisting}
-which will delete the \type{bin} and \type{obj} folders, as well as files produced by \LaTeX in \type{Documentation/}.
-\item This documentation can be generated by running 
+The \type{Makefile} also provides two additional commands. This documentation can be generated by running 
 \begin{lstlisting}
 make doc
 \end{lstlisting}
-which generates \type{./Documentation/user.pdf} and \type{./Documentation/developer.pdf}. You should not need to use these directly because pre-compiled PDF files are distributed with NeuroField. 
-\end{itemize}
+which will compile the \LaTeX\ files in the \type{Documentation/} directory. To delete the \NF binary files, object code, and temporary \LaTeX\ files (e.g., to perform a clean compile of the program), you can use
+\begin{lstlisting}
+make clean
+\end{lstlisting}
+which will delete the \type{bin} and \type{obj} folders, as well as the temporary files in \type{Documentation/}.
 
 \section{Running NeuroField}
 \label{sec:running}
-You can run NeuroField directly using
+You can run \NF directly using
 
 \begin{lstlisting}
 ./bin/neurofield
 \end{lstlisting}
 
-from the main NeuroField folder. For ease of use, you may consider adding the \type{neurofield} binary to your system path. 
+from the main \NF folder. For ease of use, you may consider adding the \type{neurofield} binary to your system path. 
 
-By default, NeuroField will check if a configuration file called \type{neurofield.conf} exists in the current directory. If this file exists, NeuroField will run it. Similarly, by default NeuroField will write output to the file \type{neurofield.output} in the current directory. When these default files are used, a warning is displayed:
+By default, \NF will check if a configuration file called \type{neurofield.conf} exists in the current directory. If this file exists, \NF will run it. Similarly, by default \NF will write output to the file \type{neurofield.output} in the current directory. When these default files are used, a warning is displayed:
 
 \begin{lstlisting}
 romesha@romeshalt: neurofield > ./bin/neurofield
@@ -199,6 +212,9 @@ The remainder of this section refers to an example configuration for the illustr
 ./bin/neurofield -i Configs/cortex.conf -o cortex.output
 \end{lstlisting}
 
+{\em It is recommended that you open \type{Configs/cortex.conf} to read in conjunction with this section of the manual.}
+\vspace{24pt}
+
 \begin{figure}[h!]
 \begin{center}
 \tikzstyle{block} = [draw,text width=3em,text centered,minimum height=2em]
@@ -230,73 +246,13 @@ The remainder of this section refers to an example configuration for the illustr
 \label{fig:cortical}
 \end{figure}
 
-\begin{figure}\begin{center}
-	\begin{lstlisting}
-Example config file of cortical model with excitatory and inhibitory neurons
-Time: 1 Deltat: 1e-4
-Nodes: 400 Longside: 2
+\clearpage
 
-Connection matrix:
-From: 1 2 3 4
-To 1: 0 0 0 0
-To 2: 0 0 0 0
-To 3: 1 0 2 3
-To 4: 0 4 5 6
 
-Population 1: Stimulation
- Length: .5
- Stimulus: Const - Onset: 0 Mean: 5
-
-Population 2: Stimulation
- Length: .5
- Stimulus: Const - Onset: 0 Mean: 5
-
-Population 3: Excitatory neurons
- Length: .5
- Q: 8.87145
- Firing: Sigmoid - Theta: 13e-3 Sigma: 3.8e-3 Qmax: 340
-  Dendrite 1: V: Steady alpha: 83 beta: 769
-  Dendrite 2: V: Steady alpha: 83 beta: 769
-  Dendrite 3: V: Steady alpha: 83 beta: 769
-
-Population 4: Inhibitory neurons
- Length: .5
- Q: 8.87145
- Firing: Sigmoid - Theta: 13e-3 Sigma: 3.8e-3 Qmax: 340
-  Dendrite 4: V: Steady alpha: 83 beta: 769
-  Dendrite 5: V: Steady alpha: 83 beta: 769
-  Dendrite 6: V: Steady alpha: 83 beta: 769
-
-Propag 1: Map  - phi: Steady Tau: 0
-Propag 2: Wave - phi: Steady Tau: 0 Range: 80e-3 gamma: 116
-Propag 3: Map  - phi: Steady Tau: 0
-Propag 4: Map  - phi: Steady Tau: 0
-Propag 5: Wave - phi: Steady Tau: 0 Range: 80e-3 gamma: 116
-Propag 6: Map  - phi: Steady Tau: 0
-
-Couple 1: Map - nu: .15e-3
-Couple 2: Map - nu: 1.5e-3
-Couple 3: Map - nu:-1.8e-3
-Couple 4: Map - nu: .15e-3
-Couple 5: Map - nu: 1.5e-3
-Couple 6: Map - nu:-1.8e-3
-
-Output: Node: 1 2 Start: 0 Interval: 1e-4
-Population: 4.V
-Dendrite: 5
-Propag: 1 4.phi
-Couple: 3.nu
-	\end{lstlisting}
-\end{center}
-\caption{An example configuration file, which can be found in \type{Configs/example.conf}.}
-\end{figure}
-
-\FloatBarrier
-
-\subsection{Global information}
+\subsubsection{Global information}
 \label{sec:global}
-\begin{itemize}
 
+\begin{itemize}
 \item {\em Initial comments}
 \begin{lstlisting}
 Example config file of cortical model with excitatory and inhibitory neurons
@@ -335,7 +291,7 @@ We next specify a square connection matrix, where each entry is the connection f
 The size of this matrix determines the number of neural populations in the simulation. The number of nonzero connections determines the number of dendrites, couplings and propagators that will be present in the configuration file.
 \end{itemize}
 
-\subsection{Population data}
+\subsubsection{Population data}
 \label{sec:pop}
 This section contains population information sections. There are two types of neural populations: ordinary populations and stimulus populations:
 \begin{description}
@@ -452,7 +408,7 @@ Dendrite 1: V: Steady alpha: 83 beta: 769
 	\end{itemize}
 \end{description}
 
-\subsection{Propagation data}
+\subsubsection{Propagation data}
 \label{sec:prop}
 \begin{itemize}
 \item
@@ -506,7 +462,7 @@ Harmonic - phi: Steady Tau: 0 gamma: 116
 \end{description}
 \end{itemize}
 
-\subsection{Coupling data}
+\subsubsection{Coupling data}
 \label{sec:couple}
 
 \begin{itemize}
@@ -582,7 +538,7 @@ CaDP - nu: 13e-6 nu_max: 80e-6 Dth: .25e-6 Pth: .45e-6 xyth: 1e-4 x: 2.3e-2 y: 2
 \end{description}
 \end{itemize}
 
-\subsection{Output data}
+\subsubsection{Output data}
 \label{sec:output}
 
 \NF outputs field quantities (i.e. a neurodynamic quantity which takes a value for each node) with respect to nodes and time. By default, the output file is \type{neurofield.output}, which can be changed by launching the program with the \type{-o} switch.
@@ -620,18 +576,7 @@ If a specific field of an object is specified, but that field does not exist, \N
 \section{Analysis}
 \label{sec:analysis}
 
-\NF produces 3 files:
-
-\begin{tabular}{l p{14.4cm}}
-\type{neurofield.conf}& When using the launcher script, this file is created to store the running configuration file.\\
-%\type{neurofield.dump}& \NF dumps data here when it terminates. This file can be used in restart mode to continue simulation. Creation of this file can be suppressed by a \type{-s} switch.\\
-\type{neurofield.output}& The result of the simulation is stored here for postprocessing.\\
-\type{neurofield.pbs}& If \NF is run in \type{yossarian}, then this file stores the output of the queueing system.
-\end{tabular}
-
-When the launcher script runs with only one set of parameters, all output files are also in the present working directory. However, if the launcher script sweeps over parameters, each parameter set has its own subdirectory inside \type{Output/}, and each set of \type{neurofield.*} files are stored in its subdirectory.
-
-The output file starts with a copy of the input file, to enable the output file to serve as a complete representation of the simulation. The simulation results follow a series of \type{=} characters. Example content in \type{neurofield.output} is
+\NF produces a single output file called \type{neurofield.output} (unless a different name is manually specified). The output file starts with a copy of the input file, to enable the output file to serve as a complete representation of the simulation. The simulation results follow a series of `\type{=}' characters. Example content in \type{neurofield.output} is
 \begin{lstlisting}
 =============================================
                 Time            Propag.2.phi
@@ -644,9 +589,32 @@ Each column is a time series with its name indicated in the first line. The firs
 It is also worth noting that traces will be written in the order that they are specified. For example, if you write \type{Population: 3 1} then the columns in the output file will be arranged in this order. 
 
 \subsection{Matlab}
-A number of \type{MatLab} functions are provided to make it easy to manipulate \NF data from within \type{MatLab}. The functions are generally self-documenting with comments at the start of the file.
+A number of Matlab functions are provided to make it easy to manipulate \NF data from within Matlab. The functions are generally self-documenting with comments at the start of the file. To use these functions, you should add the \NF root directory to your Matlab path. All of the programs in the \type{+nf} folder will then be available for use within Matlab as part of the \type{nf} package (e.g., typing \type{nf.run()} will execute the function specified in \type{+nf/run.m}).
 
-Essentially, an output file from \NF is read into a \type{nf} struct object in \type{MatLab} which simply contains all of the output from \NF in memory for easy access. Here is an example of a \type{nf} object:
+\begin{figure}[b]
+\begin{center}
+\tikzstyle{pop_style} = [rectangle, draw, text width=6em, text centered, minimum height=4em]
+\tikzstyle{couple_style} = [rectangle, draw, text width=6em, text centered, minimum height=4em,fill=gray!30]
+\tikzstyle{line} = [draw, -latex']    
+\begin{tikzpicture}[node distance = 3cm, auto]
+	\node[pop_style] (s1) {Decide model parameters};
+    \node[couple_style,right of=s1] (s2) {Write configuration\\\type{nf.eirs()}};
+    \node[pop_style,right of=s2] (s3) {Run \NF\\\type{nf.run()}};
+    \node[pop_style,right of=s3] (s4) {Read configuration\\\type{nf.read()}};
+    \node[pop_style,right of=s4] (s5) {Run analysis\\\type{nf.extract()}};
+
+    \draw[line] (s1) -- (s2);
+    \draw[line] (s2) -- (s3);
+    \draw[line] (s3) -- (s4);
+    \draw[line] (s4) -- (s5);
+
+\end{tikzpicture}
+\caption{Overview of typical \NF workflow, showing the roles of the various Matlab tools. For each step, the corresponding Matlab function is shown. Note that the configuration file contains different populations and couplings for different models of neural networks. The Matlab helper \type{nf.eirs()} is specific to the Robinson et. al. corticothalamic model, and is provided in the \type{cortiothalamic-model} software package (together with a number of other analysis routines specific to that model) available from the Brain Dynamics website.}
+\label{fig:components}
+\end{center}
+\end{figure}
+
+Essentially, an output file from \NF is read into a \type{nf} struct object in Matlab which simply contains all of the output from \NF in memory for easy access. Here is an example of a \type{nf} object:
 \begin{lstlisting}
 obj =
      fields: {'Propag.1.phi'  'Propag.3.phi'}
@@ -659,10 +627,10 @@ obj =
 \begin{itemize}
 \item \type{fields} stores a record of which traces from \NF are present in the output file
 \item \type{nodes} is a cell with the same size as \type{fields}, and records for each field present, the number of the node in the output. 
-\item \type{data} is a matrix storing the actual values of the traces
-\item \type{time} is a vector of time values, so that you can plot any of the data traces directly again \type{obj.time}
-\item \type{deltat} stores the temporal sampling rate
-\item \type{npoints} stores the total number of points in the output. The total duration is \type{obj.deltat*obj.npoints} (or  \type{obj.time(end)})
+\item \type{data} is a matrix storing the actual values of the traces.
+\item \type{time} is a vector of time values, so that you can plot any of the data traces directly again \type{obj.time}.
+\item \type{deltat} stores the temporal sampling rate.
+\item \type{npoints} stores the total number of points in the output.
 \end{itemize}
 
 There are two ways to create the \type{nf} object. You can read the output file directly after executing \NF elsewhere
@@ -698,7 +666,7 @@ One important task is computing the power spectrum as predicted by the linearize
 
 This section provides programming information about \NF for development extension and core logic. This section assumes a basic knowledge of \type{ANSI C++}, including object oriented programming, usage of template, and standard template library (STL). As our development takes place within a Git repository, a working knowledge of Git will significantly help. 
 
-A solid command of \underline{object-oriented programming} is an \underline{essential prerequisite} in developing \NF. Given the inevitable complexity arising from many developers and class relationships, good code structure and object-oriented programming principles \underline{MUST} be adhered to whenever reasonable. One of the primary aims of object-oriented program as used by \NF is code reuse. Duplicated code, with subtle variations between them, is one of the best ways to introduce \underline{undetected numerical errors}. The ultimate consequence is erroneous publication and refactoring of the code. \underline{Code reuse} is one of the highest priorities. Sec.~\ref{sec:extension} contains methods for code reuse. When in doubt, read existing class implementations for examples, or contact the developers for assistance (\url{braindynamics@physics.usyd.edu.au}).
+A solid command of \underline{object-oriented programming} is an \underline{essential prerequisite}. Given the inevitable complexity arising from many developers and class relationships, good code structure and object-oriented programming principles must be adhered to whenever reasonable. One of the primary aims of object-oriented program as used by \NF is code reuse. Duplicated code, with subtle variations between them, is one of the best ways to introduce \underline{undetected numerical errors}. The ultimate consequence is erroneous publication and refactoring of the code. \underline{Code reuse} is one of the highest priorities. Sec.~\ref{sec:extension} contains methods for code reuse. When in doubt, read existing class implementations for examples, or contact the developers for assistance (\url{braindynamics@physics.usyd.edu.au}).
 
 Here is a list of training resources:
 
@@ -719,8 +687,9 @@ We have adopted the {\em fork and pull} development model using GitHub. If you w
 	\item Use \type{git pull upstream master} to merge changes from the main repository into the master branch of your working copy.
 	\item We recommend using a branch in your fork for developing modifications
 	\item When your feature is ready for integration into the main repository, submit a pull request on GitHub. Developers within the Brain Dynamics Group will then be able to review your code, check compatibility, and perform the merge. 
-	\item Note that you do not have write access to the main repository, so all changes must be proposed via pull requests.
 \end{enumerate}
+
+Note that you do not have write access to the main repository, so all changes must be proposed via pull requests. If your proposed changes are accepted, we may make modifications to ensure they integrate seamlessly with the rest of the program.
 
 As discussed at the start of manual, \NF encapsulates each component of the model with an object: \type{Couple}, \type{Dendrite}, \type{QResponse}, \type{Propag}. The \type{Dendrite} and \type{QResponse} (and also \type{Timeseries}) are contained within \type{Population}.
 
@@ -837,7 +806,7 @@ The diagram in Figure \ref{fig:classes} shows the inheritance hierarchy for the 
 \caption{Schematic of the main class structures in \NF. Each line indicates that the bottom class is a member of the top class. The \type{a} $\ni b$ symbol indicates that the dynamical field $b(\mathbf{r},t)$ is a member of the class \type{a}. Inheritance structures are NOT illustrated.}
 \end{figure}
 
-\subsubsection{Procedure}
+\subsubsection{Procedure for implementing a new class}
 
 Implementing a new class may be done using the following procedure:
 \begin{enumerate}
