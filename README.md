@@ -3,21 +3,20 @@
     make
     ./bin/neurofield -i Configs/example.conf -o example.output
    
-
 ### Setup guide
+
+**Please check https://github.com/BrainDynamicsUSYD/neurofield/wiki for the setup walkthrough. The instructions below are a standalone summary if you do not have internet access. More detailed instructions are also included in the PDF documentation**
 
 1. Ensure you have a compiler that supports the `C++11` standard. We recommend GCC 4.8 or higher
 
-2. Type `make` to build the binary `Release/NeuroField`. Example compiler commands for Mac OS and Windows are included in `makefile`. Further information about cross platform support is available in [the wiki.](https://github.com/BrainDynamicsUSYD/neurofield/wiki/Cross-platform-support)
+2. Type `make` to build the binary `Release/NeuroField`. Information about cross platform for non-Linux systems is available at https://github.com/BrainDynamicsUSYD/neurofield/wiki/Cross-platform-support
 
-3. The user guide is contained in [Documentation/user.pdf](https://github.com/BrainDynamicsUSYD/neurofield/blob/master/Documentation/user.pdf) which contains detailed information on how to use NeuroField.
-
-4. Example configurations including examples for published results are available in the `Configs` folder
+3. Example configurations including examples for published results are available in the `Configs` folder
 
 ### Troubleshooting
 
-Problems compiling? Check [the wiki](https://github.com/BrainDynamicsUSYD/neurofield/wiki/Troubleshooting) for the latest information.
+Problems compiling? Check https://github.com/BrainDynamicsUSYD/neurofield/wiki/Troubleshooting for the latest information.
 
 ### Guidelines for contributing code
 
-If you intend to contribute to NeuroField development, please make a private fork of the repository. [Please refer to the wiki for further information.](https://github.com/BrainDynamicsUSYD/neurofield/wiki/How-to-contribute-code-to-NeuroField).
+If you intend to contribute to NeuroField development, please make a private fork of this repository and follow the instructions at https://github.com/BrainDynamicsUSYD/neurofield/wiki/How-to-contribute-code-to-NeuroField.
