@@ -17,7 +17,7 @@ function obj = run(fname,neurofield_path)
         if ispc
             neurofield_path = 'neurofield.exe';
         else
-            neurofield_path = './bin/neurofield';
+            neurofield_path = './neurofield/bin/neurofield';
             if ~exist(neurofield_path) 
                 neurofield_path = 'neurofield'; % Legacy functionality
             end
