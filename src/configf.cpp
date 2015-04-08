@@ -7,16 +7,6 @@ using std::vector;
 using std::cerr;
 using std::string;
 
-template void Configf::param
-  <double>(const string& param, double& ret, int delim=':' );
-template void Configf::param
-  <int>(const string& param, int& ret, int delim=':' );
-template void Configf::param
-  <NF>(const string& param, NF& ret, int delim=':' );
-
-template bool Configf::optional
-  <double>( const string& param, double& ret, int delim=':' );
-
 Configf::Configf( const char* filename )
   : std::ifstream(filename)
 {
