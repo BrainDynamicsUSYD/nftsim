@@ -8,8 +8,8 @@ CFLAGS = -g -lm -Wall -O3 -Wextra -pedantic -std=c++11 -msse -msse2 -msse3 -mfpm
 
 
 # Windows
-# CC = g++
-# CFLAGS = x86_64-w64-mingw32-g++ -lm -Wall -O3 -msse -msse2 -msse3 -mfpmath=sse -funroll-loops -flto -m64 -std=gnu++11 -static -static-libgcc -static-libstdc++
+# CC = x86_64-w64-mingw32-g++
+# CFLAGS = -lm -Wall -O3 -msse -msse2 -msse3 -mfpmath=sse -funroll-loops -flto -m64 -std=gnu++11 -static -static-libgcc -static-libstdc++
 
 # Debugging
 # CC = g++
