@@ -14,18 +14,14 @@ function obj = run(fname,neurofield_path)
     fprintf(1,'Executing NeuroField: %s.conf...\n',fname);
 
     if nargin < 2 || isempty(neurofield_path)
-        if ispc
-            neurofield_path = 'neurofield.exe';
+        % The first path that exists in will be selected
+        locations = {'neurofield.exe','./neurofield/bin/neurofield','./bin/neurofield','neurofield'};
+        selected_path = find(cellfun(@(name) exist(name)==2,locations),1,'first');
+        if isempty(selected_path)
+            error('neurofield not found. Please make a symlink to neurofield in the current directory');
         else
-            neurofield_path = './bin/neurofield';
-            if ~exist(neurofield_path) 
-                neurofield_path = 'neurofield'; % Legacy functionality
-            end
+            neurofield_path = locations{find(cellfun(@(name) exist(name)==2,locations),1,'first')};
         end
-    end
-    
-    if ~exist(neurofield_path) 
-        error('neurofield could not be found. Please make a symlink to neurofield in the current directory');
     end
 
     neurofield_cmd = sprintf('%s -i %s.conf -o %s.output',neurofield_path,fname,fname);
