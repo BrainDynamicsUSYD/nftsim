@@ -3,6 +3,7 @@
 #include"harmonic.h"
 #include"longcouple.h"
 #include"bcmlong.h"
+#include"coupleramp.h"
 
 using std::cerr;
 using std::endl;
@@ -145,6 +146,9 @@ void Solver::init( Configf& configf )
     else if(ctype=="BCM-Spatial")
       couples.add( new
         BCMLong(nodes,deltat,i, *propags[i], *pops[cnt.post[i]] ) );
+    else if(ctype=="Ramp")
+      couples.add( new
+        CoupleRamp(nodes,deltat,i, *propags[i], *pops[cnt.post[i]] ) );
     //else if(ctype=="fCaP")
       //couples.add( new
         //fCaP(nodes,deltat,i, *propags[i], *pops[cnt.post[i]] ) );
