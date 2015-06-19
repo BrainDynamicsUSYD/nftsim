@@ -17,6 +17,8 @@ void CoupleRamp::init( Configf& configf )
 
   for( int i=0; i<nodes; i++ )
     P[i] = n[i]*prepropag.phiinit(configf);
+
+  time = 0;
 }
 
 
