@@ -33,8 +33,17 @@ void CoupleRamp::init( Configf& configf )
   tempt = configf.numbers();
 
   double temp;
-  // Check that the lengths of both arrays match
-  // if( tempn.size() == tempt.size()) throw some errors
+
+  // Check that both vectors are of length pairs
+  if( tempt.size() != tempn.size()){
+    cerr<<" The lengths of nus and timepoints are not equal." <<endl;
+    exit(EXIT_FAILURE);
+  }
+
+  if( (tempt.size() != pairs) || (tempn.size() != pairs)) {
+    cerr<<"The length of either *nus* or *timepoints* does not match the number specified in *pairs*" <<endl;
+    exit(EXIT_FAILURE);
+  }
 
   for ( int i=0; i<=pairs; i++ ){
      temp = deltat*((tempn[i+1]-tempn[i])/(tempt[i+1]-tempt[i]));
