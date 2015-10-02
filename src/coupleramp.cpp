@@ -1,3 +1,17 @@
+/**
+ * @file coupleramp.cpp
+ * Produce piecewise linear segments to vary synaptic couplings nu **over time**.
+ * Assumes that at t=0, nu=nus[0], ie, the segment between t=0 and timepoints[0] is constant.
+ *
+ * @author Paula Sanz-Leon 
+ * 
+ */
+  
+/**
+   Reads from the configuration file
+   + param[in]     nus, timepoints: vector with the values of nus at specific time points specified in vector timepoints.
+   + param[in]     pairs   : total number of pairs of (nu, time) to define the segments
+*/
 #include<iostream>
 using std::cerr;
 using std::endl;
