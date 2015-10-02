@@ -462,26 +462,30 @@ Harmonic - phi: Steady Tau: 0 gamma: 116
 \end{description}
 \end{itemize}
 
-\subsubsection{Coupling data}
+\subsubsection{Couple Classes}
 \label{sec:couple}
+
+
 
 \begin{itemize}
 
-	\item
-	\begin{lstlisting}
+\item The type of coupling between each pair of popoulations can be specified for separately. The coupling data is given as $n$ lines  corresponding to each nonzero connection in the connection matrix defined at the top of the file. Different types of coupling has their own input form. 
+\item \begin{lstlisting}
 Couple 1:
-	\end{lstlisting}
-	Identifier for cross-checking.
-\item A couple type is required at this point. Choices are \type{Map}, \type{CaDP}, \type{BCM} and \type{Matrix}.
-
+\end{lstlisting}
+\item This syntax serves the purpose of an identifier for cross-checking. The following types of coupling are available:  \type{Map},  \type{Matrix},\type{Ramp}, \type{CaDP}, and \type{BCM}. 
 \begin{description}
 
-	\item[Map]\ \\
-	Nonplastic synaptic coupling wtih a single constant parameter \type{nu},
+\item[Map]\ \\
+	Linear synaptic coupling with input parameter \type{nu}, constant time.
+	This parameter may be a single number or take a vector of lenght
+	\texttt{Nodes}, which allows for the expression of nonuniform models.
 	\begin{lstlisting}
-Map - nu: 0.0012
+    	Map - nu: 0.0012
 	\end{lstlisting}
-	\type{nu} is the synaptic coupling parameter. It corresponds to the product of the mean synaptic strength $s_{ab}$ and $N_{ab}$, the mean number of connections from cells of type $b$ to cells of type $a$.
+	where \type{nu} is the synaptic coupling parameter. In NFT, it corresponds
+	to the product of the mean synaptic strength $s_{ab}$ and $N_{ab}$, the
+	mean number of connections from cells of type $b$ to cells of type $a$.
 
 	%\item[Modcouple]\ \\
 	%The modulated synaptic coupling implements the Clearwater/Rennie modulation equation. The modulation is given by
@@ -508,7 +512,13 @@ Map - nu: 0.0012
 	%\end{lstlisting}
 
 	\item[Matrix]\ \\
-	Coupling becomes connection matrix, where connection strength does \emph{not} change with time. The format of the nu matrix is the same as the population connection matrix, each row is to the same node, each column is from the same node. When outputting, each specified outputting node output the indexed row.
+	
+	The coupling may be expressed as a connection matrix, where the couping
+	strengths do not change with time. The format of the \texttt{nu} matrix is
+	the same as the population connection matrix, each row is to the same
+	node, each column is from the same node. When outputting, each specified
+	outputting node output the indexed row.
+
 	\begin{lstlisting}
 nu:
   13e-6 0
