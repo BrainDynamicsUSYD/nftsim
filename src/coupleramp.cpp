@@ -3,7 +3,7 @@
  * Produce piecewise linear segments to vary synaptic couplings nu **over time**.
  * Assumes that at t=0, nu=nus[0], ie, the segment between t=0 and timepoints[0] is constant.
  *
- * @author Paula Sanz-Leon 
+ * @author Paula Sanz-Leon , Romesh Abeysuriya
  * 
  */
   

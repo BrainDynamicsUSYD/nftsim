@@ -1,19 +1,18 @@
 /**
- * @file coupleramp.cpp
+ * @file coupleramp.h
  * Couple class to produce piecewise linear segments to vary synaptic couplings nu.
  * In other words it produces a temporal profile for nu.
  * 
  * @brief Can use "brief" tag to explicitly generate comments for file documentation.
  *
- * @author Paula Sanz-Leon 
+ * @author Paula Sanz-Leon , Romesh Abeysuriya
  * 
  */
   
 /**
    Define properties of CoupleRamp
   
-
-   + param[in]     ns, tpts: vector with the values of nus at specific time points specified in tpts.
+   + param[in]     ns, tpts: vector with the values of nus at specific time points specified in vector tpts.
    + param[in]     pairs   : total number of pairs of (nu, time) to define the segments
 */
 
