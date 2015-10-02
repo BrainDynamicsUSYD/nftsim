@@ -40,7 +40,7 @@ void CoupleRamp::init( Configf& configf )
     exit(EXIT_FAILURE);
   }
 
-  if( (tempt.size() != pairs) || (tempn.size() != pairs)) {
+  if( (tempt.size() != size_t(pairs)) || (tempn.size() != size_t(pairs))) {
     cerr<<"The length of either *nus* or *timepoints* does not match the number specified in *pairs*" <<endl;
     exit(EXIT_FAILURE);
   }
