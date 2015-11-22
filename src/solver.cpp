@@ -4,6 +4,8 @@
 #include"longcouple.h"
 #include"bcmlong.h"
 #include"coupleramp.h"
+#include"coupleatan.h"
+
 
 using std::cerr;
 using std::endl;
@@ -149,12 +151,24 @@ void Solver::init( Configf& configf )
     else if(ctype=="Ramp")
       couples.add( new
         CoupleRamp(nodes,deltat,i, *propags[i], *pops[cnt.post[i]] ) );
+    //else if(ctype=="Steps")
+      //couples.add( new
+       // CoupleSteps(nodes,deltat,i, *propags[i], *pops[cnt.post[i]] ) );
+    else if(ctype=="Atan")
+      couples.add( new
+        CoupleAtan(nodes,deltat,i, *propags[i], *pops[cnt.post[i]] ) );
+    //else if(ctype=="Nonplanar2")
+      //couples.add( new
+        //CoupleNonplanar2(nodes,deltat,i, *propags[i], *pops[cnt.post[i]] ) );
     //else if(ctype=="fCaP")
       //couples.add( new
         //fCaP(nodes,deltat,i, *propags[i], *pops[cnt.post[i]] ) );
     //else if(ctype=="Epilepsy")
       //couples.add( new
         //Epilepsy(nodes,deltat,i, *propags[i], *pops[cnt.post[i]] ) );
+    //else if(ctype=="DSteps")
+      //couples.add( new
+        //DCoupleSteps(nodes,deltat,i, *propags[i], *pops[cnt.post[i]] ) );
     else {
       cerr<<"Invalid couple type '"<<ctype<<"'."<<endl;
       exit(EXIT_FAILURE);
