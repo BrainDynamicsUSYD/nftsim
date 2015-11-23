@@ -40,12 +40,13 @@ void CoupleAtan::init( Configf& configf )
   //read value of ramping width
   configf.param("delt",delt);
   //read the value of total time
-  configf.param("t",t);
+  //configf.param("t",t);
   //read the time at which time will reache half of its total range
   configf.param("t1",t1);
   //read the time at which time will come down half of its total range
   configf.param("t2",t2);
-
+  
+  
 
   
 
@@ -64,7 +65,7 @@ void CoupleAtan::init( Configf& configf )
   }
   
   //Reading the temporal variation 
-  for( int i=0; i<t; i++ )
+  for( int i=0; i<time_t; i++ )
   {
     ramp = (atan((i-t1)/delt)-atan((i-t2)/delt));
     deltanu.push_back(ramp);
@@ -78,6 +79,7 @@ void CoupleAtan::init( Configf& configf )
     
   //std::cout << temp_min << endl;
   //std::cout << temp_max << endl;
+  //std::cout << time_t << endl;
   
   n.clear(); n.resize(nodes,nu0);
   pos = (nu0>0)?1:-1;
@@ -100,9 +102,11 @@ void CoupleAtan::step(void)
 }
 
 CoupleAtan::CoupleAtan( int nodes, double deltat, int index,
-        const Propag& prepropag, const Population& postpop )
+        const Propag& prepropag, const Population& postpop, double tempf )
     : Couple(nodes,deltat,index,prepropag,postpop)
 {
+  
+  time_t = tempf;      
 }
 
 CoupleAtan::~CoupleAtan(void)

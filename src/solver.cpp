@@ -152,7 +152,7 @@ void Solver::init( Configf& configf )
         CoupleRamp(nodes,deltat,i, *propags[i], *pops[cnt.post[i]] ) );
     else if(ctype=="Atan")
       couples.add( new
-        CoupleAtan(nodes,deltat,i, *propags[i], *pops[cnt.post[i]] ) );
+        CoupleAtan( nodes,deltat,i, *propags[i], *pops[cnt.post[i]], tempf ) );
     //else if(ctype=="fCaP")
       //couples.add( new
         //fCaP(nodes,deltat,i, *propags[i], *pops[cnt.post[i]] ) );

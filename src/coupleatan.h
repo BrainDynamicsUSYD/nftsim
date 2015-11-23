@@ -12,7 +12,8 @@ class CoupleAtan : public Couple
     
 protected:
   double nu0, nu_max;
-  double delt, t, t1, t2;
+  double delt, t1, t2;
+  double time_t;
   double ramp, ramp_min, ramp_max;
   double time;
   vector<double> deltanu;
@@ -23,7 +24,7 @@ public:
   void step(void);
   void find(void);
   CoupleAtan( int nodes, double deltat, int index,
-          const Propag& prepropag, const Population& postpop );
+          const Propag& prepropag, const Population& postpop, double tempf );
   virtual ~CoupleAtan(void);
 };
 
