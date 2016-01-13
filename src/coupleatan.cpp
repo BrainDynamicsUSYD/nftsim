@@ -45,8 +45,7 @@ void CoupleAtan::init( Configf& configf )
   configf.param("t1",t1);
   //read the time at which time will come down half of its total range
   configf.param("t2",t2);
-  double time_int;
-  time_int = time_t/deltat;
+
   //'std::cout << time_int << endl;
   
 
@@ -65,9 +64,9 @@ void CoupleAtan::init( Configf& configf )
   }
   
   //Reading the temporal variation 
-  for( int i=0; i<time_int; i++ )
+  for( int i=0; i<time_t; i++ )
   {
-    ramp = (atan(((i*deltat)-t1)/delt)-atan(((i*deltat)-t2)/delt));
+    ramp = (atan((i-t1)/delt)-atan((i-t2)/delt));
     deltanu.push_back(ramp);
 
   }
