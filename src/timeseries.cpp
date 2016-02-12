@@ -132,9 +132,16 @@ void White::init( Configf& configf )
   if( !configf.optional("Std",amp) ) {
     configf.param("Psd",amp);
     // index of timeseries the same as that of population
-    deltax = atof(configf.find(
-        label("Population ",index+1)+"*Length").c_str()) /sqrt(nodes);
-    amp = sqrt(4*pow(M_PI,3)*pow(amp,2)/deltat/pow(deltax,2));
+    
+    if(nodes>1){
+      deltax = atof(configf.find(
+          label("Population ",index+1)+"*Length").c_str()) /sqrt(nodes);
+      amp = sqrt(4*pow(M_PI,3)*pow(amp,2)/deltat/pow(deltax,2));
+    }
+    else{
+      amp = sqrt(M_PI*pow(amp,2)/deltat);
+    }
+
   }
   if(configf.optional("Ranseed",seed))
     random = new Random(seed,mean,amp);
