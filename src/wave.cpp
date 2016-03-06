@@ -48,9 +48,9 @@ void Wave::init( Configf& configf )
   p2 = dt2ondx2*range*range*gamma*gamma;
   tenminus3p2 = 10.-3.*p2;
   twominus3p2 = 2.-3.*p2;
-  exp1 = exp(-deltat*gamma);
+  expfact1 = exp(-deltat*gamma);
   // http://en.cppreference.com/w/cpp/numeric/math/exp2
-  exp2 = exp(-2.*deltat*gamma);
+  expfact2 = exp(-2.*deltat*gamma);
 
   if(gamma/2.0 < deltat || range/2.0 < deltax){
     cerr << "Wave equation with gamma: " << gamma << " and range: " << range << endl;
