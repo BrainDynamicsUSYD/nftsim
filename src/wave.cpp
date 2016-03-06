@@ -1,10 +1,17 @@
+/***************************************************************************
+                          waveeqn.cpp  -  Wave equation propagator
+                             -------------------
+    copyright            : (C) 2008 by Peter Drysdale
+ ***************************************************************************/
+
 #include<cmath>
 #include"wave.h"
 using std::cerr;
 using std::endl;
 
 void Wave::init( Configf& configf )
-{
+{ 
+  // This assuming a square sheet and defeats the prupose of being able to specify a rectangular lattice
   deltax = prepop.sheetlength()/sqrt(nodes);
 
   string buffer("Steady");
