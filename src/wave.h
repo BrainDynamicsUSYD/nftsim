@@ -1,5 +1,7 @@
 /**
  * @file wave.h
+ * @brief Wave propagator definition
+ *
  * The wave propagator definition, inlcuding parameters from the wave equation 
  * and coefficients related to the nine-point stencil implementation. 
  * 
