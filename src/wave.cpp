@@ -64,7 +64,7 @@ void Wave::init( Configf& configf )
     exit(EXIT_FAILURE);
   }
 
-  if( gamma*range*deltat/deltax >1.41 ) {
+  if( gamma*range*deltat/deltax >1/sqrt(2.0)) {
     cerr<<"Wave equation does not fulfill the Courant condition."<<endl;
     exit(EXIT_FAILURE);
   }
