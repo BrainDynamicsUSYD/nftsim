@@ -52,6 +52,7 @@ void Wave::init( Configf& configf )
   tenminus3p2 = 10.-3.*p2;
   twominus3p2 = 2.-3.*p2;
   exp1 = exp(-deltat*gamma);
+  // http://en.cppreference.com/w/cpp/numeric/math/exp2
   exp2 = exp(-2.*deltat*gamma);
 
   if( gamma/2.0 < deltat){
@@ -64,7 +65,7 @@ void Wave::init( Configf& configf )
     exit(EXIT_FAILURE);
   }
 
-  if( gamma*range*deltat/deltax >1/sqrt(2.0)) {
+  if( gamma*range*deltat/deltax > 1/sqrt(2.0)) {
     cerr<<"Wave equation does not fulfill the Courant condition."<<endl;
     exit(EXIT_FAILURE);
   }
