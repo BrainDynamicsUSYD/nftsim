@@ -10,7 +10,6 @@
    Reads from the configuration file
 
 */
-
 #include<cmath>
 #include"wave.h"
 using std::cerr;
@@ -19,7 +18,6 @@ using std::endl;
 void Wave::init( Configf& configf )
 { 
   deltax = prepop.sheetlength()/longside;
-
   string buffer("Steady");
   configf.optional("phi",buffer);
   double Q = prepop.Qinit(configf);
@@ -33,7 +31,6 @@ void Wave::init( Configf& configf )
   }
 
   configf.optional("Tau",tau); prepop.growHistory(tau);
-
   configf.param("Range",range);
   if( !configf.optional("gamma",gamma) ) {
     double temp; configf.param("velocity",temp);
@@ -55,13 +52,12 @@ void Wave::init( Configf& configf )
   // http://en.cppreference.com/w/cpp/numeric/math/exp2
   exp2 = exp(-2.*deltat*gamma);
 
-  if( gamma/2.0 < deltat){
-    cerr<<"gamma = " << gamma << " requires deltat < " << gamma/2.0 <<endl;
-    exit(EXIT_FAILURE);
-  }
-
-  if(range/2.0 < deltax){
-    cerr<<"range = " << range << " requires deltax < " << range/2.0 <<endl;
+  if(gamma/2.0 < deltat || range/2.0 < deltax){
+    cerr << "Wave equation with gamma: " << gamma << " and range: " << range << endl;
+    cerr << "is neither adequately captured by grid spacing chosen" << endl;
+    cerr << "nor sufficiently localized so the potential can be approximated by Q" << endl;
+    cerr << "gamma = " << gamma << " requires deltat < " << gamma/2.0 <<endl;
+    cerr << "and range = " << range << " requires deltax < " << range/2.0 <<endl;
     exit(EXIT_FAILURE);
   }
 
