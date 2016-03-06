@@ -66,7 +66,11 @@ void Wave::init( Configf& configf )
   }
 
   if( gamma*range*deltat/deltax > 1/sqrt(2.0)) {
-    cerr<<"Wave equation does not fulfill the Courant condition."<<endl;
+    cerr << "Wave equation with gamma: " << gamma << " axonal range: " << range << endl;
+    cerr << "and deltat: " << deltat << " deltax: " << deltax << endl;
+    cerr << "does not fulfill the Courant condition" << endl;
+    cerr << "Courant number is: " << (gamma*range*deltat/deltax) << endl;
+    cerr << "and should be less than " << 1/sqrt(2.0) << endl;
     exit(EXIT_FAILURE);
   }
 }
