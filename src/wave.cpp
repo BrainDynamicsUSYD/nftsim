@@ -1,8 +1,15 @@
-/***************************************************************************
-                          waveeqn.cpp  -  Wave equation propagator
-                             -------------------
-    copyright            : (C) 2008 by Peter Drysdale
- ***************************************************************************/
+/**
+ * @file wave.cpp
+ * The wave propagator, including the method to step forward in time
+ *
+ * @author Peter Drysdale, Felix Fung, Romesh Abeysuriya, Paula Sanz-Leon
+ * 
+ */
+  
+/**
+   Reads from the configuration file
+
+*/
 
 #include<cmath>
 #include"wave.h"
@@ -11,8 +18,7 @@ using std::endl;
 
 void Wave::init( Configf& configf )
 { 
-  // This assuming a square sheet and defeats the prupose of being able to specify a rectangular lattice
-  deltax = prepop.sheetlength()/sqrt(nodes);
+  deltax = prepop.sheetlength()/longside;
 
   string buffer("Steady");
   configf.optional("phi",buffer);
