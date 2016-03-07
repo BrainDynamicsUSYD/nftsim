@@ -98,9 +98,9 @@ void Wave::step(void)
     sumQ     = stencilQ(n)  +stencilQ(s)  +stencilQ(w)  +stencilQ(e) ; // sum of the von Neumann (orthogonal) neighbourhood (Q) 
     diagsumQ = stencilQ(nw) +stencilQ(ne) +stencilQ(sw) +stencilQ(se); // sum of the diagonal neighbourhood (Q) 
     drive    = dfact*( tenminus3p2*exp1* stencilQ +prepop.Q(tau)[i]
-                 +exp2* stencil_oldQ +exp1*.5*p2*(sumQ+.5*diagsumQ) );
-    p[i]     = twominus3p2*exp1 *stencilp +exp1*.5*p2*(sump+.5*diagsump)
-                 -exp2 *stencil_oldp +drive;
+                 +expfact2* stencil_oldQ +expfact1*.5*p2*(sumQ+.5*diagsumQ) );
+    p[i]     = twominus3p2*exp1 *stencilp +expfact1*.5*p2*(sump+.5*diagsump)
+                 -expfact2 *stencil_oldp +drive;
   }
 
   key = !key;
