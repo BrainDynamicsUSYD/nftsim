@@ -3,17 +3,17 @@ CXX = g++
 CXXFLAGS = -g -lm -Wall -O3 -Wextra -pedantic -std=c++11 -msse -msse2 -msse3 -mfpmath=sse -march=native -mtune=native -funroll-loops -flto #-m64
 
 # Mac OS
-# CC = g++-4.9
-# CFLAGS = -lm -Wall -O3 -std=c++11 
+# CXX = g++-4.9
+# CXXFLAGS = -lm -Wall -O3 -std=c++11 
 
 
 # Windows
-# CC = x86_64-w64-mingw32-g++
-# CFLAGS = -lm -Wall -O3 -msse -msse2 -msse3 -mfpmath=sse -funroll-loops -flto -m64 -std=gnu++11 -static -static-libgcc -static-libstdc++
+# CXX = x86_64-w64-mingw32-g++
+# CXXFLAGS = -lm -Wall -O3 -msse -msse2 -msse3 -mfpmath=sse -funroll-loops -flto -m64 -std=gnu++11 -static -static-libgcc -static-libstdc++
 
 # Debugging
-# CC = g++
-# CFLAGS = g++ -g -lm -Wall -Wextra -pedantic -std=c++11 -msse -msse2 -msse3
+# CXX = g++
+# CXXFLAGS = g++ -g -lm -Wall -Wextra -pedantic -std=c++11 -msse -msse2 -msse3
 
 
 HEADER = $(wildcard src/*.h)
