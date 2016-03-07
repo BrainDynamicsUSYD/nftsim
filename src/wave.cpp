@@ -51,12 +51,12 @@ void Wave::init( Configf& configf )
   expfact1 = exp(-1.0*deltat*gamma);
   expfact2 = exp(-2.0*deltat*gamma);
 
-  if(gamma/2.0 < deltat || range/2.0 < deltax){
+  if(gamma/2.0 < deltat || range/2.0 < deltax) {
     cerr << "Wave equation with gamma: " << gamma << " and range: " << range << endl;
     cerr << "is neither adequately captured by grid spacing chosen" << endl;
     cerr << "nor sufficiently localized so the potential can be approximated by Q" << endl;
-    cerr << "gamma = " << gamma << " requires deltat < " << gamma/2.0 <<endl;
-    cerr << "and range = " << range << " requires deltax < " << range/2.0 <<endl;
+    cerr << "gamma = " << gamma << " requires deltat < " << gamma/2.0 << endl;
+    cerr << "and range = " << range << " requires deltax < " << range/2.0 << endl;
     exit(EXIT_FAILURE);
   }
 
@@ -97,9 +97,9 @@ void Wave::step(void)
     diagsump = stencilp(nw) +stencilp(ne) +stencilp(sw) +stencilp(se); // sum of the diagonal neighbourhood (phi) 
     sumQ     = stencilQ(n)  +stencilQ(s)  +stencilQ(w)  +stencilQ(e) ; // sum of the von Neumann (orthogonal) neighbourhood (Q) 
     diagsumQ = stencilQ(nw) +stencilQ(ne) +stencilQ(sw) +stencilQ(se); // sum of the diagonal neighbourhood (Q) 
-    drive    = dfact*( tenminus3p2*exp1* stencilQ +prepop.Q(tau)[i]
+    drive    = dfact*( tenminus3p2*expfact1* stencilQ +prepop.Q(tau)[i]
                  +expfact2* stencil_oldQ +expfact1*.5*p2*(sumQ+.5*diagsumQ) );
-    p[i]     = twominus3p2*exp1 *stencilp +expfact1*.5*p2*(sump+.5*diagsump)
+    p[i]     = twominus3p2*expfact1 *stencilp +expfact1*.5*p2*(sump+.5*diagsump)
                  -expfact2 *stencil_oldp +drive;
   }
 
