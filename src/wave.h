@@ -5,6 +5,7 @@
  * The wave propagator definition, inlcuding parameters from the wave equation 
  * and coefficients related to the nine-point stencil implementation. 
  * 
+ *
  * @author Peter Drysdale, Felix Fung, Romesh Abeysuriya, Paula Sanz-Leon
  * 
  */
@@ -42,7 +43,7 @@ protected:
   double p2;          // Fquare of the mesh ratio
   double tenminus3p2; // Factor in wave algorithm
   double twominus3p2; // Factor in wave algorithm
-  double expfact1;    // Factor of Exp(- gamma deltat)
+  double expfact1;    // Factor of Exp(- gamma deltat) - scale factor applied to each step due to damping
   double expfact2;    // Factor of Exp(- 2 gamma deltat)
 
   // variables that are changed every timestep
