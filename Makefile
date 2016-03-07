@@ -23,6 +23,10 @@ OBJ = $(addprefix obj/,$(notdir $(CPP:.cpp=.o)))
 # target: default - compile bin/neurofield 
 default: bin/neurofield
 
+debugmode: CXXFLAGS = -g -ggdb3 -lm -Wall -Wextra -pedantic -std=c++11 -msse -msse2 -msse3
+
+debugmode: bin/neurofield
+
 bin/neurofield: $(OBJ)
 	@mkdir -p bin
 	@echo "$(CXX) $(CXXFLAGS) $(OBJ) -o $@"
