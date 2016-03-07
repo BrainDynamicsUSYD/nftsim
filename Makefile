@@ -1,4 +1,4 @@
-# Standard Linux, performance
+# Standard Linux (gcc must be > 4.9) performance
 CC = g++
 CFLAGS = -g -lm -Wall -O3 -Wextra -pedantic -std=c++11 -msse -msse2 -msse3 -mfpmath=sse -march=native -mtune=native -funroll-loops -flto #-m64
 
