@@ -44,7 +44,7 @@ void Wave::init( Configf& configf )
 
   dt2on12 = deltat*deltat/12.;
   dfact = dt2on12*gamma*gamma;
-  dt2ondx2 = deltat*deltat/deltax/deltax;
+  dt2ondx2 = (deltat*deltat)/(deltax*deltax);
   p2 = dt2ondx2*range*range*gamma*gamma;
   tenminus3p2 = 10.0-3.*p2;
   twominus3p2 =  2.0-3.*p2;
