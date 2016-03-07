@@ -1,6 +1,6 @@
 # Standard Linux (gcc must be > 4.9) performance
-CC = g++
-CFLAGS = -g -lm -Wall -O3 -Wextra -pedantic -std=c++11 -msse -msse2 -msse3 -mfpmath=sse -march=native -mtune=native -funroll-loops -flto #-m64
+CXX = g++
+CXXFLAGS = -g -lm -Wall -O3 -Wextra -pedantic -std=c++11 -msse -msse2 -msse3 -mfpmath=sse -march=native -mtune=native -funroll-loops -flto #-m64
 
 # Mac OS
 # CC = g++-4.9
@@ -25,8 +25,8 @@ default: bin/neurofield
 
 bin/neurofield: $(OBJ)
 	@mkdir -p bin
-	@echo "$(CC) $(CFLAGS) $(OBJ) -o $@"
-	@$(CC) $(CFLAGS) $(OBJ) -o $@ || (echo "mycommand failed $$?"; exit 1)
+	@echo "$(CXX) $(CXXFLAGS) $(OBJ) -o $@"
+	@$(CXX) $(CXXFLAGS) $(OBJ) -o $@ || (echo "mycommand failed $$?"; exit 1)
 	@echo "====="
 	@cat license.txt
 	@echo "====="
@@ -38,9 +38,9 @@ bin/neurofield: $(OBJ)
 # Build object code and also create obj/*.d header dependencies
 obj/%.o: src/%.cpp
 	@mkdir -p obj
-	@$(CC) $(CFLAGS) -c $< -o $@
-	@$(CC) -MM $(CFLAGS) $< > obj/$*.d
-	@echo "CC $<"
+	@$(CXX) $(CXXFLAGS) -c $< -o $@
+	@$(CXX) -MM $(CXXFLAGS) $< > obj/$*.d
+	@echo "CXX $<"
 	@mv -f obj/$*.d obj/$*.d.tmp
 	@sed -e 's|.*:|$@:|' < obj/$*.d.tmp > obj/$*.d
 	@sed -e 's/.*://' -e 's/\\$$//' < obj/$*.d.tmp | fmt -1 | \
