@@ -1,6 +1,6 @@
 /**
  * @file wave.cpp
- * The wave propagator, including the method to step forward in time
+ * @brief The wave propagator, including the method to step forward in time
  *
  * @author Peter Drysdale, Felix Fung, Romesh Abeysuriya, Paula Sanz-Leon
  * 
@@ -46,11 +46,10 @@ void Wave::init( Configf& configf )
   dfact = dt2on12*gamma*gamma;
   dt2ondx2 = deltat*deltat/deltax/deltax;
   p2 = dt2ondx2*range*range*gamma*gamma;
-  tenminus3p2 = 10.-3.*p2;
-  twominus3p2 = 2.-3.*p2;
-  expfact1 = exp(-deltat*gamma);
-  // http://en.cppreference.com/w/cpp/numeric/math/exp2
-  expfact2 = exp(-2.*deltat*gamma);
+  tenminus3p2 = 10.0-3.*p2;
+  twominus3p2 =  2.0-3.*p2;
+  expfact1 = exp(-1.0*deltat*gamma);
+  expfact2 = exp(-2.0*deltat*gamma);
 
   if(gamma/2.0 < deltat || range/2.0 < deltax){
     cerr << "Wave equation with gamma: " << gamma << " and range: " << range << endl;
@@ -94,10 +93,10 @@ void Wave::step(void)
   Stencil& stencilQ = *oldQ[key]; Stencil& stencil_oldQ = *oldQ[!key];
   for( int i=0; i<nodes; i++,
           stencilp++, stencilQ++, stencil_oldp++, stencil_oldQ++ ) {
-    sump     = stencilp(n)  +stencilp(s)  +stencilp(w)  +stencilp(e) ;
-    diagsump = stencilp(nw) +stencilp(ne) +stencilp(sw) +stencilp(se);
-    sumQ     = stencilQ(n)  +stencilQ(s)  +stencilQ(w)  +stencilQ(e) ;
-    diagsumQ = stencilQ(nw) +stencilQ(ne) +stencilQ(sw) +stencilQ(se);
+    sump     = stencilp(n)  +stencilp(s)  +stencilp(w)  +stencilp(e) ; // sum of the von Neumann (orthogonal) neighbourhood (phi) 
+    diagsump = stencilp(nw) +stencilp(ne) +stencilp(sw) +stencilp(se); // sum of the diagonal neighbourhood (phi) 
+    sumQ     = stencilQ(n)  +stencilQ(s)  +stencilQ(w)  +stencilQ(e) ; // sum of the von Neumann (orthogonal) neighbourhood (Q) 
+    diagsumQ = stencilQ(nw) +stencilQ(ne) +stencilQ(sw) +stencilQ(se); // sum of the diagonal neighbourhood (Q) 
     drive    = dfact*( tenminus3p2*exp1* stencilQ +prepop.Q(tau)[i]
                  +exp2* stencil_oldQ +exp1*.5*p2*(sumQ+.5*diagsumQ) );
     p[i]     = twominus3p2*exp1 *stencilp +exp1*.5*p2*(sump+.5*diagsump)
