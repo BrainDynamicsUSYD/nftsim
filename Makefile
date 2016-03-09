@@ -1,19 +1,19 @@
-# Standard Linux, performance
-CC = g++
-CFLAGS = -g -lm -Wall -O3 -Wextra -pedantic -std=c++11 -msse -msse2 -msse3 -mfpmath=sse -march=native -mtune=native -funroll-loops -flto #-m64
+# Standard Linux (gcc must be > 4.9) performance
+CXX = g++
+CXXFLAGS = -g -lm -Wall -O3 -Wextra -pedantic -std=c++11 -msse -msse2 -msse3 -mfpmath=sse -march=native -mtune=native -funroll-loops -flto #-m64
 
 # Mac OS
-# CC = g++-4.9
-# CFLAGS = -lm -Wall -O3 -std=c++11 
+# CXX = g++-4.9
+# CXXFLAGS = -lm -Wall -O3 -std=c++11 
 
 
 # Windows
-# CC = x86_64-w64-mingw32-g++
-# CFLAGS = -lm -Wall -O3 -msse -msse2 -msse3 -mfpmath=sse -funroll-loops -flto -m64 -std=gnu++11 -static -static-libgcc -static-libstdc++
+# CXX = x86_64-w64-mingw32-g++
+# CXXFLAGS = -lm -Wall -O3 -msse -msse2 -msse3 -mfpmath=sse -funroll-loops -flto -m64 -std=gnu++11 -static -static-libgcc -static-libstdc++
 
 # Debugging
-# CC = g++
-# CFLAGS = g++ -g -lm -Wall -Wextra -pedantic -std=c++11 -msse -msse2 -msse3
+# CXX = g++
+# CXXFLAGS = g++ -g -lm -Wall -Wextra -pedantic -std=c++11 -msse -msse2 -msse3
 
 
 HEADER = $(wildcard src/*.h)
@@ -23,10 +23,14 @@ OBJ = $(addprefix obj/,$(notdir $(CPP:.cpp=.o)))
 # target: default - compile bin/neurofield 
 default: bin/neurofield
 
+debugmode: CXXFLAGS = -g -ggdb3 -lm -Wall -Wextra -pedantic -std=c++11 -msse -msse2 -msse3
+
+debugmode: bin/neurofield
+
 bin/neurofield: $(OBJ)
 	@mkdir -p bin
-	@echo "$(CC) $(CFLAGS) $(OBJ) -o $@"
-	@$(CC) $(CFLAGS) $(OBJ) -o $@ || (echo "mycommand failed $$?"; exit 1)
+	@echo "$(CXX) $(CXXFLAGS) $(OBJ) -o $@"
+	@$(CXX) $(CXXFLAGS) $(OBJ) -o $@ || (echo "mycommand failed $$?"; exit 1)
 	@echo "====="
 	@cat license.txt
 	@echo "====="
@@ -38,9 +42,9 @@ bin/neurofield: $(OBJ)
 # Build object code and also create obj/*.d header dependencies
 obj/%.o: src/%.cpp
 	@mkdir -p obj
-	@$(CC) $(CFLAGS) -c $< -o $@
-	@$(CC) -MM $(CFLAGS) $< > obj/$*.d
-	@echo "CC $<"
+	@$(CXX) $(CXXFLAGS) -c $< -o $@
+	@$(CXX) -MM $(CXXFLAGS) $< > obj/$*.d
+	@echo "CXX $<"
 	@mv -f obj/$*.d obj/$*.d.tmp
 	@sed -e 's|.*:|$@:|' < obj/$*.d.tmp > obj/$*.d
 	@sed -e 's/.*://' -e 's/\\$$//' < obj/$*.d.tmp | fmt -1 | \

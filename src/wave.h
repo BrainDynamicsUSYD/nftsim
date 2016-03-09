@@ -1,3 +1,19 @@
+/**
+ * @file wave.h
+ * @brief Wave propagator definition
+ *
+ * The wave propagator definition, inlcuding parameters from the wave equation 
+ * and coefficients related to the nine-point stencil implementation. 
+ * 
+ *
+ * @author Peter Drysdale, Felix Fung, Romesh Abeysuriya, Paula Sanz-Leon
+ * 
+ */
+  
+/**
+   Reads from the configuration file
+
+*/
 #ifndef WAVE_H
 #define WAVE_H
 
@@ -18,23 +34,23 @@ protected:
   int key;
 
   // variables that's initialized once only
-  double deltax; // spatial length of a node
-  double range;  // characteristic damping length
-  double gamma;  // damping coefficient
+  double deltax; // Grid spacing in space - spatial resolution
+  double range;  // Characteristic axonal range
+  double gamma;  // Damping coefficient
   double dt2on12;
   double dfact;
-  double dt2ondx2;
-  double p2;
-  double tenminus3p2;
-  double twominus3p2;
-  double exp1;
-  double exp2;
+  double dt2ondx2;    // Factor in wave equation equal to ((gamma deltat)^2)/12.
+  double p2;          // Fquare of the mesh ratio
+  double tenminus3p2; // Factor in wave algorithm
+  double twominus3p2; // Factor in wave algorithm
+  double expfact1;    // Factor of Exp(- gamma deltat) - scale factor applied to each step due to damping
+  double expfact2;    // Factor of Exp(- 2 gamma deltat)
 
-  // variables that's changed every timestep
-  double sump;
-  double diagsump;
-  double sumQ;
-  double diagsumQ;
+  // variables that are changed every timestep
+  double sump;     // sum of the points in the von Neumann neighbourhood (phi)
+  double diagsump; // sum of the points in the diagonal neighbourhood (phi)
+  double sumQ;     // sum of the points in the von Neumann neighbourhood (Q)
+  double diagsumQ; // sum of the points in the von Neumann neighbourhood (Q)
   double drive;
 public: 
   Wave( int nodes, double deltat, int index, Population& prepop,
