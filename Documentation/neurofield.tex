@@ -473,7 +473,7 @@ Harmonic - phi: Steady Tau: 0 gamma: 116
 \item \begin{lstlisting}
 Couple 1:
 \end{lstlisting}
-\item This syntax serves the purpose of an identifier for cross-checking. The following types of coupling are available:  \type{Map},  \type{Matrix},\type{Ramp}, \type{CaDP}, and \type{BCM}. 
+\item This syntax serves the purpose of an identifier for cross-checking. The following types of coupling are available:  \type{Map},  \type{Matrix},\type{Ramp}, \type{CaDP}, \type{BCM}, and \type{Atan}. 
 \begin{description}
 
 \item[Map]\ \\
@@ -543,6 +543,13 @@ Glutamate dynamics - Lambda: 150e-6 tGlu: 30e-3
 	Extends \type{CaDP} with metaplasticity according to Fung and Robinson. it has an additional parameter \type{t\_BCM}, the timescale of metaplasticity.
 	\begin{lstlisting}
 CaDP - nu: 13e-6 nu_max: 80e-6 Dth: .25e-6 Pth: .45e-6 xyth: 1e-4 x: 2.3e-2 y: 2e-2 B: 30e3 glu_0: 200e-6 gNMDA: 2e-3 t_BCM: 7
+	\end{lstlisting}
+
+		\item[Atan]\ \\
+	Coupling becomes a function of time. It gradually increase from a equilibrium stable value of \texttt{nu}, which is \texttt{nu0} until to a maximum value, \texttt{nu_max}, then again return to \texttt{nu0}. The time point when it reaches to the half of the total range and the time point when it comes down half way from the maximum range are specified by \texttt{t1} and \texttt{t2} respectively. The width of the increment as well decrements are specified by \texttt{delt}. It is suggested to keep a good distance from the starting of the simulation with \texttt{t1}. Because, if the ramping is chosen to start at very beginning without coming the simulation into a stable state, computational instability could occur.
+
+	\begin{lstlisting}
+Atan - nu0: 0.001 nu_max:0.0065 delt: 100 t1: 500 t2: 1000
 	\end{lstlisting}
 
 \end{description}
