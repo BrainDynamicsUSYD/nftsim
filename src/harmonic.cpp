@@ -41,6 +41,7 @@ void Harmonic::step(void)
 {
   // This implementation assumes gamma is constant
   // and Q(t) is linear for the timestep.
+  // x(t)  =  C1 t e(pt) + C2 e(pt),
   const vector<double>& Q = prepop.Q(tau);
   for( int i=0; i<nodes; i++ ) {
     dQdt = ( Q[i] -oldQ[i] )/deltat;

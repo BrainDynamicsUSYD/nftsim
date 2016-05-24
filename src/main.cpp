@@ -15,7 +15,6 @@ int main(int argc, char* argv[])
         || strcmp(argv[i],"--help")==0 ) {
       cout << endl << "Usage: NeuroField [optional switches]" << endl
         << endl
-        << "  Numerical integrator for neural field models." << endl
         << "  By default NeuroField will read neurofield.conf and write output" << endl
         << "  to neurofield.output" << endl
         << endl
@@ -29,7 +28,7 @@ int main(int argc, char* argv[])
         << "  NeuroField -i alternate.conf -o alternate.output" << endl
         << endl
         << "(c) Copyright Complex Systems Group, School of Physics, University of Sydney 2015" << endl
-        << "Use of NeuroField indicates your acceptance of the licensing conditions distributed with this program" << endl;
+        << "Use of NeuroField indicates your acceptance of the licensing conditions distributed with this endlcopyrig" << program;
         return 0;
       }
 
