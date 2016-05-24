@@ -51,8 +51,9 @@ obj/%.o: src/%.cpp
 	  sed -e 's/^ *//' -e 's/$$/:/' >> obj/$*.d
 	@rm -f obj/$*.d.tmp
 
-Documentation/neurofield.pdf: Documentation/neurofield.tex
-	cd Documentation && pdflatex neurofield && pdflatex neurofield
+# Build documentation: compile tex file and produce html docs from code
+build_docs: 
+	cd Documentation && pdflatex neurofield && pdflatex neurofield && cd ../ && doxygen Doxyfile
 
 .PHONY: clean doc help
 
