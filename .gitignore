@@ -2,6 +2,9 @@
 bin/
 obj/
 
+# Ignore files associated with doxygen docs
+Documentation/html/
+Documentation/latex/
 
 # Ignore NeuroField output files
 *.output
