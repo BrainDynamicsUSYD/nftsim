@@ -28,7 +28,7 @@ int main(int argc, char* argv[])
         << "  NeuroField -i alternate.conf -o alternate.output" << endl
         << endl
         << "(c) Copyright Complex Systems Group, School of Physics, University of Sydney 2015" << endl
-        << "Use of NeuroField indicates your acceptance of the licensing conditions distributed with this endlcopyrig" << program;
+        << "Use of NeuroField indicates your acceptance of the licensing conditions distributed with this end" << endl;
         return 0;
       }
 
