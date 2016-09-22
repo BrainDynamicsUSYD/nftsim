@@ -3,160 +3,170 @@
 using std::cerr;
 using std::endl;
 
-void Timeseries::init( Configf& configf )
-{
-  int superimpose = 1; configf.optional("Superimpose",superimpose);
+void Timeseries::init( Configf& configf ) {
+  int superimpose = 1;
+  configf.optional("Superimpose",superimpose);
   for( int i=0; i<superimpose; i++ ) {
-    if( superimpose>1 )
+    if( superimpose>1 ) {
       configf.next("Stimulus");
+    }
     vector<string> mode = configf.arb("-");
 
-    configf.optional("Onset",t); t = -t;
-    if( !configf.optional("Duration",cease) )
-      if( configf.optional("Cease",cease) )
+    configf.optional("Onset",t);
+    t = -t;
+    if( !configf.optional("Duration",cease) ) {
+      if( configf.optional("Cease",cease) ) {
         cease += t;
+      }
+    }
 
     vector<double> temp_node;
-    if( configf.next("Node") )
+    if( configf.next("Node") ) {
       temp_node = configf.numbers();
-    if( temp_node.empty() )
-      for( int j=1; j<=nodes; j++ )
+    }
+    if( temp_node.empty() ) {
+      for( int j=1; j<=nodes; j++ ) {
         temp_node.push_back(j);
-    for( size_t j=0; j<temp_node.size(); j++ )
-      if( temp_node[j] > nodes ) {
-        cerr<<"Trying to plot node number "<<temp_node[j]
+      }
+    }
+    for(double j : temp_node) {
+      if( j > nodes ) {
+        cerr<<"Trying to plot node number "<<j
             <<", which is bigger than the highest node index."<<endl;
         exit(EXIT_FAILURE);
       }
-      //else
-        //node.push_back( temp_node[j]-1 );
+    }
+    //else
+    //node.push_back( temp_node[j]-1 );
 
     // PUT YOUR TIMEFUNCTION HERE
-    if( mode[0]=="Const" )
+    if( mode[0]=="Const" ) {
       series.push_back( new TIMESERIES::Const(nodes,deltat,index) );
-    else if( mode[0]=="Pulse" )
+    } else if( mode[0]=="Pulse" ) {
       series.push_back( new TIMESERIES::Pulse(nodes,deltat,index) );
-    else if( mode[0]=="White" )
+    } else if( mode[0]=="White" ) {
       series.push_back( new TIMESERIES::White(nodes,deltat,index) );
-    else if( mode[0]=="WhiteCoherent" )
+    } else if( mode[0]=="WhiteCoherent" ) {
       series.push_back( new TIMESERIES::WhiteCoherent(nodes,deltat,index) );
-    else if( mode[0]=="PAS" )
+    } else if( mode[0]=="PAS" ) {
       series.push_back( new TIMESERIES::PAS(nodes,deltat,index) );
-    else if( mode[0]=="Burst" )
+    } else if( mode[0]=="Burst" ) {
       series.push_back( new TIMESERIES::Burst(nodes,deltat,index) );
-    else if( mode[0]=="Sine" )
+    } else if( mode[0]=="Sine" ) {
       series.push_back( new TIMESERIES::Sine(nodes,deltat,index) );
-	else {
+    } else {
       cerr<<"Stimulus mode "<<mode[0].c_str()<<" not found"<<endl;
       exit(EXIT_FAILURE);
     }
     // END PUT YOUR TIMEFUNCTION HERE
-    series[i]->t = t; series[i]->cease = cease;
-    for( size_t j=0; j<temp_node.size(); j++ )
-      series[i]->node.push_back( temp_node[j]-1 );
+    series[i]->t = t;
+    series[i]->cease = cease;
+    for(double j : temp_node) {
+      series[i]->node.push_back( j-1 );
+    }
     series[i]->init(configf);
   }
 
 }
 
 Timeseries::Timeseries( int nodes, double deltat, int index )
-    : NF(nodes,deltat,index), series(), t(0), cease(1000)
-{
+  : NF(nodes,deltat,index), series(), t(0), cease(1000) {
 }
 
-Timeseries::~Timeseries(void)
-{
-  for( size_t i=0; i<series.size(); i++ )
-    delete series[i];
+Timeseries::~Timeseries() {
+  for(auto & serie : series) {
+    delete serie;
+  }
 }
 
-void Timeseries::fire( vector<double>& Q ) const
-{
+void Timeseries::fire( vector<double>& Q ) const {
   vector<double> temp(nodes,0);
-  Q.clear(); Q.resize(nodes,0);
-  for( size_t i=0; i<series.size(); i++ ) // for each timeseries
+  Q.clear();
+  Q.resize(nodes,0);
+  for(auto serie : series) { // for each timeseries
     // if the timeseries is active
-    if( series[i]->t>=0 && series[i]->t<series[i]->cease ) {
-      series[i]->fire(temp);
+    if( serie->t>=0 && serie->t<serie->cease ) {
+      serie->fire(temp);
       // then copy the temporary firing to the final firing
-      for( size_t j=0; j<series[i]->node.size(); j++ )
-        Q[series[i]->node[j]] += temp[series[i]->node[j]];
+      for(double j : serie->node) {
+        Q[j] += temp[j];
+      }
     }
+  }
 }
 
-void Timeseries::step(void)
-{
-  for( size_t i=0; i<series.size(); i++ )
-    series[i]->t += deltat;
+void Timeseries::step() {
+  for(auto & serie : series) {
+    serie->t += deltat;
+  }
 }
 
-namespace TIMESERIES
-{
+namespace TIMESERIES {
 
-void Const::init( Configf& configf )
-{
+void Const::init( Configf& configf ) {
   // Mean: 0
   configf.param("Mean",mean);
 }
 
-void Const::fire( vector<double>& Q ) const
-{
-  for( int i=0; i<nodes; i++ )
+void Const::fire( vector<double>& Q ) const {
+  for( int i=0; i<nodes; i++ ) {
     Q[i] = mean;
+  }
 }
 
-void Pulse::init( Configf& configf )
-{
-  period = 1000; pulses = 1;
+void Pulse::init( Configf& configf ) {
+  period = 1000;
+  pulses = 1;
   // Amplitude: 1 Width: .5e-3 "Period/Frequency": 1 "Pulses": 1
   configf.param("Amplitude",amp);
   configf.param("Width",width);
-  if( !configf.optional("Period",period) )
-    if( configf.optional("Frequency",period) )
+  if( !configf.optional("Period",period) ) {
+    if( configf.optional("Frequency",period) ) {
       period = 1/period;
+    }
+  }
   configf.optional("Pulses",pulses);
 }
 
-void Pulse::fire( vector<double>& Q ) const
-{
-  if( fmod(t,period)>=0 && fmod(t,period)<width && t/period<pulses )
-    for( int i=0; i<nodes; i++ )
+void Pulse::fire( vector<double>& Q ) const {
+  if( fmod(t,period)>=0 && fmod(t,period)<width && t/period<pulses ) {
+    for( int i=0; i<nodes; i++ ) {
       Q[i] = amp;
+    }
+  }
 }
 
-void White::init( Configf& configf )
-{
+void White::init( Configf& configf ) {
   // Mean: 1 Std: 1 Ranseed: 1
   // Mean: 1 Psd: 1 Ranseed: 1
   configf.param("Mean",mean);
   if( !configf.optional("Std",amp) ) {
     configf.param("Psd",amp);
     // index of timeseries the same as that of population
-    
-    if(nodes>1){
+
+    if(nodes>1) {
       deltax = atof(configf.find(
-          label("Population ",index+1)+"*Length").c_str()) /sqrt(nodes);
+                      label("Population ",index+1)+"*Length").c_str()) /sqrt(nodes);
       amp = sqrt(4*pow(M_PI,3)*pow(amp,2)/deltat/pow(deltax,2));
-    }
-    else{
+    } else {
       amp = sqrt(M_PI*pow(amp,2)/deltat);
     }
 
   }
-  if(configf.optional("Ranseed",seed))
+  if(configf.optional("Ranseed",seed)) {
     random = new Random(seed,mean,amp);
-  else
+  } else {
     random = new Random(mean,amp);
+  }
 }
 
-void White::fire( vector<double>& Q ) const
-{
-  for(double& x : Q)
+void White::fire( vector<double>& Q ) const {
+  for(double& x : Q) {
     random->get(x);
+  }
 }
 
-void WhiteCoherent::init( Configf& configf )
-{
+void WhiteCoherent::init( Configf& configf ) {
   // Mean: 1 Std: 1 Ranseed: 1
   // Mean: 1 Psd: 1 Ranseed: 1
   configf.param("Mean",mean);
@@ -164,25 +174,25 @@ void WhiteCoherent::init( Configf& configf )
     configf.param("Psd",amp);
     // index of timeseries the same as that of population
     double deltax = atof(configf.find(
-        label("Population ",index+1)+"*Length").c_str()) /sqrt(nodes);
+                           label("Population ",index+1)+"*Length").c_str()) /sqrt(nodes);
     amp = sqrt(4*pow(M_PI,3)*pow(amp,2)/deltat/pow(deltax,2));
   }
-  if(configf.optional("Ranseed",seed))
+  if(configf.optional("Ranseed",seed)) {
     random = new Random(seed,mean,amp);
-  else
+  } else {
     random = new Random(mean,amp);
+  }
 }
 
-void WhiteCoherent::fire( vector<double>& Q ) const
-{
+void WhiteCoherent::fire( vector<double>& Q ) const {
   double v;
   random->get(v);
-  for( double& x : Q)
+  for( double& x : Q) {
     x = v;
+  }
 }
 
-void PAS::init( Configf& configf )
-{
+void PAS::init( Configf& configf ) {
   // ISI: 10e-3
   // N20 width: 2.5e-3 N20 height: 5
   // P25 width: 3.5e-3 P25 height: 5
@@ -197,30 +207,32 @@ void PAS::init( Configf& configf )
   if( isi<0 ) {
     t -= isi;
     t_mns = -isi;
-  }
-  else {
+  } else {
     t_mns = 0;
   }
 }
 
-void PAS::fire( vector<double>& Q ) const
-{
+void PAS::fire( vector<double>& Q ) const {
   // MNS
-  if( t_mns<=t && t<t_mns+n20w )
-    for( int i=0; i<nodes; i++ )
+  if( t_mns<=t && t<t_mns+n20w ) {
+    for( int i=0; i<nodes; i++ ) {
       Q[i] = -n20h*sin(3.14159*(t-t_mns)/n20w);
-  else if( t_mns+n20w<=t && t<t_mns+n20w+p25w )
-    for( int i=0; i<nodes; i++ )
+    }
+  } else if( t_mns+n20w<=t && t<t_mns+n20w+p25w ) {
+    for( int i=0; i<nodes; i++ ) {
       Q[i] =  p25h*sin(3.14159*(t-t_mns-n20w)/p25w);
+    }
+  }
 
   // TMS
-  if( t_mns+n20w/2+isi<=t && t<t_mns+n20w/2+isi+tmsw )
-    for( int i=0; i<nodes; i++ )
+  if( t_mns+n20w/2+isi<=t && t<t_mns+n20w/2+isi+tmsw ) {
+    for( int i=0; i<nodes; i++ ) {
       Q[i] += tmsh;
+    }
+  }
 }
 
-void Burst::init( Configf& configf )
-{
+void Burst::init( Configf& configf ) {
   // Amplitude: 10 Width: .5e-3 Bursts: 3 Burst Frequency: 50 On: 2 Off: 8 Total Pulses: 1000
   configf.param("Amplitude",amp);
   configf.param("Width",width);
@@ -231,30 +243,34 @@ void Burst::init( Configf& configf )
   configf.param("Off",off);
 }
 
-void Burst::fire( vector<double>& Q ) const
-{
+void Burst::fire( vector<double>& Q ) const {
   if( fmod(t,on+off)>=0 && fmod(t,on+off)<on &&
       fmod(t,1/oscillation_freq)>=0 && fmod(t,1/oscillation_freq)<bursts/freq &&
-      fmod(t,1/freq)>=0 && fmod(t,1/freq)<width )
-    for( int i=0; i<nodes; i++ )
+      fmod(t,1/freq)>=0 && fmod(t,1/freq)<width ) {
+    for( int i=0; i<nodes; i++ ) {
       Q[i] = amp;
+    }
+  }
 }
 
-void Sine::init( Configf& configf )
-{
+void Sine::init( Configf& configf ) {
   // Amp: 1 Width: .5 Period: 1 Phase: 0
   configf.param("Amp",amp);
   configf.param("Width",width);
-  period = 1; configf.optional("Period",period);
-  phase  = 0; configf.optional("Phase",phase);
-  pulses = 1; configf.optional("Pulses",pulses);
+  period = 1;
+  configf.optional("Period",period);
+  phase  = 0;
+  configf.optional("Phase",phase);
+  pulses = 1;
+  configf.optional("Pulses",pulses);
 }
 
-void Sine::fire( vector<double>& Q ) const
-{
-  if( fmod(t,period)>=0 && fmod(t,period)<width && t/period<pulses )
-    for( int i=0; i<nodes; i++ )
+void Sine::fire( vector<double>& Q ) const {
+  if( fmod(t,period)>=0 && fmod(t,period)<width && t/period<pulses ) {
+    for( int i=0; i<nodes; i++ ) {
       Q[i] = amp*sin( 2*3.14159*( fmod(t,period)/width -phase/360 ) );
+    }
+  }
 }
 
-} // this bracket closes namespace TIMESERIES, do not touch
+} // namespace TIMESERIES
