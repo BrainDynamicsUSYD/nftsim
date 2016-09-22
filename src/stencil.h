@@ -1,5 +1,5 @@
-#ifndef STENCIL_H
-#define STENCIL_H
+#ifndef NEUROFIELD_SRC_STENCIL_H
+#define NEUROFIELD_SRC_STENCIL_H
 
 #include<cstdlib>
 #include<string>
@@ -9,16 +9,15 @@ using std::vector;
 
 enum Moore {
   nw=-4, n, ne,
-   w,    c,  e,
+  w,    c,  e,
   sw,    s, se
 };
 
-class Stencil
-{
+class Stencil {
   Stencil();
   Stencil& operator=(const Stencil&);
   Stencil(const Stencil&);
-protected:
+ protected:
   int nodes;
   int longside;
   int shortside;
@@ -26,7 +25,7 @@ protected:
   double* m;
 
   mutable int ptr;
-public:
+ public:
   Stencil( int nodes, int longside, const string& boundary );
   virtual ~Stencil(void);
 
@@ -46,13 +45,14 @@ public:
 };
 
 
-void Stencil::operator++ (int) const
-{
+void Stencil::operator++ (int) const {
   ptr++;
-  if( ( ptr%(longside+2)==longside+1 ) ) // Move stencil from far side to near side
+  if( ( ptr%(longside+2)==longside+1 ) ) { // Move stencil from far side to near side
     ptr += 2;
-  if( ptr == (longside+1)*(shortside+2)+1 ) // Move stencil from very end of the array to the
+  }
+  if( ptr == (longside+1)*(shortside+2)+1 ) { // Move stencil from very end of the array to the
     set(0);
+  }
 }
 
 #endif
