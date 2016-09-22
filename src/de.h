@@ -33,19 +33,19 @@ public:
   virtual ~DE(void){}
 
   virtual vector<double>& operator[] ( int index )
-    { 
+		{ 
 		return variables[index]; 
-	}
+		}
   virtual const vector<double>& operator[] ( int index ) const
-    {
+		{
 		return variables[index]; 
-	}
+		}
   // define dydt here
   virtual void rhs( const vector<double>& y, vector<double>& dydt ) = 0;
 };
 
 class Integrator
-{
+	{
 	  Integrator(void);
 	  Integrator(Integrator&);
 	  void operator=(Integrator&);
@@ -55,7 +55,7 @@ class Integrator
 	  Integrator( DE& de ) : de(de) {}
 	  virtual ~Integrator(void) {}
 	  virtual void step(void) = 0;
-};
+	};
 
 class Euler : public Integrator
 {
