@@ -1,16 +1,14 @@
-#ifndef CADP_H
-#define CADP_H
+#ifndef NEUROFIELD_SRC_CADP_H
+#define NEUROFIELD_SRC_CADP_H
 
 #include"couple.h"
 
-class CaDP : public Couple
-{
+class CaDP : public Couple {
   CaDP();
   CaDP(CaDP&);
-protected:
+ protected:
   double nu_init;
-  struct CaDE : public DE
-  {
+  struct CaDE : public DE {
     double nu_init;
     //double alpha; // for fCaDE
     //double alpha_beta; // for fCaDE, == alpha -beta
@@ -36,9 +34,9 @@ protected:
 
     virtual void init( Configf& configf );
     CaDE( int nodes, double deltat ) : DE(nodes,deltat,8) {}
-    virtual ~CaDE(void) {}
+    ~CaDE(void) override = default;
 
-    virtual void rhs( const vector<double>& y, vector<double>& dydt );
+    void rhs( const vector<double>& y, vector<double>& dydt ) override;
     double sig( double x, double beta ) const;
     virtual double _x( double Ca ) const; // potentiation rate
     virtual double _y( double Ca ) const; // depression rate
@@ -47,13 +45,13 @@ protected:
   };
   CaDE* de;
   RK4* rk4;
-  virtual void init( Configf& configf );
-public: 
+  void init( Configf& configf ) override;
+ public:
   CaDP( int nodes, double deltat, int index,
-          const Propag& prepropag, const Population& postpop );
-  virtual ~CaDP(void);
-  virtual void step(void);
-  virtual void output( Output& output ) const;
+        const Propag& prepropag, const Population& postpop );
+  ~CaDP(void) override;
+  void step(void) override;
+  void output( Output& output ) const override;
 };
 
 #endif
