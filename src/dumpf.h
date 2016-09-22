@@ -1,5 +1,5 @@
-#ifndef DUMPF_H
-#define DUMPF_H
+#ifndef NEUROFIELD_SRC_DUMPF_H
+#define NEUROFIELD_SRC_DUMPF_H
 
 #include<iostream>
 using std::istream;
@@ -15,15 +15,14 @@ using std::string;
 
 #include"configf.h"
 
-class Dumpf
-{
+class Dumpf {
   Dumpf(Dumpf&);
   Dumpf& operator=(Dumpf&);
 
   ofstream file;  // stream to a file, if outputting to file
   ostream* s;     // pointer to output, maybe to file, or to cout
   string filename;
-public:
+ public:
   Dumpf(void);
   ~Dumpf(void);
   void outputConfig( Configf& configf );
