@@ -1,8 +1,7 @@
 #include"dendrite.h"
 using std::endl;
 
-void Dendrite::init( Configf& configf )
-{
+void Dendrite::init( Configf& configf ) {
   if( !configf.next( label("Dendrite ",index+1) )) {
     std::cerr<<"Dendrite "<<index+1<<" not found."<<endl;
     exit(EXIT_FAILURE);
@@ -10,11 +9,12 @@ void Dendrite::init( Configf& configf )
   string buffer("Steady");
   configf.optional("V",buffer);
   if( buffer == "Steady" ) {
-    for( int i=0; i<nodes; i++ )
+    for( int i=0; i<nodes; i++ ) {
       v[i] = precouple.nuinit(configf)*prepropag.phiinit(configf);
-  }
-  else
+    }
+  } else {
     v.resize(nodes,atof(buffer.c_str()));
+  }
   oldnp = v;
   configf.param("alpha",alpha);
   configf.param("beta",beta);
@@ -26,20 +26,16 @@ void Dendrite::init( Configf& configf )
 }
 
 Dendrite::Dendrite( int nodes, double deltat, int index,
-    const Propag& prepropag, const Couple& precouple )
+                    const Propag& prepropag, const Couple& precouple )
   : NF(nodes,deltat,index), v(nodes), dvdt(nodes,0), oldnp(nodes),
-    prepropag(prepropag), precouple(precouple)
-{
+    prepropag(prepropag), precouple(precouple) {
 }
 
-Dendrite::~Dendrite(void)
-{
-}
+Dendrite::~Dendrite() = default;
 
-void Dendrite::step(void)
-{
+void Dendrite::step() {
   // assume that alpha, beta are constant and nu*phi is linear for the time step
-  if(alpha!=beta)
+  if(alpha!=beta) {
     for(int i=0; i<nodes; i++) {
       dpdt = ( precouple[i] -oldnp[i] )/deltat;
       adjustednp = oldnp[i] -factorab*dpdt -v[i];
@@ -50,7 +46,7 @@ void Dendrite::step(void)
       dvdt[i] = C1expa*(-alpha) +C2expb*(-beta)+dpdt;
       oldnp[i]=precouple[i]; //Save current pulse density for next step
     }
-  else // alpha==beta
+  } else { // alpha==beta
     for(int i=0; i<nodes; i++) {
       dpdt = ( precouple[i] -oldnp[i] )/deltat;
       adjustednp = oldnp[i] -factorab*dpdt -v[i];
@@ -60,11 +56,10 @@ void Dendrite::step(void)
       dvdt[i] = (C1-alpha*C1dtplusC2)*expa +dpdt;
       oldnp[i]=precouple[i]; //Save current pulse density for next step
     }
+  }
 }
 
 
-
-void Dendrite::output( Output& output ) const
-{
+void Dendrite::output( Output& output ) const {
   output("Dendrite",index+1,"V",v);
 }
