@@ -1,3 +1,11 @@
+/** @file dendriteramp.cpp
+  @brief A brief, one sentence description.
+
+  A more detailed multiline description...
+
+  @author Peter Drysdale, 
+*/
+
 #include<cstdlib>
 #include<cmath>
 #include"dendriteramp.h"

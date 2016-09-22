@@ -1,3 +1,11 @@
+/** @file longcouple.cpp
+  @brief A brief, one sentence description.
+
+  A more detailed multiline description...
+
+  @author Peter Drysdale, 
+*/
+
 #include"longcouple.h"
 using std::cerr;
 using std::endl;

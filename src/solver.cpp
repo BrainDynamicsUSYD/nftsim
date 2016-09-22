@@ -1,3 +1,11 @@
+/** @file solver.cpp
+  @brief A brief, one sentence description.
+
+  A more detailed multiline description...
+
+  @author Peter Drysdale, 
+*/
+
 #include"solver.h"
 #include"wave.h"
 #include"harmonic.h"

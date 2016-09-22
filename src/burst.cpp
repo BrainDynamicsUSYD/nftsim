@@ -1,3 +1,11 @@
+/** @file burst.cpp
+  @brief A brief, one sentence description.
+
+  A more detailed multiline description...
+
+  @author Peter Drysdale, 
+*/
+
 #include"burst.h"
 
 void BurstResponse::init( Configf& configf ) {

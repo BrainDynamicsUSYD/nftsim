@@ -1,3 +1,11 @@
+/** @file random.cpp
+  @brief A brief, one sentence description.
+
+  A more detailed multiline description...
+
+  @author Peter Drysdale, 
+*/
+
 #include "random.h"
 
 int Random::id = 0;

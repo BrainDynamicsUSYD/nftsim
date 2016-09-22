@@ -9,8 +9,8 @@
 
 /**
    Reads from the configuration file
-   + param[in]     nus, timepoints: vector with the values of nus at specific time points specified in vector timepoints.
-   + param[in]     pairs   : total number of pairs of (nu, time) to define the segments
+   + @param[in]     nus, timepoints: vector with the values of nus at specific time points specified in vector timepoints.
+   + @param[in]     pairs   : total number of pairs of (nu, time) to define the segments
 */
 #include<iostream>
 using std::cerr;

@@ -1,3 +1,11 @@
+/** @file nf.cpp
+  @brief A brief, one sentence description.
+
+  A more detailed multiline description...
+
+  @author Peter Drysdale, 
+*/
+
 #include"nf.h"
 
 Configf& operator>> ( Configf& configf, NF& nf ) {

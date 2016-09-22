@@ -1,3 +1,11 @@
+/** @file stencil.cpp
+  @brief A brief, one sentence description.
+
+  A more detailed multiline description...
+
+  @author Peter Drysdale, 
+*/
+
 #include<iostream>
 using std::cerr;
 using std::endl;
@@ -132,7 +140,6 @@ const vector<double>& Stencil::operator= ( const vector<double>& field ) {
   set(0);
   return field;
 }
-
 
 
 void Stencil::set( int node ) const {

@@ -1,3 +1,11 @@
+/** @file dendrite.cpp
+  @brief A brief, one sentence description.
+
+  A more detailed multiline description...
+
+  @author Peter Drysdale, 
+*/
+
 #include"dendrite.h"
 using std::endl;
 

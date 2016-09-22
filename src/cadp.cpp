@@ -1,3 +1,11 @@
+/** @file cadp.cpp
+  @brief A brief, one sentence description.
+
+  A more detailed multiline description...
+
+  @author Peter Drysdale, 
+*/
+
 #include<cmath>
 #include"cadp.h"
 
@@ -15,11 +23,11 @@ void CaDP::CaDE::rhs( const vector<double>& y, vector<double>& dydt ) {
   // nutilde
   //dydt[3] = y[4]*pow((max-y[3])/(max-13e-6),1+1./.7) -y[5]*pow(y[3]/13e-6,1+1./.7);
   //dydt[3] *= .7*13e-6;
-  dydt[3] = y[4]*(max-y[3]) -y[5]*y[3];
+  dydt[3] = y[4]*(max-y[3]) - y[5]*y[3];
   // x, y, leave alone
   dydt[4] = dydt[5] = 0;
   // dnudt, nu
-  dydt[6] = -2*z*y[6] +z*z*(y[3]-y[7]);
+  dydt[6] = -2*z*y[6] + z*z*(y[3]-y[7]);
   dydt[7] = y[6]; //dydt[3];
 }
 
@@ -28,7 +36,7 @@ double CaDP::CaDE::sig( double x, double beta ) const {
 }
 
 double CaDP::CaDE::_x(double Ca) const {
-  return xth +ltp*sig(Ca-pth,4e7);
+  return xth +ltp*sig(Ca-pth, 4e7);
 }
 
 void CaDP::CaDE::pot() {
@@ -38,7 +46,7 @@ void CaDP::CaDE::pot() {
 }
 
 double CaDP::CaDE::_y(double Ca) const {
-  return yth +ltd*sig(Ca-dth,4e7) -ltd*sig(Ca-pth,4e7);
+  return yth + ltd*sig(Ca-dth, 4e7) - ltd*sig(Ca-pth, 4e7);
 }
 
 void CaDP::CaDE::dep() {
@@ -98,7 +106,7 @@ CaDP::~CaDP() {
 void CaDP::step() {
   for( int i=0; i<nodes; i++ ) {
     (*de)[0][i] = de->sig( postpop.glu()[i] -de->glu_0, de->B );
-    (*de)[1][i] = (195e-3-postpop.V()[i])*de->sig( postpop.V()[i]-45.5e-3,62 );
+    (*de)[1][i] = (195e-3-postpop.V()[i])*de->sig( postpop.V()[i]-45.5e-3, 62);
   }
   de->pot();
   de->dep();

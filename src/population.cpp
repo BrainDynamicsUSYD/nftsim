@@ -1,3 +1,11 @@
+/** @file population.cpp
+  @brief A brief, one sentence description.
+
+  A more detailed multiline description...
+
+  @author Peter Drysdale, 
+*/
+
 #include"burst.h"
 using std::cerr;
 using std::endl;
@@ -59,7 +67,6 @@ double Population::Qinit( Configf& configf ) const {
 
   string temp = configf.find( label("Population ",index+1)+"*Mean:");
   return atof( temp.c_str() );
-
 }
 
 const vector<double>& Population::glu() const {
@@ -68,7 +75,6 @@ const vector<double>& Population::glu() const {
   }
   cerr<<"Trying to access glu of a stimulus population."<<endl;
   exit(EXIT_FAILURE);
-
 }
 
 void Population::add2Dendrite( int index,
@@ -111,7 +117,6 @@ const vector<double>& Population::V() const {
   }
   cerr<<"Trying to access V of a stimulus population."<<endl;
   exit(EXIT_FAILURE);
-
 }
 
 void Population::growHistory( const Tau& tau ) {
