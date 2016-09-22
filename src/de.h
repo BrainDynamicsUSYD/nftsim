@@ -11,12 +11,13 @@ class DE
   void operator=(DE&);
 protected:
   // if the number of field variables need to be extended, use this function
-  void extend( int extension ) {
-    n += extension;
-    variables.resize(n);
-    for( int i=0; i<n; i++ )
-      variables[i].resize(nodes,0);
-  }
+  void extend( int extension ) 
+	  {
+		n += extension;
+		variables.resize(n);
+		for( int i=0; i<n; i++ )
+		variables[i].resize(nodes,0);
+	  }
 public:
   int nodes;
   double deltat;
@@ -24,50 +25,57 @@ public:
   vector<vector<double> > variables;
 
   DE( int nodes, double deltat, int n )
-      : nodes(nodes), deltat(deltat), n(n), variables(n) {
-    for( int i=0; i<n; i++ )
+      : nodes(nodes), deltat(deltat), n(n), variables(n) 
+	  {
+	  for( int i=0; i<n; i++ )
       variables[i].resize(nodes);
-  }
-  virtual ~DE(void) {}
+	  }
+  virtual ~DE(void){}
 
   virtual vector<double>& operator[] ( int index )
-    { return variables[index]; }
+    { 
+		return variables[index]; 
+	}
   virtual const vector<double>& operator[] ( int index ) const
-    { return variables[index]; }
+    {
+		return variables[index]; 
+	}
   // define dydt here
   virtual void rhs( const vector<double>& y, vector<double>& dydt ) = 0;
 };
 
 class Integrator
 {
-  Integrator(void);
-  Integrator(Integrator&);
-  void operator=(Integrator&);
-protected:
-  DE& de;
-public:
-  Integrator( DE& de ) : de(de) {}
-  virtual ~Integrator(void) {}
-  virtual void step(void) = 0;
+	  Integrator(void);
+	  Integrator(Integrator&);
+	  void operator=(Integrator&);
+	protected:
+	  DE& de;
+	public:
+	  Integrator( DE& de ) : de(de) {}
+	  virtual ~Integrator(void) {}
+	  virtual void step(void) = 0;
 };
 
 class Euler : public Integrator
 {
-  Euler(void);
-  Euler(Euler&);
-  void operator=(Euler&);
-protected:
-  vector<double> dydt;
-public:
-  Euler( DE& de ) : Integrator(de), dydt(de.n) {}
-  virtual ~Euler(void) {}
-  virtual void step(void) {
-    for( int j=0; j<de.nodes; j++ ) {
-      de.rhs( de.variables[j], dydt );
-      for( int i=0; i<de.n; i++ )
-        de.variables[i][j] += dydt[i]*de.deltat;
-    }
-  }
+	  Euler(void);
+	  Euler(Euler&);
+	  void operator=(Euler&);
+	protected:
+	  vector<double> dydt;
+	public:
+	  Euler( DE& de ) : Integrator(de), dydt(de.n) {}
+	  virtual ~Euler(void) {}
+	  virtual void step(void) 
+	  {
+		for( int j=0; j<de.nodes; j++ ) 
+		{
+		  de.rhs( de.variables[j], dydt );
+		  for( int i=0; i<de.n; i++ )
+		  de.variables[i][j] += dydt[i]*de.deltat;
+		}
+	  }
 };
 
 class RK4 : public Integrator
@@ -88,8 +96,10 @@ public:
       k1(de.n), k2(de.n), k3(de.n), k4(de.n), temp(de.n) {}
   virtual ~RK4(void) {}
 
-  virtual void step(void) {
-    for( int j=0; j<de.nodes; j++ ) {
+  virtual void step(void) 
+  {
+    for( int j=0; j<de.nodes; j++ ) 
+	{
       for( int i=0; i<de.n; i++ )
         temp[i] = de.variables[i][j];
       de.rhs(temp,k1);
