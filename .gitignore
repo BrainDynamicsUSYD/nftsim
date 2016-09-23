@@ -5,9 +5,7 @@ obj/
 # Ignore files associated with doxygen docs
 Documentation/html/
 Documentation/latex/
-latex/
-html/
-doxyfile
+
 
 # Ignore NeuroField output files
 *.output
