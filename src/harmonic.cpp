@@ -1,18 +1,28 @@
+/** @file harmonic.cpp
+  @brief A brief, one sentence description.
+
+  A more detailed multiline description...
+
+  @author Peter Drysdale, 
+*/
+
 #include<cmath>
 #include"harmonic.h"
 
-void Harmonic::init( Configf& configf )
-{
+void Harmonic::init( Configf& configf ) {
   double Q = prepop.Qinit(configf);
   string buffer("Steady");
   configf.optional("phi",buffer);
-  if( buffer != "Steady" )
+  if( buffer != "Steady" ) {
     Q = atof(buffer.c_str());
-  p.clear(); p.resize(nodes,Q);
+  }
+  p.clear();
+  p.resize(nodes,Q);
   oldp.resize(nodes,Q);
   oldQ.resize(nodes,Q);
   dpdt.resize(nodes,0.);
-  configf.optional("Tau",tau); prepop.growHistory(tau);
+  configf.optional("Tau",tau);
+  prepop.growHistory(tau);
 
   // Range is either used when velocity is specified,
   // or not used but read for compatibility with Wave propagator
@@ -20,7 +30,8 @@ void Harmonic::init( Configf& configf )
   configf.optional("Range",range);
 
   if( !configf.optional("gamma",gamma) ) {
-    double velocity; configf.param("velocity",velocity);
+    double velocity;
+    configf.param("velocity",velocity);
     gamma = velocity/range;
   }
   twoongamma = 2./gamma;
@@ -28,17 +39,13 @@ void Harmonic::init( Configf& configf )
 }
 
 Harmonic::Harmonic( int nodes, double deltat, int index, Population& prepop,
-        Population& postpop, int longside, string topology )
-    : Propag(nodes,deltat,index,prepop,postpop,longside,topology)
-{
+                    Population& postpop, int longside, string topology )
+  : Propag(nodes,deltat,index,prepop,postpop,longside,topology) {
 }
 
-Harmonic::~Harmonic(void)
-{
-}
+Harmonic::~Harmonic() = default;
 
-void Harmonic::step(void)
-{
+void Harmonic::step() {
   // This implementation assumes gamma is constant
   // and Q(t) is linear for the timestep.
   // x(t)  =  C1 t e(pt) + C2 e(pt),

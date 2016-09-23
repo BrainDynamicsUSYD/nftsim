@@ -1,16 +1,14 @@
-#ifndef BCM_H
-#define BCM_H
+#ifndef NEUROFIELD_SRC_BCM_H
+#define NEUROFIELD_SRC_BCM_H
 
 #include"cadp.h"
 
-class BCM : public CaDP
-{
+class BCM : public CaDP {
   BCM(BCM&);
   BCM();
-protected:
+ protected:
   //double t_BCM;
-  struct BCMDE : public CaDE
-  {
+  struct BCMDE : public CaDE {
     double t_BCM;
     double t_rec;
     double gnmda_0;
@@ -38,20 +36,22 @@ protected:
       this->t_BCM = bcmDE.t_BCM;
       this->t_rec = bcmDE.t_rec;
       this->gnmda_0 = bcmDE.gnmda_0;
-	  for( size_t i=0; i<variables.size(); i++ )
-        for( int j=0; j<nodes; j++ )
+      for( size_t i=0; i<variables.size(); i++ ) {
+        for( int j=0; j<nodes; j++ ) {
           this->variables[i][j] = bcmDE.variables[i][j];
+        }
+      }
       return *this;
     }
-    virtual ~BCMDE(void) {}
-    virtual void init( Configf& configf );
-    virtual void rhs( const vector<double>& y, vector<double>& dydt );
+    ~BCMDE(void) override = default;
+    void init( Configf& configf ) override;
+    void rhs( const vector<double>& y, vector<double>& dydt ) override;
   };
-public:
+ public:
   BCM( int nodes, double deltat, int index,
-          const Propag& prepropag, const Population& postpop );
-  virtual ~BCM(void);
-  virtual void output( Output& output ) const;
+       const Propag& prepropag, const Population& postpop );
+  ~BCM(void) override;
+  void output( Output& output ) const override;
 };
 
 #endif

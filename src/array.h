@@ -1,5 +1,5 @@
-#ifndef ARRAY_H
-#define ARRAY_H
+#ifndef NEUROFIELD_SRC_ARRAY_H
+#define NEUROFIELD_SRC_ARRAY_H
 
 //#include<omp.h>
 #include<string>
@@ -10,12 +10,11 @@ using std::vector;
 using std::endl;
 
 template<class T>
-class Array
-{
+class Array {
   Array(Array&);   // no copy constructor allowed
 
   vector<T*> m;
-public:
+ public:
   virtual void step(void);
   virtual void pstep(void); // parallel for loop over elements::loop
 
@@ -30,63 +29,58 @@ public:
 };
 
 template<class T>
-void Array<T>::add( T* t )
-{
+void Array<T>::add( T* t ) {
   m.push_back(t);
 }
 
 template<class T>
-void Array<T>::add( vector<T*> t )
-{
-  for( size_t i=0; i<t.size(); i++ )
+void Array<T>::add( vector<T*> t ) {
+  for( size_t i=0; i<t.size(); i++ ) {
     m.push_back( t[i] );
+  }
 }
 
 template<class T>
-bool Array<T>::empty(void) const
-{
+bool Array<T>::empty(void) const {
   return m.empty();
 }
 
 template<class T>
-void Array<T>::step(void)
-{
-  for( size_t i=0; i<m.size(); i++ )
+void Array<T>::step(void) {
+  for( size_t i=0; i<m.size(); i++ ) {
     m[i]->step();
+  }
 }
 
 template<class T>
-void Array<T>::pstep(void)
-{
+void Array<T>::pstep(void) {
   // Note pstep() is needed as well as step() because output must use
   // step so that it is not parallelized
   //#pragma omp parallel for num_threads(5)
-  for( size_t i=0; i<m.size(); i++ )
+  for( size_t i=0; i<m.size(); i++ ) {
     m[i]->step();
+  }
 }
 
 template<class T>
-Array<T>::Array(void)
-{
-}
+Array<T>::Array(void) = default;
 
 template<class T>
-Array<T>::~Array(void)
-{
-  for( size_t i=0; i<m.size(); i++ )
-    if( m[i] )
+Array<T>::~Array(void) {
+  for( size_t i=0; i<m.size(); i++ ) {
+    if( m[i] ) {
       delete m[i];
+    }
+  }
 }
 
 template<class T>
-T* Array<T>::operator[]( int index ) const
-{
+T* Array<T>::operator[]( int index ) const {
   return m[index];
 }
 
 template<class T>
-unsigned int Array<T>::size(void) const
-{
+unsigned int Array<T>::size(void) const {
   return m.size();
 }
 

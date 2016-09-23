@@ -1,9 +1,9 @@
-#ifndef QRESPONSE_H
-#define QRESPONSE_H
+#ifndef NEUROFIELD_SRC_QRESPONSE_H
+#define NEUROFIELD_SRC_QRESPONSE_H
 
-#include"population.h"
 #include"array.h"
 #include"de.h"
+#include"population.h"
 
 using std::string;
 
@@ -11,13 +11,12 @@ class Dendrite;
 class Propag;
 class Couple;
 
-class QResponse : public NF
-{
+class QResponse : public NF {
   QResponse(QResponse& ); // no copy constructor
   QResponse(void);      // no copy constructor
 
-protected:
-  virtual void init( Configf& configf );
+ protected:
+  void init( Configf& configf ) override;
   //virtual void restart( Restartf& restartf );
   //virtual void dump( Dumpf& dumpf ) const;
 
@@ -32,34 +31,32 @@ protected:
   vector<double> v; // soma potential for the population
 
   // glutamate concentration in synaptic cleft
-  struct Glu : public DE
-  {
+  struct Glu : public DE {
     double Lambda; // glutamate concentration per action potential
     double tGlu;   // time scale of glutamate
 
     Glu( int nodes, double deltat ) : DE(nodes,deltat,2) {}
-    virtual ~Glu(void) {}
+    ~Glu(void) override = default;
     void init( Configf& configf );
-    void rhs( const vector<double>& y, vector<double>& dydt );
+    void rhs( const vector<double>& y, vector<double>& dydt ) override;
   };
   Glu glu_m;
   RK4 glu_rk4;
-public: 
+ public:
   QResponse( int nodes, double deltat, int index );
-  virtual ~QResponse(void);
-  virtual void step(void);
+  ~QResponse(void) override;
+  void step(void) override;
   virtual void add2Dendrite( int index,
-          const Propag& prepropag, const Couple& precouple, Configf& configf );
+                             const Propag& prepropag, const Couple& precouple, Configf& configf );
   const vector<double>& glu(void) const;
 
   virtual void fire( vector<double>& Q ) const;
   inline const vector<double>& V(void) const;
-  virtual void output( Output& output ) const;
+  void output( Output& output ) const override;
   virtual void outputDendrite( int index, Output& output ) const;
 };
 
-const vector<double>& QResponse::V(void) const
-{
+const vector<double>& QResponse::V(void) const {
   return v;
 }
 

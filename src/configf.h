@@ -1,5 +1,5 @@
-#ifndef CONFIGF_H
-#define CONFIGF_H
+#ifndef NEUROFIELD_SRC_CONFIGF_H
+#define NEUROFIELD_SRC_CONFIGF_H
 
 #include<sstream>
 using std::stringstream;
@@ -16,17 +16,16 @@ using std::vector;
 using std::cerr;
 using std::endl;
 
-class Configf : protected std::ifstream // derived class 
-{
+class Configf : protected std::ifstream { // derived class
   Configf(const Configf& other); // No copy constructor
   Configf(); // No default constructor
   Configf& operator=(const Configf& other); // No assignment operator
 
   char* buffer;
   size_t filesize;
-public: 
-  Configf( const char* filename ); // const ptr to filename for ifstream
-  virtual ~Configf(void);
+ public:
+  explicit Configf( const char* filename ); // const ptr to filename for ifstream
+  ~Configf(void) override;
 
   // Looks for the next parameter called "param" and stores it in T
   // If "param" is not found, terminate program
@@ -46,8 +45,12 @@ public:
   // searches and points to next keyword
   void go2( const string& keyword );
 
-  int tell(void) { return std::ifstream::tellg(); }
-  void seek( int position ) { std::ifstream::seekg(position); }
+  int tell(void) {
+    return std::ifstream::tellg();
+  }
+  void seek( int position ) {
+    std::ifstream::seekg(position);
+  }
 
   friend class Dumpf;
 };
@@ -56,59 +59,54 @@ public:
 // also useful in naming outputf "solution.phi.#"
 string label( const string& prefix, int index );
 
-template<class T> void Configf::param(const string& param, T& ret, int delim )
-{
+template<class T> void Configf::param(const string& param, T& ret, int delim ) {
   if( next(param,delim) ) {
     if( !good() ) {
       cerr << "Input variable '" << param << "' is given a wrong type."
-        << endl;
+           << endl;
       exit(EXIT_FAILURE);
     }
     *this >> ret;
-  }
-  else {
+  } else {
     int position = tellg();
     seekg(0,std::ios::beg);
     read(buffer,position);
     buffer[position] = '\0';
     cerr << "Unable to find next input variable: "
-      << param << endl
-      << "From configuration file:" << endl
-      << buffer << endl;
+         << param << endl
+         << "From configuration file:" << endl
+         << buffer << endl;
     exit(EXIT_FAILURE);
   }
 }
 
-template<> inline void Configf::param<string>(const string& param, string& ret, int delim )
-{
+template<> inline void Configf::param<string>(const string& param, string& ret, int delim ) {
   if( next(param,delim) ) {
     *this >> buffer;
     if( !good() ) {
       cerr << "Input variable '" << param << "' is given a wrong type."
-        << endl;
+           << endl;
       exit(EXIT_FAILURE);
     }
     ret = string(buffer);
-  }
-  else {
+  } else {
     exit(EXIT_FAILURE);
   }
 }
 
-template<class T> bool Configf::optional( const string& param, T& ret, int delim )
-{
+template<class T> bool Configf::optional( const string& param, T& ret, int delim ) {
   if( next(param,delim) ) {
     *this >> ret;
     if( !good() ) {
       cerr << "Input variable '" << param << "' is given a wrong type."
-        << endl;
+           << endl;
       exit(EXIT_FAILURE);
     }
     return true;
   }
-  else {
-    return false;
-  }
+
+  return false;
+
 }
 
 #endif
