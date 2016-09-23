@@ -7,6 +7,8 @@ Documentation/html/
 Documentation/latex/
 latex/
 html/
+doxyfile
+
 # Ignore NeuroField output files
 *.output
 *.mat
