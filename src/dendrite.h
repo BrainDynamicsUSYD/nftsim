@@ -1,12 +1,11 @@
-#ifndef DENDRITICR_H
-#define DENDRITICR_H
+#ifndef NEUROFIELD_SRC_DENDRITE_H
+#define NEUROFIELD_SRC_DENDRITE_H
 
 #include "population.h"
 
 using std::vector;
 
-class Dendrite : public NF
-{
+class Dendrite : public NF {
   Dendrite(void); // default constructor
   Dendrite(Dendrite& ); // no copy constructor
 
@@ -24,8 +23,8 @@ class Dendrite : public NF
   double C1expa;
   double C2expb;
   double C1dtplusC2;
-protected:
-  
+ protected:
+
   double alpha; // needed here for DendriteRamp
   double beta;
 
@@ -34,23 +33,22 @@ protected:
   //vector<double> np;
   vector<double> oldnp;
 
-  virtual void init( Configf& configf );
+  void init( Configf& configf ) override;
   //virtual void restart( Restartf& restartf );
   //virtual void dump( Dumpf& dumpf ) const;
-public: 
+ public:
   const Propag& prepropag;
   const Couple& precouple;
 
   Dendrite( int nodes, double deltat, int index,
-      const Propag& prepropag, const Couple& precouple );
-  virtual ~Dendrite(void);
-  virtual void step(void);
+            const Propag& prepropag, const Couple& precouple );
+  ~Dendrite(void) override;
+  void step(void) override;
   inline const vector<double>& V(void) const;
-  virtual void output( Output& output ) const;
+  void output( Output& output ) const override;
 };
 
-const vector<double>& Dendrite::V(void) const
-{
+const vector<double>& Dendrite::V(void) const {
   return v;
 }
 

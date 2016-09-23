@@ -1,16 +1,15 @@
-#ifndef HARMONIC_H
-#define HARMONIC_H
+#ifndef NEUROFIELD_SRC_HARMONIC_H
+#define NEUROFIELD_SRC_HARMONIC_H
 
 #include"propag.h"
 
 using std::vector;
 
-class Harmonic : public virtual Propag
-{
+class Harmonic : public virtual Propag {
   Harmonic(); // no default constructor
   Harmonic(Harmonic&); // no copy constructor
-protected:
-  virtual void init( Configf& configf );
+ protected:
+  void init( Configf& configf ) override;
   //virtual void restart( Restartf& restartf );
   //virtual void dump( Dumpf& dumpf ) const;
 
@@ -29,11 +28,11 @@ protected:
   double adjustedQ;
   double C1;
   double C1dtplusC2;
-public: 
+ public:
   Harmonic( int nodes, double deltat, int index, Population& prepop,
-      Population& postpop, int longside, string topology );
-  virtual ~Harmonic(void);
-  virtual void step(void); 
+            Population& postpop, int longside, string topology );
+  ~Harmonic(void) override;
+  void step(void) override;
 };
 
 #endif

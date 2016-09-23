@@ -2,30 +2,29 @@
  * @file wave.h
  * @brief Wave propagator definition
  *
- * The wave propagator definition, inlcuding parameters from the wave equation 
- * and coefficients related to the nine-point stencil implementation. 
- * 
+ * The wave propagator definition, inlcuding parameters from the wave equation
+ * and coefficients related to the nine-point stencil implementation.
+ *
  *
  * @author Peter Drysdale, Felix Fung, Romesh Abeysuriya, Paula Sanz-Leon
- * 
+ *
  */
-  
+
 /**
    Reads from the configuration file
 
 */
-#ifndef WAVE_H
-#define WAVE_H
+#ifndef NEUROFIELD_SRC_WAVE_H
+#define NEUROFIELD_SRC_WAVE_H
 
 #include"propag.h"
 #include"stencil.h"
 
-class Wave : public Propag
-{
+class Wave : public Propag {
   Wave(); // no default constructor
   Wave(Wave&); // no copy constructor
-protected:
-  void init( Configf& configf );
+ protected:
+  void init( Configf& configf ) override;
   //void restart( Restartf& restartf );
   //void dump( Dumpf& dumpf ) const;
 
@@ -52,11 +51,11 @@ protected:
   double sumQ;     // sum of the points in the von Neumann neighbourhood (Q)
   double diagsumQ; // sum of the points in the von Neumann neighbourhood (Q)
   double drive;
-public: 
+ public:
   Wave( int nodes, double deltat, int index, Population& prepop,
-      Population& postpop, int longside, string topology );
-  virtual ~Wave(void);
-  virtual void step(void); 
+        Population& postpop, int longside, string topology );
+  ~Wave(void) override;
+  void step(void) override;
 };
 
 #endif

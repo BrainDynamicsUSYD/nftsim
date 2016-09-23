@@ -1,23 +1,22 @@
-#ifndef LONG_COUPLE_H
-#define LONG_COUPLE_H
+#ifndef NEUROFIELD_SRC_LONGCOUPLE_H
+#define NEUROFIELD_SRC_LONGCOUPLE_H
 
 #include"couple.h"
 
-class LongCouple : public Couple
-{
+class LongCouple : public Couple {
   LongCouple();
   LongCouple(LongCouple&);
-protected:
-  virtual void init( Configf& configf ); 
+ protected:
+  void init( Configf& configf ) override;
 
   vector< vector<double> > n2d; // nu tensor, nu[i][j] = from i to j
   int pos;
-public: 
+ public:
   LongCouple( int nodes, double deltat, int index,
-      const Propag& prepropag, const Population& postpop );
-  virtual ~LongCouple(void);
-  virtual void step(void);
-  virtual void output( Output& output ) const;
+              const Propag& prepropag, const Population& postpop );
+  ~LongCouple(void) override;
+  void step(void) override;
+  void output( Output& output ) const override;
 };
 
 #endif
