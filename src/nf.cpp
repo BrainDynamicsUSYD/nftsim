@@ -1,7 +1,14 @@
+/** @file nf.cpp
+  @brief A brief, one sentence description.
+
+  A more detailed multiline description...
+
+  @author Peter Drysdale, 
+*/
+
 #include"nf.h"
 
-Configf& operator>> ( Configf& configf, NF& nf )
-{
+Configf& operator>> ( Configf& configf, NF& nf ) {
   nf.init(configf);
   return configf;
 }
@@ -20,14 +27,10 @@ Dumpf& operator<< ( Dumpf& dumpf, const NF& nf )
 }*/
 
 NF::NF( int nodes, double deltat, int index )
-    : nodes(nodes), deltat(deltat), index(index)
-{
+  : nodes(nodes), deltat(deltat), index(index) {
 }
 
-void NF::output( Output&  ) const
-{
+void NF::output( Output&   /*unused*/) const {
 }
 
-NF::~NF(void)
-{
-}
+NF::~NF() = default;

@@ -1,3 +1,11 @@
+/** @file dumpf.cpp
+  @brief A brief, one sentence description.
+
+  A more detailed multiline description...
+
+  @author Peter Drysdale, 
+*/
+
 #include<iomanip>
 using std::scientific;
 #include<cstdlib>
@@ -8,12 +16,10 @@ using std::cerr;
 using std::endl;
 #include"dumpf.h"
 
-Dumpf::Dumpf(void)
-{
+Dumpf::Dumpf() {
 }
 
-Dumpf::~Dumpf(void)
-{
+Dumpf::~Dumpf() {
   file.close();
 }
 
@@ -26,8 +32,7 @@ void Dumpf::outputConfig( Configf& configf ) {
   *this<<endl<<"============================================="<<endl<<endl;
 }
 
-void Dumpf::open( const string& filename )
-{
+void Dumpf::open( const string& filename ) {
   this->filename = filename;
   if( !file.is_open() ) {
     file.open( filename.c_str() );
@@ -37,61 +42,57 @@ void Dumpf::open( const string& filename )
       exit(EXIT_FAILURE);
     }
     s = &file;
-    file.precision(14); file<<scientific;
-  }
-  else {
+    file.precision(14);
+    file<<scientific;
+  } else {
     cerr<<"Attempting to dump into two files."<<endl;
     exit(EXIT_FAILURE);
   }
 }
 
-void Dumpf::verbose(void)
-{
-  if( file.is_open() )
+void Dumpf::verbose() {
+  if( file.is_open() ) {
     file.close();
+  }
   s = &cout;
-  s->precision(14); cout<<scientific;
+  s->precision(14);
+  cout<<scientific;
 }
 
-Dumpf& Dumpf::operator<< ( double f )
-{
-  if( f>=0 ) *s<<" ";
-  *s<<f;
+Dumpf& Dumpf::operator<< ( double f ) {
+  if( f>=0 ) {
+    *s<<" ";
+
+  }*s<<f;
   return *this;
 }
 
-Dumpf& Dumpf::operator<< ( const string& str )
-{
+Dumpf& Dumpf::operator<< ( const string& str ) {
   *s<<setw(20)<<str.c_str();
   return *this;
 }
 
-Dumpf& Dumpf::operator<< ( int i )
-{
+Dumpf& Dumpf::operator<< ( int i ) {
   *s<<i;
   return *this;
 }
 
-Dumpf& Dumpf::operator<< ( ostream& (*pf)(ostream&) )
-{
+Dumpf& Dumpf::operator<< ( ostream& (*pf)(ostream&) ) {
   *s<<pf;
   return *this;
 }
 
-ostream& septor( ostream& os )
-{
+ostream& septor( ostream& os ) {
   //os<<"|";
   return os;
 }
 
-ostream& space( ostream& os )
-{
+ostream& space( ostream& os ) {
   os<<" ";
   return os;
 }
 
-ostream& setw( ostream& os )
-{
+ostream& setw( ostream& os ) {
   os<<setw(20);
   return os;
 }
