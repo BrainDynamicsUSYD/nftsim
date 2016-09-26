@@ -3,7 +3,7 @@
     make ./bin/neurofield -i configs/example.conf -o example.output
     doxygen Doxyfile
     
-The html files will be place under `Documentation/html`
+The html files will be place under `doc/html`
 ### Setup guide
 
 **Please check the [NeuroField wiki](https://github.com/BrainDynamicsUSYD/neurofield/wiki) for the setup walkthrough. The instructions below are a standalone summary if you do not have internet access. More detailed instructions are also included in the PDF documentation**
