@@ -1,6 +1,6 @@
 ### Quick start
 
-    make ./bin/neurofield -i Configs/example.conf -o example.output
+    make ./bin/neurofield -i configs/example.conf -o example.output
     doxygen Doxyfile
     
 The html files will be place under `Documentation/html`
