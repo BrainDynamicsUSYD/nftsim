@@ -12,7 +12,7 @@ The html files will be place under `doc/html`
 
 2. Type `make` to build the binary `Release/NeuroField`. More information about [cross platform for non-Linux](https://github.com/BrainDynamicsUSYD/neurofield/wiki/Cross-platform-support) systems is also available. 
 
-3. Example configurations including examples for published results are available in the `Configs` folder.
+3. Example configurations including examples for published results are available in the `configs` folder.
 
 ### Troubleshooting
 

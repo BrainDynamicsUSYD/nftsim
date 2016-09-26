@@ -114,10 +114,10 @@ All of the files associated with \NF are contained in a folder called \type{neur
 \type{src/}& \type{C++} source code.\\
 \type{(obj/)}& This folder is created during compilation and stores intermediate object code.\\
 \type{(bin/)}& The compiled binary \type{neurofield} is created here.\\
-\type{Configs/}& Stores example configuration files for \NF.\\
-\type{Documentation/}& Contains this manual.\\
+\type{configs/}& Stores example configuration files for \NF.\\
+\type{doc/}& Contains this manual.\\
 \type{+nf/}& Matlab package folder containing \NF helper scripts.\\
-\type{Test/}& Directory for development testing and is irrelevant for users.\\
+\type{test/}& Directory for development testing and is irrelevant for users.\\
 \end{tabular}
 
 \subsection{Compiling NeuroField} 
@@ -134,11 +134,11 @@ The \type{Makefile} also provides two additional commands. This documentation ca
 \begin{lstlisting}
 make doc
 \end{lstlisting}
-which will compile the \LaTeX\ files in the \type{Documentation/} directory. To delete the \NF binary files, object code, and temporary \LaTeX\ files (e.g., to perform a clean compile of the program), you can use
+which will compile the \LaTeX\ files in the \type{doc/} directory. To delete the \NF binary files, object code, and temporary \LaTeX\ files (e.g., to perform a clean compile of the program), you can use
 \begin{lstlisting}
 make clean
 \end{lstlisting}
-which will delete the \type{bin} and \type{obj} folders, as well as the temporary files in \type{Documentation/}.
+which will delete the \type{bin} and \type{obj} folders, as well as the temporary files in \type{doc/}.
 
 \section{Running NeuroField}
 \label{sec:running}
@@ -163,22 +163,22 @@ Note that NeuroField will overwrite the output file if it exists, so it is not a
 You can optionally specify input and output files, using the \type{-i} and \type{-o} switches. For example,
 
 \begin{lstlisting}
-./bin/neurofield -i Configs/example.conf -o example.output
+./bin/neurofield -i configs/example.conf -o example.output
 \end{lstlisting}
 
-will use the configuration file \type{example.conf} within the \type{Configs} folder, and will write output to \type{example.output} in the current folder.
+will use the configuration file \type{example.conf} within the \type{configs} folder, and will write output to \type{example.output} in the current folder.
 
 A list of available switches can be displayed by using the \type{-h} or \type{--help} option i.e., \type{./bin/neurofield -h}
 
 \subsection{Writing a configuration file}
 \label{sec:config}
 
-\NF allows an arbitrary number of populations and connections between them, with all objects taking arbitrary parameter values. These are all configured via a configuration file. This section documents the specifications of configuration files, where we use \type{Configs/example.conf} as an illustrative example.
+\NF allows an arbitrary number of populations and connections between them, with all objects taking arbitrary parameter values. These are all configured via a configuration file. This section documents the specifications of configuration files, where we use \type{configs/example.conf} as an illustrative example.
 
 To write a configuration file, follow these steps:
 \begin{enumerate}
 \item Determine your population model by drawing a schematic diagram, thereby constructing a connection matrix. An example is shown in Fig.~\ref{fig:pop}.
-\item Look up existing configuration files in \type{Configs/}. By checking the comment located at the top of a configuration file, and also the connection matrix, a user should find the most suitable existing file to construct his own. This is less tedious (and less error prone) than writing a new one from scratch.
+\item Look up existing configuration files in \type{configs/}. By checking the comment located at the top of a configuration file, and also the connection matrix, a user should find the most suitable existing file to construct his own. This is less tedious (and less error prone) than writing a new one from scratch.
 \item Specify the global parameters and connectivity matrix (Sec.~\ref{sec:global}).
 \item Specify all populations (Sec.~\ref{sec:pop}).
 \item Specify all propagators (Sec.~\ref{sec:prop}).
@@ -206,13 +206,13 @@ Object parameter: value
 \end{enumerate}
 
 \subsubsection{Example configuration}
-The remainder of this section refers to an example configuration for the illustrative example system shown in Fig.~\ref{fig:cortical}. The corresponding configuration file is also shown below. This configuration file is included in the repository as \type{Configs/cortex.conf} and can be run from the \NF repository root using
+The remainder of this section refers to an example configuration for the illustrative example system shown in Fig.~\ref{fig:cortical}. The corresponding configuration file is also shown below. This configuration file is included in the repository as \type{configs/cortex.conf} and can be run from the \NF repository root using
 
 \begin{lstlisting}
-./bin/neurofield -i Configs/cortex.conf -o cortex.output
+./bin/neurofield -i configs/cortex.conf -o cortex.output
 \end{lstlisting}
 
-{\em It is recommended that you open \type{Configs/cortex.conf} to read in conjunction with this section of the manual.}
+{\em It is recommended that you open \type{configs/cortex.conf} to read in conjunction with this section of the manual.}
 \vspace{24pt}
 
 \begin{figure}[h!]
