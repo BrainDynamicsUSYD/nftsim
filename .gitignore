@@ -1,10 +1,11 @@
 # Ignore files associated with compiling
 bin/
 obj/
+dep/
 
 # Ignore files associated with doxygen docs
-Documentation/html/
-Documentation/latex/
+doc/html/
+doc/latex/
 
 # Ignore NeuroField output files
 *.output
