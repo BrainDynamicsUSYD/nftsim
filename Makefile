@@ -30,17 +30,17 @@ CAT := cat
 # Standard Linux (gcc must be > 4.9) performance
 ifeq ($(shell uname -s), Linux)
   CXX := g++
-  CXXFLAGS := -lm -Wall -O3 -Wextra -pedantic -std=c++11 -msse -msse2 -msse3 -mfpmath=sse -march=native -mtune=native -funroll-loops -flto
-  DEBUG := -ggdb3 -Og -lm -Wall -Wextra -pedantic -std=c++11 -msse -msse2 -msse3
-  DEPFLAGS = -MM -MP -std=c++11 -MT $(OBJDIR)$*.o
+  CXXFLAGS := -std=c++11 -lm -Wall -Wextra -pedantic -msse -msse2 -msse3 -mfpmath=sse -march=native -mtune=native -funroll-loops -flto -O3
+  DEBUG := -std=c++11 -ggdb3 -Og -lm -Wall -Wextra -pedantic -msse -msse2 -msse3 -mfpmath=sse -march=native -mtune=native -funroll-loops
+  DEPFLAGS = -std=c++11 -MM -MP -MT $(OBJDIR)$*.o
 endif
 
 # Mac OS, default to clang++
 ifeq ($(shell uname -s), Darwin)
   CXX := clang++
-  CXXFLAGS := -lm -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -fdiagnostics-fixit-info -Wdocumentation -O3 -std=c++11
-  DEBUG := -glldb -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -fdiagnostics-fixit-info -Wdocumentation
-  DEPFLAGS = -MM -MP -std=c++11 -MT $(OBJDIR)$*.o
+  CXXFLAGS := -std=c++11 -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -fdiagnostics-fixit-info -Wdocumentation -march=native -funroll-loops -flto -O3
+  DEBUG := -std=c++11 -glldb -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -fdiagnostics-fixit-info -Wdocumentation
+  DEPFLAGS = -std=c++11 -MM -MP -MT $(OBJDIR)$*.o
 endif
 
 # Source and header files
@@ -73,14 +73,14 @@ all: neurofield docs
 
 #   target: clang - Build using clang++, redundant on MacOS as clang++ is default.
 clang: CXX := clang++
-clang: CXXFLAGS := -lm -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -fdiagnostics-fixit-info -Wdocumentation -O3 -std=c++11
-clang: DEPFLAGS = -MM -MP -std=c++11 -MT $(OBJDIR)$*.o
+clang: CXXFLAGS := -std=c++11 -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -fdiagnostics-fixit-info -Wdocumentation -march=native -funroll-loops -flto -O3
+clang: DEPFLAGS = -std=c++11 -MM -MP -MT $(OBJDIR)$*.o
 clang: neurofield
 
 #   target: icc - Build using intel C++ compiler. #TODO: consider/test -ipp -mkl -unroll-aggressive -static
 icc: CXX := icc
-icc: CXXFLAGS := -Wall -Wremarks -Wchecks -Weffec++ -xHost -O3 -ipo -funroll-loops -std=c++11
-icc: DEPFLAGS = -MM -MP -std=c++11 -MT $(OBJDIR)$*.o
+icc: CXXFLAGS := -std=c++11 -Wall -Wremarks -Wchecks -Weffec++ -xHost -funroll-loops -ipo -O3
+icc: DEPFLAGS = -std=c++11 -MM -MP -MT $(OBJDIR)$*.o
 icc: neurofield
 
 #   target: $(BINDIR)$(BIN) - Main target for the final build, linking objects into an executable.
