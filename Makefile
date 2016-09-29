@@ -77,6 +77,12 @@ clang: CXXFLAGS := -lm -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic
 clang: DEPFLAGS = -MM -MP -std=c++11 -MT $(OBJDIR)$*.o
 clang: neurofield
 
+#   target: icc - Build using intel C++ compiler. #TODO: consider/test -ipp -mkl -unroll-aggressive -static
+icc: CXX := icc
+icc: CXXFLAGS := -Wall -Wremarks -Wchecks -Weffec++ -xHost -O3 -ipo -funroll-loops -std=c++11
+icc: DEPFLAGS = -MM -MP -std=c++11 -MT $(OBJDIR)$*.o
+icc: neurofield
+
 #   target: $(BINDIR)$(BIN) - Main target for the final build, linking objects into an executable.
 $(BINDIR)$(BIN): $(OBJ) | make_bin_dir
 	$(CXX) $(CXXFLAGS) $(OBJ) -o $@
