@@ -7,50 +7,50 @@
 #
 
 #Default to *nix directories.
-SRCDIR ::= src/
-OBJDIR ::= obj/
-BINDIR ::= bin/
-DOCDIR ::= doc/
-DEPDIR ::= dep/
+SRCDIR := src/
+OBJDIR := obj/
+BINDIR := bin/
+DOCDIR := doc/
+DEPDIR := dep/
 
 #Default to *nix, suffix-less, binary.
-BIN ::= neurofield
+BIN := neurofield
 
 #User-manual files
-USER_MANUAL ::= NeurofieldManual.pdf
-USER_MANUAL_SRC ::= NeurofieldManual.tex
+USER_MANUAL := NeurofieldManual.pdf
+USER_MANUAL_SRC := NeurofieldManual.tex
 
 #Default to *nix commands.
-MV ::= mv -f
-RM ::= rm -f
-RMDIR ::= rm -rf
-GREP ::= egrep
-CAT ::= cat
+MV := mv -f
+RM := rm -f
+RMDIR := rm -rf
+GREP := egrep
+CAT := cat
 
 # Standard Linux (gcc must be > 4.9) performance
 ifeq ($(shell uname -s), Linux)
-  CXX ::= g++
-  CXXFLAGS ::= -lm -Wall -O3 -Wextra -pedantic -std=c++11 -msse -msse2 -msse3 -mfpmath=sse -march=native -mtune=native -funroll-loops -flto
-  DEBUG ::= -ggdb3 -Og -lm -Wall -Wextra -pedantic -std=c++11 -msse -msse2 -msse3
-  DEPFLAGS = -MM -MP -MT $(OBJDIR)$*.o
+  CXX := g++
+  CXXFLAGS := -lm -Wall -O3 -Wextra -pedantic -std=c++11 -msse -msse2 -msse3 -mfpmath=sse -march=native -mtune=native -funroll-loops -flto
+  DEBUG := -ggdb3 -Og -lm -Wall -Wextra -pedantic -std=c++11 -msse -msse2 -msse3
+  DEPFLAGS = -MM -MP -std=c++11 -MT $(OBJDIR)$*.o
 endif
 
 # Mac OS, default to clang++
 ifeq ($(shell uname -s), Darwin)
-  CXX ::= clang++
-  CXXFLAGS ::= -lm -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -fdiagnostics-fixit-info -Wdocumentation -O3 -std=c++11
-  DEBUG ::= -glldb -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -fdiagnostics-fixit-info -Wdocumentation
-  DEPFLAGS = -MM -MP -MT $(OBJDIR)$*.o
+  CXX := clang++
+  CXXFLAGS := -lm -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -fdiagnostics-fixit-info -Wdocumentation -O3 -std=c++11
+  DEBUG := -glldb -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -fdiagnostics-fixit-info -Wdocumentation
+  DEPFLAGS = -MM -MP -std=c++11 -MT $(OBJDIR)$*.o
 endif
 
 # Source and header files
-HEADER ::= $(wildcard $(SRCDIR)*.h)
-CPP ::= $(wildcard $(SRCDIR)*.cpp)
-OBJ ::= $(addprefix $(OBJDIR),$(notdir $(CPP:.cpp=.o)))
-DEP ::= $(addprefix $(DEPDIR),$(notdir $(CPP:.cpp=.d)))
+HEADER := $(wildcard $(SRCDIR)*.h)
+CPP := $(wildcard $(SRCDIR)*.cpp)
+OBJ := $(addprefix $(OBJDIR),$(notdir $(CPP:.cpp=.o)))
+DEP := $(addprefix $(DEPDIR),$(notdir $(CPP:.cpp=.d)))
 
 #Targets that don't need the dependencies evaluated/included.
-NO_DEPS ::= make_bin_dir make_obj_dir make_dep_dir help help-dev docs info $(DOCDIR)$(USER_MANUAL) reference-manual user-manual
+NO_DEPS := make_bin_dir make_obj_dir make_dep_dir help help-dev docs info $(DOCDIR)$(USER_MANUAL) reference-manual user-manual
 NO_DEPS += clean-user-manual clean-reference-manual clean-docs clean-deps clean-objs clean-bin clean clean-all
 
 # Delete the default suffixes
@@ -65,16 +65,16 @@ NO_DEPS += clean-user-manual clean-reference-manual clean-docs clean-deps clean-
 neurofield: $(BINDIR)$(BIN)
 
 # target: debug - compile neurofield with debugging enabled.
-debug: CXXFLAGS ::= $(DEBUG)
+debug: CXXFLAGS := $(DEBUG)
 debug: neurofield
 
 # target: all - compile neurofield and build all documentation.
 all: neurofield docs
 
 #   target: clang - Build using clang++, redundant on MacOS as clang++ is default.
-clang: CXX ::= clang++
-clang: CXXFLAGS ::= -lm -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -fdiagnostics-fixit-info -Wdocumentation -O3 -std=c++11
-clang: DEPFLAGS = -MM -MP -MT $(OBJDIR)$*.o
+clang: CXX := clang++
+clang: CXXFLAGS := -lm -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -fdiagnostics-fixit-info -Wdocumentation -O3 -std=c++11
+clang: DEPFLAGS = -MM -MP -std=c++11 -MT $(OBJDIR)$*.o
 clang: neurofield
 
 #   target: $(BINDIR)$(BIN) - Main target for the final build, linking objects into an executable.
