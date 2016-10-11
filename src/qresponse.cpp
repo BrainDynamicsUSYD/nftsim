@@ -3,7 +3,7 @@
 
   A more detailed multiline description...
 
-  @author Peter Drysdale, 
+  @author Peter Drysdale, Felix Fung,
 */
 
 //#include<cmath>
