@@ -170,6 +170,9 @@ void Solver::init( Configf& configf ) {
       //else if(ctype=="Epilepsy")
       //couples.add( new
       //Epilepsy(nodes,deltat,i, *propags[i], *pops[cnt.post[i]] ) );
+    } else if(ctype=="diff_arctan") {
+      couples.add( new
+                   Couple_diff_arctan(nodes,deltat,i, *propags[i], *pops[cnt.post[i]], tempf ) );
     } else {
       cerr<<"Invalid couple type '"<<ctype<<"'."<<endl;
       exit(EXIT_FAILURE);
