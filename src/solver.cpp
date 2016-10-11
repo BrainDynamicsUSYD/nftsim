@@ -164,6 +164,10 @@ void Solver::init( Configf& configf ) {
     } else if(ctype=="Ramp") {
       couples.add( new
                    CoupleRamp(nodes,deltat,i, *propags[i], *pops[cnt.post[i]] ) );
+    }  else if(ctype=="diff_arctan") {
+      couples.add( new
+                   Couple_diff_arctan(nodes,deltat,i, *propags[i], *pops[cnt.post[i]], tempf ) );
+     
       //else if(ctype=="fCaP")
       //couples.add( new
       //fCaP(nodes,deltat,i, *propags[i], *pops[cnt.post[i]] ) );
