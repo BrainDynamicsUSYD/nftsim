@@ -1,7 +1,11 @@
 /** @file qresponse.cpp
-  @brief A brief, one sentence description.
+  @brief Implements the QResponse class, for the soma response of neural populations.
 
-  A more detailed multiline description...
+  Each neural population is associated with a QResponse object which produces
+  the soma response governed by a specified equation, for example Sigmoid:
+  \f[
+    Insert equation 9 from draft neurofield paper here.
+  \f]
 
   @author Peter Drysdale, Felix Fung,
 */

@@ -1,5 +1,5 @@
 /** @file dendrite.h
-  @brief A brief, one sentence description.
+  @brief Defines the Dendrite class, which handles the response of the postsynaptic population.
 
   A more detailed multiline description...
 

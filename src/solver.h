@@ -1,7 +1,7 @@
 /** @file solver.h
-  @brief A brief, one sentence description.
+  @brief Defines the Solver class, a high level container for managing a simulation.
 
-  A more detailed multiline description...
+  The Solver class pulls together Population, Propag, and Couple classes.
 
   @author Peter Drysdale, Felix Fung,
 */

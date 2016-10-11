@@ -1,7 +1,8 @@
 /** @file qresponse.h
-  @brief A brief, one sentence description.
+  @brief Defines the QResponse class, for the soma response of neural populations.
 
-  A more detailed multiline description...
+  Each neural population is associated with a QResponse object, which produces
+  the soma response.
 
   @author Peter Drysdale, Felix Fung,
 */
@@ -31,7 +32,7 @@ class QResponse : public NF {
   string mode;
   double theta;
   double sigma;
-  double Q_max;
+  double Q_max; ///< Maximum firing rate.
   double a,b,c,d;
 
   Array<Dendrite> dendrites; ///< array of dendrites

@@ -1,7 +1,8 @@
 /** @file propag.h
-  @brief A brief, one sentence description.
+  @brief The base Propag class definition.
 
-  A more detailed multiline description...
+  Propagators are used to compute the axonal propagation of instantaneous
+  firing rate.
 
   @author Peter Drysdale, Felix Fung,
 */

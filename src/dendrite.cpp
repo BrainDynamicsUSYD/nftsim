@@ -1,5 +1,5 @@
 /** @file dendrite.cpp
-  @brief A brief, one sentence description.
+  @brief Dendrite handles the dendritic response of the postsynaptic population.
 
   A more detailed multiline description...
 
