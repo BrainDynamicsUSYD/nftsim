@@ -39,7 +39,7 @@ void Couple_diff_arctan::init( Configf& configf ) {
   }
   //min and max ramp values
   ramp_min=*std::min_element(deltanu.begin(), deltanu.end());
-  ramp_min=*std::min_element(deltanu.begin(), deltanu.end());
+  ramp_max=*std::max_element(deltanu.begin(), deltanu.end());
   
   n.clear(); n.resize(nodes,nu_min);
   pos = (nu_min>0)?1:-1;
