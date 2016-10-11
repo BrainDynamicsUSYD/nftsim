@@ -1,3 +1,11 @@
+/** @file qresponse.h
+  @brief A brief, one sentence description.
+
+  A more detailed multiline description...
+
+  @author Peter Drysdale, Felix Fung,
+*/
+
 #ifndef NEUROFIELD_SRC_QRESPONSE_H
 #define NEUROFIELD_SRC_QRESPONSE_H
 

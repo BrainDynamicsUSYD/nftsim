@@ -1,3 +1,11 @@
+/** @file random.h
+  @brief A brief, one sentence description.
+
+  A more detailed multiline description...
+
+  @author Peter Drysdale, Felix Fung,
+*/
+
 #ifndef NEUROFIELD_SRC_RANDOM_H
 #define NEUROFIELD_SRC_RANDOM_H
 

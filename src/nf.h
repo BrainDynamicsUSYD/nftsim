@@ -1,3 +1,11 @@
+/** @file nf.h
+  @brief A brief, one sentence description.
+
+  A more detailed multiline description...
+
+  @author Peter Drysdale, Felix Fung,
+*/
+
 #ifndef NEUROFIELD_SRC_NF_H
 #define NEUROFIELD_SRC_NF_H
 

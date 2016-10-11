@@ -1,3 +1,11 @@
+/** @file solver.h
+  @brief A brief, one sentence description.
+
+  A more detailed multiline description...
+
+  @author Peter Drysdale, Felix Fung,
+*/
+
 #ifndef NEUROFIELD_SRC_SOLVER_H
 #define NEUROFIELD_SRC_SOLVER_H
 
