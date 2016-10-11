@@ -12,6 +12,7 @@
 #include"longcouple.h"
 #include"bcmlong.h"
 #include"coupleramp.h"
+#include"couple_diff_arctan.h"
 
 using std::cerr;
 using std::endl;
