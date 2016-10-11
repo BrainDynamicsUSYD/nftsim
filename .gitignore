@@ -6,7 +6,6 @@ obj/
 Documentation/html/
 Documentation/latex/
 
-
 # Ignore NeuroField output files
 *.output
 *.mat
