@@ -27,8 +27,8 @@ class Dumpf {
   Dumpf(Dumpf&);
   Dumpf& operator=(Dumpf&);
 
-  ofstream file;  // stream to a file, if outputting to file
-  ostream* s;     // pointer to output, maybe to file, or to cout
+  ofstream file;  ///< stream to a file, if outputting to file
+  ostream* s;     ///< pointer to output, maybe to file, or to cout
   string filename;
  public:
   Dumpf(void);
@@ -42,8 +42,8 @@ class Dumpf {
   Dumpf& operator<< ( ostream& (*pf)(ostream&) ); // for manupulators eg endl
 };
 
-ostream& septor( ostream& os ); // implements the separator "|" between fields
-ostream& space( ostream& os );  // puts a space into dumpfile
+ostream& septor( ostream& os ); ///< implements the separator "|" between fields
+ostream& space( ostream& os );  ///< puts a space into dumpfile
 ostream& setw( ostream& os );
 
 #endif

@@ -28,7 +28,7 @@ class DE {
  public:
   int nodes;
   double deltat;
-  int n; // dimension of system == y.size()
+  int n; ///< dimension of system == y.size()
   vector<vector<double> > variables;
 
   DE( int nodes, double deltat, int n )
@@ -85,7 +85,7 @@ class RK4 : public Integrator {
   RK4(RK4&);
   void operator=(RK4&);
  protected:
-  double h6; // == deltat/6
+  double h6; ///< == deltat/6
 
   vector<double> k1;
   vector<double> k2;

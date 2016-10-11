@@ -16,8 +16,8 @@ class Random {
 
   static int id; // Auto-increment the ID of each Random instance to use as the default seed
 
-  std::mt19937_64 gen; // Generator
-  std::normal_distribution<double> dist; // Distribution
+  std::mt19937_64 gen; ///< Generator
+  std::normal_distribution<double> dist; ///< Distribution
 
  public:
   Random(double mean, double std);

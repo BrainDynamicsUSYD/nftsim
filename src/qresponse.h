@@ -34,14 +34,14 @@ class QResponse : public NF {
   double Q_max;
   double a,b,c,d;
 
-  Array<Dendrite> dendrites; // array of dendrites
-  vector<int> dendrite_index; // indices of dendrites
-  vector<double> v; // soma potential for the population
+  Array<Dendrite> dendrites; ///< array of dendrites
+  vector<int> dendrite_index; ///< indices of dendrites
+  vector<double> v; ///< soma potential for the population
 
   // glutamate concentration in synaptic cleft
   struct Glu : public DE {
-    double Lambda; // glutamate concentration per action potential
-    double tGlu;   // time scale of glutamate
+    double Lambda; ///< glutamate concentration per action potential
+    double tGlu;   ///< time scale of glutamate
 
     Glu( int nodes, double deltat ) : DE(nodes,deltat,2) {}
     ~Glu(void) override = default;

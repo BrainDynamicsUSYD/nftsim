@@ -17,7 +17,7 @@ class LongCouple : public Couple {
  protected:
   void init( Configf& configf ) override;
 
-  vector< vector<double> > n2d; // nu tensor, nu[i][j] = from i to j
+  vector< vector<double> > n2d; ///< nu tensor, nu[i][j] = from i to j
   int pos;
  public:
   LongCouple( int nodes, double deltat, int index,

@@ -21,8 +21,8 @@ class Couple : public NF {
 
   const Propag& prepropag;
   const Population& postpop;
-  vector<double> n; // nu
-  vector<double> P; // nu*phi
+  vector<double> n; ///< nu
+  vector<double> P; ///< nu*phi
   int pos;
  public:
   Couple( int nodes, double deltat, int index,

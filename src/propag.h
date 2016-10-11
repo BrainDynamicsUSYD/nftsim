@@ -23,9 +23,9 @@ class Propag : public NF {
 
   Population& prepop;
   Population& postpop;
-  Tau tau; // tau_ab
+  Tau tau; ///< tau_ab
   int longside;
-  vector<double> p; // phi_ab
+  vector<double> p; ///< phi_ab
  public:
   Propag( int nodes, double deltat, int index, Population& prepop,
           Population& postpop, int longside, string topology );

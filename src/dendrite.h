@@ -18,10 +18,10 @@ class Dendrite : public NF {
   Dendrite(Dendrite& ); // no copy constructor
 
   // variables that are intialized once to speed up computation
-  double aminusb; // == alpha - beta
-  double expa; // == exp(-alpha*deltat)
-  double expb; // == exp(-beta*deltat)
-  double factorab; // == 1./alpha + 1./beta;
+  double aminusb;  ///< == alpha - beta
+  double expa;     ///< == exp(-alpha*deltat)
+  double expb;     ///< == exp(-beta*deltat)
+  double factorab; ///< == 1./alpha + 1./beta;
 
   // variables that are used every timestep
   double adjustednp;
