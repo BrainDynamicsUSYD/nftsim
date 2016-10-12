@@ -32,7 +32,7 @@ void Couple_diff_arctan::init( Configf& configf ) {
   //size of time vector:
   time_int = time_tot/deltat;
 
-  //initializing the ramping of nu_ab
+  //initialize ramp
   for( int i=0; i<time_tot; i++ ) {
       ramp = (atan((i-t_half_up)/delt)-atan((i-t_half_down)/delt));
       deltanu.push_back(ramp);
@@ -53,7 +53,7 @@ void Couple_diff_arctan::init( Configf& configf ) {
 }
 
 void Couple_diff_arctan::step(void) {
-  //ramping of vu_ab (indirectly via n)
+  //ramping of nu_ab (nu_ab = n)
   time += deltat;
   for( int i=0; i<nodes; i++ ) {
     n[i]= nu_min + (nu_max-nu_min)*(((atan((time-t_half_up)/delt)-atan((time-t_half_down)/delt))-ramp_min)/(ramp_max-ramp_min));
