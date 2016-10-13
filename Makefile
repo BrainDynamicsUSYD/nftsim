@@ -6,7 +6,7 @@
 #  of key variables in the Makefile, to help with debugging.
 #
 
-#Default to *nix directories.
+#Specify our directories.
 SRCDIR := src/
 OBJDIR := obj/
 BINDIR := bin/
@@ -73,7 +73,10 @@ all: neurofield docs
 
 #   target: clang - Build using clang++, redundant on MacOS as clang++ is default.
 ifeq ($(MAKECMDGOALS), clang)
-  CXX := clang++
+  CXX := $(shell command -v clang++ 2> /dev/null)
+  ifndef CXX
+    $(error "You don't appear to have clang++ installed. If it is installed make sure it's in your PATH.")
+  endif
   CXXFLAGS := -std=c++11 -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -fdiagnostics-fixit-info -Wdocumentation -march=native -funroll-loops -flto -O3
   DEPFLAGS = -std=c++11 -MM -MP -MT $(OBJDIR)$*.o
 endif
@@ -81,7 +84,10 @@ clang: neurofield
 
 #   target: icc - Build using intel C++ compiler.
 ifeq ($(MAKECMDGOALS), icc)
-  CXX := icc
+  CXX := $(shell command -v icc 2> /dev/null)
+  ifndef CXX
+    $(error "You don't appear to have icc installed. If it is installed make sure it's in your PATH.")
+  endif
   #TODO: consider/test -ipp -mkl -unroll-aggressive -static
   CXXFLAGS := -std=c++11 -Wall -Wremarks -Wchecks -Weffec++ -xHost -funroll-loops -ipo -O3
   DEPFLAGS = -std=c++11 -MM -MP -MT $(OBJDIR)$*.o
