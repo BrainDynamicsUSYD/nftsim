@@ -27,7 +27,7 @@ RMDIR := rm -rf
 GREP := egrep
 CAT := cat
 
-# Standard Linux (gcc must be > 4.9) performance
+# Standard Linux (gcc must be >= 4.8.5) performance
 ifeq ($(shell uname -s), Linux)
   CXX := g++
   CXXFLAGS := -std=c++11 -lm -Wall -Wextra -pedantic -msse -msse2 -msse3 -mfpmath=sse -march=native -mtune=native -funroll-loops -flto -O3
@@ -72,15 +72,20 @@ debug: neurofield
 all: neurofield docs
 
 #   target: clang - Build using clang++, redundant on MacOS as clang++ is default.
-clang: CXX := clang++
-clang: CXXFLAGS := -std=c++11 -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -fdiagnostics-fixit-info -Wdocumentation -march=native -funroll-loops -flto -O3
-clang: DEPFLAGS = -std=c++11 -MM -MP -MT $(OBJDIR)$*.o
+ifeq ($(MAKECMDGOALS), clang)
+  CXX := clang++
+  CXXFLAGS := -std=c++11 -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -fdiagnostics-fixit-info -Wdocumentation -march=native -funroll-loops -flto -O3
+  DEPFLAGS = -std=c++11 -MM -MP -MT $(OBJDIR)$*.o
+endif
 clang: neurofield
 
-#   target: icc - Build using intel C++ compiler. #TODO: consider/test -ipp -mkl -unroll-aggressive -static
-icc: CXX := icc
-icc: CXXFLAGS := -std=c++11 -Wall -Wremarks -Wchecks -Weffec++ -xHost -funroll-loops -ipo -O3
-icc: DEPFLAGS = -std=c++11 -MM -MP -MT $(OBJDIR)$*.o
+#   target: icc - Build using intel C++ compiler.
+ifeq ($(MAKECMDGOALS), icc)
+  CXX := icc
+  #TODO: consider/test -ipp -mkl -unroll-aggressive -static
+  CXXFLAGS := -std=c++11 -Wall -Wremarks -Wchecks -Weffec++ -xHost -funroll-loops -ipo -O3
+  DEPFLAGS = -std=c++11 -MM -MP -MT $(OBJDIR)$*.o
+endif
 icc: neurofield
 
 #   target: $(BINDIR)$(BIN) - Main target for the final build, linking objects into an executable.
@@ -129,6 +134,7 @@ help-dev: help
 #   target: info - A convenience target for debugging the Makefile.
 info:
 	@echo "  SHELL: $(SHELL)"
+	@echo "  MAKE_VERSION: $(MAKE_VERSION)"
 	@echo "  .VARIABLES: $(.VARIABLES)"
 	@echo "  .DEFAULT_GOAL: $(.DEFAULT_GOAL)"
 	@echo "  SRCDIR: $(SRCDIR)"
@@ -176,7 +182,7 @@ clean-reference-manual:
 clean-deps:
 	-$(RM) $(DEP)
 
-#   target: clean-objs -  Delete the objects created during build.
+#   target: clean-objs - Delete the objects created during build.
 clean-objs:
 	-$(RM) $(OBJ)
 
