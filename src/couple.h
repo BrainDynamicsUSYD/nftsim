@@ -1,3 +1,11 @@
+/** @file couple.h
+  @brief A brief, one sentence description.
+
+  A more detailed multiline description...
+
+  @author Peter Drysdale, Felix Fung,
+*/
+
 #ifndef NEUROFIELD_SRC_COUPLE_H
 #define NEUROFIELD_SRC_COUPLE_H
 
@@ -13,8 +21,8 @@ class Couple : public NF {
 
   const Propag& prepropag;
   const Population& postpop;
-  vector<double> n; // nu
-  vector<double> P; // nu*phi
+  vector<double> n; ///< nu
+  vector<double> P; ///< nu*phi
   int pos;
  public:
   Couple( int nodes, double deltat, int index,

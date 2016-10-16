@@ -1,9 +1,15 @@
 /** @file main.cpp
-  @brief A brief, one sentence description.
+  @brief Implements the main entry point for Neurofield, a multiscale neural field software.
 
-  A more detailed multiline description...
+  NeuroField is capable of simulating scales from a few tenths of a millimetre
+  and a few milliseconds upward. It allows for the specification of models with:
+    + an arbitrary number of neural populations, of different types and with
+      different parameters;
+    + different types of connections between populations; and,
+    + different type of activity propagation, with or without propagation
+      time delays between neural populations.
 
-  @author Peter Drysdale, 
+  @author Peter Drysdale, Felix Fung,
 */
 
 #include<cstring>

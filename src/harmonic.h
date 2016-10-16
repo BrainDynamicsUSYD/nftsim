@@ -1,3 +1,11 @@
+/** @file harmonic.h
+  @brief A brief, one sentence description.
+
+  A more detailed multiline description...
+
+  @author Peter Drysdale, Felix Fung,
+*/
+
 #ifndef NEUROFIELD_SRC_HARMONIC_H
 #define NEUROFIELD_SRC_HARMONIC_H
 
@@ -13,7 +21,7 @@ class Harmonic : public virtual Propag {
   //virtual void restart( Restartf& restartf );
   //virtual void dump( Dumpf& dumpf ) const;
 
-  double gamma;  // damping coefficient
+  double gamma;  ///< damping coefficient
 
   vector<double> oldp;
   vector<double> oldQ;

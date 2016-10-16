@@ -1,3 +1,11 @@
+/** @file solver.h
+  @brief Defines the Solver class, a high level container for managing a simulation.
+
+  The Solver class pulls together Population, Propag, and Couple classes.
+
+  @author Peter Drysdale, Felix Fung,
+*/
+
 #ifndef NEUROFIELD_SRC_SOLVER_H
 #define NEUROFIELD_SRC_SOLVER_H
 
@@ -16,16 +24,16 @@ class Solver : public NF {
 
   Dumpf& dumpf;
 
-  int steps; // number of integration steps to perform
+  int steps; ///< number of integration steps to perform
 
   struct CntMat : public NF {
-    int npop; // number of populations
-    int ncnt; // number of connections
+    int npop; ///< number of populations
+    int ncnt; ///< number of connections
     vector< vector<double> > raw; // 2D vector of raw connection matrix
 
-    vector<int> pre;  // presynaptic connection index for each population
-    vector<int> post;  // postsynaptic connection index for each population
-    vector<int> ndr;  // number of dendrites for each population
+    vector<int> pre;  ///< presynaptic connection index for each population
+    vector<int> post; ///< postsynaptic connection index for each population
+    vector<int> ndr;  ///< number of dendrites for each population
 
     void init( Configf& configf ) override;
     //void restart( Restartf& restartf ) {}
@@ -82,7 +90,7 @@ class Solver : public NF {
   explicit Solver( Dumpf& dumpf );
   ~Solver(void) override;
 
-  void solve(void); // main integration loop
+  void solve(void); ///< main integration loop
   void step(void) override;
 };
 

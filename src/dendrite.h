@@ -1,3 +1,11 @@
+/** @file dendrite.h
+  @brief Defines the Dendrite class, which handles the response of the postsynaptic population.
+
+  A more detailed multiline description...
+
+  @author Peter Drysdale, Felix Fung,
+*/
+
 #ifndef NEUROFIELD_SRC_DENDRITE_H
 #define NEUROFIELD_SRC_DENDRITE_H
 
@@ -10,10 +18,10 @@ class Dendrite : public NF {
   Dendrite(Dendrite& ); // no copy constructor
 
   // variables that are intialized once to speed up computation
-  double aminusb; // == alpha - beta
-  double expa; // == exp(-alpha*deltat)
-  double expb; // == exp(-beta*deltat)
-  double factorab; // == 1./alpha + 1./beta;
+  double aminusb;  ///< == alpha - beta
+  double expa;     ///< == exp(-alpha*deltat)
+  double expb;     ///< == exp(-beta*deltat)
+  double factorab; ///< == 1./alpha + 1./beta;
 
   // variables that are used every timestep
   double adjustednp;

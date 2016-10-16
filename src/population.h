@@ -1,3 +1,11 @@
+/** @file population.h
+  @brief A brief, one sentence description.
+
+  A more detailed multiline description...
+
+  @author Peter Drysdale, Felix Fung,
+*/
+
 #ifndef NEUROFIELD_SRC_POPULATION_H
 #define NEUROFIELD_SRC_POPULATION_H
 
@@ -20,15 +28,15 @@ using std::vector;
 class Population : public NF {
   Population(void); // no default constructor
   Population(Population& ); // no copy constructor
-  QResponse* qresponse; // qresponse for neural population
-  Timeseries* timeseries; // timeseries for stimulus
+  QResponse* qresponse; ///< qresponse for neural population
+  Timeseries* timeseries; ///< timeseries for stimulus
  protected:
-  int qkey; // index to the present q in qhistory
-  vector< vector<double> > qhistory; // keyring of Q
-  vector<double> q; // current Q, only for output purpose
-  bool settled; // if true, forbids add2Dendrite and growHistory
-  double length; // spatial length
-  double qinit; // initial firing rate
+  int qkey; ///< index to the present q in qhistory
+  vector< vector<double> > qhistory; ///< keyring of Q
+  vector<double> q; ///< current Q, only for output purpose
+  bool settled; ///< if true, forbids add2Dendrite and growHistory
+  double length; ///< spatial length
+  double qinit; ///< initial firing rate
 
   void init( Configf& configf ) override;
  public:

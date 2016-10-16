@@ -1,3 +1,12 @@
+/** @file qresponse.h
+  @brief Defines the QResponse class, for the soma response of neural populations.
+
+  Each neural population is associated with a QResponse object, which produces
+  the soma response.
+
+  @author Peter Drysdale, Felix Fung,
+*/
+
 #ifndef NEUROFIELD_SRC_QRESPONSE_H
 #define NEUROFIELD_SRC_QRESPONSE_H
 
@@ -23,17 +32,17 @@ class QResponse : public NF {
   string mode;
   double theta;
   double sigma;
-  double Q_max;
+  double Q_max; ///< Maximum firing rate.
   double a,b,c,d;
 
-  Array<Dendrite> dendrites; // array of dendrites
-  vector<int> dendrite_index; // indices of dendrites
-  vector<double> v; // soma potential for the population
+  Array<Dendrite> dendrites; ///< array of dendrites
+  vector<int> dendrite_index; ///< indices of dendrites
+  vector<double> v; ///< soma potential for the population
 
   // glutamate concentration in synaptic cleft
   struct Glu : public DE {
-    double Lambda; // glutamate concentration per action potential
-    double tGlu;   // time scale of glutamate
+    double Lambda; ///< glutamate concentration per action potential
+    double tGlu;   ///< time scale of glutamate
 
     Glu( int nodes, double deltat ) : DE(nodes,deltat,2) {}
     ~Glu(void) override = default;

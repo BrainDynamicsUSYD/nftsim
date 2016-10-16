@@ -1,9 +1,9 @@
 /** @file propag.cpp
-  @brief A brief, one sentence description.
+  @brief Propag computes the axonal propagation of instantaneous firing rate.
 
   A more detailed multiline description...
 
-  @author Peter Drysdale, 
+  @author Peter Drysdale, Felix Fung,
 */
 
 #include "propag.h"

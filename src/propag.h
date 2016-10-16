@@ -1,3 +1,12 @@
+/** @file propag.h
+  @brief The base Propag class definition.
+
+  Propagators are used to compute the axonal propagation of instantaneous
+  firing rate.
+
+  @author Peter Drysdale, Felix Fung,
+*/
+
 #ifndef NEUROFIELD_SRC_PROPAG_H
 #define NEUROFIELD_SRC_PROPAG_H
 
@@ -15,9 +24,9 @@ class Propag : public NF {
 
   Population& prepop;
   Population& postpop;
-  Tau tau; // tau_ab
+  Tau tau; ///< tau_ab
   int longside;
-  vector<double> p; // phi_ab
+  vector<double> p; ///< phi_ab
  public:
   Propag( int nodes, double deltat, int index, Population& prepop,
           Population& postpop, int longside, string topology );

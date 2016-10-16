@@ -1,6 +1,6 @@
 /**
  * @file wave.cpp
- * @brief The wave propagator, including the method to step forward in time
+ * @brief The wave propagator, including the method to step forward in time.
  *
  * @author Peter Drysdale, Felix Fung, Romesh Abeysuriya, Paula Sanz-Leon
  *

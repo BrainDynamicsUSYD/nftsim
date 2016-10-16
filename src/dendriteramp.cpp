@@ -3,13 +3,23 @@
 
   A more detailed multiline description...
 
-  @author Peter Drysdale, 
+  @author Peter Drysdale, Felix Fung,
 */
 
 #include<cstdlib>
 #include<cmath>
 #include"dendriteramp.h"
 
+/**
+  @brief Computes the dendritic ramp.
+
+  The dendritic ramp is given by:
+  \f{eqnarray*}{
+    \frac{dv}{dt}&=&W \\
+    \frac{dW}{dt}&=&\left(\nu\phi - V - \left(\frac{1}{\alpha} + \frac{1}{\beta}\right) W\right) \alpha \beta \\
+    \frac{d\nu\phi}{dt}&=&0
+  \f}
+*/
 void DendriteRamp::DendriteDE::rhs( const vector<double>& y, vector<double>& dydt ) {
   // y = {V,W==dv/dt,nuphi}
   // dydt = {dv/dt==W, dW/dt==d^2V/dt^2,dnuphi/dt}  d(nuphi)/dt from precouple

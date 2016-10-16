@@ -1,3 +1,11 @@
+/** @file cadp.h
+  @brief A brief, one sentence description.
+
+  A more detailed multiline description...
+
+  @author Peter Drysdale, Felix Fung,
+*/
+
 #ifndef NEUROFIELD_SRC_CADP_H
 #define NEUROFIELD_SRC_CADP_H
 
@@ -13,24 +21,24 @@ class CaDP : public Couple {
     //double alpha; // for fCaDE
     //double alpha_beta; // for fCaDE, == alpha -beta
 
-    double B; // 1/stanard deviation of glutamate binding
-    double glu_0; // glutamte dose-response threshold
+    double B; ///< 1/standard deviation of glutamate binding
+    double glu_0; ///< glutamate dose-response threshold
 
-    double max; // maximum synaptic strength
-    double xth;  // threshold time-scale of plasticity
-    double yth;  // threshold time-scale of plasticity
-    double ltd; // time-scale of depression
-    double ltp; // time-scale of potentiation
+    double max; ///< maximum synaptic strength
+    double xth; ///< threshold time-scale of plasticity
+    double yth; ///< threshold time-scale of plasticity
+    double ltd; ///< time-scale of depression
+    double ltp; ///< time-scale of potentiation
 
-    double dth; // calcium threshold to depression
-    double pth; // calcium threshold to potentiation
+    double dth; ///< calcium threshold to depression
+    double pth; ///< calcium threshold to potentiation
 
-    double tCa; // time-scale of calcium influx/cascade
+    double tCa; ///< time-scale of calcium influx/cascade
 
-    double gnmda; // gain for NMDA receptor
-    double z; // timescale of protein cascade
+    double gnmda; ///< gain for NMDA receptor
+    double z; ///< timescale of protein cascade
 
-    double pos; // sign of nu
+    double pos; ///< sign of nu
 
     virtual void init( Configf& configf );
     CaDE( int nodes, double deltat ) : DE(nodes,deltat,8) {}
@@ -38,8 +46,8 @@ class CaDP : public Couple {
 
     void rhs( const vector<double>& y, vector<double>& dydt ) override;
     double sig( double x, double beta ) const;
-    virtual double _x( double Ca ) const; // potentiation rate
-    virtual double _y( double Ca ) const; // depression rate
+    virtual double _x( double Ca ) const; ///< potentiation rate
+    virtual double _y( double Ca ) const; ///< depression rate
     virtual void pot(void);
     virtual void dep(void);
   };
