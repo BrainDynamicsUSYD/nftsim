@@ -34,16 +34,16 @@ void Couple_diff_arctan::init( Configf& configf ) {
   //size of time vector:
   time_int = time_tot/deltat;
 
-  //initialize ramp
+  //pre-compute the profile
   for( int i=0; i<time_tot; i++ ) {
-      ramp = (atan((i-t_half_up)/delt)-atan((i-t_half_down)/delt));
-      deltanu.push_back(ramp);
+      diff_atan = (atan((i-t_half_up)/delt)-atan((i-t_half_down)/delt));
+      deltanu.push_back(diff_atan);
   }
-  //min and max ramp values
-  ramp_min=*std::min_element(deltanu.begin(), deltanu.end());
-  ramp_max=*std::max_element(deltanu.begin(), deltanu.end());
+  //min and max value -  standardise values between 0 and 1
+  diff_atan_min=*std::min_element(deltanu.begin(), deltanu.end());
+  diff_atan_max=*std::max_element(deltanu.begin(), deltanu.end());
   
-  n.clear(); n.resize(nodes,nu_min);
+  n.clear(); n.resize(nodes, nu_min);
   pos = (nu_min>0)?1:-1;
 
   for( int i=0; i<nodes; i++) {
@@ -55,7 +55,7 @@ void Couple_diff_arctan::init( Configf& configf ) {
 }
 
 void Couple_diff_arctan::step(void) {
-  //ramping of nu_ab (nu_ab = n)
+  // Return the right value at each time point
   time += deltat;
   for( int i=0; i<nodes; i++ ) {
     n[i]= nu_min + (nu_max-nu_min)*(((atan((time-t_half_up)/delt)-atan((time-t_half_down)/delt))-ramp_min)/(ramp_max-ramp_min));
