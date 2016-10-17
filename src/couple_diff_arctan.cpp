@@ -21,7 +21,7 @@ void Couple_diff_arctan::init( Configf& configf ) {
   //read initial ramp conditions from config file
   configf.param("nu_min",nu_min);
   configf.param("nu_max",nu_max);
-  configf.param("delt",delt);
+  configf.param("delta",delta);
   configf.param("t_half_up",t_half_up);
   configf.param("t_half_down",t_half_down);
   if(t_half_up > t_half_down) {
@@ -36,7 +36,7 @@ void Couple_diff_arctan::init( Configf& configf ) {
 
   //pre-compute the profile
   for( int i=0; i<time_tot; i++ ) {
-      diff_atan = (atan((i-t_half_up)/delt)-atan((i-t_half_down)/delt));
+      diff_atan = (atan((i-t_half_up)/delta)-atan((i-t_half_down)/delta));
       deltanu.push_back(diff_atan);
   }
   //min and max value -  standardise values between 0 and 1
@@ -58,7 +58,7 @@ void Couple_diff_arctan::step(void) {
   // Return the right value at each time point
   time += deltat;
   for( int i=0; i<nodes; i++ ) {
-    n[i]= nu_min + (nu_max-nu_min)*(((atan((time-t_half_up)/delt)-atan((time-t_half_down)/delt))-ramp_min)/(ramp_max-ramp_min));
+    n[i]= nu_min + (nu_max-nu_min)*(((atan((time-t_half_up)/delta)-atan((time-t_half_down)/delta))-ramp_min)/(ramp_max-ramp_min));
   }
   Couple::step();
 }
