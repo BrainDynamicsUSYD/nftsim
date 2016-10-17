@@ -545,11 +545,11 @@ Glutamate dynamics - Lambda: 150e-6 tGlu: 30e-3
 CaDP - nu: 13e-6 nu_max: 80e-6 Dth: .25e-6 Pth: .45e-6 xyth: 1e-4 x: 2.3e-2 y: 2e-2 B: 30e3 glu_0: 200e-6 gNMDA: 2e-3 t_BCM: 7
 	\end{lstlisting}
          \item[DiffArctan]\ \\
-	This type of coupling allows the connection strength $\nu_{ab}$ to vary as a function of time, such that $\nu$ is smoothly ramped up and down. 
+	This type of coupling allows the connection strength $\nu_{ab}$ to vary as a function of time, such that $\nu$ can be smoothly ramped up and down. 
 	\begin{lstlisting}
-DiffArctan - nu_min: 0.002  nu_max: 0.006  delt: 10  t_half_up:50  t_half_down:100
+DiffArctan - nu_min: 0.002  nu_max: 0.006  delta: 10  t_half_up:50  t_half_down:100
 	\end{lstlisting}
-where \type{nu\_min} and \type{nu\_max} are the min and max $\nu$'s respectively. \type{delt} determines the slope of the ramp, where gradient $\propto$ 1/\type{delt}. \type{t\_half\_up} and \type{t\_half\_down} are the half way times to maximum and minimum ramp amplitude, respectively.  
+where \type{nu\_min} and \type{nu\_max} are the min and max $\nu$'s respectively. \type{delta} determines the slope of the ramp (1/\type{delta}) and is the time interval in which the connection strenght increases (decreases) from 0.25 to 0.75 of \type{nu\_max}. \type{t\_half\_up} and \type{t\_half\_down} are the half way times to maximum and minimum  amplitude, respectively.  
 \end{description}
 \end{itemize}
 
