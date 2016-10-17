@@ -1,16 +1,28 @@
 ### Quick start
 
-    make ./bin/neurofield -i configs/example.conf -o example.output
-    doxygen Doxyfile
-    
-The html files will be place under `doc/html`
+To build the executable on Linux or Mac, open a terminal in the neurofield directory and type:
+
+    make
+
+this produces the executable (bin/neurofield). The user-manual is available as doc/NeurofieldManual.pdf.
+
+To build the reference manual, generated from the code, type:
+
+    make reference-manual
+
+The html files for the reference-manual will be place under `doc/html`, point your browser at the index.html file in that directory.
+
+For a brief description of available Makefile targets, type:
+
+    make help
+
 ### Setup guide
 
 **Please check the [NeuroField wiki](https://github.com/BrainDynamicsUSYD/neurofield/wiki) for the setup walkthrough. The instructions below are a standalone summary if you do not have internet access. More detailed instructions are also included in the PDF documentation**
 
 1. Ensure you have a compiler that supports the `C++11` standard. We recommend GCC 4.8 or higher.
 
-2. Type `make` to build the binary `Release/NeuroField`. More information about [cross platform for non-Linux](https://github.com/BrainDynamicsUSYD/neurofield/wiki/Cross-platform-support) systems is also available. 
+2. Type `make` to build the binary `bin/neurofield`. More information about [cross platform for non-Linux](https://github.com/BrainDynamicsUSYD/neurofield/wiki/Cross-platform-support) systems is also available.
 
 3. Example configurations including examples for published results are available in the `configs` folder.
 
