@@ -58,7 +58,7 @@ void CoupleDiffArctan::step(void) {
   // Return the right value at each time point
   time += deltat;
   for( int i=0; i<nodes; i++ ) {
-    n[i]= nu_min + (nu_max-nu_min)*(((atan((time-t_half_up)/delta)-atan((time-t_half_down)/delta))-ramp_min)/(ramp_max-ramp_min));
+    n[i]= nu_min + (nu_max-nu_min)*(((atan((time-t_half_up)/delta)-atan((time-t_half_down)/delta))-diff_atan_min)/(diff_atan_max-diff_atan_min));
   }
   Couple::step();
 }
