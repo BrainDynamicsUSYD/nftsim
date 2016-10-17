@@ -9,9 +9,10 @@ class Couple_diff_arctan : public Couple {
  Couple_diff_arctan(Couple_diff_arctan&);
  protected:
   double nu_min, nu_max;
-  double delt, t_half_down, t_half_up;
+  double t_half_down, t_half_up;
+  double delta; ///< Time interval [s] in which the function will go from 0.25 to 0.75 of nu_max.
   double time_tot;
-  double ramp, ramp_min, ramp_max;
+  double diff_atan, diff_atan_min,  diff_atan_max;
   double time;
   double time_int;
   vector<double> deltanu;
