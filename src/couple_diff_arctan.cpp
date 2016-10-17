@@ -1,7 +1,9 @@
 /** @file couple.cpp
-  @brief A variation of the class "couple", where nu_ab is ramped with time, where the ramp is a difference of arctans. 
+  @brief A new Couple class, where nu_ab follows a smooth function. 
 
-  A more detailed multiline description...
+  The smooth variation of nu_ab is defined by the difference of 
+  two arctangent functions.  
+
 
   @author Farah Deeba, Paula Sanz-Leon, Sahand Assadzadeh 
 */
