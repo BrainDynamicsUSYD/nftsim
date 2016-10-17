@@ -173,7 +173,7 @@ void Solver::init( Configf& configf ) {
       //Epilepsy(nodes,deltat,i, *propags[i], *pops[cnt.post[i]] ) );
     } else if(ctype=="DiffArctan") {
       couples.add( new
-                   Couple_diff_arctan(nodes,deltat,i, *propags[i], *pops[cnt.post[i]], tempf ) );
+                   CoupleDiffArctan(nodes,deltat,i, *propags[i], *pops[cnt.post[i]], tempf ) );
     } else {
       cerr<<"Invalid couple type '"<<ctype<<"'."<<endl;
       exit(EXIT_FAILURE);
