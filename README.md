@@ -1,35 +1,47 @@
-### Quick start
+# Neurofield
+
+This library implements methods to simulate neural field models,
+based on Robinson's Neural Field Theory.
+
+
+## Installation
+
+1. Fork and clone; or,
+
+2. download the latest [release](https://github.com/BrainDynamicsUSYD/neurofield/releases) as a `.zip` or `tar.gz` file.
+
+### Build/compilation
 
 To build the executable on Linux or Mac, open a terminal in the neurofield directory and type:
 
     make
 
-this produces the executable (bin/neurofield). The user-manual is available as doc/NeurofieldManual.pdf.
+this produces the executable (`bin/neurofield`). The user-manual is available as `doc/NeurofieldManual.pdf`.
 
 To build the reference manual, generated from the code, type:
 
     make reference-manual
 
-The html files for the reference-manual will be place under `doc/html`, point your browser at the index.html file in that directory.
+The html files for the reference-manual will be placed under `doc/html`, point your browser at the index.html file in that directory.
 
 For a brief description of available Makefile targets, type:
 
     make help
 
-### Setup guide
 
-**Please check the [NeuroField wiki](https://github.com/BrainDynamicsUSYD/neurofield/wiki) for the setup walkthrough. The instructions below are a standalone summary if you do not have internet access. More detailed instructions are also included in the PDF documentation**
 
-1. Ensure you have a compiler that supports the `C++11` standard. We recommend GCC 4.8 or higher.
+**NOTE**: Ensure you have a compiler that supports the `C++11` standard.  
+On Linux: g++ 4.8 or higher; clang 3.7 or higher.
+On MacOS: TBD.
 
-2. Type `make` to build the binary `bin/neurofield`. More information about [cross platform for non-Linux](https://github.com/BrainDynamicsUSYD/neurofield/wiki/Cross-platform-support) systems is also available.
+## Demos
 
-3. Example configurations including examples for published results are available in the `configs` folder.
+Example configurations including examples for published results are available in the `configs` folder.
 
-### Troubleshooting
+## Troubleshooting
 
 Problems compiling? Check [the following page](https://github.com/BrainDynamicsUSYD/neurofield/wiki/Troubleshooting) for the latest information.
 
-### Guidelines for contributing code
+## How to contribute code
 
 If you intend to contribute to NeuroField development, please make a private fork of this repository and follow the [instructions for contributors.](https://github.com/BrainDynamicsUSYD/neurofield/wiki/How-to-contribute-code-to-NeuroField)
