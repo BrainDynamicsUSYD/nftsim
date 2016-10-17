@@ -12,6 +12,7 @@
 #include"longcouple.h"
 #include"bcmlong.h"
 #include"coupleramp.h"
+#include"couple_diff_arctan.h"
 
 using std::cerr;
 using std::endl;
@@ -170,6 +171,9 @@ void Solver::init( Configf& configf ) {
       //else if(ctype=="Epilepsy")
       //couples.add( new
       //Epilepsy(nodes,deltat,i, *propags[i], *pops[cnt.post[i]] ) );
+    } else if(ctype=="DiffArctan") {
+      couples.add( new
+                   CoupleDiffArctan(nodes,deltat,i, *propags[i], *pops[cnt.post[i]], tempf ) );
     } else {
       cerr<<"Invalid couple type '"<<ctype<<"'."<<endl;
       exit(EXIT_FAILURE);
