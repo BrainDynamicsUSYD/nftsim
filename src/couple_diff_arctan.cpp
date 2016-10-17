@@ -1,11 +1,11 @@
 /** @file couple.cpp
-  @brief A new Couple class, where nu_ab follows a smooth function. 
+  @brief A new Couple class, where nu_ab follows a smooth function.
 
-  The smooth variation of nu_ab is defined by the difference of 
-  two arctangent functions.  
+  The smooth variation of nu_ab is defined by the difference of
+  two arctangent functions.
 
 
-  @author Farah Deeba, Paula Sanz-Leon, Sahand Assadzadeh 
+  @author Farah Deeba, Paula Sanz-Leon, Sahand Assadzadeh
 */
 
 #include<iostream>
@@ -29,21 +29,22 @@ void CoupleDiffArctan::init( Configf& configf ) {
   } else if(t_half_up == t_half_down) {
     cerr<<"t_half_up must be less than t_half_down" <<endl;
     exit (EXIT_FAILURE);
-  } 
+  }
 
   //size of time vector:
   time_int = time_tot/deltat;
 
   //pre-compute the profile
   for( int i=0; i<time_tot; i++ ) {
-      diff_atan = (atan((i-t_half_up)/delta)-atan((i-t_half_down)/delta));
-      deltanu.push_back(diff_atan);
+    diff_atan = (atan((i-t_half_up)/delta)-atan((i-t_half_down)/delta));
+    deltanu.push_back(diff_atan);
   }
   //min and max value -  standardise values between 0 and 1
   diff_atan_min=*std::min_element(deltanu.begin(), deltanu.end());
   diff_atan_max=*std::max_element(deltanu.begin(), deltanu.end());
-  
-  n.clear(); n.resize(nodes, nu_min);
+
+  n.clear();
+  n.resize(nodes, nu_min);
   pos = (nu_min>0)?1:-1;
 
   for( int i=0; i<nodes; i++) {
@@ -51,7 +52,7 @@ void CoupleDiffArctan::init( Configf& configf ) {
   }
 
   //initial time
-  time = 0; 
+  time = 0;
 }
 
 void CoupleDiffArctan::step(void) {
@@ -65,9 +66,9 @@ void CoupleDiffArctan::step(void) {
 
 
 CoupleDiffArctan::CoupleDiffArctan( int nodes, double deltat, int index,
-                const Propag& prepropag, const Population& postpop, double tempf )
+                                    const Propag& prepropag, const Population& postpop, double tempf )
   : Couple(nodes,deltat,index,prepropag,postpop) {
-  // total simulation time is stored in tempf (defined in solver.cpp line 73)  
+  // total simulation time is stored in tempf (defined in solver.cpp line 73)
   time_tot = tempf;
 }
 
