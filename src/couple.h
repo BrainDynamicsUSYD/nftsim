@@ -19,14 +19,14 @@ class Couple : public NF {
   //virtual void restart( Restartf& restartf );
   //virtual void dump( Dumpf& dumpf ) const;
 
-  const Propag& prepropag;
+  const Propagator& prepropag;
   const Population& postpop;
   vector<double> n; ///< nu
   vector<double> P; ///< nu*phi
   int pos;
  public:
   Couple( int nodes, double deltat, int index,
-          const Propag& prepropag, const Population& postpop );
+          const Propagator& prepropag, const Population& postpop );
   ~Couple(void) override;
   void step(void) override;
   double nuinit( Configf& configf ) const;

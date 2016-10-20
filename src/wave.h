@@ -17,10 +17,10 @@
 #ifndef NEUROFIELD_SRC_WAVE_H
 #define NEUROFIELD_SRC_WAVE_H
 
-#include"propag.h"
+#include"propagator.h"
 #include"stencil.h"
 
-class Wave : public Propag {
+class Wave : public Propagator {
   Wave(); // no default constructor
   Wave(Wave&); // no copy constructor
  protected:

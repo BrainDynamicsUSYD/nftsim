@@ -123,11 +123,11 @@ void Solver::init( Configf& configf ) {
   }*/
 
   for( int i=0; i<cnt.ncnt; i++ ) {
-    string ptype = configf.find( label("Propag ",i+1) +":" );
+    string ptype = configf.find( label("Propagator ",i+1) +":" );
     // PUT YOUR PROPAGATORS HERE
     if(ptype=="Map") {
       propags.add( new
-                   Propag(nodes,deltat,i, *pops[cnt.pre[i]], *pops[cnt.post[i]], longside, topology));
+                   Propagator(nodes,deltat,i, *pops[cnt.pre[i]], *pops[cnt.post[i]], longside, topology));
     } else if(ptype=="Wave") {
       if( nodes==1 ) {
         propags.add( new
@@ -195,7 +195,7 @@ void Solver::init( Configf& configf ) {
     configf.param( label("Population ",i+1), *pops[i] );
   }
   for( int i=0; i<cnt.ncnt; i++ ) {
-    configf.param( label("Propag ",i+1), *propags[i] );
+    configf.param( label("Propagator ",i+1), *propags[i] );
   }
   for( int i=0; i<cnt.ncnt; i++ ) {
     configf.param( label("Couple ",i+1), *couples[i] );
@@ -315,7 +315,7 @@ void Solver::Outputs::init( Configf& configf ) {
 
   // read in dendrites to output
   configf.next("Dendrite");
-  temp = configf.arb("Propag:");
+  temp = configf.arb("Propagator:");
   for(auto & i : temp) {
     int obj_index = atoi(i.c_str());
     if( obj_index > cnt.ncnt || obj_index<1 ) {
@@ -339,13 +339,13 @@ void Solver::Outputs::init( Configf& configf ) {
   }
 
   // read in propags to output
-  configf.next("Propag");
+  configf.next("Propagator");
   temp = configf.arb("Couple:");
   for(auto & i : temp) {
     int obj_index = atoi(i.c_str());
     if( obj_index > cnt.ncnt || obj_index<1 ) {
-      cerr<<"Trying to output propag "<<obj_index
-          <<", which is an invalid propag."<<endl;
+      cerr<<"Trying to output propagator "<<obj_index
+          <<", which is an invalid propagator."<<endl;
       exit(EXIT_FAILURE);
     }
     string key;
@@ -355,7 +355,7 @@ void Solver::Outputs::init( Configf& configf ) {
     Output output(key);
     propags[obj_index-1]->output(output);
     if( output.empty() ) {
-      cerr<<"Propag "<<i.c_str()<<" cannot be outputted."<<endl;
+      cerr<<"Propagator "<<i.c_str()<<" cannot be outputted."<<endl;
       exit(EXIT_FAILURE);
     }
     add(output);

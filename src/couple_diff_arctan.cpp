@@ -66,7 +66,7 @@ void CoupleDiffArctan::step(void) {
 
 
 CoupleDiffArctan::CoupleDiffArctan( int nodes, double deltat, int index,
-                                    const Propag& prepropag, const Population& postpop, double tempf )
+                                    const Propagator& prepropag, const Population& postpop, double tempf )
   : Couple(nodes,deltat,index,prepropag,postpop) {
   // total simulation time is stored in tempf (defined in solver.cpp line 73)
   time_tot = tempf;

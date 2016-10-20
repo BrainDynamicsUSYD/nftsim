@@ -57,7 +57,7 @@ class BCM : public CaDP {
   };
  public:
   BCM( int nodes, double deltat, int index,
-       const Propag& prepropag, const Population& postpop );
+       const Propagator& prepropag, const Population& postpop );
   ~BCM(void) override;
   void output( Output& output ) const override;
 };

@@ -1,6 +1,6 @@
 function [data,grid_edge] = grid(obj,trace)
     % This function returns a gridded version of a single parameter
-    % e.g. data = nf.grid(nf,'Propag.2.phi') will return the data for Propag.2.phi
+    % e.g. data = nf.grid(nf,'Propagator.2.phi') will return the data for Propagator.2.phi
     % as a 3D matrix, with X and Y coordinates referring to grid positions and
     % Z corresponding to time. This script will throw an error if the output nodes
     % do not start at 1; are not consecutive (i.e. the conf file should

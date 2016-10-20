@@ -9,7 +9,7 @@
 #ifndef NEUROFIELD_SRC_POPULATION_H
 #define NEUROFIELD_SRC_POPULATION_H
 
-class Propag;
+class Propagator;
 class Couple;
 class Population;
 class QResponse;
@@ -18,8 +18,8 @@ class QResponse;
 #include"qresponse.h"
 #include"dendrite.h"
 #include"couple.h"
-#include"tau.h" // Must be included before propag.h
-#include"propag.h"
+#include"tau.h" // Must be included before propagator.h
+#include"propagator.h"
 
 
 using std::vector;
@@ -52,7 +52,7 @@ class Population : public NF {
     return length;
   }
   virtual void add2Dendrite( int index,
-                             const Propag& prepropag, const Couple& precouple, Configf& configf );
+                             const Propagator& prepropag, const Couple& precouple, Configf& configf );
   virtual void growHistory( const Tau& tau );
   void output( Output& output ) const override;
   virtual void outputDendrite( int index, Output& output ) const;

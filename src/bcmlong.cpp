@@ -57,7 +57,7 @@ void BCMLong::init( Configf& configf ) {
 }
 
 BCMLong::BCMLong( int nodes, double deltat, int index,
-                  const Propag& prepropag, const Population& postpop )
+                  const Propagator& prepropag, const Population& postpop )
   : BCM(nodes,deltat,index,prepropag,postpop), de_2d(nodes), rk4_2d(nodes) {
   for( int i=0; i<nodes; i++ ) {
     de_2d [i] = new BCMDE(nodes,deltat);

@@ -36,7 +36,7 @@ class CoupleRamp : public Couple {
   void init( Configf& configf ) override;
   void step(void) override;
   CoupleRamp( int nodes, double deltat, int index,
-              const Propag& prepropag, const Population& postpop );
+              const Propagator& prepropag, const Population& postpop );
   ~CoupleRamp(void) override;
 };
 

@@ -1,7 +1,7 @@
 /** @file solver.h
   @brief Defines the Solver class, a high level container for managing a simulation.
 
-  The Solver class pulls together Population, Propag, and Couple classes.
+  The Solver class pulls together Population, Propagator, and Couple classes.
 
   @author Peter Drysdale, Felix Fung,
 */
@@ -14,7 +14,7 @@
 
 using std::vector;
 
-class Propag;
+class Propagator;
 class Couple;
 class Population;
 
@@ -52,14 +52,14 @@ class Solver : public NF {
     Dumpf& dumpf;
     CntMat& cnt;
     Array<Population>& pops;
-    Array<Propag>& propags;
+    Array<Propagator>& propags;
     Array<Couple>& couples;
 
     void init( Configf& configf ) override;
     //void restart( Restartf& restartf ) {}
     //void dump( Dumpf& dumpf ) const {}
     Outputs( int nodes, double deltat, Dumpf& dumpf,
-             CntMat& cnt, Array<Population>& pops, Array<Propag>& propags, Array<Couple>& couples )
+             CntMat& cnt, Array<Population>& pops, Array<Propagator>& propags, Array<Couple>& couples )
       : NF(nodes,deltat,0), dumpf(dumpf),
         cnt(cnt), pops(pops), propags(propags), couples(couples) {}
     ~Outputs(void) override {
@@ -80,7 +80,7 @@ class Solver : public NF {
   Outputs* outputs;
 
   Array<Population> pops;
-  Array<Propag> propags;
+  Array<Propagator> propags;
   Array<Couple> couples;
  protected:
   void init( Configf& configf ) override;

@@ -56,7 +56,7 @@ class CaDP : public Couple {
   void init( Configf& configf ) override;
  public:
   CaDP( int nodes, double deltat, int index,
-        const Propag& prepropag, const Population& postpop );
+        const Propagator& prepropag, const Population& postpop );
   ~CaDP(void) override;
   void step(void) override;
   void output( Output& output ) const override;

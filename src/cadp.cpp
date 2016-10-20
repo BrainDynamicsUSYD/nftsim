@@ -92,7 +92,7 @@ void CaDP::CaDE::init( Configf& configf ) {
 }
 
 CaDP::CaDP( int nodes, double deltat, int index,
-            const Propag& prepropag, const Population& postpop )
+            const Propagator& prepropag, const Population& postpop )
   : Couple(nodes,deltat,index,prepropag,postpop) {
   de = new CaDE(nodes,deltat);
   rk4 = new RK4(*de);

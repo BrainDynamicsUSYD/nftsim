@@ -40,7 +40,7 @@ void Harmonic::init( Configf& configf ) {
 
 Harmonic::Harmonic( int nodes, double deltat, int index, Population& prepop,
                     Population& postpop, int longside, string topology )
-  : Propag(nodes,deltat,index,prepop,postpop,longside,topology) {
+  : Propagator(nodes,deltat,index,prepop,postpop,longside,topology) {
 }
 
 Harmonic::~Harmonic() = default;

@@ -6,7 +6,7 @@ function [f,P] = spectrum(obj,p,n_windows)    % return the frequency and frequen
     %  p - sampling rate
     if isstruct(obj)
         if nargin < 2 || isempty(p)
-            p = 'propag.1.phi'; % Try the phi propagator first
+            p = 'propagator.1.phi'; % Try the phi propagator first
         end
         data = nf.grid(obj,p);
         fs = 1/obj.deltat;

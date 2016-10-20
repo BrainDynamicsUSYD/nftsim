@@ -35,7 +35,7 @@ void Couple::init( Configf& configf ) {
 }
 
 Couple::Couple( int nodes, double deltat, int index,
-                const Propag& prepropag, const Population& postpop )
+                const Propagator& prepropag, const Population& postpop )
   : NF(nodes,deltat,index), prepropag(prepropag), postpop(postpop), n(nodes), P(nodes) {
 }
 

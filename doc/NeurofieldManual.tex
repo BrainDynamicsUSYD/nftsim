@@ -91,7 +91,7 @@ To get the most out of \NF, you will require a working knowledge of neural field
 	P &= \nu_{ab}\phi_{ab}, & \mathtt{Couple}\\
 	D_{ab}V_{ab} &= P, & \mathtt{Dendrite}\\
 	Q_a &= S_a \big[\sum_b V_{ab} \big], & \mathtt{QResponse}\\
-	\mathcal{D}_{ab}\phi_{ab} &= Q_b.&  \mathtt{Propag}
+	\mathcal{D}_{ab}\phi_{ab} &= Q_b.&  \mathtt{Propagator}
 \end{align*}
 A detailed understanding of these equations is not essential to use \NF. However, you should be familiar with the roles of these components in neural field models. TODO - GO HERE TO FIND OUT MORE
 
@@ -423,7 +423,7 @@ Dendrite 1: V: Steady alpha: 83 beta: 769
 \begin{itemize}
 \item
 	\begin{lstlisting}
-Propag 1:
+Propagator 1:
 	\end{lstlisting}
 	This identifier is required for cross-checking.
 \item A propagator type is required at this point. Choices are \type{Map}, \type{Wave}, and \type{Harmonic}.
@@ -588,7 +588,7 @@ If undefined, defaults, to 0 and \type{Deltat}, respectively.
 \item \begin{lstlisting}
 Population: 4.V
 Dendrite: 5
-Propag: 1 4.phi
+Propagator: 1 4.phi
 Couple: 3.nu
 \end{lstlisting}
 
@@ -606,12 +606,12 @@ If a specific field of an object is specified, but that field does not exist, \N
 \NF produces a single output file called \type{neurofield.output} (unless a different name is manually specified). The output file starts with a copy of the input file, to enable the output file to serve as a complete representation of the simulation. The simulation results follow a series of `\type{=}' characters. Example content in \type{neurofield.output} is
 \begin{lstlisting}
 =============================================
-                Time            Propag.2.phi
+                Time            Propagator.2.phi
                                            0
 1.00000000000000e-04    8.87145000000000e+00
 \end{lstlisting}
 
-Each column is a time series with its name indicated in the first line. The first column is always time, and in this example, the second column is \type{Propag.2.phi}, indicating that it is $\phi_{ee}$ (when checked against connection matrix). The node number is indicated in the second line.
+Each column is a time series with its name indicated in the first line. The first column is always time, and in this example, the second column is \type{Propagator.2.phi}, indicating that it is $\phi_{ee}$ (when checked against connection matrix). The node number is indicated in the second line.
 
 It is also worth noting that traces will be written in the order that they are specified. For example, if you write \type{Population: 3 1} then the columns in the output file will be arranged in this order. 
 
@@ -644,7 +644,7 @@ A number of Matlab functions are provided to make it easy to manipulate \NF data
 Essentially, an output file from \NF is read into a \type{nf} struct object in Matlab which simply contains all of the output from \NF in memory for easy access. Here is an example of a \type{nf} object:
 \begin{lstlisting}
 obj =
-     fields: {'Propag.1.phi'  'Propag.3.phi'}
+     fields: {'Propagator.1.phi'  'Propagator.3.phi'}
       nodes: {[1]  [1]}
        data: {[300000x1 double]  [300000x1 double]}
        time: [300000x1 double]
@@ -674,14 +674,14 @@ obj = nf.run('neurofield.conf')
 
 %Using \type{nf\_run} means you will need to add \NF to your shell search path.
 
-Several helper files are provided to manipulate the \type{nf} object. The two most important helpers are \type{nf.extract} and \type{nf.grid}. Often you want to extract a particular field from the \type{nf} object, for example, to examine the output from \type{Propag.3.phi}. To do this directly with the neurofield struct, you would need to check the \type{fields} variable to find the index of the trace you wanted, and then extract it from the \type{data} field. In the previous example, \type{Propag.3.phi} is the second trace. These expressions are identical:
+Several helper files are provided to manipulate the \type{nf} object. The two most important helpers are \type{nf.extract} and \type{nf.grid}. Often you want to extract a particular field from the \type{nf} object, for example, to examine the output from \type{Propagator.3.phi}. To do this directly with the neurofield struct, you would need to check the \type{fields} variable to find the index of the trace you wanted, and then extract it from the \type{data} field. In the previous example, \type{Propagator.3.phi} is the second trace. These expressions are identical:
 \begin{lstlisting}
 trace = obj.data{2};
-trace = nf.extract(obj,'Propag.3.phi')
+trace = nf.extract(obj,'Propagator.3.phi')
 \end{lstlisting}
-\type{nf.extract} quickly becomes useful when there are many different fields. It is not case sensitive (so \type{propag.3.phi} works as well). You can also specify using additional arguments to extract only a portion of the time series, and also to select a subset of nodes. Finally, you can also provide multiple traces to concatenate them into a single matrix. For example,
+\type{nf.extract} quickly becomes useful when there are many different fields. It is not case sensitive (so \type{propagator.3.phi} works as well). You can also specify using additional arguments to extract only a portion of the time series, and also to select a subset of nodes. Finally, you can also provide multiple traces to concatenate them into a single matrix. For example,
 \begin{lstlisting}
-trace = nf.extract(obj,'propag.1.phi,propag.3.phi');
+trace = nf.extract(obj,'propagator.1.phi,propagator.3.phi');
 \end{lstlisting}
 will create a 300000$\times$2 matrix with both of the traces. 
 
@@ -718,9 +718,9 @@ We have adopted the {\em fork and pull} development model using GitHub. If you w
 
 Note that you do not have write access to the main repository, so all changes must be proposed via pull requests. If your proposed changes are accepted, we may make modifications to ensure they integrate seamlessly with the rest of the program.
 
-As discussed at the start of manual, \NF encapsulates each component of the model with an object: \type{Couple}, \type{Dendrite}, \type{QResponse}, \type{Propag}. The \type{Dendrite} and \type{QResponse} (and also \type{Timeseries}) are contained within \type{Population}.
+As discussed at the start of manual, \NF encapsulates each component of the model with an object: \type{Couple}, \type{Dendrite}, \type{QResponse}, \type{Propagator}. The \type{Dendrite} and \type{QResponse} (and also \type{Timeseries}) are contained within \type{Population}.
 
-Each object class may be overloaded for more sophisticated behaviour; for example, \type{Propag} may be overloaded to perform wave propagation, or \type{Couple} may be overloaded for synaptic plasticity.
+Each object class may be overloaded for more sophisticated behaviour; for example, \type{Propagator} may be overloaded to perform wave propagation, or \type{Couple} may be overloaded for synaptic plasticity.
 
 \subsubsection{Coding style}
 
@@ -753,7 +753,7 @@ Most new functionalities may be introduced by inheriting existing classes and ov
 	\type{Dendrite}&Dendritic response.&$V_{ab}$\\
 	\type{QResponse}&Firing response of population.&$V_a$\\
 	\type{Population}&Contains \type{Timeseries}, \type{Dendrite}, and \type{QResponse}.&$Q_a$\\
-	\type{Propag}&Axonal firing propagation&$\phi_{ab}$\\
+	\type{Propagator}&Axonal firing propagation&$\phi_{ab}$\\
 	\type{Tau}&Axonal propagation time latency&$\tau_{ab}$\\
 	\type{Couple}&Synaptic coupling&$\nu_{ab}$
 \end{tabular}
@@ -763,7 +763,7 @@ Examples where these classes are inherited to provided new functionalities inclu
 \begin{tabular}{l l l}
 	Derived class&Base class&Extension\\
 	\hline
-	\type{Wave}&\type{Propag}&Wave propagation.\\
+	\type{Wave}&\type{Propagator}&Wave propagation.\\
 	\type{CaDP}&\type{Couple}&Plastic synapse.\\
 	\type{LongCouple}&\type{Couple}&Nonlocal synapse.
 \end{tabular}
@@ -790,7 +790,7 @@ The diagram in Figure \ref{fig:classes} shows the inheritance hierarchy for the 
 	\coordinate[right of=vcouple,node distance=10em] (voutput) {};
     \draw (vcouple) -- (voutput);
 
-	\node[below of=vpropag] (apropag) {\type{Array$\langle$Propag$\rangle$}};
+	\node[below of=vpropag] (apropag) {\type{Array$\langle$Propagator$\rangle$}};
     \draw (vpropag) -| (apropag);
 	\node[below of=vpop]    (apop) {\type{Array$\langle$Population$\rangle$}};
     \draw (vpop) -| (apop);
@@ -799,8 +799,8 @@ The diagram in Figure \ref{fig:classes} shows the inheritance hierarchy for the 
 	\node[below of=voutput] (aoutput) {\type{Array$\langle$Outlet$\rangle$}};
     \draw (voutput) -- (aoutput);
 
-	\node[below of=apropag] (propag) {\type{Propag} $\ni \phi_{ab}$};
-    \draw (apropag) -- (propag);
+	\node[below of=apropag] (propagator) {\type{Propagator} $\ni \phi_{ab}$};
+    \draw (apropag) -- (propagator);
 	\node[below of=apop]    (pop) {\type{Population} $\ni Q_a$};
     \draw (apop) -- (pop);
 	\node[below of=acouple] (couple) {\type{Couple} $\ni \nu_{ab}$};
@@ -825,8 +825,8 @@ The diagram in Figure \ref{fig:classes} shows the inheritance hierarchy for the 
 	\node[below of=adendrite](dendrite){\type{Dendrite} $\ni V_{ab}$};
     \draw (adendrite) -- (dendrite);
 
-	\node[below of=propag,node distance=3em](tau){\type{Tau} $\ni \tau_{ab}$};
-	\draw(propag)--(tau);
+	\node[below of=propagator,node distance=3em](tau){\type{Tau} $\ni \tau_{ab}$};
+	\draw(propagator)--(tau);
 \end{tikzpicture}
 \tikzstyle{block} = [draw,text width=3em,text centered,minimum height=2em]
 \tikzstyle{line} = [draw, -latex']
@@ -892,15 +892,15 @@ Functions \type{sheetlength()} and \type{glu()} provides access to the physical 
 
 A population is ``settled" after \type{Population::init()} is called, after which no dendrites can be added, and the firing rate history cannot grow.
 
-\subsubsection{Propag}
-\label{sec:propag}
+\subsubsection{Propagator}
+\label{sec:propagator}
 
-The \type{Propag} class implements the axonal propagation as an identity map, i.e.
+The \type{Propagator} class implements the axonal propagation as an identity map, i.e.
 \[ \mathcal{D}_{ab} = 1. \]
 
 To introduce more sophisticated axonal propagation, this class is inherited and overloaded.
 
-The \type{Propag} class provides a constant references to both presynaptic and postsynaptic populations.
+The \type{Propagator} class provides a constant references to both presynaptic and postsynaptic populations.
 
 Object \type{Tau} provides the axonal delay latency of propagator.
 
@@ -1176,10 +1176,10 @@ We use the semicolon to denote a succession of functions/procedures, and \type{a
 \type{main()}& $\Rightarrow$ &Initialize the config file, dump file and output file;\\[6pt]
 &&\type{Solver::init()};\type{Solver::solve()};\\[6pt]
 \type{Solver::init()}& $\Rightarrow$ &read in global parameters; Read in \type{CntMat};\\[6pt]
-&&Construct \type{Population}; construct \type{Propag}; construct \type{Couple}; \type{Population::add2Dendrite()};\\[6pt]
-&&Read configurations for \type{Population}, \type{Propag}, \type{Couple}, and \type{Output}.\\[6pt]
+&&Construct \type{Population}; construct \type{Propagator}; construct \type{Couple}; \type{Population::add2Dendrite()};\\[6pt]
+&&Read configurations for \type{Population}, \type{Propagator}, \type{Couple}, and \type{Output}.\\[6pt]
 \type{Solver::solve()}& $\Rightarrow$ & \type{for(...) \{ Solver::step(); \type{Output::step()}; \} }\\[6pt]
-\type{Solver::step()}& $\Rightarrow$ & \type{Population::step()}; \type{Propag::step()}; \type{Couple::step()};\\[6pt]
+\type{Solver::step()}& $\Rightarrow$ & \type{Population::step()}; \type{Propagator::step()}; \type{Couple::step()};\\[6pt]
 \type{Population::step()}& $\Rightarrow$ & \type{QResponse::step()} if neural population;\\[6pt]
 &&\type{Timeseries::step()} if stimulus\\[6pt]
 \type{QResponse::step()}& $\Rightarrow$ & \type{Dendrite::step()}; sum over \(V_{ab}\)

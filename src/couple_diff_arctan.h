@@ -22,7 +22,7 @@ class CoupleDiffArctan : public Couple {
   void step(void);
   void find(void);
   CoupleDiffArctan( int nodes, double deltat, int index,
-                    const Propag& prepropag, const Population& postpop, double tempf );
+                    const Propagator& prepropag, const Population& postpop, double tempf );
   virtual ~CoupleDiffArctan(void);
 };
 

@@ -76,7 +76,7 @@ void CoupleRamp::step() {
 }
 
 CoupleRamp::CoupleRamp( int nodes, double deltat, int index,
-                        const Propag& prepropag, const Population& postpop )
+                        const Propagator& prepropag, const Population& postpop )
   : Couple(nodes,deltat,index,prepropag,postpop) {
 }
 

@@ -21,7 +21,7 @@ class LongCouple : public Couple {
   int pos;
  public:
   LongCouple( int nodes, double deltat, int index,
-              const Propag& prepropag, const Population& postpop );
+              const Propagator& prepropag, const Population& postpop );
   ~LongCouple(void) override;
   void step(void) override;
   void output( Output& output ) const override;

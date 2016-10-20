@@ -39,7 +39,7 @@ void BCM::BCMDE::init( Configf& configf ) {
 }
 
 BCM::BCM( int nodes, double deltat, int index,
-          const Propag& prepropag, const Population& postpop )
+          const Propagator& prepropag, const Population& postpop )
   : CaDP(nodes,deltat,index,prepropag,postpop) {
   delete de;
   de = new BCMDE(nodes,deltat);

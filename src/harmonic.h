@@ -9,11 +9,11 @@
 #ifndef NEUROFIELD_SRC_HARMONIC_H
 #define NEUROFIELD_SRC_HARMONIC_H
 
-#include"propag.h"
+#include"propagator.h"
 
 using std::vector;
 
-class Harmonic : public virtual Propag {
+class Harmonic : public virtual Propagator {
   Harmonic(); // no default constructor
   Harmonic(Harmonic&); // no copy constructor
  protected:

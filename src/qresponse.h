@@ -17,7 +17,7 @@
 using std::string;
 
 class Dendrite;
-class Propag;
+class Propagator;
 class Couple;
 
 class QResponse : public NF {
@@ -56,7 +56,7 @@ class QResponse : public NF {
   ~QResponse(void) override;
   void step(void) override;
   virtual void add2Dendrite( int index,
-                             const Propag& prepropag, const Couple& precouple, Configf& configf );
+                             const Propagator& prepropag, const Couple& precouple, Configf& configf );
   const vector<double>& glu(void) const;
 
   virtual void fire( vector<double>& Q ) const;
