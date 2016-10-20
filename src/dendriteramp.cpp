@@ -56,7 +56,7 @@ void DendriteRamp::DendriteDE::init(const double vinit) {
 }
 
 DendriteRamp::DendriteRamp( int nodes, double deltat, int index,
-                            const Propagator& prepropag, const Couple& precouple )
+                            const Propagator& prepropag, const Coupling& precouple )
   : Dendrite(nodes,deltat,index,prepropag,precouple)
 
 {

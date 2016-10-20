@@ -9,9 +9,9 @@
 #ifndef NEUROFIELD_SRC_CADP_H
 #define NEUROFIELD_SRC_CADP_H
 
-#include"couple.h"
+#include"coupling.h"
 
-class CaDP : public Couple {
+class CaDP : public Coupling {
   CaDP();
   CaDP(CaDP&);
  protected:

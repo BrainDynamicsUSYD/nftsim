@@ -88,7 +88,7 @@ Command to put in computer
 \subsection*{Assumed knowledge}
 To get the most out of \NF, you will require a working knowledge of neural field theory. In \NF, each neural field component is handled by an object:
 \begin{align*}
-	P &= \nu_{ab}\phi_{ab}, & \mathtt{Couple}\\
+	P &= \nu_{ab}\phi_{ab}, & \mathtt{Coupling}\\
 	D_{ab}V_{ab} &= P, & \mathtt{Dendrite}\\
 	Q_a &= S_a \big[\sum_b V_{ab} \big], & \mathtt{QResponse}\\
 	\mathcal{D}_{ab}\phi_{ab} &= Q_b.&  \mathtt{Propagator}
@@ -192,7 +192,7 @@ To write a configuration file, follow these steps:
 \item Specify the global parameters and connectivity matrix (Sec.~\ref{sec:global}).
 \item Specify all populations (Sec.~\ref{sec:pop}).
 \item Specify all propagators (Sec.~\ref{sec:prop}).
-\item Specify all couples (Sec.~\ref{sec:couple}).
+\item Specify all couplings (Sec.~\ref{sec:coupling}).
 \item Specify all output requests (Sec.~\ref{sec:output}).
 \end{enumerate}
 
@@ -472,8 +472,8 @@ Harmonic - phi: Steady Tau: 0 gamma: 116
 \end{description}
 \end{itemize}
 
-\subsubsection{Couple Classes}
-\label{sec:couple}
+\subsubsection{Coupling Classes}
+\label{sec:coupling}
 
 
 
@@ -481,7 +481,7 @@ Harmonic - phi: Steady Tau: 0 gamma: 116
 
 \item The type of coupling between each pair of popoulations can be specified for separately. The coupling data is given as $n$ lines  corresponding to each nonzero connection in the connection matrix defined at the top of the file. Different types of coupling has their own input form. 
 \item \begin{lstlisting}
-Couple 1:
+Coupling 1:
 \end{lstlisting}
 \item This syntax serves the purpose of an identifier for cross-checking. The following types of coupling are available:  \type{Map},  \type{Matrix},\type{Ramp}, \type{CaDP}, \type{BCM} and \type{DiffArctan}. 
 \begin{description}
@@ -589,10 +589,10 @@ If undefined, defaults, to 0 and \type{Deltat}, respectively.
 Population: 4.V
 Dendrite: 5
 Propagator: 1 4.phi
-Couple: 3.nu
+Coupling: 3.nu
 \end{lstlisting}
 
-\NF allows the user to specify which objects to output, by entering the appropriate object indices after the labels. For each object, it has some intrinsic fields that will be outputted; for example, \type{Couple} outputs \type{nu}, whereas \type{CaDP} outputs \type{nu} and \type{Ca}.
+\NF allows the user to specify which objects to output, by entering the appropriate object indices after the labels. For each object, it has some intrinsic fields that will be outputted; for example, \type{Coupling} outputs \type{nu}, whereas \type{CaDP} outputs \type{nu} and \type{Ca}.
 
 For each entry, a field name may be appended after the index with a dot, so that only that field of the object is outputted. If no field name is specified for that entry, then all fields of that object is outputted.
 
@@ -718,9 +718,9 @@ We have adopted the {\em fork and pull} development model using GitHub. If you w
 
 Note that you do not have write access to the main repository, so all changes must be proposed via pull requests. If your proposed changes are accepted, we may make modifications to ensure they integrate seamlessly with the rest of the program.
 
-As discussed at the start of manual, \NF encapsulates each component of the model with an object: \type{Couple}, \type{Dendrite}, \type{QResponse}, \type{Propagator}. The \type{Dendrite} and \type{QResponse} (and also \type{Timeseries}) are contained within \type{Population}.
+As discussed at the start of manual, \NF encapsulates each component of the model with an object: \type{Coupling}, \type{Dendrite}, \type{QResponse}, \type{Propagator}. The \type{Dendrite} and \type{QResponse} (and also \type{Timeseries}) are contained within \type{Population}.
 
-Each object class may be overloaded for more sophisticated behaviour; for example, \type{Propagator} may be overloaded to perform wave propagation, or \type{Couple} may be overloaded for synaptic plasticity.
+Each object class may be overloaded for more sophisticated behaviour; for example, \type{Propagator} may be overloaded to perform wave propagation, or \type{Coupling} may be overloaded for synaptic plasticity.
 
 \subsubsection{Coding style}
 
@@ -755,7 +755,7 @@ Most new functionalities may be introduced by inheriting existing classes and ov
 	\type{Population}&Contains \type{Timeseries}, \type{Dendrite}, and \type{QResponse}.&$Q_a$\\
 	\type{Propagator}&Axonal firing propagation&$\phi_{ab}$\\
 	\type{Tau}&Axonal propagation time latency&$\tau_{ab}$\\
-	\type{Couple}&Synaptic coupling&$\nu_{ab}$
+	\type{Coupling}&Synaptic coupling&$\nu_{ab}$
 \end{tabular}
 
 Examples where these classes are inherited to provided new functionalities include:
@@ -764,8 +764,8 @@ Examples where these classes are inherited to provided new functionalities inclu
 	Derived class&Base class&Extension\\
 	\hline
 	\type{Wave}&\type{Propagator}&Wave propagation.\\
-	\type{CaDP}&\type{Couple}&Plastic synapse.\\
-	\type{LongCouple}&\type{Couple}&Nonlocal synapse.
+	\type{CaDP}&\type{Coupling}&Plastic synapse.\\
+	\type{LongCouple}&\type{Coupling}&Nonlocal synapse.
 \end{tabular}
 
 \subsubsection{Class hierarchy}
@@ -794,7 +794,7 @@ The diagram in Figure \ref{fig:classes} shows the inheritance hierarchy for the 
     \draw (vpropag) -| (apropag);
 	\node[below of=vpop]    (apop) {\type{Array$\langle$Population$\rangle$}};
     \draw (vpop) -| (apop);
-	\node[below of=vcouple] (acouple) {\type{Array$\langle$Couple$\rangle$}};
+	\node[below of=vcouple] (acouple) {\type{Array$\langle$Coupling$\rangle$}};
     \draw (vcouple) -| (acouple);
 	\node[below of=voutput] (aoutput) {\type{Array$\langle$Outlet$\rangle$}};
     \draw (voutput) -- (aoutput);
@@ -803,8 +803,8 @@ The diagram in Figure \ref{fig:classes} shows the inheritance hierarchy for the 
     \draw (apropag) -- (propagator);
 	\node[below of=apop]    (pop) {\type{Population} $\ni Q_a$};
     \draw (apop) -- (pop);
-	\node[below of=acouple] (couple) {\type{Couple} $\ni \nu_{ab}$};
-    \draw (acouple) -- (couple);
+	\node[below of=acouple] (coupling) {\type{Coupling} $\ni \nu_{ab}$};
+    \draw (acouple) -- (coupling);
 	\node[below of=aoutput] (output) {\type{Outlet}};
     \draw (aoutput) -- (output);
 
@@ -838,7 +838,7 @@ The diagram in Figure \ref{fig:classes} shows the inheritance hierarchy for the 
 Implementing a new class may be done using the following procedure:
 \begin{enumerate}
 	\item Identifying the core class to inherit (see above tables). Then look up the documentation of the appropriate base class from Sec.~\ref{sec:pop}--\ref{sec:dendrite}.
-	\item Decide on the name of the class. Generally, it may be advantageous for the new name to refer to the base name, plus a terse description. For example, \type{LongCouple} refers to its base class \type{Couple}, with the additional description indicating that the new class has long range coupling. The file names should be the same as the class name, but all in lower case, for consistency.
+	\item Decide on the name of the class. Generally, it may be advantageous for the new name to refer to the base name, plus a terse description. For example, \type{LongCouple} refers to its base class \type{Coupling}, with the additional description indicating that the new class has long range coupling. The file names should be the same as the class name, but all in lower case, for consistency.
 	\item Overload appropriately the \type{init()} (see Sec.~\ref{sec:init}), \type{output()} (see Sec.~\ref{sec:output}), and \type{step()} functions. {\bf Do not} copy and paste code. Rather, use
 		\begin{lstlisting}
 BaseClass::function();
@@ -912,20 +912,20 @@ To ``register" your propagator, look for the
 \end{lstlisting}
 subsection in \type{solver.cpp}.
 
-\subsubsection{Couple}
-\label{sec:couple}
+\subsubsection{Coupling}
+\label{sec:coupling}
 
-The \type{Couple} class manages \(\nu_{ab}\), which is constant in space and time.
+The \type{Coupling} class manages \(\nu_{ab}\), which is constant in space and time.
 
 To introduce synaptic plasticity, derive from this class.
 
-The \type{Couple} class provides a constant references to both presynaptic and postsynaptic populations. Glutamate concentration is also provided.
+The \type{Coupling} class provides a constant references to both presynaptic and postsynaptic populations. Glutamate concentration is also provided.
 
 Function \type{excite()} indicates whether this is an excitatory coupling. Protected variable \type{pos} is $+1$ or $-1$, depending on the sign of \(\nu_{ab}\).
 
-To ``register" your couple, look for the
+To ``register" your coupling, look for the
 \begin{lstlisting}
-// PUT YOUR COUPLES HERE
+// PUT YOUR COUPLINGS HERE
 \end{lstlisting}
 subsection in \type{solver.cpp}.
 
@@ -1176,10 +1176,10 @@ We use the semicolon to denote a succession of functions/procedures, and \type{a
 \type{main()}& $\Rightarrow$ &Initialize the config file, dump file and output file;\\[6pt]
 &&\type{Solver::init()};\type{Solver::solve()};\\[6pt]
 \type{Solver::init()}& $\Rightarrow$ &read in global parameters; Read in \type{CntMat};\\[6pt]
-&&Construct \type{Population}; construct \type{Propagator}; construct \type{Couple}; \type{Population::add2Dendrite()};\\[6pt]
-&&Read configurations for \type{Population}, \type{Propagator}, \type{Couple}, and \type{Output}.\\[6pt]
+&&Construct \type{Population}; construct \type{Propagator}; construct \type{Coupling}; \type{Population::add2Dendrite()};\\[6pt]
+&&Read configurations for \type{Population}, \type{Propagator}, \type{Coupling}, and \type{Output}.\\[6pt]
 \type{Solver::solve()}& $\Rightarrow$ & \type{for(...) \{ Solver::step(); \type{Output::step()}; \} }\\[6pt]
-\type{Solver::step()}& $\Rightarrow$ & \type{Population::step()}; \type{Propagator::step()}; \type{Couple::step()};\\[6pt]
+\type{Solver::step()}& $\Rightarrow$ & \type{Population::step()}; \type{Propagator::step()}; \type{Coupling::step()};\\[6pt]
 \type{Population::step()}& $\Rightarrow$ & \type{QResponse::step()} if neural population;\\[6pt]
 &&\type{Timeseries::step()} if stimulus\\[6pt]
 \type{QResponse::step()}& $\Rightarrow$ & \type{Dendrite::step()}; sum over \(V_{ab}\)
@@ -1246,7 +1246,7 @@ Working knowledge of object-oriented programming (and \type{C++}) is an essentia
 	\item \NF is naturally object oriented: firing response, propagators, couplings, dendrites naturally arise and form a network, where each class/object influences other ones.
 	\item The extension of simple objects to more sophisticated ones (e.g. from static to plastic synaptic coupling) may naturally be done via inheritance. In many cases, the interface is kept while the implementation is extended.
 	\item The object type is determined during \emph{runtime}, while reading the config file. Thus, \emph{polymorphism} comes into play.
-	\item All fundamental classes in \NF has already been inherited. Among the inherited classes, many have fundamental relationships with classes in the inheritance hierarchy, e.g. \type{Wave} propagator may degenerate to \type{Harmonic}, \type{BCM} couple extends \type{CaDP}.
+	\item All fundamental classes in \NF has already been inherited. Among the inherited classes, many have fundamental relationships with classes in the inheritance hierarchy, e.g. \type{Wave} propagator may degenerate to \type{Harmonic}, \type{BCM} coupling extends \type{CaDP}.
 	\item Given these complexities, which will only increase in the future, object-oriented programming principles \underline{MUST} be adhered to whenever reasonable. Failure to do so will inevitably lead to unmaintainable (and unacceptable) code that may well introduce undetected numerical error.
 \end{enumerate}
 

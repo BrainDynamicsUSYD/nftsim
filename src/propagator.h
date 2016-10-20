@@ -7,8 +7,8 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#ifndef NEUROFIELD_SRC_PROPAG_H
-#define NEUROFIELD_SRC_PROPAG_H
+#ifndef NEUROFIELD_SRC_PROPAGATOR_H
+#define NEUROFIELD_SRC_PROPAGATOR_H
 
 #include"population.h"
 

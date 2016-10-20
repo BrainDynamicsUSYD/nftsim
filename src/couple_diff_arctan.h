@@ -1,10 +1,10 @@
 #ifndef COUPLE_DIFF_ARCTAN_H
 #define COUPLE_DIFF_ARCTAN_H
 
-#include"couple.h"
+#include"coupling.h"
 using std::vector;
 
-class CoupleDiffArctan : public Couple {
+class CoupleDiffArctan : public Coupling {
   CoupleDiffArctan();
   CoupleDiffArctan(CoupleDiffArctan&);
  protected:

@@ -145,47 +145,47 @@ void Solver::init( Configf& configf ) {
     }
     // END PUT YOUR PROPAGATORS HERE
 
-    string ctype = configf.find( label("Couple ",i+1) +":" );
-    // PUT YOUR COUPLES HERE
+    string ctype = configf.find( label("Coupling ",i+1) +":" );
+    // PUT YOUR COUPLINGS HERE
     if(ctype=="Map") {
-      couples.add( new
-                   Couple(nodes,deltat,i, *propagators[i], *pops[cnt.post[i]] ) );
+      couplings.add( new
+                   Coupling(nodes,deltat,i, *propagators[i], *pops[cnt.post[i]] ) );
     } else if(ctype=="Matrix") {
-      couples.add( new
+      couplings.add( new
                    LongCouple(nodes,deltat,i, *propagators[i], *pops[cnt.post[i]] ) );
     } else if(ctype=="CaDP") {
-      couples.add( new
+      couplings.add( new
                    CaDP(nodes,deltat,i, *propagators[i], *pops[cnt.post[i]] ) );
     } else if(ctype=="BCM") {
-      couples.add( new
+      couplings.add( new
                    BCM(nodes,deltat,i, *propagators[i], *pops[cnt.post[i]] ) );
     } else if(ctype=="BCM-Spatial") {
-      couples.add( new
+      couplings.add( new
                    BCMLong(nodes,deltat,i, *propagators[i], *pops[cnt.post[i]] ) );
     } else if(ctype=="Ramp") {
-      couples.add( new
+      couplings.add( new
                    CoupleRamp(nodes,deltat,i, *propagators[i], *pops[cnt.post[i]] ) );
       //else if(ctype=="fCaP")
-      //couples.add( new
+      //couplings.add( new
       //fCaP(nodes,deltat,i, *propagators[i], *pops[cnt.post[i]] ) );
       //else if(ctype=="Epilepsy")
-      //couples.add( new
+      //couplings.add( new
       //Epilepsy(nodes,deltat,i, *propagators[i], *pops[cnt.post[i]] ) );
     } else if(ctype=="DiffArctan") {
-      couples.add( new
+      couplings.add( new
                    CoupleDiffArctan(nodes,deltat,i, *propagators[i], *pops[cnt.post[i]], tempf ) );
     } else {
-      cerr<<"Invalid couple type '"<<ctype<<"'."<<endl;
+      cerr<<"Invalid coupling type '"<<ctype<<"'."<<endl;
       exit(EXIT_FAILURE);
     }
-    // END PUT YOUR COUPLES HERE
+    // END PUT YOUR COUPLINGS HERE
   }
 
   // insert dendrites to each population
   for( int i=0; i<cnt.npop; i++ ) {
     for( int j=0; j<cnt.ncnt; j++ ) {
       if( cnt.post[j] == i ) {
-        pops[i]->add2Dendrite( j, *propagators[j], *couples[j], configf );
+        pops[i]->add2Dendrite( j, *propagators[j], *couplings[j], configf );
       }
     }
   }
@@ -198,13 +198,13 @@ void Solver::init( Configf& configf ) {
     configf.param( label("Propagator ",i+1), *propagators[i] );
   }
   for( int i=0; i<cnt.ncnt; i++ ) {
-    configf.param( label("Couple ",i+1), *couples[i] );
+    configf.param( label("Coupling ",i+1), *couplings[i] );
   }
 
   // initialize outputs
   configf.go2("Output");
   configf.next("Output");
-  outputs = new Outputs(nodes,deltat,dumpf,cnt,pops,propagators,couples);
+  outputs = new Outputs(nodes,deltat,dumpf,cnt,pops,propagators,couplings);
   outputs->init(configf);
 }
 
@@ -216,7 +216,7 @@ void Solver::solve() {
 
 void Solver::step() {
   // step through populations
-  couples.pstep();
+  couplings.pstep();
   pops.pstep();
   propagators.pstep();
   outputs->step();
@@ -340,7 +340,7 @@ void Solver::Outputs::init( Configf& configf ) {
 
   // read in propagators to output
   configf.next("Propagator");
-  temp = configf.arb("Couple:");
+  temp = configf.arb("Coupling:");
   for(auto & i : temp) {
     int obj_index = atoi(i.c_str());
     if( obj_index > cnt.ncnt || obj_index<1 ) {
@@ -361,8 +361,8 @@ void Solver::Outputs::init( Configf& configf ) {
     add(output);
   }
 
-  // read in couples to output
-  configf.next("Couple");
+  // read in couplings to output
+  configf.next("Coupling");
   // config files do not contain "EOF", reads to end of file
   // this raises the error flag in configf
   // and forbids any further reading of the config file
@@ -370,8 +370,8 @@ void Solver::Outputs::init( Configf& configf ) {
   for(auto & i : temp) {
     int obj_index = atoi(i.c_str());
     if( obj_index > cnt.ncnt || obj_index<1 ) {
-      cerr<<"Trying to output couple "<<obj_index
-          <<", which is an invalid couple."<<endl;
+      cerr<<"Trying to output coupling "<<obj_index
+          <<", which is an invalid coupling."<<endl;
       exit(EXIT_FAILURE);
     }
     string key;
@@ -379,9 +379,9 @@ void Solver::Outputs::init( Configf& configf ) {
       key = i.substr( i.find(".")+1, string::npos );
     }
     Output output(key);
-    couples[obj_index-1]->output(output);
+    couplings[obj_index-1]->output(output);
     if( output.empty() ) {
-      cerr<<"Couple "<<i.c_str()<<" cannot be outputted."<<endl;
+      cerr<<"Coupling "<<i.c_str()<<" cannot be outputted."<<endl;
       exit(EXIT_FAILURE);
     }
     add(output);

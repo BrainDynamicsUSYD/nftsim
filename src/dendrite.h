@@ -46,10 +46,10 @@ class Dendrite : public NF {
   //virtual void dump( Dumpf& dumpf ) const;
  public:
   const Propagator& prepropag;
-  const Couple& precouple;
+  const Coupling& precouple;
 
   Dendrite( int nodes, double deltat, int index,
-            const Propagator& prepropag, const Couple& precouple );
+            const Propagator& prepropag, const Coupling& precouple );
   ~Dendrite(void) override;
   void step(void) override;
   inline const vector<double>& V(void) const;

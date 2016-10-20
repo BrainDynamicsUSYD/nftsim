@@ -50,7 +50,7 @@ BCM::BCM( int nodes, double deltat, int index,
 BCM::~BCM() = default;
 
 void BCM::output( Output& output ) const {
-  output.prefix("Couple",index+1);
+  output.prefix("Coupling",index+1);
   output("nu",(*de)[7]);
   output("nutilde",(*de)[3]);
   output("Ca",(*de)[2]);

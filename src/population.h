@@ -10,14 +10,14 @@
 #define NEUROFIELD_SRC_POPULATION_H
 
 class Propagator;
-class Couple;
+class Coupling;
 class Population;
 class QResponse;
 
 #include"timeseries.h"
 #include"qresponse.h"
 #include"dendrite.h"
-#include"couple.h"
+#include"coupling.h"
 #include"tau.h" // Must be included before propagator.h
 #include"propagator.h"
 
@@ -52,7 +52,7 @@ class Population : public NF {
     return length;
   }
   virtual void add2Dendrite( int index,
-                             const Propagator& prepropag, const Couple& precouple, Configf& configf );
+                             const Propagator& prepropag, const Coupling& precouple, Configf& configf );
   virtual void growHistory( const Tau& tau );
   void output( Output& output ) const override;
   virtual void outputDendrite( int index, Output& output ) const;

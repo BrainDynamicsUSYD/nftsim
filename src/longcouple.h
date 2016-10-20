@@ -9,9 +9,9 @@
 #ifndef NEUROFIELD_SRC_LONGCOUPLE_H
 #define NEUROFIELD_SRC_LONGCOUPLE_H
 
-#include"couple.h"
+#include"coupling.h"
 
-class LongCouple : public Couple {
+class LongCouple : public Coupling {
   LongCouple();
   LongCouple(LongCouple&);
  protected:

@@ -72,12 +72,12 @@ void CoupleRamp::step() {
       }
     }
   }
-  Couple::step();
+  Coupling::step();
 }
 
 CoupleRamp::CoupleRamp( int nodes, double deltat, int index,
                         const Propagator& prepropag, const Population& postpop )
-  : Couple(nodes,deltat,index,prepropag,postpop) {
+  : Coupling(nodes,deltat,index,prepropag,postpop) {
 }
 
 CoupleRamp::~CoupleRamp() = default;

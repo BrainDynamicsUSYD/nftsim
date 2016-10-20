@@ -3,7 +3,7 @@ function [data,t2] = extract(obj,traces,t,nodes)
     % Given an nf object, return data from certain traces at particular times
     % obj - nf object
     % t - can be a time e.g. 0.001 or a range [0.001 0.1]. If empty, returns all times
-    % traces - comma separated string of traces e.g. 'Propagator.2.phi, Couple.2.nu'
+    % traces - comma separated string of traces e.g. 'Propagator.2.phi, Coupling.2.nu'
     % nodes - an array of node numbers that are requested e.g. [1 2 3]
     % traces and nodes are optional
     

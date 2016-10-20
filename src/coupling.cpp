@@ -1,4 +1,4 @@
-/** @file couple.cpp
+/** @file coupling.cpp
   @brief A brief, one sentence description.
 
   A more detailed multiline description...
@@ -9,9 +9,9 @@
 #include<iostream>
 using std::cerr;
 using std::endl;
-#include "couple.h"
+#include "coupling.h"
 
-void Couple::init( Configf& configf ) {
+void Coupling::init( Configf& configf ) {
   configf.next("nu");
   vector<double> temp = configf.numbers();
   if( temp.size() == 1 ) {
@@ -34,32 +34,32 @@ void Couple::init( Configf& configf ) {
   }
 }
 
-Couple::Couple( int nodes, double deltat, int index,
+Coupling::Coupling( int nodes, double deltat, int index,
                 const Propagator& prepropag, const Population& postpop )
   : NF(nodes,deltat,index), prepropag(prepropag), postpop(postpop), n(nodes), P(nodes) {
 }
 
-Couple::~Couple() = default;
+Coupling::~Coupling() = default;
 
-void Couple::step() {
+void Coupling::step() {
   for( int i=0; i<nodes; i++ ) {
     P[i] = n[i]*prepropag[i];
   }
 }
 
-double Couple::nuinit( Configf& configf ) const {
-  string buffer = configf.find( label("Couple ",index+1)+"*nu:");
+double Coupling::nuinit( Configf& configf ) const {
+  string buffer = configf.find( label("Coupling ",index+1)+"*nu:");
   return atof(buffer.c_str());
 }
 
-void Couple::output( Output& output ) const {
-  output("Couple",index+1,"nu",n);
+void Coupling::output( Output& output ) const {
+  output("Coupling",index+1,"nu",n);
 }
 
-bool Couple::excite() const {
+bool Coupling::excite() const {
   return pos==1;
 }
 
-const vector<double>& Couple::nuphi() const {
+const vector<double>& Coupling::nuphi() const {
   return P;
 }

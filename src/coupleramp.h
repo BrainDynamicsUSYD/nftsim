@@ -1,6 +1,6 @@
 /**
  * @file coupleramp.h
- * Couple class to produce piecewise linear segments to vary synaptic couplings nu.
+ * Coupling class to produce piecewise linear segments to vary synaptic couplings nu.
  * In other words it produces a temporal profile for nu.
  *
  * @brief Can use "brief" tag to explicitly generate comments for file documentation.
@@ -19,11 +19,11 @@
 #ifndef NEUROFIELD_SRC_COUPLERAMP_H
 #define NEUROFIELD_SRC_COUPLERAMP_H
 
-#include"couple.h"
+#include"coupling.h"
 
 using std::vector;
 
-class CoupleRamp : public Couple {
+class CoupleRamp : public Coupling {
   CoupleRamp();
   CoupleRamp(CoupleRamp&);
  protected:

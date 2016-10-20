@@ -36,7 +36,7 @@ void LongCouple::init( Configf& configf ) {
 
 LongCouple::LongCouple( int nodes, double deltat, int index,
                         const Propagator& prepropag, const Population& postpop )
-  : Couple(nodes,deltat,index,prepropag,postpop) {
+  : Coupling(nodes,deltat,index,prepropag,postpop) {
 }
 
 LongCouple::~LongCouple() = default;
