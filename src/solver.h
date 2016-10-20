@@ -52,16 +52,16 @@ class Solver : public NF {
     Dumpf& dumpf;
     CntMat& cnt;
     Array<Population>& pops;
-    Array<Propagator>& propags;
+    Array<Propagator>& propagators;
     Array<Couple>& couples;
 
     void init( Configf& configf ) override;
     //void restart( Restartf& restartf ) {}
     //void dump( Dumpf& dumpf ) const {}
     Outputs( int nodes, double deltat, Dumpf& dumpf,
-             CntMat& cnt, Array<Population>& pops, Array<Propagator>& propags, Array<Couple>& couples )
+             CntMat& cnt, Array<Population>& pops, Array<Propagator>& propagators, Array<Couple>& couples )
       : NF(nodes,deltat,0), dumpf(dumpf),
-        cnt(cnt), pops(pops), propags(propags), couples(couples) {}
+        cnt(cnt), pops(pops), propagators(propagators), couples(couples) {}
     ~Outputs(void) override {
       for(auto & outlet : outlets) {
         delete outlet;
@@ -80,7 +80,7 @@ class Solver : public NF {
   Outputs* outputs;
 
   Array<Population> pops;
-  Array<Propagator> propags;
+  Array<Propagator> propagators;
   Array<Couple> couples;
  protected:
   void init( Configf& configf ) override;

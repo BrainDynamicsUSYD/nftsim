@@ -126,18 +126,18 @@ void Solver::init( Configf& configf ) {
     string ptype = configf.find( label("Propagator ",i+1) +":" );
     // PUT YOUR PROPAGATORS HERE
     if(ptype=="Map") {
-      propags.add( new
+      propagators.add( new
                    Propagator(nodes,deltat,i, *pops[cnt.pre[i]], *pops[cnt.post[i]], longside, topology));
     } else if(ptype=="Wave") {
       if( nodes==1 ) {
-        propags.add( new
+        propagators.add( new
                      Harmonic(nodes,deltat,i, *pops[cnt.pre[i]], *pops[cnt.post[i]], longside, topology));
       } else {
-        propags.add( new
+        propagators.add( new
                      Wave(nodes,deltat,i, *pops[cnt.pre[i]], *pops[cnt.post[i]], longside, topology));
       }
     } else if(ptype=="Harmonic") {
-      propags.add( new
+      propagators.add( new
                    Harmonic(nodes,deltat,i, *pops[cnt.pre[i]], *pops[cnt.post[i]], longside, topology));
     } else {
       cerr<<"Invalid propagator type '"<<ptype<<"'."<<endl;
@@ -149,31 +149,31 @@ void Solver::init( Configf& configf ) {
     // PUT YOUR COUPLES HERE
     if(ctype=="Map") {
       couples.add( new
-                   Couple(nodes,deltat,i, *propags[i], *pops[cnt.post[i]] ) );
+                   Couple(nodes,deltat,i, *propagators[i], *pops[cnt.post[i]] ) );
     } else if(ctype=="Matrix") {
       couples.add( new
-                   LongCouple(nodes,deltat,i, *propags[i], *pops[cnt.post[i]] ) );
+                   LongCouple(nodes,deltat,i, *propagators[i], *pops[cnt.post[i]] ) );
     } else if(ctype=="CaDP") {
       couples.add( new
-                   CaDP(nodes,deltat,i, *propags[i], *pops[cnt.post[i]] ) );
+                   CaDP(nodes,deltat,i, *propagators[i], *pops[cnt.post[i]] ) );
     } else if(ctype=="BCM") {
       couples.add( new
-                   BCM(nodes,deltat,i, *propags[i], *pops[cnt.post[i]] ) );
+                   BCM(nodes,deltat,i, *propagators[i], *pops[cnt.post[i]] ) );
     } else if(ctype=="BCM-Spatial") {
       couples.add( new
-                   BCMLong(nodes,deltat,i, *propags[i], *pops[cnt.post[i]] ) );
+                   BCMLong(nodes,deltat,i, *propagators[i], *pops[cnt.post[i]] ) );
     } else if(ctype=="Ramp") {
       couples.add( new
-                   CoupleRamp(nodes,deltat,i, *propags[i], *pops[cnt.post[i]] ) );
+                   CoupleRamp(nodes,deltat,i, *propagators[i], *pops[cnt.post[i]] ) );
       //else if(ctype=="fCaP")
       //couples.add( new
-      //fCaP(nodes,deltat,i, *propags[i], *pops[cnt.post[i]] ) );
+      //fCaP(nodes,deltat,i, *propagators[i], *pops[cnt.post[i]] ) );
       //else if(ctype=="Epilepsy")
       //couples.add( new
-      //Epilepsy(nodes,deltat,i, *propags[i], *pops[cnt.post[i]] ) );
+      //Epilepsy(nodes,deltat,i, *propagators[i], *pops[cnt.post[i]] ) );
     } else if(ctype=="DiffArctan") {
       couples.add( new
-                   CoupleDiffArctan(nodes,deltat,i, *propags[i], *pops[cnt.post[i]], tempf ) );
+                   CoupleDiffArctan(nodes,deltat,i, *propagators[i], *pops[cnt.post[i]], tempf ) );
     } else {
       cerr<<"Invalid couple type '"<<ctype<<"'."<<endl;
       exit(EXIT_FAILURE);
@@ -185,7 +185,7 @@ void Solver::init( Configf& configf ) {
   for( int i=0; i<cnt.npop; i++ ) {
     for( int j=0; j<cnt.ncnt; j++ ) {
       if( cnt.post[j] == i ) {
-        pops[i]->add2Dendrite( j, *propags[j], *couples[j], configf );
+        pops[i]->add2Dendrite( j, *propagators[j], *couples[j], configf );
       }
     }
   }
@@ -195,7 +195,7 @@ void Solver::init( Configf& configf ) {
     configf.param( label("Population ",i+1), *pops[i] );
   }
   for( int i=0; i<cnt.ncnt; i++ ) {
-    configf.param( label("Propagator ",i+1), *propags[i] );
+    configf.param( label("Propagator ",i+1), *propagators[i] );
   }
   for( int i=0; i<cnt.ncnt; i++ ) {
     configf.param( label("Couple ",i+1), *couples[i] );
@@ -204,7 +204,7 @@ void Solver::init( Configf& configf ) {
   // initialize outputs
   configf.go2("Output");
   configf.next("Output");
-  outputs = new Outputs(nodes,deltat,dumpf,cnt,pops,propags,couples);
+  outputs = new Outputs(nodes,deltat,dumpf,cnt,pops,propagators,couples);
   outputs->init(configf);
 }
 
@@ -218,7 +218,7 @@ void Solver::step() {
   // step through populations
   couples.pstep();
   pops.pstep();
-  propags.pstep();
+  propagators.pstep();
   outputs->step();
 }
 
@@ -338,7 +338,7 @@ void Solver::Outputs::init( Configf& configf ) {
     add(output);
   }
 
-  // read in propags to output
+  // read in propagators to output
   configf.next("Propagator");
   temp = configf.arb("Couple:");
   for(auto & i : temp) {
@@ -353,7 +353,7 @@ void Solver::Outputs::init( Configf& configf ) {
       key = i.substr( i.find(".")+1, string::npos );
     }
     Output output(key);
-    propags[obj_index-1]->output(output);
+    propagators[obj_index-1]->output(output);
     if( output.empty() ) {
       cerr<<"Propagator "<<i.c_str()<<" cannot be outputted."<<endl;
       exit(EXIT_FAILURE);
