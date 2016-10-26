@@ -1,5 +1,5 @@
-#ifndef COUPLE_DIFF_ARCTAN_H
-#define COUPLE_DIFF_ARCTAN_H
+#ifndef COUPLING_DIFF_ARCTAN_H
+#define COUPLING_DIFF_ARCTAN_H
 
 #include"coupling.h"
 using std::vector;

@@ -16,8 +16,8 @@
    + param[in]     pairs   : total number of pairs of (nu, time) to define the segments
 */
 
-#ifndef NEUROFIELD_SRC_COUPLERAMP_H
-#define NEUROFIELD_SRC_COUPLERAMP_H
+#ifndef NEUROFIELD_SRC_COUPLINGRAMP_H
+#define NEUROFIELD_SRC_COUPLINGRAMP_H
 
 #include"coupling.h"
 
