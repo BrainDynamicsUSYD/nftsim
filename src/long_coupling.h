@@ -6,8 +6,8 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#ifndef NEUROFIELD_SRC_LONGCOUPLE_H
-#define NEUROFIELD_SRC_LONGCOUPLE_H
+#ifndef NEUROFIELD_SRC_LONGCOUPLING_H
+#define NEUROFIELD_SRC_LONGCOUPLING_H
 
 #include"coupling.h"
 
