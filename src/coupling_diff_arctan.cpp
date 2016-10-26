@@ -1,5 +1,5 @@
-/** @file couple.cpp
-  @brief A new Couple class, where nu_ab follows a smooth function.
+/** @file coupling.cpp
+  @brief A new Coupling class, where nu_ab follows a smooth function.
 
   The smooth variation of nu_ab is defined by the difference of
   two arctangent functions.
@@ -14,10 +14,10 @@
 using std::cerr;
 using std::endl;
 using std::cout;
-#include "couple_diff_arctan.h"
+#include "coupling_diff_arctan.h"
 
 
-void CoupleDiffArctan::init( Configf& configf ) {
+void CouplingDiffArctan::init( Configf& configf ) {
   //read initial ramp conditions from config file
   configf.param("nu_min",nu_min);
   configf.param("nu_max",nu_max);
@@ -55,22 +55,22 @@ void CoupleDiffArctan::init( Configf& configf ) {
   time = 0;
 }
 
-void CoupleDiffArctan::step(void) {
+void CouplingDiffArctan::step(void) {
   // Return the right value at each time point
   time += deltat;
   for( int i=0; i<nodes; i++ ) {
     n[i]= nu_min + (nu_max-nu_min)*(((atan((time-t_half_up)/delta)-atan((time-t_half_down)/delta))-diff_atan_min)/(diff_atan_max-diff_atan_min));
   }
-  Couple::step();
+  Coupling::step();
 }
 
 
-CoupleDiffArctan::CoupleDiffArctan( int nodes, double deltat, int index,
-                                    const Propag& prepropag, const Population& postpop, double tempf )
-  : Couple(nodes,deltat,index,prepropag,postpop) {
+CouplingDiffArctan::CouplingDiffArctan( int nodes, double deltat, int index,
+                                    const Propagator& prepropag, const Population& postpop, double tempf )
+  : Coupling(nodes,deltat,index,prepropag,postpop) {
   // total simulation time is stored in tempf (defined in solver.cpp line 73)
   time_tot = tempf;
 }
 
-CoupleDiffArctan::~CoupleDiffArctan(void) {
+CouplingDiffArctan::~CouplingDiffArctan(void) {
 }

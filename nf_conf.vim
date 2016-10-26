@@ -12,7 +12,7 @@ syn keyword preproc Time Deltat Nodes Topology Bath Glutamate dynamics Onset Cea
 syn keyword CntKey From To nextgroup=CntI skipwhite skipnl skipempty
 syn match CntI '\d\+' contained
 
-syn keyword Object Connection matrix Population Stimulus Population Firing Dendrite Propag Couple nextgroup=Index skipwhite skipnl skipempty
+syn keyword Object Connection matrix Population Stimulus Population Firing Dendrite Propagator Coupling nextgroup=Index skipwhite skipnl skipempty
 syn match Index '\d\+' contained
 
 syn match Choice /:\D*-/ms=s+1,me=e-1

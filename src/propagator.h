@@ -1,5 +1,5 @@
-/** @file propag.h
-  @brief The base Propag class definition.
+/** @file propagator.h
+  @brief The base Propagator class definition.
 
   Propagators are used to compute the axonal propagation of instantaneous
   firing rate.
@@ -7,16 +7,16 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#ifndef NEUROFIELD_SRC_PROPAG_H
-#define NEUROFIELD_SRC_PROPAG_H
+#ifndef NEUROFIELD_SRC_PROPAGATOR_H
+#define NEUROFIELD_SRC_PROPAGATOR_H
 
 #include"population.h"
 
 using std::string;
 
-class Propag : public NF {
-  Propag(); // no default constructor
-  Propag(Propag&); // no copy constructor
+class Propagator : public NF {
+  Propagator(); // no default constructor
+  Propagator(Propagator&); // no copy constructor
  protected:
   void init( Configf& configf ) override;
   //void restart( Restartf& restartf );
@@ -28,9 +28,9 @@ class Propag : public NF {
   int longside;
   vector<double> p; ///< phi_ab
  public:
-  Propag( int nodes, double deltat, int index, Population& prepop,
+  Propagator( int nodes, double deltat, int index, Population& prepop,
           Population& postpop, int longside, string topology );
-  ~Propag(void) override;
+  ~Propagator(void) override;
   void step(void) override;
   double phiinit( Configf& configf ) const;
   virtual const vector<double>& phi(void) const;
@@ -38,7 +38,7 @@ class Propag : public NF {
   void output( Output& output ) const override;
 };
 
-double Propag::operator[]( int node ) const {
+double Propagator::operator[]( int node ) const {
   return p[node];
 }
 

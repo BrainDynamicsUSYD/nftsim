@@ -1,14 +1,14 @@
-/** @file propag.cpp
-  @brief Propag computes the axonal propagation of instantaneous firing rate.
+/** @file propagator.cpp
+  @brief Propagator computes the axonal propagation of instantaneous firing rate.
 
   A more detailed multiline description...
 
   @author Peter Drysdale, Felix Fung,
 */
 
-#include "propag.h"
+#include "propagator.h"
 
-void Propag::init( Configf& configf ) {
+void Propagator::init( Configf& configf ) {
   double Q = prepop.Qinit(configf);
   string buffer("Steady");
   configf.optional("phi",buffer);
@@ -21,26 +21,26 @@ void Propag::init( Configf& configf ) {
   prepop.growHistory(tau);
 }
 
-Propag::Propag( int nodes, double deltat, int index, Population& prepop,
+Propagator::Propagator( int nodes, double deltat, int index, Population& prepop,
                 Population& postpop, int longside, string  /*unused*/)
   : NF(nodes,deltat,index), prepop(prepop), postpop(postpop),
     tau(nodes,deltat,index), longside(longside), p(nodes) {
 }
 
-Propag::~Propag() = default;
+Propagator::~Propagator() = default;
 
-void Propag::step() {
+void Propagator::step() {
   p = prepop.Q(tau);
 }
 
-double Propag::phiinit( Configf& configf ) const {
+double Propagator::phiinit( Configf& configf ) const {
   return prepop.Qinit(configf);
 }
 
-const vector<double>& Propag::phi() const {
+const vector<double>& Propagator::phi() const {
   return p;
 }
 
-void Propag::output( Output& output ) const {
-  output("Propag",index+1,"phi",p);
+void Propagator::output( Output& output ) const {
+  output("Propagator",index+1,"phi",p);
 }

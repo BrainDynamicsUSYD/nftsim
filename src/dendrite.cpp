@@ -34,7 +34,7 @@ void Dendrite::init( Configf& configf ) {
 }
 
 Dendrite::Dendrite( int nodes, double deltat, int index,
-                    const Propag& prepropag, const Couple& precouple )
+                    const Propagator& prepropag, const Coupling& precouple )
   : NF(nodes,deltat,index), v(nodes), dvdt(nodes,0), oldnp(nodes),
     prepropag(prepropag), precouple(precouple) {
 }

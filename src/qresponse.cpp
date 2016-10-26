@@ -100,7 +100,7 @@ void QResponse::step() {
 }
 
 void QResponse::add2Dendrite( int index,
-                              const Propag& prepropag, const Couple& precouple, Configf& configf ) {
+                              const Propagator& prepropag, const Coupling& precouple, Configf& configf ) {
   string temp(configf.find( label("Dendrite ",index+1)+":" ));
   dendrite_index.push_back(index);
   // PUT YOUR DENDRITE HERE

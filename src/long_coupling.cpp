@@ -1,4 +1,4 @@
-/** @file longcouple.cpp
+/** @file long_coupling.cpp
   @brief A brief, one sentence description.
 
   A more detailed multiline description...
@@ -6,11 +6,11 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#include"longcouple.h"
+#include"long_coupling.h"
 using std::cerr;
 using std::endl;
 
-void LongCouple::init( Configf& configf ) {
+void LongCoupling::init( Configf& configf ) {
   configf.next("nu");
   vector<double> temp = configf.numbers();
   if( temp.size() == 1 ) {
@@ -34,14 +34,14 @@ void LongCouple::init( Configf& configf ) {
   }
 }
 
-LongCouple::LongCouple( int nodes, double deltat, int index,
-                        const Propag& prepropag, const Population& postpop )
-  : Couple(nodes,deltat,index,prepropag,postpop) {
+LongCoupling::LongCoupling( int nodes, double deltat, int index,
+                        const Propagator& prepropag, const Population& postpop )
+  : Coupling(nodes,deltat,index,prepropag,postpop) {
 }
 
-LongCouple::~LongCouple() = default;
+LongCoupling::~LongCoupling() = default;
 
-void LongCouple::step() {
+void LongCoupling::step() {
   for( int j=0; j<nodes; j++ ) {
     P[j] = 0;
     for( int i=0; i<nodes; i++ ) {
@@ -50,7 +50,7 @@ void LongCouple::step() {
   }
 }
 
-void LongCouple::output( Output& output ) const {
+void LongCoupling::output( Output& output ) const {
   // outputting a 2D matrix rather than a vector:
   // for each "to", output all "from"
   for( int i=0; i<nodes; i++ ) {

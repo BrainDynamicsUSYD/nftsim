@@ -9,9 +9,9 @@
 #ifndef NEUROFIELD_SRC_CADP_H
 #define NEUROFIELD_SRC_CADP_H
 
-#include"couple.h"
+#include"coupling.h"
 
-class CaDP : public Couple {
+class CaDP : public Coupling {
   CaDP();
   CaDP(CaDP&);
  protected:
@@ -56,7 +56,7 @@ class CaDP : public Couple {
   void init( Configf& configf ) override;
  public:
   CaDP( int nodes, double deltat, int index,
-        const Propag& prepropag, const Population& postpop );
+        const Propagator& prepropag, const Population& postpop );
   ~CaDP(void) override;
   void step(void) override;
   void output( Output& output ) const override;

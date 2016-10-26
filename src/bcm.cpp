@@ -39,7 +39,7 @@ void BCM::BCMDE::init( Configf& configf ) {
 }
 
 BCM::BCM( int nodes, double deltat, int index,
-          const Propag& prepropag, const Population& postpop )
+          const Propagator& prepropag, const Population& postpop )
   : CaDP(nodes,deltat,index,prepropag,postpop) {
   delete de;
   de = new BCMDE(nodes,deltat);
@@ -50,7 +50,7 @@ BCM::BCM( int nodes, double deltat, int index,
 BCM::~BCM() = default;
 
 void BCM::output( Output& output ) const {
-  output.prefix("Couple",index+1);
+  output.prefix("Coupling",index+1);
   output("nu",(*de)[7]);
   output("nutilde",(*de)[3]);
   output("Ca",(*de)[2]);

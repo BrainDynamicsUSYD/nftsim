@@ -36,7 +36,7 @@ class DendriteRamp : public Dendrite {
   void init( Configf& configf ) override;
  public:
   DendriteRamp( int nodes, double deltat, int index,
-                const Propag& prepropag, const Couple& precouple );
+                const Propagator& prepropag, const Coupling& precouple );
   ~DendriteRamp(void) override;
   void step(void) override;
 

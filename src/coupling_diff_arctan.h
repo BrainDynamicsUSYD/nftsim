@@ -1,12 +1,12 @@
-#ifndef COUPLE_DIFF_ARCTAN_H
-#define COUPLE_DIFF_ARCTAN_H
+#ifndef COUPLING_DIFF_ARCTAN_H
+#define COUPLING_DIFF_ARCTAN_H
 
-#include"couple.h"
+#include"coupling.h"
 using std::vector;
 
-class CoupleDiffArctan : public Couple {
-  CoupleDiffArctan();
-  CoupleDiffArctan(CoupleDiffArctan&);
+class CouplingDiffArctan : public Coupling {
+  CouplingDiffArctan();
+  CouplingDiffArctan(CouplingDiffArctan&);
  protected:
   double nu_min, nu_max;
   double t_half_down, t_half_up;
@@ -21,9 +21,9 @@ class CoupleDiffArctan : public Couple {
   void init( Configf& configf );
   void step(void);
   void find(void);
-  CoupleDiffArctan( int nodes, double deltat, int index,
-                    const Propag& prepropag, const Population& postpop, double tempf );
-  virtual ~CoupleDiffArctan(void);
+  CouplingDiffArctan( int nodes, double deltat, int index,
+                    const Propagator& prepropag, const Population& postpop, double tempf );
+  virtual ~CouplingDiffArctan(void);
 };
 
 #endif

@@ -3,7 +3,7 @@ function movie( obj, field, normalize, fname )
     % This script assumes the nodes are continuous, and the grid is a square
     %
     % nf.movie( nf, field, normalize, avi )
-    %   - field is a string of a field name e.g. "Propag.2.phi"
+    %   - field is a string of a field name e.g. "Propagator.2.phi"
     %   - normalize is an integer value 0 = raw data, 1 = subtract mean
     %                                   2 = subtract mean and rescale
     %                                   3 = subtract mean, rescale over entire duration
@@ -11,7 +11,7 @@ function movie( obj, field, normalize, fname )
     % 
     % Felix Fung 120322
     if nargin < 2 || isempty(field)
-        field = 'propag.1.phi';
+        field = 'propagator.1.phi';
     end
     
     [data,side] = nf.grid(obj,field);

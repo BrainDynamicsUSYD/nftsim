@@ -1,4 +1,4 @@
-/** @file couple.h
+/** @file coupling.h
   @brief A brief, one sentence description.
 
   A more detailed multiline description...
@@ -6,28 +6,28 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#ifndef NEUROFIELD_SRC_COUPLE_H
-#define NEUROFIELD_SRC_COUPLE_H
+#ifndef NEUROFIELD_SRC_COUPLING_H
+#define NEUROFIELD_SRC_COUPLING_H
 
 #include"population.h"
 
-class Couple : public NF {
-  Couple();
-  Couple(Couple&);
+class Coupling : public NF {
+  Coupling();
+  Coupling(Coupling&);
  protected:
   void init( Configf& configf ) override;
   //virtual void restart( Restartf& restartf );
   //virtual void dump( Dumpf& dumpf ) const;
 
-  const Propag& prepropag;
+  const Propagator& prepropag;
   const Population& postpop;
   vector<double> n; ///< nu
   vector<double> P; ///< nu*phi
   int pos;
  public:
-  Couple( int nodes, double deltat, int index,
-          const Propag& prepropag, const Population& postpop );
-  ~Couple(void) override;
+  Coupling( int nodes, double deltat, int index,
+          const Propagator& prepropag, const Population& postpop );
+  ~Coupling(void) override;
   void step(void) override;
   double nuinit( Configf& configf ) const;
   void output( Output& output ) const override;
@@ -36,7 +36,7 @@ class Couple : public NF {
   virtual bool excite(void) const;
 };
 
-double Couple::operator[]( int node ) const {
+double Coupling::operator[]( int node ) const {
   return P[node];
 }
 

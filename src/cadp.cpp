@@ -92,8 +92,8 @@ void CaDP::CaDE::init( Configf& configf ) {
 }
 
 CaDP::CaDP( int nodes, double deltat, int index,
-            const Propag& prepropag, const Population& postpop )
-  : Couple(nodes,deltat,index,prepropag,postpop) {
+            const Propagator& prepropag, const Population& postpop )
+  : Coupling(nodes,deltat,index,prepropag,postpop) {
   de = new CaDE(nodes,deltat);
   rk4 = new RK4(*de);
 }
@@ -117,7 +117,7 @@ void CaDP::step() {
 }
 
 void CaDP::output( Output& output ) const {
-  output.prefix("Couple",index+1);
+  output.prefix("Coupling",index+1);
   output("nutilde",(*de)[3]);
   output("nu",(*de)[7]);
   output("Ca",(*de)[2]);

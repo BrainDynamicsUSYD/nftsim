@@ -78,7 +78,7 @@ const vector<double>& Population::glu() const {
 }
 
 void Population::add2Dendrite( int index,
-                               const Propag& prepropag, const Couple& precouple, Configf& configf ) {
+                               const Propagator& prepropag, const Coupling& precouple, Configf& configf ) {
   if( settled ) {
     cerr<<"Population is already settled, no more dendrites can be added!"
         <<endl;

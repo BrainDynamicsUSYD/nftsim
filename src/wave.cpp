@@ -72,7 +72,7 @@ void Wave::init( Configf& configf ) {
 
 Wave::Wave( int nodes, double deltat, int index, Population& prepop,
             Population& postpop, int longside, string topology )
-  : Propag(nodes,deltat,index,prepop,postpop,longside,topology),
+  : Propagator(nodes,deltat,index,prepop,postpop,longside,topology),
     key(0) {
   oldp[0] = new Stencil(nodes,longside,topology);
   oldp[1] = new Stencil(nodes,longside,topology);
