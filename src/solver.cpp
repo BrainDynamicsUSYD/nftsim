@@ -152,7 +152,7 @@ void Solver::init( Configf& configf ) {
                    Coupling(nodes,deltat,i, *propagators[i], *pops[cnt.post[i]] ) );
     } else if(ctype=="Matrix") {
       couplings.add( new
-                   LongCouple(nodes,deltat,i, *propagators[i], *pops[cnt.post[i]] ) );
+                   LongCoupling(nodes,deltat,i, *propagators[i], *pops[cnt.post[i]] ) );
     } else if(ctype=="CaDP") {
       couplings.add( new
                    CaDP(nodes,deltat,i, *propagators[i], *pops[cnt.post[i]] ) );
@@ -164,7 +164,7 @@ void Solver::init( Configf& configf ) {
                    BCMLong(nodes,deltat,i, *propagators[i], *pops[cnt.post[i]] ) );
     } else if(ctype=="Ramp") {
       couplings.add( new
-                   CoupleRamp(nodes,deltat,i, *propagators[i], *pops[cnt.post[i]] ) );
+                   CouplingRamp(nodes,deltat,i, *propagators[i], *pops[cnt.post[i]] ) );
       //else if(ctype=="fCaP")
       //couplings.add( new
       //fCaP(nodes,deltat,i, *propagators[i], *pops[cnt.post[i]] ) );
@@ -173,7 +173,7 @@ void Solver::init( Configf& configf ) {
       //Epilepsy(nodes,deltat,i, *propagators[i], *pops[cnt.post[i]] ) );
     } else if(ctype=="DiffArctan") {
       couplings.add( new
-                   CoupleDiffArctan(nodes,deltat,i, *propagators[i], *pops[cnt.post[i]], tempf ) );
+                   CouplingDiffArctan(nodes,deltat,i, *propagators[i], *pops[cnt.post[i]], tempf ) );
     } else {
       cerr<<"Invalid coupling type '"<<ctype<<"'."<<endl;
       exit(EXIT_FAILURE);
