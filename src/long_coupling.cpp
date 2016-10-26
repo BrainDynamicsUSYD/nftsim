@@ -1,4 +1,4 @@
-/** @file longcouple.cpp
+/** @file long_coupling.cpp
   @brief A brief, one sentence description.
 
   A more detailed multiline description...
@@ -6,7 +6,7 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#include"longcouple.h"
+#include"long_coupling.h"
 using std::cerr;
 using std::endl;
 

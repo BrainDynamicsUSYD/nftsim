@@ -1,5 +1,5 @@
 /**
- * @file coupleramp.cpp
+ * @file coupling_ramp.cpp
  * Produce piecewise linear segments to vary synaptic couplings nu **over time**.
  * Assumes that at t=0, nu=nus[0], ie, the segment between t=0 and timepoints[0] is constant.
  *
@@ -16,7 +16,7 @@
 using std::cerr;
 using std::endl;
 using std::cout;
-#include "coupleramp.h"
+#include "coupling_ramp.h"
 
 void CouplingRamp::init( Configf& configf ) {
 

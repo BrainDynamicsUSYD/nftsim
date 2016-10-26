@@ -9,10 +9,10 @@
 #include"solver.h"
 #include"wave.h"
 #include"harmonic.h"
-#include"longcouple.h"
+#include"long_coupling.h"
 #include"bcmlong.h"
-#include"coupleramp.h"
-#include"couple_diff_arctan.h"
+#include"coupling_ramp.h"
+#include"coupling_diff_arctan.h"
 
 using std::cerr;
 using std::endl;

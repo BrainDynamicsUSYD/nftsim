@@ -1,4 +1,4 @@
-/** @file longcouple.h
+/** @file long_coupling.h
   @brief A brief, one sentence description.
 
   A more detailed multiline description...

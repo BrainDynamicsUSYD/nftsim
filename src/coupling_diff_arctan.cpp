@@ -14,7 +14,7 @@
 using std::cerr;
 using std::endl;
 using std::cout;
-#include "couple_diff_arctan.h"
+#include "coupling_diff_arctan.h"
 
 
 void CouplingDiffArctan::init( Configf& configf ) {

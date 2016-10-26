@@ -1,5 +1,5 @@
 /**
- * @file coupleramp.h
+ * @file coupling_ramp.h
  * Coupling class to produce piecewise linear segments to vary synaptic couplings nu.
  * In other words it produces a temporal profile for nu.
  *
