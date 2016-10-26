@@ -515,7 +515,7 @@ Coupling 1:
 
 	%An example Modcouple input form is given by
 	%\begin{lstlisting}
-%ModCouple - Nuzero: 0.0002 Nuscal: 0.02 Mu: .1 Lambda: 1 k: .000001
+%ModCoupling - Nuzero: 0.0002 Nuscal: 0.02 Mu: .1 Lambda: 1 k: .000001
 %Concentration mode: 1  Time to start of Concentration: .01 Amplitude: .0001
 %Pulse Duration: .2 Pulse repetition period: 40
 %Number of traces: 100  Single/All: All nodes}
@@ -765,7 +765,7 @@ Examples where these classes are inherited to provided new functionalities inclu
 	\hline
 	\type{Wave}&\type{Propagator}&Wave propagation.\\
 	\type{CaDP}&\type{Coupling}&Plastic synapse.\\
-	\type{LongCouple}&\type{Coupling}&Nonlocal synapse.
+	\type{LongCoupling}&\type{Coupling}&Nonlocal synapse.
 \end{tabular}
 
 \subsubsection{Class hierarchy}
@@ -838,7 +838,7 @@ The diagram in Figure \ref{fig:classes} shows the inheritance hierarchy for the 
 Implementing a new class may be done using the following procedure:
 \begin{enumerate}
 	\item Identifying the core class to inherit (see above tables). Then look up the documentation of the appropriate base class from Sec.~\ref{sec:pop}--\ref{sec:dendrite}.
-	\item Decide on the name of the class. Generally, it may be advantageous for the new name to refer to the base name, plus a terse description. For example, \type{LongCouple} refers to its base class \type{Coupling}, with the additional description indicating that the new class has long range coupling. The file names should be the same as the class name, but all in lower case, for consistency.
+	\item Decide on the name of the class. Generally, it may be advantageous for the new name to refer to the base name, plus a terse description. For example, \type{LongCoupling} refers to its base class \type{Coupling}, with the additional description indicating that the new class has long range coupling. The file names should be the same as the class name, but all in lower case, for consistency.
 	\item Overload appropriately the \type{init()} (see Sec.~\ref{sec:init}), \type{output()} (see Sec.~\ref{sec:output}), and \type{step()} functions. {\bf Do not} copy and paste code. Rather, use
 		\begin{lstlisting}
 BaseClass::function();
