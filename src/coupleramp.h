@@ -10,7 +10,7 @@
  */
 
 /**
-   Define properties of CoupleRamp
+   Define properties of CouplingRamp
 
    + param[in]     ns, tpts: vector with the values of nus at specific time points specified in vector tpts.
    + param[in]     pairs   : total number of pairs of (nu, time) to define the segments
@@ -23,9 +23,9 @@
 
 using std::vector;
 
-class CoupleRamp : public Coupling {
-  CoupleRamp();
-  CoupleRamp(CoupleRamp&);
+class CouplingRamp : public Coupling {
+  CouplingRamp();
+  CouplingRamp(CouplingRamp&);
  protected:
   vector<double> ns;
   vector<double> tpts;
@@ -35,9 +35,9 @@ class CoupleRamp : public Coupling {
  public:
   void init( Configf& configf ) override;
   void step(void) override;
-  CoupleRamp( int nodes, double deltat, int index,
+  CouplingRamp( int nodes, double deltat, int index,
               const Propagator& prepropag, const Population& postpop );
-  ~CoupleRamp(void) override;
+  ~CouplingRamp(void) override;
 };
 
 #endif

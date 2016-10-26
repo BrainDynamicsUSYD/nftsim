@@ -17,7 +17,7 @@ using std::cout;
 #include "couple_diff_arctan.h"
 
 
-void CoupleDiffArctan::init( Configf& configf ) {
+void CouplingDiffArctan::init( Configf& configf ) {
   //read initial ramp conditions from config file
   configf.param("nu_min",nu_min);
   configf.param("nu_max",nu_max);
@@ -55,7 +55,7 @@ void CoupleDiffArctan::init( Configf& configf ) {
   time = 0;
 }
 
-void CoupleDiffArctan::step(void) {
+void CouplingDiffArctan::step(void) {
   // Return the right value at each time point
   time += deltat;
   for( int i=0; i<nodes; i++ ) {
@@ -65,12 +65,12 @@ void CoupleDiffArctan::step(void) {
 }
 
 
-CoupleDiffArctan::CoupleDiffArctan( int nodes, double deltat, int index,
+CouplingDiffArctan::CouplingDiffArctan( int nodes, double deltat, int index,
                                     const Propagator& prepropag, const Population& postpop, double tempf )
   : Coupling(nodes,deltat,index,prepropag,postpop) {
   // total simulation time is stored in tempf (defined in solver.cpp line 73)
   time_tot = tempf;
 }
 
-CoupleDiffArctan::~CoupleDiffArctan(void) {
+CouplingDiffArctan::~CouplingDiffArctan(void) {
 }

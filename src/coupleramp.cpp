@@ -18,7 +18,7 @@ using std::endl;
 using std::cout;
 #include "coupleramp.h"
 
-void CoupleRamp::init( Configf& configf ) {
+void CouplingRamp::init( Configf& configf ) {
 
   // Number of different nus and timepoints
   configf.param("pairs", pairs);
@@ -63,7 +63,7 @@ void CoupleRamp::init( Configf& configf ) {
   }
 }
 
-void CoupleRamp::step() {
+void CouplingRamp::step() {
   time += deltat;
   for ( int j=1; j<pairs; j++ ) {
     if( time >= tpts[j-1] && time < tpts[j] ) {
@@ -75,9 +75,9 @@ void CoupleRamp::step() {
   Coupling::step();
 }
 
-CoupleRamp::CoupleRamp( int nodes, double deltat, int index,
+CouplingRamp::CouplingRamp( int nodes, double deltat, int index,
                         const Propagator& prepropag, const Population& postpop )
   : Coupling(nodes,deltat,index,prepropag,postpop) {
 }
 
-CoupleRamp::~CoupleRamp() = default;
+CouplingRamp::~CouplingRamp() = default;

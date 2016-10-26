@@ -4,9 +4,9 @@
 #include"coupling.h"
 using std::vector;
 
-class CoupleDiffArctan : public Coupling {
-  CoupleDiffArctan();
-  CoupleDiffArctan(CoupleDiffArctan&);
+class CouplingDiffArctan : public Coupling {
+  CouplingDiffArctan();
+  CouplingDiffArctan(CouplingDiffArctan&);
  protected:
   double nu_min, nu_max;
   double t_half_down, t_half_up;
@@ -21,9 +21,9 @@ class CoupleDiffArctan : public Coupling {
   void init( Configf& configf );
   void step(void);
   void find(void);
-  CoupleDiffArctan( int nodes, double deltat, int index,
+  CouplingDiffArctan( int nodes, double deltat, int index,
                     const Propagator& prepropag, const Population& postpop, double tempf );
-  virtual ~CoupleDiffArctan(void);
+  virtual ~CouplingDiffArctan(void);
 };
 
 #endif

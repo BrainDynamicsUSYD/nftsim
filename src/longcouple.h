@@ -11,18 +11,18 @@
 
 #include"coupling.h"
 
-class LongCouple : public Coupling {
-  LongCouple();
-  LongCouple(LongCouple&);
+class LongCoupling : public Coupling {
+  LongCoupling();
+  LongCoupling(LongCoupling&);
  protected:
   void init( Configf& configf ) override;
 
   vector< vector<double> > n2d; ///< nu tensor, nu[i][j] = from i to j
   int pos;
  public:
-  LongCouple( int nodes, double deltat, int index,
+  LongCoupling( int nodes, double deltat, int index,
               const Propagator& prepropag, const Population& postpop );
-  ~LongCouple(void) override;
+  ~LongCoupling(void) override;
   void step(void) override;
   void output( Output& output ) const override;
 };
