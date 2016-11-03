@@ -1,4 +1,7 @@
-#Tell git how to deal with line endings for specific files. 
+#Tell git how to deal with line endings for specific files.
+
+#To start with, turn on auto text determination as a fall back.
+* text=auto
 
 # C++ source files.
 *.cpp text diff=cpp
