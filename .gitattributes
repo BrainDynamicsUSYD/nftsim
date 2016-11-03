@@ -1,4 +1,8 @@
 #Tell git how to deal with line endings for specific files.
+#See:
+#    man gitattributes
+#    https://help.github.com/articles/dealing-with-line-endings/
+#    http://stackoverflow.com/questions/170961/whats-the-best-crlf-carriage-return-line-feed-handling-strategy-with-git
 
 #To start with, turn on auto text determination as a fall back.
 * text=auto
