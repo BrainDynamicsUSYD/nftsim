@@ -28,4 +28,4 @@ class Random {
   ~Random(void);
 };
 
-#endif
+#endif // NEUROFIELD_SRC_RANDOM_H
