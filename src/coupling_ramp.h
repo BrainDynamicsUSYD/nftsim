@@ -40,4 +40,4 @@ class CouplingRamp : public Coupling {
   ~CouplingRamp(void) override;
 };
 
-#endif
+#endif // NEUROFIELD_SRC_COUPLINGRAMP_H
