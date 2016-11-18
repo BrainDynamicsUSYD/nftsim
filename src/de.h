@@ -9,8 +9,10 @@
 #ifndef NEUROFIELD_SRC_DE_H
 #define NEUROFIELD_SRC_DE_H
 
-#include<vector>
+#include <vector>
 using std::vector;
+
+typedef vector<vector<double>>::size_type vvd_size_type;
 
 class DE {
   DE(void);
@@ -18,31 +20,31 @@ class DE {
   void operator=(DE&);
  protected:
   // if the number of field variables need to be extended, use this function
-  void extend( int extension ) {
+  void extend( vvd_size_type extension ) {
     n += extension;
     variables.resize(n);
-    for( int i=0; i<n; i++ ) {
+    for( vvd_size_type i=0; i<n; i++ ) {
       variables[i].resize(nodes,0);
     }
   }
  public:
-  int nodes;
+  vvd_size_type nodes;
   double deltat;
-  int n; ///< dimension of system == y.size()
+  vvd_size_type n; ///< dimension of system == y.size()
   vector<vector<double> > variables;
 
-  DE( int nodes, double deltat, int n )
+  DE( vvd_size_type nodes, double deltat, vvd_size_type n )
     : nodes(nodes), deltat(deltat), n(n), variables(n) {
-    for( int i=0; i<n; i++ ) {
+    for( vvd_size_type i=0; i<n; i++ ) {
       variables[i].resize(nodes);
     }
   }
   virtual ~DE(void) = default;
 
-  virtual vector<double>& operator[] ( int index ) {
+  virtual vector<double>& operator[] ( vvd_size_type index ) {
     return variables[index];
   }
-  virtual const vector<double>& operator[] ( int index ) const {
+  virtual const vector<double>& operator[] ( vvd_size_type index ) const {
     return variables[index];
   }
   // define dydt here
@@ -71,9 +73,9 @@ class Euler : public Integrator {
   explicit Euler( DE& de ) : Integrator(de), dydt(de.n) {}
   ~Euler(void) override = default;
   void step(void) override {
-    for( int j=0; j<de.nodes; j++ ) {
+    for( vvd_size_type j=0; j<de.nodes; j++ ) {
       de.rhs( de.variables[j], dydt );
-      for( int i=0; i<de.n; i++ ) {
+      for( vvd_size_type i=0; i<de.n; i++ ) {
         de.variables[i][j] += dydt[i]*de.deltat;
       }
     }
@@ -98,28 +100,28 @@ class RK4 : public Integrator {
   ~RK4(void) override = default;
 
   void step(void) override {
-    for( int j=0; j<de.nodes; j++ ) {
-      for( int i=0; i<de.n; i++ ) {
+    for( vvd_size_type j=0; j<de.nodes; j++ ) {
+      for( vvd_size_type i=0; i<de.n; i++ ) {
         temp[i] = de.variables[i][j];
       }
       de.rhs(temp,k1);
-      for( int i=0; i<de.n; i++ ) {
+      for( vvd_size_type i=0; i<de.n; i++ ) {
         temp[i] = de.variables[i][j] +de.deltat*.5*k1[i];
       }
       de.rhs(temp,k2);
-      for( int i=0; i<de.n; i++ ) {
+      for( vvd_size_type i=0; i<de.n; i++ ) {
         temp[i] = de.variables[i][j] +de.deltat*.5*k2[i];
       }
       de.rhs(temp,k3);
-      for( int i=0; i<de.n; i++ ) {
+      for( vvd_size_type i=0; i<de.n; i++ ) {
         temp[i] = de.variables[i][j] +de.deltat*k3[i];
       }
       de.rhs(temp,k4);
-      for( int i=0; i<de.n; i++ ) {
+      for( vvd_size_type i=0; i<de.n; i++ ) {
         de.variables[i][j] += h6*( k1[i] +2*k2[i] +2*k3[i] +k4[i] );
       }
     }
   }
 };
 
-#endif
+#endif //NEUROFIELD_SRC_DE_H
