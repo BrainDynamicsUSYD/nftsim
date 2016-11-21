@@ -38,7 +38,7 @@ endif
 # Mac OS, default to clang++
 ifeq ($(shell uname -s), Darwin)
   CXX := clang++
-  CXXFLAGS := -std=c++11 -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -fdiagnostics-fixit-info -Wdocumentation -march=native -funroll-loops -flto -O3
+  CXXFLAGS := -std=c++11 -Weverything -Wno-padded -Wno-c++98-compat -Wno-c++98-compat-pedantic -fdiagnostics-fixit-info -Wdocumentation -march=native -funroll-loops -flto -O3
   DEBUG := -std=c++11 -glldb -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -fdiagnostics-fixit-info -Wdocumentation
   DEPFLAGS = -std=c++11 -MM -MP -MT $(OBJDIR)$*.o
 endif
@@ -77,7 +77,7 @@ ifeq ($(MAKECMDGOALS), clang)
   ifndef CXX
     $(error "You don't appear to have clang++ installed. If it is installed make sure it's in your PATH.")
   endif
-  CXXFLAGS := -std=c++11 -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -fdiagnostics-fixit-info -Wdocumentation -march=native -funroll-loops -flto -O3
+  CXXFLAGS := -std=c++11 -Weverything -Wno-padded -Wno-c++98-compat -Wno-c++98-compat-pedantic -fdiagnostics-fixit-info -Wdocumentation -march=native -funroll-loops -flto -O3
   DEPFLAGS = -std=c++11 -MM -MP -MT $(OBJDIR)$*.o
 endif
 clang: neurofield

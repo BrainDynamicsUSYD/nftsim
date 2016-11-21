@@ -6,9 +6,9 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#include<cstdlib>
-#include<cmath>
-#include"dendriteramp.h"
+#include <cstdlib>
+#include <cmath>
+#include "dendriteramp.h"
 
 /**
   @brief Computes the dendritic ramp.
@@ -55,7 +55,7 @@ void DendriteRamp::DendriteDE::init(const double vinit) {
   variables[2].resize(nodes, 0.0);
 }
 
-DendriteRamp::DendriteRamp( int nodes, double deltat, int index,
+DendriteRamp::DendriteRamp( size_type nodes, double deltat, size_type index,
                             const Propagator& prepropag, const Coupling& precouple )
   : Dendrite(nodes,deltat,index,prepropag,precouple)
 
@@ -70,7 +70,7 @@ DendriteRamp::~DendriteRamp() {
 }
 
 void DendriteRamp::step() {
-  for( int i=0; i<nodes; i++ ) {
+  for( size_type i=0; i<nodes; i++ ) {
     (*de)[2][i] = precouple[i];
   }
   time += deltat;
@@ -94,7 +94,7 @@ void DendriteRamp::step() {
 //   de->beta_vec[0] = beta;
 //}
   rk4->step();
-  for( int i=0; i<nodes; i++ ) {
+  for( size_type i=0; i<nodes; i++ ) {
     v[i] = (*de)[0][i]; // Voltage
   }
 }

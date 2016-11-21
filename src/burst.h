@@ -9,7 +9,7 @@
 #ifndef NEUROFIELD_SRC_BURST_H
 #define NEUROFIELD_SRC_BURST_H
 
-#include"population.h"
+#include "population.h"
 #include <math.h>
 
 using std::vector;
@@ -45,7 +45,7 @@ class BurstResponse : public QResponse { //derived class; constructor initialize
  protected:
   void init( Configf& configf ) override;
  public:
-  BurstResponse( int nodes, double deltat, int index );
+  BurstResponse( size_type nodes, double deltat, size_type index );
   ~BurstResponse(void) override; //destructor mem fnctn
 
   void step(void) override;
@@ -53,5 +53,5 @@ class BurstResponse : public QResponse { //derived class; constructor initialize
   void output( Output& output ) const override; //vector of Output ptrs filled by
 };
 
-#endif
+#endif //NEUROFIELD_SRC_BURST_H
 

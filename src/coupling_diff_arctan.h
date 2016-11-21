@@ -1,7 +1,17 @@
+/** @file coupling.h
+  @brief A new Coupling class, where nu_ab follows a smooth function.
+
+  The smooth variation of nu_ab is defined by the difference of
+  two arctangent functions.
+
+
+  @author Farah Deeba, Paula Sanz-Leon, Sahand Assadzadeh
+*/
+
 #ifndef COUPLING_DIFF_ARCTAN_H
 #define COUPLING_DIFF_ARCTAN_H
 
-#include"coupling.h"
+#include "coupling.h"
 using std::vector;
 
 class CouplingDiffArctan : public Coupling {
@@ -21,10 +31,10 @@ class CouplingDiffArctan : public Coupling {
   void init( Configf& configf );
   void step(void);
   void find(void);
-  CouplingDiffArctan( int nodes, double deltat, int index,
+  CouplingDiffArctan( size_type nodes, double deltat, size_type index,
                     const Propagator& prepropag, const Population& postpop, double tempf );
   virtual ~CouplingDiffArctan(void);
 };
 
-#endif
+#endif //COUPLING_DIFF_ARCTAN_H
 

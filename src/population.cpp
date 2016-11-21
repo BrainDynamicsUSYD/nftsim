@@ -28,7 +28,7 @@ void Population::init( Configf& configf ) {
   settled = true;
 }
 
-Population::Population( int nodes, double deltat, int index )
+Population::Population( size_type nodes, double deltat, size_type index )
   : NF(nodes,deltat,index),
     qresponse(nullptr), timeseries(nullptr), qkey(0), settled(false) {
 }
@@ -54,7 +54,7 @@ void Population::step() {
   }
 
   // q is the current Q, only for output purpose
-  for( int i=0; i<nodes; i++ ) {
+  for( size_type i=0; i<nodes; i++ ) {
     q[i] = qhistory[qkey][i];
   }
 }
@@ -77,7 +77,7 @@ const vector<double>& Population::glu() const {
   exit(EXIT_FAILURE);
 }
 
-void Population::add2Dendrite( int index,
+void Population::add2Dendrite( size_type index,
                                const Propagator& prepropag, const Coupling& precouple, Configf& configf ) {
   if( settled ) {
     cerr<<"Population is already settled, no more dendrites can be added!"
@@ -105,7 +105,7 @@ const vector<double>& Population::Q( const Tau& tau) const {
     return qhistory[(qkey-tau.m[0]+qhistory.size())%qhistory.size()];
   }// tau.m.size() == nodes, inhomogeneous tau
   static vector<double> temp(nodes);
-  for( int i=0; i<nodes; i++ ) {
+  for( size_type i=0; i<nodes; i++ ) {
     temp[i] = qhistory[(qkey-tau.m[i]+qhistory.size())%qhistory.size()][i];
   }
   return temp;
@@ -143,7 +143,7 @@ void Population::output( Output& output ) const {
   }
 }
 
-void Population::outputDendrite( int index, Output& output ) const {
+void Population::outputDendrite( size_type index, Output& output ) const {
   if(qresponse != nullptr) {
     return qresponse->outputDendrite(index,output);
   }

@@ -6,7 +6,7 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#include"dendrite.h"
+#include "dendrite.h"
 using std::endl;
 
 void Dendrite::init( Configf& configf ) {
@@ -17,7 +17,7 @@ void Dendrite::init( Configf& configf ) {
   string buffer("Steady");
   configf.optional("V",buffer);
   if( buffer == "Steady" ) {
-    for( int i=0; i<nodes; i++ ) {
+    for( size_type i=0; i<nodes; i++ ) {
       v[i] = precouple.nuinit(configf)*prepropag.phiinit(configf);
     }
   } else {
@@ -33,7 +33,7 @@ void Dendrite::init( Configf& configf ) {
   factorab = 1./alpha + 1./beta;
 }
 
-Dendrite::Dendrite( int nodes, double deltat, int index,
+Dendrite::Dendrite( size_type nodes, double deltat, size_type index,
                     const Propagator& prepropag, const Coupling& precouple )
   : NF(nodes,deltat,index), v(nodes), dvdt(nodes,0), oldnp(nodes),
     prepropag(prepropag), precouple(precouple) {
@@ -44,7 +44,7 @@ Dendrite::~Dendrite() = default;
 void Dendrite::step() {
   // assume that alpha, beta are constant and nu*phi is linear for the time step
   if(alpha!=beta) {
-    for(int i=0; i<nodes; i++) {
+    for(size_type i=0; i<nodes; i++) {
       dpdt = ( precouple[i] -oldnp[i] )/deltat;
       adjustednp = oldnp[i] -factorab*dpdt -v[i];
       C1 = ( adjustednp*beta -dvdt[i] +dpdt )/aminusb;
@@ -55,7 +55,7 @@ void Dendrite::step() {
       oldnp[i]=precouple[i]; //Save current pulse density for next step
     }
   } else { // alpha==beta
-    for(int i=0; i<nodes; i++) {
+    for(size_type i=0; i<nodes; i++) {
       dpdt = ( precouple[i] -oldnp[i] )/deltat;
       adjustednp = oldnp[i] -factorab*dpdt -v[i];
       C1 = dvdt[i] -alpha*adjustednp -dpdt;

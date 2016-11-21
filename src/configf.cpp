@@ -6,8 +6,8 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#include<list>
-#include"nf.h"
+#include <list>
+#include "nf.h"
 
 using std::endl;
 using std::list;
@@ -21,7 +21,7 @@ Configf::Configf( const char* filename )
     cerr << "Unable to open configuration file." << endl;
     exit(EXIT_FAILURE);
   }
-  int sp = tellg(); // store current file position
+  std::streamoff sp = tellg(); // store current file position
   seekg(0,std::ios::end);
   filesize = tellg();
   buffer = new char[filesize+1];
@@ -84,7 +84,7 @@ string Configf::find( const string& Check ) {
     exit(EXIT_FAILURE);
   }
   string result;
-  int sp = tellg(); // store current file position
+  std::streamoff sp = tellg(); // store current file position
   seekg(0,std::ios::beg);
   read(buffer,filesize);
   string file_content(buffer);
@@ -156,7 +156,7 @@ void Configf::go2( const string& keyword ) {
   seekg( file_content.find(keyword)-1 );
 }
 
-string label( const string& prefix, int index ) {
+string label( const string& prefix, size_t index ) {
   stringstream ss;
   ss<<prefix.c_str()<<index;
   return ss.str();

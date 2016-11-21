@@ -6,7 +6,7 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#include<iostream>
+#include <iostream>
 using std::cerr;
 using std::endl;
 #include "coupling.h"
@@ -18,10 +18,10 @@ void Coupling::init( Configf& configf ) {
     n.clear();
     n.resize(nodes,temp[0]);
     pos = (temp[0]>0)?1:-1;
-  } else if( temp.size() == size_t(nodes) ) {
+  } else if( temp.size() == nodes ) {
     n.clear();
     n.resize(nodes);
-    for( int i=0; i<nodes; i++ ) {
+    for( size_type i=0; i<nodes; i++ ) {
       n[i] = temp[i];
     }
     pos = 0;
@@ -29,12 +29,12 @@ void Coupling::init( Configf& configf ) {
     cerr<<"nu either has a homogeneous initial value or has one intial value per node."<<endl;
     exit(EXIT_FAILURE);
   }
-  for( int i=0; i<nodes; i++ ) {
+  for( size_type i=0; i<nodes; i++ ) {
     P[i] = n[i]*prepropag.phiinit(configf);
   }
 }
 
-Coupling::Coupling( int nodes, double deltat, int index,
+Coupling::Coupling( size_type nodes, double deltat, size_type index,
                 const Propagator& prepropag, const Population& postpop )
   : NF(nodes,deltat,index), prepropag(prepropag), postpop(postpop), n(nodes), P(nodes) {
 }
@@ -42,7 +42,7 @@ Coupling::Coupling( int nodes, double deltat, int index,
 Coupling::~Coupling() = default;
 
 void Coupling::step() {
-  for( int i=0; i<nodes; i++ ) {
+  for( size_type i=0; i<nodes; i++ ) {
     P[i] = n[i]*prepropag[i];
   }
 }

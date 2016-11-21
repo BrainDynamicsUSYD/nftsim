@@ -13,8 +13,8 @@
 //#include<cmath>
 //#include<iostream>
 
-#include"fmath.h"
-#include"dendriteramp.h"
+#include "fmath.h"
+#include "dendriteramp.h"
 
 using std::endl;
 void QResponse::init( Configf& configf ) {
@@ -38,7 +38,7 @@ void QResponse::init( Configf& configf ) {
     configf.param("d",d);
   }
 
-  for( size_t i=0; i<dendrites.size(); i++ ) {
+  for( Array<Dendrite>::size_type i=0; i<dendrites.size(); i++ ) {
     configf>>*dendrites[i];
   }
 
@@ -65,7 +65,7 @@ void QResponse::Glu::rhs( const vector<double>& y, vector<double>& dydt ) {
   dydt[1] = 0;
 }
 
-QResponse::QResponse( int nodes, double deltat, int index )
+QResponse::QResponse( size_type nodes, double deltat, size_type index )
   : NF(nodes,deltat,index), v(nodes), glu_m(nodes,deltat), glu_rk4(glu_m) {
 }
 
@@ -74,23 +74,23 @@ QResponse::~QResponse() = default;
 void QResponse::step() {
   // step through dendrites, then sum up soma potential
   dendrites.step();
-  for( int i=0; i<nodes; i++ ) {
+  for( size_type i=0; i<nodes; i++ ) {
     v[i] = 0;
   }
-  for( size_t i=0; i<dendrites.size(); i++ ) {
-    for( int j=0; j<nodes; j++ ) {
+  for( Array<Dendrite>::size_type  i=0; i<dendrites.size(); i++ ) {
+    for( size_type j=0; j<nodes; j++ ) {
       v[j] += dendrites[i]->V()[j];
     }
   }
 
   // glutamate dynamics
   if( glu_m.Lambda != 0 ) {
-    for( int j=0; j<nodes; j++ ) {
+    for( size_type j=0; j<nodes; j++ ) {
       glu_m[1][j] = 0; // reset excitatory phi
     }
-    for( size_t i=0; i<dendrites.size(); i++ ) {
+    for( Array<Dendrite>::size_type  i=0; i<dendrites.size(); i++ ) {
       if( dendrites[i]->precouple.excite() ) {
-        for( int j=0; j<nodes; j++ ) {
+        for( size_type j=0; j<nodes; j++ ) {
           glu_m[1][j] += dendrites[i]->prepropag[j]; // put in excitatory phi
         }
       }
@@ -99,7 +99,7 @@ void QResponse::step() {
   }
 }
 
-void QResponse::add2Dendrite( int index,
+void QResponse::add2Dendrite( size_type index,
                               const Propagator& prepropag, const Coupling& precouple, Configf& configf ) {
   string temp(configf.find( label("Dendrite ",index+1)+":" ));
   dendrite_index.push_back(index);
@@ -118,19 +118,19 @@ const vector<double>& QResponse::glu() const {
 
 void QResponse::fire( vector<double>& Q ) const {
   if(mode == "Sigmoid") {
-    for( int i=0; i<nodes; i++ ) {
+    for( size_type i=0; i<nodes; i++ ) {
       Q[i] = Q_max/( 1.0F+ fmath::expd( -(v[i]-theta)/sigma ) );
     }
   } else if (mode == "Linear") {
-    for( int i=0; i<nodes; i++ ) {
+    for( size_type i=0; i<nodes; i++ ) {
       Q[i] = v[i]*a +b;
     }
   } else if (mode == "Quadratic") {
-    for( int i=0; i<nodes; i++ ) {
+    for( size_type i=0; i<nodes; i++ ) {
       Q[i] = v[i]*v[i]*a + v[i]*b +c;
     }
   } else if (mode == "Cubic") {
-    for( int i=0; i<nodes; i++ ) {
+    for( size_type i=0; i<nodes; i++ ) {
       Q[i] = v[i]*v[i]*v[i]*a + v[i]*v[i]*b + v[i]*c +d;
     }
   }
@@ -140,8 +140,8 @@ void QResponse::output( Output& output ) const {
   output("Pop",index+1,"V",v);
 }
 
-void QResponse::outputDendrite( int index, Output& output ) const {
-  for( unsigned int i=0; i<dendrites.size(); i++ ) {
+void QResponse::outputDendrite( size_type index, Output& output ) const {
+  for( Array<Dendrite>::size_type  i=0; i<dendrites.size(); i++ ) {
     if( dendrite_index[i] == index ) {
       dendrites[i]->output(output);
     }

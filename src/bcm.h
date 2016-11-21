@@ -9,7 +9,7 @@
 #ifndef NEUROFIELD_SRC_BCM_H
 #define NEUROFIELD_SRC_BCM_H
 
-#include"cadp.h"
+#include "cadp.h"
 
 class BCM : public CaDP {
   BCM(BCM&);
@@ -20,7 +20,7 @@ class BCM : public CaDP {
     double t_BCM;
     double t_rec;
     double gnmda_0;
-    BCMDE( int nodes, double deltat ) : CaDE(nodes,deltat) {
+    BCMDE( size_type nodes, double deltat ) : CaDE(nodes,deltat) {
       extend(1);
     }
     BCMDE( BCMDE& bcmDE ) : CaDE(bcmDE.nodes,bcmDE.deltat) {
@@ -45,7 +45,7 @@ class BCM : public CaDP {
       this->t_rec = bcmDE.t_rec;
       this->gnmda_0 = bcmDE.gnmda_0;
       for( size_t i=0; i<variables.size(); i++ ) {
-        for( int j=0; j<nodes; j++ ) {
+        for( size_type j=0; j<nodes; j++ ) {
           this->variables[i][j] = bcmDE.variables[i][j];
         }
       }
@@ -56,10 +56,10 @@ class BCM : public CaDP {
     void rhs( const vector<double>& y, vector<double>& dydt ) override;
   };
  public:
-  BCM( int nodes, double deltat, int index,
+  BCM( size_type nodes, double deltat, size_type index,
        const Propagator& prepropag, const Population& postpop );
   ~BCM(void) override;
   void output( Output& output ) const override;
 };
 
-#endif
+#endif //NEUROFIELD_SRC_BCM_H

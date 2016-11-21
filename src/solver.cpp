@@ -6,13 +6,13 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#include"solver.h"
-#include"wave.h"
-#include"harmonic.h"
-#include"long_coupling.h"
-#include"bcmlong.h"
-#include"coupling_ramp.h"
-#include"coupling_diff_arctan.h"
+#include "solver.h"
+#include "wave.h"
+#include "harmonic.h"
+#include "long_coupling.h"
+#include "bcmlong.h"
+#include "coupling_ramp.h"
+#include "coupling_diff_arctan.h"
 
 using std::cerr;
 using std::endl;
@@ -28,10 +28,10 @@ void Solver::CntMat::init( Configf& configf ) {
 
   raw.resize(npop);
 
-  for( int i=0; i<npop; i++ ) {
+  for( vector<double>::size_type i=0; i<npop; i++ ) {
     configf.next( label("To ",i+1) ); // ignore "To ?:"
     raw[i] = configf.numbers();
-    if( raw[i].size() != size_t(npop) ) {
+    if( raw[i].size() != npop ) {
       cerr << "The connection matrix is not configured correctly."
            << endl;
       exit(EXIT_FAILURE);
@@ -39,8 +39,8 @@ void Solver::CntMat::init( Configf& configf ) {
   }
 
   // presynaptic population index for each connection index
-  for( int i=0; i<npop; i++ ) {
-    for( int j=0; j<npop; j++ ) {
+  for( vector<double>::size_type i=0; i<npop; i++ ) {
+    for( vector<double>::size_type j=0; j<npop; j++ ) {
       if( raw[i][j] != 0.0 ) {
         pre.push_back(j);
       }
@@ -48,8 +48,8 @@ void Solver::CntMat::init( Configf& configf ) {
   }
 
   // postsynaptic population index for each connection index
-  for( int i=0; i<npop; i++ ) {
-    for( int j=0; j<npop; j++ ) {
+  for( vector<double>::size_type i=0; i<npop; i++ ) {
+    for( vector<double>::size_type j=0; j<npop; j++ ) {
       if( raw[i][j] != 0.0 ) {
         post.push_back(i);
       }
@@ -109,10 +109,10 @@ void Solver::init( Configf& configf ) {
   configf.param("Connection matrix",cnt);
 
   // construct populations
-  for( int i=0; i<cnt.npop; i++ ) {
+  for( vector<double>::size_type i=0; i<cnt.npop; i++ ) {
     /*{
       bool neuralpop = false; // marker of neural or Betz population
-      for( int j=0; j<cnt.ncnt; j++ )
+      for( vector<int>::size_type j=0; j<cnt.ncnt; j++ )
         if( cnt.pre[j] == i )
           neuralpop = true; // a Betz cell is one without postsynaptic connections
       if( neuralpop ) // neural population includes stimulus populations too*/
@@ -122,7 +122,7 @@ void Solver::init( Configf& configf ) {
     pops.add( new Single(nodes,deltat,i) );
   }*/
 
-  for( int i=0; i<cnt.ncnt; i++ ) {
+  for( vector<int>::size_type i=0; i<cnt.ncnt; i++ ) {
     string ptype = configf.find( label("Propagator ",i+1) +":" );
     // PUT YOUR PROPAGATORS HERE
     if(ptype=="Map") {
@@ -182,8 +182,8 @@ void Solver::init( Configf& configf ) {
   }
 
   // insert dendrites to each population
-  for( int i=0; i<cnt.npop; i++ ) {
-    for( int j=0; j<cnt.ncnt; j++ ) {
+  for( vector<double>::size_type i=0; i<cnt.npop; i++ ) {
+    for( vector<int>::size_type j=0; j<cnt.ncnt; j++ ) {
       if( cnt.post[j] == i ) {
         pops[i]->add2Dendrite( j, *propagators[j], *couplings[j], configf );
       }
@@ -191,13 +191,13 @@ void Solver::init( Configf& configf ) {
   }
 
   // read object parameters
-  for( int i=0; i<cnt.npop; i++ ) {
+  for( vector<double>::size_type i=0; i<cnt.npop; i++ ) {
     configf.param( label("Population ",i+1), *pops[i] );
   }
-  for( int i=0; i<cnt.ncnt; i++ ) {
+  for( vector<int>::size_type i=0; i<cnt.ncnt; i++ ) {
     configf.param( label("Propagator ",i+1), *propagators[i] );
   }
-  for( int i=0; i<cnt.ncnt; i++ ) {
+  for( vector<int>::size_type i=0; i<cnt.ncnt; i++ ) {
     configf.param( label("Coupling ",i+1), *couplings[i] );
   }
 
@@ -250,7 +250,7 @@ void Solver::Outputs::init( Configf& configf ) {
   }
   if( temp_node.empty() ) {
     //seekg(position,ios::beg);
-    for( int i=0; i<nodes; i++ ) {
+    for( size_type i=0; i<nodes; i++ ) {
       node.push_back(i);
     }
   }
@@ -295,7 +295,7 @@ void Solver::Outputs::init( Configf& configf ) {
   vector<string> temp = configf.arb("Dendrite:");
   for(auto & i : temp) {
     int obj_index = atoi(i.c_str()); // atoi() takes only 1 of "1.V"
-    if( obj_index > cnt.npop || obj_index<1 ) {
+    if( static_cast<vector<double>::size_type>(obj_index) > cnt.npop || obj_index<1 ) {
       cerr<<"Trying to output population "<<obj_index
           <<", which is an invalid population."<<endl;
       exit(EXIT_FAILURE);
@@ -318,7 +318,7 @@ void Solver::Outputs::init( Configf& configf ) {
   temp = configf.arb("Propagator:");
   for(auto & i : temp) {
     int obj_index = atoi(i.c_str());
-    if( obj_index > cnt.ncnt || obj_index<1 ) {
+    if( static_cast<vector<int>::size_type>(obj_index) > cnt.ncnt || obj_index<1 ) {
       cerr<<"Trying to output dendrite "<<obj_index
           <<", which is an invalid dendrite."<<endl;
       exit(EXIT_FAILURE);
@@ -343,7 +343,7 @@ void Solver::Outputs::init( Configf& configf ) {
   temp = configf.arb("Coupling:");
   for(auto & i : temp) {
     int obj_index = atoi(i.c_str());
-    if( obj_index > cnt.ncnt || obj_index<1 ) {
+    if( static_cast<vector<int>::size_type>(obj_index) > cnt.ncnt || obj_index<1 ) {
       cerr<<"Trying to output propagator "<<obj_index
           <<", which is an invalid propagator."<<endl;
       exit(EXIT_FAILURE);
@@ -369,7 +369,7 @@ void Solver::Outputs::init( Configf& configf ) {
   temp = configf.arb("EOF");
   for(auto & i : temp) {
     int obj_index = atoi(i.c_str());
-    if( obj_index > cnt.ncnt || obj_index<1 ) {
+    if( static_cast<vector<int>::size_type>(obj_index) > cnt.ncnt || obj_index<1 ) {
       cerr<<"Trying to output coupling "<<obj_index
           <<", which is an invalid coupling."<<endl;
       exit(EXIT_FAILURE);

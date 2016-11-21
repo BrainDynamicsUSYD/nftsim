@@ -8,9 +8,9 @@
   @author Farah Deeba, Paula Sanz-Leon, Sahand Assadzadeh
 */
 
-#include<iostream>
-#include<vector>
-#include<algorithm>
+#include <iostream>
+#include <vector>
+#include <algorithm>
 using std::cerr;
 using std::endl;
 using std::cout;
@@ -47,7 +47,7 @@ void CouplingDiffArctan::init( Configf& configf ) {
   n.resize(nodes, nu_min);
   pos = (nu_min>0)?1:-1;
 
-  for( int i=0; i<nodes; i++) {
+  for( size_type i=0; i<nodes; i++) {
     P[i] = n[i]*prepropag.phiinit(configf);
   }
 
@@ -58,14 +58,14 @@ void CouplingDiffArctan::init( Configf& configf ) {
 void CouplingDiffArctan::step(void) {
   // Return the right value at each time point
   time += deltat;
-  for( int i=0; i<nodes; i++ ) {
+  for( size_type i=0; i<nodes; i++ ) {
     n[i]= nu_min + (nu_max-nu_min)*(((atan((time-t_half_up)/delta)-atan((time-t_half_down)/delta))-diff_atan_min)/(diff_atan_max-diff_atan_min));
   }
   Coupling::step();
 }
 
 
-CouplingDiffArctan::CouplingDiffArctan( int nodes, double deltat, int index,
+CouplingDiffArctan::CouplingDiffArctan( size_type nodes, double deltat, size_type index,
                                     const Propagator& prepropag, const Population& postpop, double tempf )
   : Coupling(nodes,deltat,index,prepropag,postpop) {
   // total simulation time is stored in tempf (defined in solver.cpp line 73)

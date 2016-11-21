@@ -8,9 +8,9 @@
 
 #include <utility>
 
-#include"output.h"
-#include"configf.h"
-#include"dumpf.h"
+#include "output.h"
+#include "configf.h"
+#include "dumpf.h"
 
 Outlet::Outlet( string  name, const vector<double>& field, bool single_output )
   : name(std::move(name)), field(field), single_output(single_output) {
@@ -26,11 +26,11 @@ void Output::operator() ( const string& name, const vector<double>& field ) {
   }
 }
 
-void Output::prefix( const string& object, int index ) {
+void Output::prefix( const string& object, vector<double>::size_type index ) {
   m_prefix = label(object+".",index) +".";
 }
 
-void Output::operator() ( const string& object, int index,
+void Output::operator() ( const string& object, vector<double>::size_type index,
                           const string& name, const vector<double>& field ) {
   prefix(object,index);
   (*this)(name,field);
@@ -42,7 +42,7 @@ void Output::singleNode ( const string& name, const vector<double>& field ) {
   }
 }
 
-void Output::singleNode (const string& object, int index, const string& name, const vector<double>& field ) {
+void Output::singleNode (const string& object, vector<double>::size_type index, const string& name, const vector<double>& field ) {
   prefix(object, index);
   singleNode(name,field);
 }

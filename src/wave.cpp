@@ -10,8 +10,8 @@
    Reads from the configuration file
 
 */
-#include<cmath>
-#include"wave.h"
+#include <cmath>
+#include "wave.h"
 using std::cerr;
 using std::endl;
 
@@ -70,7 +70,7 @@ void Wave::init( Configf& configf ) {
   }
 }
 
-Wave::Wave( int nodes, double deltat, int index, Population& prepop,
+Wave::Wave( size_type nodes, double deltat, size_type index, Population& prepop,
             Population& postpop, int longside, string topology )
   : Propagator(nodes,deltat,index,prepop,postpop,longside,topology),
     key(0) {
@@ -92,7 +92,7 @@ void Wave::step() {
   Stencil& stencil_oldp = *oldp[key == 0];
   Stencil& stencilQ = *oldQ[key];
   Stencil& stencil_oldQ = *oldQ[key == 0];
-  for( int i=0; i<nodes; i++,
+  for( size_type i=0; i<nodes; i++,
        stencilp++, stencilQ++, stencil_oldp++, stencil_oldQ++ ) {
     sump     = stencilp(n)  +stencilp(s)  +stencilp(w)  +stencilp(e) ; // sum of the von Neumann (orthogonal) neighbourhood (phi)
     diagsump = stencilp(nw) +stencilp(ne) +stencilp(sw) +stencilp(se); // sum of the diagonal neighbourhood (phi)

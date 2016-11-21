@@ -28,9 +28,9 @@ class DE {
     }
   }
  public:
-  vvd_size_type nodes;
-  double deltat;
-  vvd_size_type n; ///< dimension of system == y.size()
+  vvd_size_type nodes; ///< number of nodes in the system.
+  double deltat;       ///< integration timestep size.
+  vvd_size_type n;     ///< dimension of system == y.size()
   vector<vector<double> > variables;
 
   DE( vvd_size_type nodes, double deltat, vvd_size_type n )

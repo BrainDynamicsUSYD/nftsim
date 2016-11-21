@@ -40,7 +40,7 @@ double CaDP::CaDE::_x(double Ca) const {
 }
 
 void CaDP::CaDE::pot() {
-  for( int i=0; i<nodes; i++ ) {
+  for( size_type i=0; i<nodes; i++ ) {
     variables[4][i] = _x( variables[2][i] );
   }
 }
@@ -50,7 +50,7 @@ double CaDP::CaDE::_y(double Ca) const {
 }
 
 void CaDP::CaDE::dep() {
-  for( int i=0; i<nodes; i++ ) {
+  for( size_type i=0; i<nodes; i++ ) {
     variables[5][i] = _y( variables[2][i] );
   }
 }
@@ -91,7 +91,7 @@ void CaDP::CaDE::init( Configf& configf ) {
   }
 }
 
-CaDP::CaDP( int nodes, double deltat, int index,
+CaDP::CaDP( size_type nodes, double deltat, size_type index,
             const Propagator& prepropag, const Population& postpop )
   : Coupling(nodes,deltat,index,prepropag,postpop) {
   de = new CaDE(nodes,deltat);
@@ -104,14 +104,14 @@ CaDP::~CaDP() {
 }
 
 void CaDP::step() {
-  for( int i=0; i<nodes; i++ ) {
+  for( size_type i=0; i<nodes; i++ ) {
     (*de)[0][i] = de->sig( postpop.glu()[i] -de->glu_0, de->B );
     (*de)[1][i] = (195e-3-postpop.V()[i])*de->sig( postpop.V()[i]-45.5e-3, 62);
   }
   de->pot();
   de->dep();
   rk4->step();
-  for( int i=0; i<nodes; i++ ) {
+  for( size_type i=0; i<nodes; i++ ) {
     P[i] = (*de)[7][0]*prepropag[i];
   }
 }
