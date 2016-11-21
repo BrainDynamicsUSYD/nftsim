@@ -9,7 +9,7 @@
 #ifndef NEUROFIELD_SRC_COUPLING_H
 #define NEUROFIELD_SRC_COUPLING_H
 
-#include"population.h"
+#include "population.h"
 
 class Coupling : public NF {
   Coupling();
@@ -40,4 +40,4 @@ double Coupling::operator[]( size_type node ) const {
   return P[node];
 }
 
-#endif
+#endif //NEUROFIELD_SRC_COUPLING_H

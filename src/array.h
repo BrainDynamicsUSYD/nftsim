@@ -9,7 +9,7 @@
 #ifndef NEUROFIELD_SRC_ARRAY_H
 #define NEUROFIELD_SRC_ARRAY_H
 
-//#include<omp.h>
+//#include <omp.h>
 #include <string>
 using std::string;
 #include <vector>

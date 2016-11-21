@@ -12,7 +12,7 @@
    + @param[in]     nus, timepoints: vector with the values of nus at specific time points specified in vector timepoints.
    + @param[in]     pairs   : total number of pairs of (nu, time) to define the segments
 */
-#include<iostream>
+#include <iostream>
 using std::cerr;
 using std::endl;
 using std::cout;

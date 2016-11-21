@@ -6,10 +6,11 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#include"burst.h"
+#include "burst.h"
 using std::cerr;
 using std::endl;
 using std::cout;
+
 void Population::init( Configf& configf ) {
   qinit = Qinit(configf);
   qhistory.push_back( vector<double>(nodes,qinit) );

@@ -1,4 +1,4 @@
-/** @file coupling.h
+/** @file coupling_diff_arctan.h
   @brief A new Coupling class, where nu_ab follows a smooth function.
 
   The smooth variation of nu_ab is defined by the difference of
