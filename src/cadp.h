@@ -9,7 +9,7 @@
 #ifndef NEUROFIELD_SRC_CADP_H
 #define NEUROFIELD_SRC_CADP_H
 
-#include"coupling.h"
+#include "coupling.h"
 
 class CaDP : public Coupling {
   CaDP();
@@ -41,7 +41,7 @@ class CaDP : public Coupling {
     double pos; ///< sign of nu
 
     virtual void init( Configf& configf );
-    CaDE( int nodes, double deltat ) : DE(nodes,deltat,8) {}
+    CaDE( size_type nodes, double deltat ) : DE(nodes,deltat,8) {}
     ~CaDE(void) override = default;
 
     void rhs( const vector<double>& y, vector<double>& dydt ) override;
@@ -55,11 +55,11 @@ class CaDP : public Coupling {
   RK4* rk4;
   void init( Configf& configf ) override;
  public:
-  CaDP( int nodes, double deltat, int index,
+  CaDP( size_type nodes, double deltat, size_type index,
         const Propagator& prepropag, const Population& postpop );
   ~CaDP(void) override;
   void step(void) override;
   void output( Output& output ) const override;
 };
 
-#endif
+#endif //NEUROFIELD_SRC_CADP_H

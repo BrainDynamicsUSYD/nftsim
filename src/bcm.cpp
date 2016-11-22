@@ -6,8 +6,8 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#include<cmath>
-#include"bcm.h"
+#include <cmath>
+#include "bcm.h"
 
 void BCM::BCMDE::rhs( const vector<double>& y, vector<double>& dydt ) {
   // y == { binding, H, Ca, nutilde, x, y, dnudt, nu, gNMDA }
@@ -29,7 +29,7 @@ void BCM::BCMDE::rhs( const vector<double>& y, vector<double>& dydt ) {
 void BCM::BCMDE::init( Configf& configf ) {
   CaDE::init(configf);
   configf.param("t_BCM",t_BCM);
-  for( int i=0; i<nodes; i++ ) {
+  for( size_type i=0; i<nodes; i++ ) {
     variables[8][i] = gnmda;
   }
   gnmda_0 = gnmda;
@@ -38,7 +38,7 @@ void BCM::BCMDE::init( Configf& configf ) {
   }
 }
 
-BCM::BCM( int nodes, double deltat, int index,
+BCM::BCM( size_type nodes, double deltat, size_type index,
           const Propagator& prepropag, const Population& postpop )
   : CaDP(nodes,deltat,index,prepropag,postpop) {
   delete de;

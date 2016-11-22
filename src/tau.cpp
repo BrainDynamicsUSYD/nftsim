@@ -6,8 +6,8 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#include<cmath>
-#include"tau.h"
+#include <cmath>
+#include "tau.h"
 using std::cerr;
 using std::endl;
 
@@ -20,14 +20,14 @@ void Tau::init( Configf& configf ) {
     }
     m[0] = temp[0]/deltat;
     max = m[0];
-  } else if( temp.size() == size_t(nodes) ) {
+  } else if( temp.size() == nodes ) {
     if( remainder(temp[0],deltat) >deltat ) {
       std::cerr<<"Value of tau not divisible by Deltat!"<<endl;
       exit(EXIT_FAILURE);
     }
     m.resize(nodes);
-    for( int i=0; i<nodes; i++ ) {
-      m[i] = int(temp[i]/deltat);
+    for( size_type i=0; i<nodes; i++ ) {
+      m[i] = size_type(temp[i]/deltat);
       if( m[i]>max ) {
         max = m[i];
       }
@@ -38,7 +38,7 @@ void Tau::init( Configf& configf ) {
   }
 }
 
-Tau::Tau( int nodes, double deltat, int index ) : NF(nodes,deltat,index), max(0), m(1,0) {
+Tau::Tau( size_type nodes, double deltat, size_type index ) : NF(nodes,deltat,index), max(0), m(1,0) {
 }
 
 Tau::~Tau() = default;

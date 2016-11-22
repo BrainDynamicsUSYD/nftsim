@@ -9,10 +9,10 @@
 #ifndef NEUROFIELD_SRC_STENCIL_H
 #define NEUROFIELD_SRC_STENCIL_H
 
-#include<cstdlib>
-#include<string>
+#include <cstdlib>
+#include <string>
 using std::string;
-#include<vector>
+#include <vector>
 using std::vector;
 
 enum Moore {
@@ -63,4 +63,4 @@ void Stencil::operator++ (int) const {
   }
 }
 
-#endif
+#endif //NEUROFIELD_SRC_STENCIL_H

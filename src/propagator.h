@@ -10,7 +10,7 @@
 #ifndef NEUROFIELD_SRC_PROPAGATOR_H
 #define NEUROFIELD_SRC_PROPAGATOR_H
 
-#include"population.h"
+#include "population.h"
 
 using std::string;
 
@@ -28,18 +28,18 @@ class Propagator : public NF {
   int longside;
   vector<double> p; ///< phi_ab
  public:
-  Propagator( int nodes, double deltat, int index, Population& prepop,
+  Propagator( size_type nodes, double deltat, size_type index, Population& prepop,
           Population& postpop, int longside, string topology );
   ~Propagator(void) override;
   void step(void) override;
   double phiinit( Configf& configf ) const;
   virtual const vector<double>& phi(void) const;
-  inline double operator[]( int node ) const;
+  inline double operator[]( size_type node ) const;
   void output( Output& output ) const override;
 };
 
-double Propagator::operator[]( int node ) const {
+double Propagator::operator[]( size_type node ) const {
   return p[node];
 }
 
-#endif
+#endif //NEUROFIELD_SRC_PROPAGATOR_H

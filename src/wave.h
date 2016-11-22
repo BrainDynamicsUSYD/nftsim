@@ -17,8 +17,8 @@
 #ifndef NEUROFIELD_SRC_WAVE_H
 #define NEUROFIELD_SRC_WAVE_H
 
-#include"propagator.h"
-#include"stencil.h"
+#include "propagator.h"
+#include "stencil.h"
 
 class Wave : public Propagator {
   Wave(); // no default constructor
@@ -52,10 +52,10 @@ class Wave : public Propagator {
   double diagsumQ; ///< sum of the points in the diagonal neighbourhood (Q)
   double drive;
  public:
-  Wave( int nodes, double deltat, int index, Population& prepop,
+  Wave( size_type nodes, double deltat, size_type index, Population& prepop,
         Population& postpop, int longside, string topology );
   ~Wave(void) override;
   void step(void) override;
 };
 
-#endif
+#endif //NEUROFIELD_SRC_WAVE_H

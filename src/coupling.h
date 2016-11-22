@@ -9,7 +9,7 @@
 #ifndef NEUROFIELD_SRC_COUPLING_H
 #define NEUROFIELD_SRC_COUPLING_H
 
-#include"population.h"
+#include "population.h"
 
 class Coupling : public NF {
   Coupling();
@@ -25,19 +25,19 @@ class Coupling : public NF {
   vector<double> P; ///< nu*phi
   int pos;
  public:
-  Coupling( int nodes, double deltat, int index,
+  Coupling( size_type nodes, double deltat, size_type index,
           const Propagator& prepropag, const Population& postpop );
   ~Coupling(void) override;
   void step(void) override;
   double nuinit( Configf& configf ) const;
   void output( Output& output ) const override;
   virtual const vector<double>& nuphi(void) const;
-  inline double operator[]( int node ) const;
+  inline double operator[]( size_type node ) const;
   virtual bool excite(void) const;
 };
 
-double Coupling::operator[]( int node ) const {
+double Coupling::operator[]( size_type node ) const {
   return P[node];
 }
 
-#endif
+#endif //NEUROFIELD_SRC_COUPLING_H

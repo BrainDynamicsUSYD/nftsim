@@ -9,7 +9,7 @@
 #ifndef NEUROFIELD_SRC_LONGCOUPLING_H
 #define NEUROFIELD_SRC_LONGCOUPLING_H
 
-#include"coupling.h"
+#include "coupling.h"
 
 class LongCoupling : public Coupling {
   LongCoupling();
@@ -20,11 +20,11 @@ class LongCoupling : public Coupling {
   vector< vector<double> > n2d; ///< nu tensor, nu[i][j] = from i to j
   int pos;
  public:
-  LongCoupling( int nodes, double deltat, int index,
+  LongCoupling( size_type nodes, double deltat, size_type index,
               const Propagator& prepropag, const Population& postpop );
   ~LongCoupling(void) override;
   void step(void) override;
   void output( Output& output ) const override;
 };
 
-#endif
+#endif //NEUROFIELD_SRC_LONGCOUPLING_H

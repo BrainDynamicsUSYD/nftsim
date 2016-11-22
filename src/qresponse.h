@@ -10,9 +10,9 @@
 #ifndef NEUROFIELD_SRC_QRESPONSE_H
 #define NEUROFIELD_SRC_QRESPONSE_H
 
-#include"array.h"
-#include"de.h"
-#include"population.h"
+#include "array.h"
+#include "de.h"
+#include "population.h"
 
 using std::string;
 
@@ -36,7 +36,7 @@ class QResponse : public NF {
   double a,b,c,d;
 
   Array<Dendrite> dendrites; ///< array of dendrites
-  vector<int> dendrite_index; ///< indices of dendrites
+  vector<Array<Dendrite>::size_type> dendrite_index; ///< indices of dendrites
   vector<double> v; ///< soma potential for the population
 
   // glutamate concentration in synaptic cleft
@@ -44,7 +44,7 @@ class QResponse : public NF {
     double Lambda; ///< glutamate concentration per action potential
     double tGlu;   ///< time scale of glutamate
 
-    Glu( int nodes, double deltat ) : DE(nodes,deltat,2) {}
+    Glu( vvd_size_type nodes, double deltat ) : DE(nodes,deltat,2) {}
     ~Glu(void) override = default;
     void init( Configf& configf );
     void rhs( const vector<double>& y, vector<double>& dydt ) override;
@@ -52,21 +52,21 @@ class QResponse : public NF {
   Glu glu_m;
   RK4 glu_rk4;
  public:
-  QResponse( int nodes, double deltat, int index );
+  QResponse( size_type nodes, double deltat, size_type index );
   ~QResponse(void) override;
   void step(void) override;
-  virtual void add2Dendrite( int index,
+  virtual void add2Dendrite( size_type index,
                              const Propagator& prepropag, const Coupling& precouple, Configf& configf );
   const vector<double>& glu(void) const;
 
   virtual void fire( vector<double>& Q ) const;
   inline const vector<double>& V(void) const;
   void output( Output& output ) const override;
-  virtual void outputDendrite( int index, Output& output ) const;
+  virtual void outputDendrite( size_type index, Output& output ) const;
 };
 
 const vector<double>& QResponse::V(void) const {
   return v;
 }
 
-#endif
+#endif //NEUROFIELD_SRC_QRESPONSE_H

@@ -9,7 +9,7 @@
 #ifndef NEUROFIELD_SRC_BCMLONG_H
 #define NEUROFIELD_SRC_BCMLONG_H
 
-#include"bcm.h"
+#include "bcm.h"
 
 class BCMLong : public BCM {
   BCMLong();
@@ -21,11 +21,11 @@ class BCMLong : public BCM {
   vector<RK4*> rk4_2d;
 
  public:
-  BCMLong( int nodes, double deltat, int index,
+  BCMLong( size_type nodes, double deltat, size_type index,
            const Propagator& prepropag, const Population& postpop );
   ~BCMLong(void) override;
   void step(void) override;
   void output( Output& output ) const override;
 };
 
-#endif
+#endif //NEUROFIELD_SRC_BCMLONG_H

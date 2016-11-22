@@ -10,7 +10,7 @@
 #define NEUROFIELD_SRC_SOLVER_H
 
 
-#include"population.h"
+#include "population.h"
 
 using std::vector;
 
@@ -27,13 +27,13 @@ class Solver : public NF {
   int steps; ///< number of integration steps to perform
 
   struct CntMat : public NF {
-    int npop; ///< number of populations
-    int ncnt; ///< number of connections
+    vector<double>::size_type npop; ///< number of populations
+    vector<int>::size_type ncnt; ///< number of connections
     vector< vector<double> > raw; // 2D vector of raw connection matrix
 
-    vector<int> pre;  ///< presynaptic connection index for each population
-    vector<int> post; ///< postsynaptic connection index for each population
-    vector<int> ndr;  ///< number of dendrites for each population
+    vector<vector<double>::size_type> pre;  ///< presynaptic connection index for each population
+    vector<vector<double>::size_type> post; ///< postsynaptic connection index for each population
+    vector<vector<double>::size_type> ndr;  ///< number of dendrites for each population
 
     void init( Configf& configf ) override;
     //void restart( Restartf& restartf ) {}
@@ -58,7 +58,7 @@ class Solver : public NF {
     void init( Configf& configf ) override;
     //void restart( Restartf& restartf ) {}
     //void dump( Dumpf& dumpf ) const {}
-    Outputs( int nodes, double deltat, Dumpf& dumpf,
+    Outputs( size_type nodes, double deltat, Dumpf& dumpf,
              CntMat& cnt, Array<Population>& pops, Array<Propagator>& propagators, Array<Coupling>& couplings )
       : NF(nodes,deltat,0), dumpf(dumpf),
         cnt(cnt), pops(pops), propagators(propagators), couplings(couplings) {}
@@ -94,5 +94,4 @@ class Solver : public NF {
   void step(void) override;
 };
 
-
-#endif
+#endif //NEUROFIELD_SRC_SOLVER_H

@@ -21,7 +21,7 @@ void Propagator::init( Configf& configf ) {
   prepop.growHistory(tau);
 }
 
-Propagator::Propagator( int nodes, double deltat, int index, Population& prepop,
+Propagator::Propagator( size_type nodes, double deltat, size_type index, Population& prepop,
                 Population& postpop, int longside, string  /*unused*/)
   : NF(nodes,deltat,index), prepop(prepop), postpop(postpop),
     tau(nodes,deltat,index), longside(longside), p(nodes) {

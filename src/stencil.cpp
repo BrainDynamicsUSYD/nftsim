@@ -6,10 +6,10 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#include<iostream>
+#include <iostream>
 using std::cerr;
 using std::endl;
-#include"stencil.h"
+#include "stencil.h"
 
 Stencil::Stencil( int nodes, int longside, const string& boundary )
   : nodes(nodes), longside(longside), shortside(nodes/longside),

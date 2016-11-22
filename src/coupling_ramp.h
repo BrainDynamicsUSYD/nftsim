@@ -19,7 +19,7 @@
 #ifndef NEUROFIELD_SRC_COUPLINGRAMP_H
 #define NEUROFIELD_SRC_COUPLINGRAMP_H
 
-#include"coupling.h"
+#include "coupling.h"
 
 using std::vector;
 
@@ -31,11 +31,11 @@ class CouplingRamp : public Coupling {
   vector<double> tpts;
   vector<double> deltanu;
   double time;
-  int pairs;
+  vector<double>::size_type pairs;
  public:
   void init( Configf& configf ) override;
   void step(void) override;
-  CouplingRamp( int nodes, double deltat, int index,
+  CouplingRamp( size_type nodes, double deltat, size_type index,
               const Propagator& prepropag, const Population& postpop );
   ~CouplingRamp(void) override;
 };

@@ -6,7 +6,7 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#include"burst.h"
+#include "burst.h"
 
 void BurstResponse::init( Configf& configf ) {
   configf.param("Sigma",sigma);
@@ -52,7 +52,7 @@ void BurstResponse::init( Configf& configf ) {
     gH2 = gH1;
   }
 
-  for(size_t i = 0; i<dendrites.size(); i++) {
+  for(Array<Dendrite>::size_type i = 0; i<dendrites.size(); i++) {
     configf>>*dendrites[i];  // array.h vector<T*> vector of ptrs info and inserts into this from the ifstream configf
   }
 // read config file- see qresponse.init()
@@ -73,7 +73,7 @@ void BurstResponse::init( Configf& configf ) {
   }
 }
 
-BurstResponse::BurstResponse( int nodes, double deltat, int index )  // constructor
+BurstResponse::BurstResponse( size_type nodes, double deltat, size_type index )  // constructor
   : QResponse(nodes,deltat,index), xtemp(nodes), htemp(nodes) {
   h=deltat;
   h2=deltat/2;
@@ -115,7 +115,7 @@ void BurstResponse::step() {
   ib = -gX[0] * (Veff -Vx) / 3;
   ia = ib - gH[0] * (Veff - Vk);
 
-  for(int i=0; i<nodes; i++ ) {
+  for(size_type i=0; i<nodes; i++ ) {
     modtheta[i] = (ic-3*ib*xtilde[i]+(ib-ia)*htilde[i])/mu; // use updated y to calculate theta
   }
 }
@@ -132,7 +132,7 @@ void BurstResponse::output(Output& output) const {
 }
 
 void BurstResponse::fire( vector<double>& Q ) const {
-  for(int i=0; i<nodes; i++ ) {
+  for(size_type i=0; i<nodes; i++ ) {
     Q[i] = Q_max/( 1.0F+ exp( -(v[i]-modtheta[i])/sigma ) );
   }
 }
@@ -142,26 +142,26 @@ void BurstResponse::rk4() {
   // Updates them by one time step in place
 
   rkderivs(xtilde,htilde,xk[0],hk[0]);
-  for(int i=0; i<nodes; i++) {
+  for(size_type i=0; i<nodes; i++) {
     xtemp[i] = xtilde[i] + h2*xk[0][i];
     htemp[i] = htilde[i] + h2*hk[0][i];
   }
 
   rkderivs(xtemp,htemp,xk[1],hk[1]);
-  for(int i=0; i<nodes; i++) {
+  for(size_type i=0; i<nodes; i++) {
     xtemp[i] = xtilde[i] + h2*xk[1][i];
     htemp[i] = htilde[i] + h2*hk[1][i];
   }
 
   rkderivs(xtemp,htemp,xk[2],hk[2]);
-  for(int i=0; i<nodes; i++) {
+  for(size_type i=0; i<nodes; i++) {
     xtemp[i] = xtilde[i] + h*xk[2][i];
     htemp[i] = htilde[i] + h*hk[2][i];
   }
 
   rkderivs(xtemp,htemp,xk[3],hk[3]);
 
-  for(int i=0; i<nodes; i++) {
+  for(size_type i=0; i<nodes; i++) {
     xtilde[i] = xtilde[i] + h6*(xk[0][i] + 2*xk[1][i] + 2*xk[2][i] + xk[3][i]);
     htilde[i] = htilde[i] + h6*(hk[0][i] + 2*hk[1][i] + 2*hk[2][i] + hk[3][i]);
   }
@@ -172,7 +172,7 @@ void BurstResponse::rkderivs(vector<double>& xtemp, vector<double>& htemp,vector
   //y[0] is Htilde , y[1] is Xtilde
   ib = -gX[0] * (Veff -Vx) / 3;
   ia = ib - gH[0] * (Veff - Vk);
-  for(int i = 0; i < nodes; i++) {
+  for(size_type i = 0; i < nodes; i++) {
     thetatemp[i] = (ic-3*ib*xtilde[i]+(ib-ia)*htilde[i])/mu;
     qfiring[i] = Q_max/(1+exp(-(v[i]-thetatemp[i])/sigma));
 

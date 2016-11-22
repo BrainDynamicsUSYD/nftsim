@@ -9,18 +9,18 @@
 #ifndef NEUROFIELD_SRC_CONFIGF_H
 #define NEUROFIELD_SRC_CONFIGF_H
 
-#include<sstream>
+#include <sstream>
 using std::stringstream;
-#include<string>
+#include <string>
 using std::string;
 
-#include<fstream>
-#include<iostream>
-#include<string>
+#include <fstream>
+#include <iostream>
+#include <string>
 using std::string;
-#include<vector>
+#include <vector>
 using std::vector;
-#include<cstdlib>
+#include <cstdlib>
 using std::cerr;
 using std::endl;
 
@@ -30,7 +30,7 @@ class Configf : protected std::ifstream { // derived class
   Configf& operator=(const Configf& other); // No assignment operator
 
   char* buffer;
-  size_t filesize;
+  std::streamsize filesize;
  public:
   explicit Configf( const char* filename ); // const ptr to filename for ifstream
   ~Configf(void) override;
@@ -53,10 +53,10 @@ class Configf : protected std::ifstream { // derived class
   // searches and points to next keyword
   void go2( const string& keyword );
 
-  int tell(void) {
+  std::streamsize tell(void) {
     return std::ifstream::tellg();
   }
-  void seek( int position ) {
+  void seek( std::streamsize position ) {
     std::ifstream::seekg(position);
   }
 
@@ -65,7 +65,7 @@ class Configf : protected std::ifstream { // derived class
 
 // global function that returns string=="Object#" for config file parsing
 // also useful in naming outputf "solution.phi.#"
-string label( const string& prefix, int index );
+string label( const string& prefix, size_t index );
 
 template<class T> void Configf::param(const string& param, T& ret, int delim ) {
   if( next(param,delim) ) {
@@ -76,7 +76,7 @@ template<class T> void Configf::param(const string& param, T& ret, int delim ) {
     }
     *this >> ret;
   } else {
-    int position = tellg();
+    std::streamsize position = tellg();
     seekg(0,std::ios::beg);
     read(buffer,position);
     buffer[position] = '\0';
@@ -112,9 +112,7 @@ template<class T> bool Configf::optional( const string& param, T& ret, int delim
     }
     return true;
   }
-
   return false;
-
 }
 
-#endif
+#endif //NEUROFIELD_SRC_CONFIGF_H

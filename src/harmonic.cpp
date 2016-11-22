@@ -6,8 +6,8 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#include<cmath>
-#include"harmonic.h"
+#include <cmath>
+#include "harmonic.h"
 
 void Harmonic::init( Configf& configf ) {
   double Q = prepop.Qinit(configf);
@@ -38,7 +38,7 @@ void Harmonic::init( Configf& configf ) {
   expgamma = exp(-gamma*deltat);
 }
 
-Harmonic::Harmonic( int nodes, double deltat, int index, Population& prepop,
+Harmonic::Harmonic( size_type nodes, double deltat, size_type index, Population& prepop,
                     Population& postpop, int longside, string topology )
   : Propagator(nodes,deltat,index,prepop,postpop,longside,topology) {
 }
@@ -50,7 +50,7 @@ void Harmonic::step() {
   // and Q(t) is linear for the timestep.
   // x(t)  =  C1 t e(pt) + C2 e(pt),
   const vector<double>& Q = prepop.Q(tau);
-  for( int i=0; i<nodes; i++ ) {
+  for( size_type i=0; i<nodes; i++ ) {
     dQdt = ( Q[i] -oldQ[i] )/deltat;
     adjustedQ = oldQ[i] -twoongamma*dQdt -oldp[i];
     C1 = dpdt[i] -gamma*adjustedQ -dQdt;

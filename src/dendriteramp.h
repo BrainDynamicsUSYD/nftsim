@@ -9,7 +9,7 @@
 #ifndef NEUROFIELD_SRC_DENDRITERAMP_H
 #define NEUROFIELD_SRC_DENDRITERAMP_H
 
-#include"dendrite.h"
+#include "dendrite.h"
 
 using std::vector;
 
@@ -23,7 +23,7 @@ class DendriteRamp : public Dendrite {
     double alpha2, beta2;
     double t1, t2, t3, t4;
     virtual void init( const double vinit);
-    DendriteDE( int nodes, double deltat) : DE(nodes, deltat, 3) {}
+    DendriteDE( size_type nodes, double deltat) : DE(nodes, deltat, 3) {}
     ~DendriteDE(void) override = default;
     void rhs( const vector<double>& y, vector<double>& dydt ) override;
   };
@@ -32,10 +32,9 @@ class DendriteRamp : public Dendrite {
 
   double time;
 
-
   void init( Configf& configf ) override;
  public:
-  DendriteRamp( int nodes, double deltat, int index,
+  DendriteRamp( size_type nodes, double deltat, size_type index,
                 const Propagator& prepropag, const Coupling& precouple );
   ~DendriteRamp(void) override;
   void step(void) override;
@@ -46,4 +45,4 @@ class DendriteRamp : public Dendrite {
   void output( Output& output ) const override;
 };
 
-#endif
+#endif //NEUROFIELD_SRC_DENDRITERAMP_H

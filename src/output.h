@@ -9,9 +9,9 @@
 #ifndef NEUROFIELD_SRC_OUTPUT_H
 #define NEUROFIELD_SRC_OUTPUT_H
 
-#include<string>
+#include <string>
 using std::string;
-#include<vector>
+#include <vector>
 using std::vector;
 
 class Outlet {
@@ -29,14 +29,14 @@ class Output {
  public:
   explicit Output( string  key );
   void operator() ( const string& name, const vector<double>& field );
-  void prefix( const string& object, int index );
-  void operator() ( const string& object, int index,
+  void prefix( const string& object, vector<double>::size_type index );
+  void operator() ( const string& object, vector<double>::size_type index,
                     const string& name, const vector<double>& field );
   void singleNode( const string& name, const vector<double>& field );
   void singleNode(
-    const string& object, int index, const string& name, const vector<double>& field );
+    const string& object, vector<double>::size_type index, const string& name, const vector<double>& field );
   bool empty(void) const;
   operator vector<Outlet*>(void) const;
 };
 
-#endif
+#endif //NEUROFIELD_SRC_OUTPUT_H

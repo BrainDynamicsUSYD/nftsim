@@ -48,7 +48,7 @@ class Dendrite : public NF {
   const Propagator& prepropag;
   const Coupling& precouple;
 
-  Dendrite( int nodes, double deltat, int index,
+  Dendrite( size_type nodes, double deltat, size_type index,
             const Propagator& prepropag, const Coupling& precouple );
   ~Dendrite(void) override;
   void step(void) override;

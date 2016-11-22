@@ -6,7 +6,7 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#include"nf.h"
+#include "nf.h"
 
 Configf& operator>> ( Configf& configf, NF& nf ) {
   nf.init(configf);
@@ -26,7 +26,7 @@ Dumpf& operator<< ( Dumpf& dumpf, const NF& nf )
   return dumpf;
 }*/
 
-NF::NF( int nodes, double deltat, int index )
+NF::NF( size_type nodes, double deltat, size_type index )
   : nodes(nodes), deltat(deltat), index(index) {
 }
 

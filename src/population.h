@@ -14,12 +14,12 @@ class Coupling;
 class Population;
 class QResponse;
 
-#include"timeseries.h"
-#include"qresponse.h"
-#include"dendrite.h"
-#include"coupling.h"
-#include"tau.h" // Must be included before propagator.h
-#include"propagator.h"
+#include "timeseries.h"
+#include "qresponse.h"
+#include "dendrite.h"
+#include "coupling.h"
+#include "tau.h" // Must be included before propagator.h
+#include "propagator.h"
 
 
 using std::vector;
@@ -31,7 +31,7 @@ class Population : public NF {
   QResponse* qresponse; ///< qresponse for neural population
   Timeseries* timeseries; ///< timeseries for stimulus
  protected:
-  int qkey; ///< index to the present q in qhistory
+  vector< vector<double> >::size_type qkey; ///< index to the present q in qhistory
   vector< vector<double> > qhistory; ///< keyring of Q
   vector<double> q; ///< current Q, only for output purpose
   bool settled; ///< if true, forbids add2Dendrite and growHistory
@@ -40,22 +40,23 @@ class Population : public NF {
 
   void init( Configf& configf ) override;
  public:
-  Population( int nodes, double deltat, int index );
+  Population( size_type nodes, double deltat, size_type index );
   ~Population() override;
   void step(void) override;
   virtual const vector<double>& Q( const Tau& tau ) const;
   double Qinit( Configf& configf ) const;
   virtual const vector<double>& V(void) const;
-  inline double operator[]( int node ) const;
+  inline double operator[]( size_type node ) const;
   const vector<double>& glu(void) const;
   inline double sheetlength(void) const {
     return length;
   }
-  virtual void add2Dendrite( int index,
+  virtual void add2Dendrite( size_type index,
                              const Propagator& prepropag, const Coupling& precouple, Configf& configf );
   virtual void growHistory( const Tau& tau );
   void output( Output& output ) const override;
-  virtual void outputDendrite( int index, Output& output ) const;
+  virtual void outputDendrite( size_type
+   index, Output& output ) const;
 };
 
-#endif
+#endif //NEUROFIELD_SRC_POPULATION_H

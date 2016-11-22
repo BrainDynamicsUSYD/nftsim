@@ -9,12 +9,12 @@
 #ifndef NEUROFIELD_SRC_ARRAY_H
 #define NEUROFIELD_SRC_ARRAY_H
 
-//#include<omp.h>
-#include<string>
+//#include <omp.h>
+#include <string>
 using std::string;
-#include<vector>
+#include <vector>
 using std::vector;
-#include<iostream>
+#include <iostream>
 using std::endl;
 
 template<class T>
@@ -23,14 +23,15 @@ class Array {
 
   vector<T*> m;
  public:
+  typedef typename vector<T>::size_type size_type;
   virtual void step(void);
   virtual void pstep(void); // parallel for loop over elements::loop
 
   void add(T* t);
   void add(vector<T*> t);
   bool empty(void) const;
-  inline T* operator[]( int index ) const;
-  unsigned int size(void) const;
+  inline T* operator[]( size_type index ) const;
+  size_type size(void) const;
 
   Array<T>(void);
   virtual ~Array(void);
@@ -43,7 +44,7 @@ void Array<T>::add( T* t ) {
 
 template<class T>
 void Array<T>::add( vector<T*> t ) {
-  for( size_t i=0; i<t.size(); i++ ) {
+  for( size_type i=0; i<t.size(); i++ ) {
     m.push_back( t[i] );
   }
 }
@@ -55,7 +56,7 @@ bool Array<T>::empty(void) const {
 
 template<class T>
 void Array<T>::step(void) {
-  for( size_t i=0; i<m.size(); i++ ) {
+  for( size_type i=0; i<m.size(); i++ ) {
     m[i]->step();
   }
 }
@@ -65,7 +66,7 @@ void Array<T>::pstep(void) {
   // Note pstep() is needed as well as step() because output must use
   // step so that it is not parallelized
   //#pragma omp parallel for num_threads(5)
-  for( size_t i=0; i<m.size(); i++ ) {
+  for( size_type i=0; i<m.size(); i++ ) {
     m[i]->step();
   }
 }
@@ -75,7 +76,7 @@ Array<T>::Array(void) = default;
 
 template<class T>
 Array<T>::~Array(void) {
-  for( size_t i=0; i<m.size(); i++ ) {
+  for( size_type i=0; i<m.size(); i++ ) {
     if( m[i] ) {
       delete m[i];
     }
@@ -83,13 +84,13 @@ Array<T>::~Array(void) {
 }
 
 template<class T>
-T* Array<T>::operator[]( int index ) const {
+T* Array<T>::operator[]( size_type index ) const {
   return m[index];
 }
 
 template<class T>
-unsigned int Array<T>::size(void) const {
+typename Array<T>::size_type Array<T>::size(void) const {
   return m.size();
 }
 
-#endif
+#endif //NEUROFIELD_SRC_ARRAY_H

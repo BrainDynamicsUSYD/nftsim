@@ -6,15 +6,15 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#include"timeseries.h"
+#include "timeseries.h"
 
 using std::cerr;
 using std::endl;
 
 void Timeseries::init( Configf& configf ) {
-  int superimpose = 1;
+  series_size_type superimpose = 1;
   configf.optional("Superimpose",superimpose);
-  for( int i=0; i<superimpose; i++ ) {
+  for( series_size_type i=0; i<superimpose; i++ ) {
     if( superimpose>1 ) {
       configf.next("Stimulus");
     }
@@ -33,7 +33,7 @@ void Timeseries::init( Configf& configf ) {
       temp_node = configf.numbers();
     }
     if( temp_node.empty() ) {
-      for( int j=1; j<=nodes; j++ ) {
+      for( size_type j=1; j<=nodes; j++ ) {
         temp_node.push_back(j);
       }
     }
@@ -77,7 +77,7 @@ void Timeseries::init( Configf& configf ) {
 
 }
 
-Timeseries::Timeseries( int nodes, double deltat, int index )
+Timeseries::Timeseries( size_type nodes, double deltat, size_type index )
   : NF(nodes,deltat,index), series(), t(0), cease(1000) {
 }
 
@@ -117,7 +117,7 @@ void Const::init( Configf& configf ) {
 }
 
 void Const::fire( vector<double>& Q ) const {
-  for( int i=0; i<nodes; i++ ) {
+  for( size_type i=0; i<nodes; i++ ) {
     Q[i] = mean;
   }
 }
@@ -138,7 +138,7 @@ void Pulse::init( Configf& configf ) {
 
 void Pulse::fire( vector<double>& Q ) const {
   if( fmod(t,period)>=0 && fmod(t,period)<width && t/period<pulses ) {
-    for( int i=0; i<nodes; i++ ) {
+    for( size_type i=0; i<nodes; i++ ) {
       Q[i] = amp;
     }
   }
@@ -223,18 +223,18 @@ void PAS::init( Configf& configf ) {
 void PAS::fire( vector<double>& Q ) const {
   // MNS
   if( t_mns<=t && t<t_mns+n20w ) {
-    for( int i=0; i<nodes; i++ ) {
+    for( size_type i=0; i<nodes; i++ ) {
       Q[i] = -n20h*sin(3.14159*(t-t_mns)/n20w);
     }
   } else if( t_mns+n20w<=t && t<t_mns+n20w+p25w ) {
-    for( int i=0; i<nodes; i++ ) {
+    for( size_type i=0; i<nodes; i++ ) {
       Q[i] =  p25h*sin(3.14159*(t-t_mns-n20w)/p25w);
     }
   }
 
   // TMS
   if( t_mns+n20w/2+isi<=t && t<t_mns+n20w/2+isi+tmsw ) {
-    for( int i=0; i<nodes; i++ ) {
+    for( size_type i=0; i<nodes; i++ ) {
       Q[i] += tmsh;
     }
   }
@@ -255,7 +255,7 @@ void Burst::fire( vector<double>& Q ) const {
   if( fmod(t,on+off)>=0 && fmod(t,on+off)<on &&
       fmod(t,1/oscillation_freq)>=0 && fmod(t,1/oscillation_freq)<bursts/freq &&
       fmod(t,1/freq)>=0 && fmod(t,1/freq)<width ) {
-    for( int i=0; i<nodes; i++ ) {
+    for( size_type i=0; i<nodes; i++ ) {
       Q[i] = amp;
     }
   }
@@ -275,7 +275,7 @@ void Sine::init( Configf& configf ) {
 
 void Sine::fire( vector<double>& Q ) const {
   if( fmod(t,period)>=0 && fmod(t,period)<width && t/period<pulses ) {
-    for( int i=0; i<nodes; i++ ) {
+    for( size_type i=0; i<nodes; i++ ) {
       Q[i] = amp*sin( 2*3.14159*( fmod(t,period)/width -phase/360 ) );
     }
   }

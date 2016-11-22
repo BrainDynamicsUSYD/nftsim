@@ -9,7 +9,7 @@
 #ifndef NEUROFIELD_SRC_HARMONIC_H
 #define NEUROFIELD_SRC_HARMONIC_H
 
-#include"propagator.h"
+#include "propagator.h"
 
 using std::vector;
 
@@ -37,10 +37,10 @@ class Harmonic : public virtual Propagator {
   double C1;
   double C1dtplusC2;
  public:
-  Harmonic( int nodes, double deltat, int index, Population& prepop,
+  Harmonic( size_type nodes, double deltat, size_type index, Population& prepop,
             Population& postpop, int longside, string topology );
   ~Harmonic(void) override;
   void step(void) override;
 };
 
-#endif
+#endif //NEUROFIELD_SRC_HARMONIC_H
