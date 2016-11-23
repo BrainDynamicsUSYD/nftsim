@@ -49,6 +49,11 @@ parse_command_flags(){
       check_output_file "$INPUTARG2"
       return "$?"
     ;;
+    --clean)
+      #Remove files left around by calls to --check that found differences.
+      rm -f /tmp/neurofield_*
+      return "$?"
+    ;;
     --help|-h|-?)
       msg_help
       return 0
@@ -74,6 +79,10 @@ msg_help(){
   printf '%s\n'   "    output to change."
   printf '%s\n'   "    eg: ./nf_configs --regenerate 'example'"
   printf '%s\n'   "    eg: ./nf_configs --regenerate './configs/example.conf'"
+  printf '\n%s\n' "  --clean"
+  printf '%s\n'   "    Removes files that are left in the /tmp/ directory when a call to --check"
+  printf '%s\n'   "    finds differences."
+  printf '%s\n'   "    eg: ./nf_configs --clean"
   printf '\n%s\n' "  --help"
   printf '%s\n'   "    Displays this message"
   printf '%s\n\n'   "    eg: ./nf_configs --help"
@@ -160,7 +169,7 @@ check_output_file(){
     set_output_file "$config_file"
     [[ -f "${OUTPUT_FILE}.gz" ]] || { printf '%s\n' "No existing file to check against."; exit 1; }
     config_file_name="$(basename "$config_file")"
-    output_file_tmp="$(mktemp --tmpdir="/tmp" --suffix=.output nf_"$config_file_name"-XXXX)"
+    output_file_tmp="$(mktemp --tmpdir="/tmp" --suffix=.output neurofield_"$config_file_name"-XXXX)"
     run_config "$config_file" "$output_file_tmp"
     zdiff "${output_file_tmp}.gz" "${OUTPUT_FILE}.gz"  &> /dev/null
     diff_status="$?" #NOTE: No-diff = 0; diff = 1; error = 2
@@ -170,6 +179,7 @@ check_output_file(){
         rm -f "${output_file_tmp}.gz"
     ;;
       1)
+        zdiff --side-by-side --suppress-common-lines --width=180 "${OUTPUT_FILE}.gz" "${output_file_tmp}.gz" | less
         printf '%s\n' "$config_file output DIFFERS!"
         printf '%s\n' "See: ${output_file_tmp}.gz"
     ;;
