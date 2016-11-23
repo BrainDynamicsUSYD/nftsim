@@ -22,7 +22,7 @@ INPUTARG1="$1" ; INPUTARG2="$2"
 declare -r  INPUTARG1 INPUTARG2
 
 #Check we were called with the right number of args:
-(($# > 2)) && { printf '%s\n' "${BASH_SOURCE[0]} takes at most 2 args" ; return 1 ; }
+(($# > 2)) && { printf '%s\n' "${BASH_SOURCE[0]} takes at most 2 args" ; exit 1 ; }
 
 SCRIPTDIR="$(dirname "${BASH_SOURCE[0]}")"
 
@@ -72,8 +72,8 @@ msg_help(){
   printf '%s\n'   "    that should change the output. The updated output file should then be"
   printf '%s\n'   "    committed as part of the pull request for the code changes that caused the"
   printf '%s\n'   "    output to change."
-  printf '%s\n'   "    eg: ./nf_configs --check 'example'"
-  printf '%s\n'   "    eg: ./nf_configs --check './configs/example.conf'"
+  printf '%s\n'   "    eg: ./nf_configs --regenerate 'example'"
+  printf '%s\n'   "    eg: ./nf_configs --regenerate './configs/example.conf'"
   printf '\n%s\n' "  --help"
   printf '%s\n'   "    Displays this message"
   printf '%s\n\n'   "    eg: ./nf_configs --help"
