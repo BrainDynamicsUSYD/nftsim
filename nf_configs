@@ -58,15 +58,26 @@ msg_help(){
   printf '%s\n'   "    eg: ./nf_configs --check 'example'"
   printf '%s\n'   "    eg: ./nf_configs --check './configs/example.conf'"
   printf '\n%s\n' "  --regenerate"
-  printf '%s\n'   "    Regenerates the output for the specified config file. This should only be used when you've"
-  printf '%s\n'   "    intentionally made a change to the code or config file that should change the output. The"
-  printf '%s\n'   "    updated output file should then be committed as part of the pull request for the code"
-  printf '%s\n'   "    changes that caused the output to change."
+  printf '%s\n'   "    Regenerates the output for the specified config file. This should only be used when"
+  printf '%s\n'   "    you've intentionally made a change to the code or config file that should change the"
+  printf '%s\n'   "    output. The updated output file should then be committed as part of the pull request"
+  printf '%s\n'   "    for the code changes that caused the output to change."
   printf '%s\n'   "    eg: ./nf_configs --check 'example'"
   printf '%s\n'   "    eg: ./nf_configs --check './configs/example.conf'"
   printf '\n%s\n' "  --help"
   printf '%s\n'   "    Displays this message"
   printf '%s\n\n'   "    eg: ./nf_configs --help"
+}
+
+#Sets the global variable OUTPUT_FILE to the default location for the
+#specified configuration file.
+set_output_file(){
+  local config_file="$1"
+
+  #Set the default output file path for the current config file.
+  OUTPUT_FILE="$SCRIPTDIR/test/data/configs/${config_file#*/configs/*}"
+  OUTPUT_FILE="${OUTPUT_FILE%.*}.output"
+
 }
 
 # Run the config file provided as an argument, the first arg is expected
@@ -75,10 +86,6 @@ run_config(){
   local config_file="$1"
   local output_file
   local neurofield_status
-
-  #Set the default output file path for the current config file.
-  OUTPUT_FILE="$SCRIPTDIR/test/data/configs/${config_file#*/configs/*}"
-  OUTPUT_FILE="${OUTPUT_FILE%.*}.output"
 
   #If run_config() was called with a second arg use it as the output_file 
   if (( $# > 1 )); then
@@ -110,6 +117,7 @@ regenerate_output_file(){
     local -a config_files
     config_files=($(find "$SCRIPTDIR/configs" -maxdepth 2 -type f -name '*.conf'))
     for (( i = 0; i < ${#config_files[@]}; i++ )) ; do
+      set_output_file "${config_files[i]}"
       run_config "${config_files[i]}"
     done
     return 0
@@ -118,6 +126,7 @@ regenerate_output_file(){
     config_file="$(find "$SCRIPTDIR/configs" -maxdepth 3 -type f -name "${config_file}.conf")"
   fi
   if [[ -f "$config_file" ]]; then
+    set_output_file "$config_file"
     run_config "$config_file"
     return "$?"
   else
@@ -138,6 +147,8 @@ check_output_file(){
     config_file="$(find "$SCRIPTDIR/configs" -maxdepth 3 -type f -name "${config_file}.conf")"
   fi
   if [[ -f "$config_file" ]]; then
+    set_output_file "$config_file"
+    [[ -f "${OUTPUT_FILE}.gz" ]] || { printf '%s\n' "No existing file to check against."; exit 1; }
     config_file_name="$(basename "$config_file")"
     output_file_tmp="$(mktemp --tmpdir="/tmp" --suffix=.output nf_"$config_file_name"-XXXX)"
     run_config "$config_file" "$output_file_tmp"
