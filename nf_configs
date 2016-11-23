@@ -74,22 +74,21 @@ msg_help(){
 run_config(){
   local config_file="$1"
   local output_file
-  local output_dir
   local neurofield_status
-  
+
   #Set the default output file path for the current config file.
   OUTPUT_FILE="$SCRIPTDIR/test/data/configs/${config_file#*/configs/*}"
   OUTPUT_FILE="${OUTPUT_FILE%.*}.output"
-  output_dir="$(dirname "$OUTPUT_FILE")"
 
-  #If it doesn't already exist: Create the output directory.
-  [[ -d "$output_dir" ]] || mkdir --parents "$output_dir"
-  
   #If run_config() was called with a second arg use it as the output_file 
   if (( $# > 1 )); then
     output_file="$2"
   else #otherwise use the default location in the test directory
     output_file="$OUTPUT_FILE"
+    local output_dir
+    output_dir="$(dirname "$output_file")"
+    #If it doesn't already exist: Create the output directory.
+    [[ -d "$output_dir" ]] || mkdir --parents "$output_dir"
   fi
   
   #Run neurofield for the requested config file
