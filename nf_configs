@@ -25,18 +25,27 @@ declare -r  INPUTARG1 INPUTARG2
 (($# > 2)) && { printf '%s\n' "${BASH_SOURCE[0]} takes at most 2 args" ; return 1 ; }
 
 SCRIPTDIR="$(dirname "${BASH_SOURCE[0]}")"
-[[ -e "$SCRIPTDIR"/bin/neurofield ]] || { printf '%s\n' "The neurofield executable doesn't exist, run make."; exit 1; }
 
+neurofield_exists(){
+  if [[ -e "$SCRIPTDIR"/bin/neurofield ]]; then
+    return 0
+  else
+    printf '%s\n' "The neurofield executable doesn't exist, run make."
+    return 1
+  fi
+}
 
 #Run appropriate functions based on how we were called.
 parse_command_flags(){
   #check for command line switches
   case "$INPUTARG1" in
     --regenerate|-r)
+      neurofield_exists || return 1
       regenerate_output_file "$INPUTARG2"
       return "$?"
     ;;
     --check|-c)
+      neurofield_exists || return 1
       check_output_file "$INPUTARG2"
       return "$?"
     ;;
