@@ -169,7 +169,7 @@ check_output_file(){
     set_output_file "$config_file"
     [[ -f "${OUTPUT_FILE}.gz" ]] || { printf '%s\n' "No existing file to check against."; exit 1; }
     config_file_name="$(basename "$config_file")"
-    output_file_tmp="$(mktemp --tmpdir="/tmp" --suffix=.output neurofield_"$config_file_name"-XXXX \
+    output_file_tmp="$(mktemp --tmpdir="/tmp" --suffix=.output neurofield_"$config_file_name"-XXXX 2>/dev/null \
                      || mktemp /tmp/neurofield_"$config_file_name".XXXX)" #Alternative for OSX
     run_config "$config_file" "$output_file_tmp"
     zdiff "${output_file_tmp}.gz" "${OUTPUT_FILE}.gz"  &> /dev/null
