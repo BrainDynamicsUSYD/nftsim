@@ -122,7 +122,11 @@ run_config(){
   neurofield_status="$?"
 
   #If the run was successful then gzip the resulting file.
-  ((neurofield_status == 0)) && gzip --force "$output_file"
+  if ((neurofield_status == 0)); then
+    gzip --force "$output_file"
+  else
+    printf '%s\n' "Failed runnning: $SCRIPTDIR/bin/neurofield -i $config_file -o $output_file"
+  fi
   
   return "$neurofield_status"
 }
@@ -167,11 +171,11 @@ check_output_file(){
   fi
   if [[ -f "$config_file" ]]; then
     set_output_file "$config_file"
-    [[ -f "${OUTPUT_FILE}.gz" ]] || { printf '%s\n' "No existing file to check against."; exit 1; }
+    [[ -f "${OUTPUT_FILE}.gz" ]] || { printf '%s\n' "No existing file to check against."; return 1; }
     config_file_name="$(basename "$config_file")"
     output_file_tmp="$(mktemp --tmpdir="/tmp" --suffix=.output neurofield_"$config_file_name"-XXXX 2>/dev/null \
                      || mktemp /tmp/neurofield_"$config_file_name".XXXX)" #Alternative for OSX
-    run_config "$config_file" "$output_file_tmp"
+    run_config "$config_file" "$output_file_tmp" || return 1
     zdiff "${output_file_tmp}.gz" "${OUTPUT_FILE}.gz"  &> /dev/null
     diff_status="$?" #NOTE: No-diff = 0; diff = 1; error = 2
     case "$diff_status" in
