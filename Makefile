@@ -39,7 +39,7 @@ endif
 ifeq ($(shell uname -s), Darwin)
   CXX := clang++
   CXXFLAGS := -std=c++11 -Weverything -Wno-padded -Wno-c++98-compat -Wno-c++98-compat-pedantic -fdiagnostics-fixit-info -Wdocumentation -march=native -funroll-loops -flto -O3
-  DEBUG := -std=c++11 -glldb -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -fdiagnostics-fixit-info -Wdocumentation
+  DEBUG := -std=c++11 -g -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -fdiagnostics-fixit-info -Wdocumentation
   DEPFLAGS = -std=c++11 -MM -MP -MT $(OBJDIR)$*.o
 endif
 
