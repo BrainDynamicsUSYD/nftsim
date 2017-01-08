@@ -7,7 +7,8 @@
 #
 #DESCRIPTION:
 #  A script for checking the output from the neurofield repo's .conf files
-#  against their expected output. The expected output is stored in the directory
+#  against their expected test output. The expected/test output is stored in 
+#  the directory
 #    ./test/data/configs/
 #  The script also supports updating those expected output files when code or
 #  .conf file changes have been made that intentionally modify the output.
@@ -72,9 +73,9 @@ msg_help(){
   printf '%s\n'   "    eg: ./nf_configs --check 'example'"
   printf '%s\n'   "    eg: ./nf_configs --check './configs/example.conf'"
   printf '\n%s\n' "  --regenerate"
-  printf '%s\n'   "    Regenerates the output for the specified config file. This should only be"
+  printf '%s\n'   "    Regenerates the test output for the specified config file. This should ONLY be"
   printf '%s\n'   "    used when you've intentionally made a change to the code or config file"
-  printf '%s\n'   "    that should change the output. The updated output file should then be"
+  printf '%s\n'   "    that should change the test output. The updated test output file should then be"
   printf '%s\n'   "    committed as part of the pull request for the code changes that caused the"
   printf '%s\n'   "    output to change."
   printf '%s\n'   "    eg: ./nf_configs --regenerate 'example'"
