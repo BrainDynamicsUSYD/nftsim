@@ -61,14 +61,14 @@ NO_DEPS += clean-user-manual clean-reference-manual clean-docs clean-deps clean-
 .PHONY: neurofield debug all clang make_bin_dir make_obj_dir make_dep_dir help help-dev info docs user-manual reference-manual \
 	clean-user-manual clean-reference-manual clean-docs clean-deps clean-objs clean-bin clean clean-all
 
-# target: neurofield - compile neurofield placing the executable in the bin directory.
+# target: neurofield - Compile neurofield placing the executable in the bin directory.
 neurofield: $(BINDIR)$(BIN)
 
-# target: debug - compile neurofield with debugging enabled.
+# target: debug - Compile neurofield with debugging enabled.
 debug: CXXFLAGS := $(DEBUG)
 debug: neurofield
 
-# target: all - compile neurofield and build all documentation.
+# target: all - Compile neurofield and build all documentation.
 all: neurofield docs
 
 #   target: clang - Build using clang++, redundant on MacOS as clang++ is default.
