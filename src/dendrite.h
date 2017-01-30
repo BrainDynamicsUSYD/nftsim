@@ -25,21 +25,21 @@ class Dendrite : public NF {
 
   // variables that are used every timestep
   double adjustednp;
-  double deltaPdeltat;
+  double deltaPdeltat; //NOTE: doesn't seem to be used anywhere (???maybe replaced by current dpdt???).
   double C1;
-  double dpdt;
+  double dpdt; // Temporal derivative of pulse density.
   double C1expa;
   double C2expb;
   double C1dtplusC2;
  protected:
 
-  double alpha; // needed here for DendriteRamp
-  double beta;
+  double alpha; ///< Mean decay rate of the soma response to a delta-function synaptic input (needed here for DendriteRamp).
+  double beta; ///< Mean rise rate of the soma response to a delta-function synaptic input.
 
-  vector<double> v;
-  vector<double> dvdt;
-  //vector<double> np;
-  vector<double> oldnp;
+  vector<double> v; ///< Membrane potential.
+  vector<double> dvdt; ///< Temporal derivative of the membrane potential.
+  //vector<double> np; ///< Pulse density (nu*phi).
+  vector<double> oldnp; ///< Pulse density (nu*phi) of the previous time-step.
 
   void init( Configf& configf ) override;
   //virtual void restart( Restartf& restartf );
