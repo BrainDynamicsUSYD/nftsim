@@ -15,6 +15,7 @@
 
 #include "fmath.h"
 #include "dendriteramp.h"
+#include "dendrite_integral.h"
 
 using std::endl;
 void QResponse::init( Configf& configf ) {
@@ -106,6 +107,8 @@ void QResponse::add2Dendrite( size_type index,
   // PUT YOUR DENDRITE HERE
   if( temp == "Ramp" ) {
     dendrites.add( new DendriteRamp(nodes,deltat,index,prepropag,precouple) );
+  } else if ( temp == "Integral" ) {
+    dendrites.add( new DendriteIntegral(nodes,deltat,index,prepropag,precouple) );
     // END PUT YOUR DENDRITE HERE
   } else {
     dendrites.add( new Dendrite(nodes,deltat,index,prepropag,precouple) );

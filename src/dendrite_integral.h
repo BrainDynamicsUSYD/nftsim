@@ -31,6 +31,10 @@ class DendriteIntegral : public Dendrite {
   double C1expa;
   double C2expb;
   double C1dtplusC2;
+
+ protected:
+  void init( Configf& configf ) override;
+
  public:
 
   DendriteIntegral( size_type nodes, double deltat, size_type index,
