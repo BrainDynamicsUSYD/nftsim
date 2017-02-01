@@ -33,6 +33,10 @@ class DendriteIntegral : public Dendrite {
   double C1dtplusC2;
 
  protected:
+  vector<double> dvdt; ///< Temporal derivative of the membrane potential.
+  //vector<double> np; ///< Pulse density (nu*phi).
+  vector<double> oldnp; ///< Pulse density (nu*phi) of the previous time-step.
+
   void init( Configf& configf ) override;
 
  public:

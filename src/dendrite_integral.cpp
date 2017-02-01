@@ -13,12 +13,9 @@
 void DendriteIntegral::init( Configf& configf ) {
   Dendrite::init(configf);
 
-  // NOTE: We have to set these here as the base Dendrite::init is setting
-  // the private versions of these variables. If they're used by the new
-  // differential form of Dendrite::step() then make them not-private so we
-  // can just rely on the base class member, then clean-up. If they're not
-  // used by the new Dendrite::step() then remove them from Dendrite and keep
-  // them here... Either way, get rid of the redundancy.
+  oldnp = v;
+
+  // Initialize constant factors to speed up computation.
   aminusb = alpha - beta;
   expa = exp(-alpha*deltat);
   expb = exp(-beta*deltat);
@@ -27,7 +24,7 @@ void DendriteIntegral::init( Configf& configf ) {
 
 DendriteIntegral::DendriteIntegral( size_type nodes, double deltat, size_type index,
                     const Propagator& prepropag, const Coupling& precouple )
-  : Dendrite(nodes, deltat, index, prepropag, precouple) {
+  : Dendrite(nodes, deltat, index, prepropag, precouple), dvdt(nodes,0), oldnp(nodes) {
 }
 
 DendriteIntegral::~DendriteIntegral() = default;
