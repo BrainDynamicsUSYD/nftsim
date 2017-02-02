@@ -24,7 +24,7 @@ void Dendrite::DendriteDE::rhs( const vector<double>& y, vector<double>& dydt ) 
   // dydt = {dv/dt==W, dW/dt==d^2V/dt^2,dnuphi/dt}  d(nuphi)/dt from precouple
   dydt[0] = y[1];
 
-  dydt[1] = (y[2] - y[0] - (1.0/alpha + 1.0/beta) * y[1]) * (alpha * beta);
+  dydt[1] = (y[2] - y[0] - factorab * y[1]) * alphaxbeta;
 
   dydt[2] = 0.0;
 }
@@ -47,9 +47,13 @@ void Dendrite::init( Configf& configf ) {
   configf.param("alpha",alpha);
   configf.param("beta",beta);
 
+  // Initialize constant factors to speed up computation.
+  factorab = 1./alpha + 1./beta;
+  alphaxbeta = alpha * beta;
+
   de->init(v[0]); // call Dendrite::DendriteDE::init
-  de->alpha = alpha;
-  de->beta = beta;
+  de->factorab = factorab;
+  de->alphaxbeta = alphaxbeta;
 }
 
 void Dendrite::DendriteDE::init(const double vinit) {
@@ -85,7 +89,6 @@ void Dendrite::step() {
     v[i] = (*de)[0][i]; // Voltage
   }
 }
-
 
 void Dendrite::output( Output& output ) const {
   output("Dendrite",index+1,"V",v);
