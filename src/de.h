@@ -88,6 +88,7 @@ class RK4 : public Integrator {
   void operator=(RK4&);
  protected:
   double h6; ///< == deltat/6
+  double deltat5; ///< == deltat*0.5
 
   vector<double> k1;
   vector<double> k2;
@@ -95,7 +96,7 @@ class RK4 : public Integrator {
   vector<double> k4;
   vector<double> temp;
  public:
-  explicit RK4( DE& de ) : Integrator(de), h6(de.deltat/6.),
+  explicit RK4( DE& de ) : Integrator(de), h6(de.deltat/6.), deltat5(de.deltat*0.5),
     k1(de.n), k2(de.n), k3(de.n), k4(de.n), temp(de.n) {}
   ~RK4(void) override = default;
 
@@ -106,11 +107,11 @@ class RK4 : public Integrator {
       }
       de.rhs(temp,k1);
       for( vvd_size_type i=0; i<de.n; i++ ) {
-        temp[i] = de.variables[i][j] +de.deltat*.5*k1[i];
+        temp[i] = de.variables[i][j] +deltat5*k1[i];
       }
       de.rhs(temp,k2);
       for( vvd_size_type i=0; i<de.n; i++ ) {
-        temp[i] = de.variables[i][j] +de.deltat*.5*k2[i];
+        temp[i] = de.variables[i][j] +deltat5*k2[i];
       }
       de.rhs(temp,k3);
       for( vvd_size_type i=0; i<de.n; i++ ) {
@@ -118,7 +119,7 @@ class RK4 : public Integrator {
       }
       de.rhs(temp,k4);
       for( vvd_size_type i=0; i<de.n; i++ ) {
-        de.variables[i][j] += h6*( k1[i] +2*k2[i] +2*k3[i] +k4[i] );
+        de.variables[i][j] += h6*( k1[i] +2.0*k2[i] +2.0*k3[i] +k4[i] );
       }
     }
   }
