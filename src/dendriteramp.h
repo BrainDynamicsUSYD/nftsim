@@ -40,7 +40,7 @@ class DendriteRamp : public Dendrite {
   void step(void) override;
 
   inline const vector<double>& V(void) const {
-    return (*de)[1];
+    return (*de)[1]; //NOTE: Pretty sure this is an error: index=1 points to dv/dt, to get voltage, which is what I think is wanted here, it should be index=0
   }
   void output( Output& output ) const override;
 };
