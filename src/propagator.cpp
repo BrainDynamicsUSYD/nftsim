@@ -9,7 +9,7 @@
 #include "propagator.h"
 
 void Propagator::init( Configf& configf ) {
-  double Q = prepop.Qinit(configf);
+  Q = prepop.Qinit(configf);
   string buffer("Steady");
   configf.optional("phi",buffer);
   if( buffer != "Steady" ) {
@@ -19,6 +19,15 @@ void Propagator::init( Configf& configf ) {
   p.resize(nodes,Q);
   configf.optional("Tau",tau);
   prepop.growHistory(tau);
+
+  // Range is either used when velocity is specified, or
+  // not used but read for compatibility with Wave propagator.
+  configf.optional("Range",range);
+  if( !configf.optional("gamma",gamma) ) {
+    if( configf.optional("velocity",velocity) ) {
+      gamma = velocity/range;
+    }
+  }
 }
 
 Propagator::Propagator( size_type nodes, double deltat, size_type index, Population& prepop,

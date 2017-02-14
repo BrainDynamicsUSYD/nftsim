@@ -26,7 +26,11 @@ class Propagator : public NF {
   Population& postpop;
   Tau tau; ///< tau_ab
   int longside;
+  double Q;
   vector<double> p; ///< phi_ab
+  double range;     ///< Characteristic axonal range
+  double velocity;  ///< Mean axonal conduction Speed
+  double gamma;     ///< Damping coefficient
  public:
   Propagator( size_type nodes, double deltat, size_type index, Population& prepop,
           Population& postpop, int longside, string topology );

@@ -21,8 +21,6 @@ class HarmonicIntegral : public virtual Propagator {
   //virtual void restart( Restartf& restartf );
   //virtual void dump( Dumpf& dumpf ) const;
 
-  double gamma;  ///< damping coefficient
-
   vector<double> oldp;
   vector<double> oldQ;
   vector<double> dpdt;

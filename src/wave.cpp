@@ -16,10 +16,9 @@ using std::cerr;
 using std::endl;
 
 void Wave::init( Configf& configf ) {
-  deltax = prepop.sheetlength()/longside;
+  double Q = prepop.Qinit(configf);
   string buffer("Steady");
   configf.optional("phi",buffer);
-  double Q = prepop.Qinit(configf);
   if( buffer != "Steady" ) {
     p.clear();
     p.resize(nodes,atof(buffer.c_str()));
@@ -32,10 +31,11 @@ void Wave::init( Configf& configf ) {
   prepop.growHistory(tau);
   configf.param("Range",range);
   if( !configf.optional("gamma",gamma) ) {
-    double temp;
-    configf.param("velocity",temp);
-    gamma = temp/range;
+    configf.param("velocity",velocity);
+    gamma = velocity/range;
   }
+
+  deltax = prepop.sheetlength()/longside;
 
   *oldp[0] = vector<double>(nodes,p[0]);
   *oldp[1] = vector<double>(nodes,p[0]);

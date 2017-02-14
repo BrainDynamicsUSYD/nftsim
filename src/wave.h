@@ -34,8 +34,6 @@ class Wave : public Propagator {
 
   // variables that's initialized once only
   double deltax; ///< Grid spacing in space - spatial resolution
-  double range;  ///< Characteristic axonal range
-  double gamma;  ///< Damping coefficient
   double dt2on12;
   double dfact;
   double dt2ondx2;    ///< Factor in wave equation equal to ((gamma deltat)^2)/12.

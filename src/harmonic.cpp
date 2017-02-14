@@ -10,30 +10,12 @@
 #include "harmonic.h"
 
 void Harmonic::init( Configf& configf ) {
-  double Q = prepop.Qinit(configf);
-  string buffer("Steady");
-  configf.optional("phi",buffer);
-  if( buffer != "Steady" ) {
-    Q = atof(buffer.c_str());
-  }
-  p.clear();
-  p.resize(nodes,Q);
+  Propagator::init(configf);
+
   oldp.resize(nodes,Q);
   oldQ.resize(nodes,Q);
   dpdt.resize(nodes,0.);
-  configf.optional("Tau",tau);
-  prepop.growHistory(tau);
 
-  // Range is either used when velocity is specified,
-  // or not used but read for compatibility with Wave propagator
-  double range;
-  configf.optional("Range",range);
-
-  if( !configf.optional("gamma",gamma) ) {
-    double velocity;
-    configf.param("velocity",velocity);
-    gamma = velocity/range;
-  }
   twoongamma = 2./gamma;
   expgamma = exp(-gamma*deltat);
 }
