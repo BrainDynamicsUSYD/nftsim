@@ -139,6 +139,9 @@ void Solver::init( Configf& configf ) {
     } else if(ptype=="Harmonic") {
       propagators.add( new
                    Harmonic(nodes,deltat,i, *pops[cnt.pre[i]], *pops[cnt.post[i]], longside, topology));
+    } else if(ptype=="HarmonicIntegral") {
+      propagators.add( new
+                   HarmonicIntegral(nodes,deltat,i, *pops[cnt.pre[i]], *pops[cnt.post[i]], longside, topology));
     } else {
       cerr<<"Invalid propagator type '"<<ptype<<"'."<<endl;
       exit(EXIT_FAILURE);
