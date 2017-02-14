@@ -49,20 +49,21 @@ HarmonicIntegral::~HarmonicIntegral() = default;
   @brief Uses an integral approximation to advance the Harmonic Propogator.
   
   This implementation assumes gamma is constant and Q(t) is linear for the 
-  timestep. If you are working in a regime that doesn't conform to these
+  timestep. If you are working in a regime that does not conform to these
   assumptions then use the Harmonic class, which uses a more general
   differential form for the step method.
-  
+
   x(t)  =  C1 t e(pt) + C2 e(pt)
   
   TODO: add equations and reference for the integral approximation used here.
   \f{eqnarray*}{
-    \frac{dp}{dt}&=&\left(C1 - \gamma \left(C2\right)\right) 
+    \frac{dp}{dt}&=&\left(C1 - \gamma \left(C2\right)\right) \\
+    \phi&=&something
   \f}
   where
   \f{eqnarray*}{
-    C1&=&\stuff
-    C2&=&\stuff
+    C1&=& stuff \\
+    C2&=& stuff
   \f}
 */
 void HarmonicIntegral::step() {

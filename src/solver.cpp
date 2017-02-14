@@ -9,6 +9,7 @@
 #include "solver.h"
 #include "wave.h"
 #include "harmonic.h"
+#include "harmonic_integral.h"
 #include "long_coupling.h"
 #include "bcmlong.h"
 #include "coupling_ramp.h"
