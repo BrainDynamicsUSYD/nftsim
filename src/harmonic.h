@@ -10,30 +10,33 @@
 #define NEUROFIELD_SRC_HARMONIC_H
 
 #include "propagator.h"
+#include "de.h"
 
 using std::vector;
 
 class Harmonic : public virtual Propagator {
   Harmonic(); // no default constructor
   Harmonic(Harmonic&); // no copy constructor
+
+  // variables that are initialized once to speed up computation
+  double gammasquared = 0.0; ///< == gamma^2;
+  double twoongamma = 0.0;   ///< == 2.0/gamma;
+
+  struct HarmonicDE : public DE {
+    double gammasquared = 0.0, twoongamma = 0.0;
+    virtual void init( const double pinit);
+    HarmonicDE( size_type nodes, double deltat) : DE(nodes, deltat, 3) {}
+    ~HarmonicDE(void) override = default;
+    void rhs( const vector<double>& y, vector<double>& dydt ) override;
+  };
+  HarmonicDE* de;
+  RK4* rk4;
+
  protected:
   void init( Configf& configf ) override;
   //virtual void restart( Restartf& restartf );
   //virtual void dump( Dumpf& dumpf ) const;
 
-  vector<double> oldp;
-  vector<double> oldQ;
-  vector<double> dpdt;
-  double dQdt;
-
-  // variables that initializes once
-  double twoongamma;
-  double expgamma;
-
-  // variables that change every timestep
-  double adjustedQ;
-  double C1;
-  double C1dtplusC2;
  public:
   Harmonic( size_type nodes, double deltat, size_type index, Population& prepop,
             Population& postpop, int longside, string topology );
