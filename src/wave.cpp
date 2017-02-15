@@ -16,23 +16,19 @@ using std::cerr;
 using std::endl;
 
 void Wave::init( Configf& configf ) {
-  double Q = prepop.Qinit(configf);
-  string buffer("Steady");
-  configf.optional("phi",buffer);
-  if( buffer != "Steady" ) {
-    p.clear();
-    p.resize(nodes,atof(buffer.c_str()));
-  } else {
-    p.clear();
-    p.resize(nodes,Q);
+  Propagator::init(configf);
+
+  // Propagator::init considers range optional, but for Wave it's required.
+  if(range == 0.0) {
+    cerr << "Wave requires Range to be set in the .conf file." << endl;
+    exit(EXIT_FAILURE);
   }
 
-  configf.optional("Tau",tau);
-  prepop.growHistory(tau);
-  configf.param("Range",range);
-  if( !configf.optional("gamma",gamma) ) {
-    configf.param("velocity",velocity);
-    gamma = velocity/range;
+  // Propagators require gamma, so either gamma or velocity must be set in
+  // the .conf file (gamma=velocity/range).
+  if(gamma == 0.0) {
+    cerr << "Wave requires either gamma or velocity to be set in the .conf file." << endl;
+    exit(EXIT_FAILURE);
   }
 
   deltax = prepop.sheetlength()/longside;
