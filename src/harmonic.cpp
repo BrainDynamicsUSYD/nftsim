@@ -12,6 +12,11 @@
 void Harmonic::init( Configf& configf ) {
   Propagator::init(configf);
 
+  // If "Steady" then phi was set to Q in Propagator::init, so the
+  // following assignment does nothing. But if not "Steady" then
+  // for Harmonic we still want phi=Q. ?True for integral approx but maybe not general?
+  Q = p[0];
+
   oldp.resize(nodes,Q);
   oldQ.resize(nodes,Q);
   dpdt.resize(nodes,0.);

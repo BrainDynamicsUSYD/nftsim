@@ -13,10 +13,12 @@ void Propagator::init( Configf& configf ) {
   string buffer("Steady");
   configf.optional("phi",buffer);
   if( buffer != "Steady" ) {
-    Q = atof(buffer.c_str());
+    p.clear();
+    p.resize(nodes,atof(buffer.c_str()));
+  } else {
+    p.clear();
+    p.resize(nodes,Q);
   }
-  p.clear();
-  p.resize(nodes,Q);
   configf.optional("Tau",tau);
   prepop.growHistory(tau);
 
