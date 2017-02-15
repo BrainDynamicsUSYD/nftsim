@@ -12,6 +12,13 @@
 void Harmonic::init( Configf& configf ) {
   Propagator::init(configf);
 
+  // Propagator::init considers gamma optional but Harmonic requires gamma, so
+  // either it or velocity must be set in the .conf file (gamma=velocity/range).
+  if(gamma == 0.0) {
+    cerr << "Harmonic requires gamma or velocity to be provided." << endl;
+    exit(EXIT_FAILURE);
+  }
+
   // If "Steady" then phi was set to Q in Propagator::init, so the
   // following assignment does nothing. But if not "Steady" then
   // for Harmonic we still want phi=Q. ?True for integral approx but maybe not general?

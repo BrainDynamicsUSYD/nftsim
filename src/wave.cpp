@@ -24,8 +24,8 @@ void Wave::init( Configf& configf ) {
     exit(EXIT_FAILURE);
   }
 
-  // Propagators require gamma, so either gamma or velocity must be set in
-  // the .conf file (gamma=velocity/range).
+  // Propagator::init considers gamma optional but Wave requires gamma, so
+  // either it or velocity must be set in the .conf file (gamma=velocity/range).
   if(gamma == 0.0) {
     cerr << "Wave requires either gamma or velocity to be set in the .conf file." << endl;
     exit(EXIT_FAILURE);
