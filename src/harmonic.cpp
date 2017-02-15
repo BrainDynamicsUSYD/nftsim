@@ -10,7 +10,7 @@
 #include "harmonic.h"
 
 /**
-  @brief Computes the derivatives of the dendritic response function.
+  @brief Computes the derivatives of the Harmonic Propagator function.
 
   The Harmonic propgator equation is given by:
   \f{eqnarray*}{
@@ -72,11 +72,11 @@ Harmonic::~Harmonic() {
 
 void Harmonic::step() {
   const vector<double>& Q = prepop.Q(tau);
-  //Copy the \nu\phi into their corresponding variable in the DE.
+  //Copy the Q to its corresponding variable in the DE.
   for( size_type i=0; i<nodes; i++ ) {
     (*de)[2][i] = Q[i]; // Q
   }
-  //Integrate the harmonic propagator one step forward in time.
+  //Integrate the Harmonic Propagator one step forward in time.
   rk4->step();
   //Copy the phi from the updated DE to the local variable p.
   for( size_type i=0; i<nodes; i++ ) {
