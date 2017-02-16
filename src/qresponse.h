@@ -37,8 +37,8 @@ class QResponse : public NF {
   //virtual void dump( Dumpf& dumpf ) const;
 
   std::string mode;
-  double theta;
-  double sigma;
+  double theta; ///< Mean firing threshold.
+  double sigma; ///< Standard deviation of the firing threshold.
   double Q_max; ///< Maximum firing rate.
   double a,b,c,d;
 

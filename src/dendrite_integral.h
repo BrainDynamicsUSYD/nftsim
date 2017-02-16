@@ -34,7 +34,7 @@ class DendriteIntegral : public Dendrite {
   double adjustednp;
   double deltaPdeltat; //NOTE: doesn't seem to be used anywhere (???maybe replaced by current dpdt???).
   double C1;
-  double dpdt; // Temporal derivative of pulse density.
+  double dpdt; ///< Temporal derivative of pulse density.
   double C1expa;
   double C2expb;
   double C1dtplusC2;

@@ -16,9 +16,6 @@ using std::vector;
 #include <string>   // std::string;
 using std::string;
 
-//#include <cmath>
-//#include <iostream>
-
 // Neurofield headers
 #include "array.h"      // Array;
 #include "configf.h"    // Configf;

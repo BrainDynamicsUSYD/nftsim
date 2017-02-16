@@ -10,7 +10,6 @@
 #define NEUROFIELD_SRC_BURST_H
 
 // C++ standard library headers
-// #include <cmath>
 #include <vector> // std::vector;
 
 // Neurofield headers

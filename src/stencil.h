@@ -10,7 +10,6 @@
 #define NEUROFIELD_SRC_STENCIL_H
 
 // C++ standard library headers
-//#include <cstdlib>
 #include <string> // std::string;
 #include <vector> // std::vector;
 

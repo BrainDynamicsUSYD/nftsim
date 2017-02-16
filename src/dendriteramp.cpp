@@ -10,9 +10,6 @@
 #include <vector>   // std::vector;
 using std::vector;
 
-//#include <cstdlib>
-//#include <cmath>
-
 // Neurofield headers
 #include "configf.h"    // Configf;
 #include "de.h"         // RK4;

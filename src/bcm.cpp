@@ -9,7 +9,6 @@
 // C++ standard library headers
 #include <vector>   // std::vector;
 using std::vector;
-//#include <cmath>
 
 // Neurofield headers
 #include "configf.h"    // Configf;

@@ -10,10 +10,6 @@
  *
  */
 
-/**
-   Reads from the configuration file
-
-*/
 #ifndef NEUROFIELD_SRC_WAVE_H
 #define NEUROFIELD_SRC_WAVE_H
 
