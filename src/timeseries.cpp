@@ -6,10 +6,26 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#include "timeseries.h"
+// C++ standard library headers
+#include <vector>   // std::vector;
+using std::vector;
+#include <string>   // std::string;
+using std::string;
 
+#include <iostream> // std::cerr; std::endl;
 using std::cerr;
 using std::endl;
+
+#include <cmath>    // std::pow; std::sqrt; std::sin; std::fmod;
+using std::pow;
+using std::sqrt;
+using std::sin;
+using std::fmod;
+
+// Neurofield headers
+#include "configf.h"    // Configf;
+#include "random.h"     // Random;
+#include "timeseries.h" // Timeseries; TIMESERIES::;
 
 void Timeseries::init( Configf& configf ) {
   series_size_type superimpose = 1;

@@ -9,7 +9,15 @@
 #ifndef NEUROFIELD_SRC_LONGCOUPLING_H
 #define NEUROFIELD_SRC_LONGCOUPLING_H
 
-#include "coupling.h"
+// C++ standard library headers
+#include <vector> // std::vector;
+
+// Neurofield headers
+#include "configf.h"    // Configf;
+#include "output.h"     // Output;
+#include "coupling.h"   // Coupling;
+#include "propagator.h" // Propagator;
+#include "population.h" // Population;
 
 class LongCoupling : public Coupling {
   LongCoupling();
@@ -17,7 +25,7 @@ class LongCoupling : public Coupling {
  protected:
   void init( Configf& configf ) override;
 
-  vector< vector<double> > n2d; ///< nu tensor, nu[i][j] = from i to j
+  std::vector< std::vector<double> > n2d; ///< nu tensor, nu[i][j] = from i to j
   int pos;
  public:
   LongCoupling( size_type nodes, double deltat, size_type index,

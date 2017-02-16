@@ -6,9 +6,17 @@
   @author Peter Drysdale, Felix Fung,
 */
 
+// C++ standard library headers
+#include <vector>   // std::vector;
+using std::vector;
+#include <string>   // std::string;
+using std::string;
+
 #include <iostream>
 using std::cerr;
 using std::endl;
+
+// Neurofield headers
 #include "stencil.h"
 
 Stencil::Stencil( int nodes, int longside, const string& boundary )

@@ -6,15 +6,22 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#include<iomanip>
+// C++ standard library headers
+#include <string>   // std::string;
+using std::string;
+#include <iomanip>
 using std::scientific;
-#include<cstdlib>
+#include <cstdlib>
 using std::setw;
-#include<iostream>
+#include <iostream> // std::ios::beg;
 using std::cout;
 using std::cerr;
 using std::endl;
-#include"dumpf.h"
+using std::ostream;
+
+// Neurofield headers
+#include "configf.h"    // Configf;
+#include "dumpf.h"      // Dumpf;
 
 Dumpf::Dumpf() {
 }

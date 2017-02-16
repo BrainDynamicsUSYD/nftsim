@@ -9,30 +9,31 @@
 #ifndef NEUROFIELD_SRC_TIMESERIES_H
 #define NEUROFIELD_SRC_TIMESERIES_H
 
-//#include <string>
-//#include <vector>
+// C++ standard library headers
+#include <vector>   // std::vector;
 //#include <cmath>
-#include "nf.h"
-#include "random.h"
-using std::string;
-using std::vector;
+
+// Neurofield headers
+#include "configf.h"    // Configf;
+#include "random.h"     // Random;
+#include "nf.h"         // NF;
 
 class Timeseries : public NF {
   Timeseries(Timeseries&);
   Timeseries(void);
  protected:
-  typedef vector<double>::size_type series_size_type;
+  typedef std::vector<double>::size_type series_size_type;
   void init( Configf& configf ) override;
 
-  vector<Timeseries*> series;
-  vector<double> node;
+  std::vector<Timeseries*> series;
+  std::vector<double> node;
   double t;
   double cease;
  public:
   Timeseries( size_type nodes, double deltat, size_type index );
   ~Timeseries(void) override;
   void step(void) override;
-  virtual void fire( vector<double>& Q ) const;
+  virtual void fire( std::vector<double>& Q ) const;
 };
 
 namespace TIMESERIES {
@@ -41,14 +42,14 @@ struct Const : public Timeseries {
   double mean;
   Const(size_type nodes,double deltat,size_type index) : Timeseries(nodes,deltat,index) {}
   void init( Configf& configf ) override;
-  void fire( vector<double>& Q ) const override;
+  void fire( std::vector<double>& Q ) const override;
 };
 
 struct Pulse : public Timeseries {
   double amp, width, period, pulses;
   Pulse(size_type nodes,double deltat,size_type index) : Timeseries(nodes,deltat,index) {}
   void init( Configf& configf ) override;
-  void fire( vector<double>& Q ) const override;
+  void fire( std::vector<double>& Q ) const override;
 };
 
 struct White : public Timeseries {
@@ -60,7 +61,7 @@ struct White : public Timeseries {
     delete random;
   }
   void init( Configf& configf ) override;
-  void fire( vector<double>& Q ) const override;
+  void fire( std::vector<double>& Q ) const override;
 };
 
 struct WhiteCoherent : public Timeseries {
@@ -72,21 +73,21 @@ struct WhiteCoherent : public Timeseries {
     delete random;
   }
   void init( Configf& configf ) override;
-  void fire( vector<double>& Q ) const override;
+  void fire( std::vector<double>& Q ) const override;
 };
 
 struct PAS : public Timeseries {
   double n20w, n20h, p25w, p25h, tmsw, tmsh, t_mns, isi;
   PAS(size_type nodes,double deltat,size_type index) : Timeseries(nodes,deltat,index) {}
   void init( Configf& configf ) override;
-  void fire( vector<double>& Q ) const override;
+  void fire( std::vector<double>& Q ) const override;
 };
 
 struct Burst : public Timeseries {
   double amp, width, bursts, freq, oscillation_freq, on, off, total;
   Burst(size_type nodes,double deltat,size_type index) : Timeseries(nodes,deltat,index) {}
   void init( Configf& configf ) override;
-  void fire( vector<double>& Q ) const override;
+  void fire( std::vector<double>& Q ) const override;
 };
 
 struct Sine : public Timeseries {
@@ -94,7 +95,7 @@ struct Sine : public Timeseries {
   Sine(size_type nodes,double deltat,size_type index) : Timeseries(nodes,deltat,index) {}
   ~Sine(void) override = default;
   void init( Configf& configf ) override;
-  void fire( vector<double>& Q ) const override;
+  void fire( std::vector<double>& Q ) const override;
 };
 
 } // namespace TIMESERIES

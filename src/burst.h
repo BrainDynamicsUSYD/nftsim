@@ -9,10 +9,14 @@
 #ifndef NEUROFIELD_SRC_BURST_H
 #define NEUROFIELD_SRC_BURST_H
 
-#include "population.h"
-#include <math.h>
+// C++ standard library headers
+// #include <cmath>
+#include <vector> // std::vector;
 
-using std::vector;
+// Neurofield headers
+#include "configf.h"    // Configf;
+#include "output.h"     // Output;
+#include "qresponse.h"  // QResponse;
 
 class BurstResponse : public QResponse { //derived class; constructor initializer
  private:
@@ -20,10 +24,11 @@ class BurstResponse : public QResponse { //derived class; constructor initialize
   BurstResponse(void);      // no copy constructor; void no return value
 
   void rk4(void);
-  void rkderivs(vector<double>& xtemp, vector<double>& htemp,vector<double>& xk, vector<double>& hk);
-  vector<double> modtheta;
-  vector<double> gX,gH,xtilde,htilde,xtemp,htemp;
-  vector<vector<double> > xk,hk; // stores temporary values in RK4
+  void rkderivs(std::vector<double>& xtemp, std::vector<double>& htemp,
+                std::vector<double>& xk, std::vector<double>& hk);
+  std::vector<double> modtheta;
+  std::vector<double> gX,gH,xtilde,htilde,xtemp,htemp;
+  std::vector<std::vector<double> > xk,hk; // stores temporary values in RK4
   double Veff;
   double Vk;
   double Vx;
@@ -36,7 +41,7 @@ class BurstResponse : public QResponse { //derived class; constructor initialize
   double h,h2,h6;
   double yt[2],k1[2],k2[2],k3[2],k4[2]; // temporary RK4 values
 
-  vector<double> thetatemp, qfiring, xinfinity;
+  std::vector<double> thetatemp, qfiring, xinfinity;
 
   double gX1, gX2, gH1, gH2;
   double tx1, tx2, tx3, tx4, th1, th2, th3, th4;
@@ -49,7 +54,7 @@ class BurstResponse : public QResponse { //derived class; constructor initialize
   ~BurstResponse(void) override; //destructor mem fnctn
 
   void step(void) override;
-  void fire( vector<double>& Q ) const override;
+  void fire( std::vector<double>& Q ) const override;
   void output( Output& output ) const override; //vector of Output ptrs filled by
 };
 

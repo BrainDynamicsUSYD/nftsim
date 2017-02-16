@@ -6,8 +6,20 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#include "dendrite.h"
-using std::endl;
+// C++ standard library headers
+#include <iostream> // std::endl; std::cerr;
+#include <string>   // std::string;
+using std::string;
+#include <vector>   // std::vector;
+using std::vector;
+
+// Neurofield headers
+#include "configf.h"    // Configf;
+#include "de.h"         // RK4;
+#include "output.h"     // Output;
+#include "coupling.h"   // Coupling;
+#include "dendrite.h"   // Dendrite;
+#include "propagator.h" // Propagator;
 
 /**
   @brief Computes the derivatives of the dendritic response function.
@@ -31,7 +43,7 @@ void Dendrite::DendriteDE::rhs( const vector<double>& y, vector<double>& dydt ) 
 
 void Dendrite::init( Configf& configf ) {
   if( !configf.next( label("Dendrite ",index+1) )) {
-    std::cerr<<"Dendrite "<<index+1<<" not found."<<endl;
+    std::cerr<<"Dendrite "<<index+1<<" not found."<<std::endl;
     exit(EXIT_FAILURE);
   }
   string buffer("Steady");

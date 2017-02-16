@@ -6,14 +6,19 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#include <list>
-#include "nf.h"
-
+// C++ standard library headers
+#include <iostream> // std::streamoff; std::ios::beg; std::ios::end; std::streampos; std::ifstream;
 using std::endl;
-using std::list;
-using std::vector;
 using std::cerr;
+#include <sstream> // std::stringstream;
+using std::stringstream;
+#include <string>   // std::string;
 using std::string;
+#include <vector>   // std::vector;
+using std::vector;
+
+// Neurofield headers
+#include "configf.h"    // Configf;
 
 Configf::Configf( const char* filename )
   : std::ifstream(filename) {

@@ -6,8 +6,15 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#include <cmath>
-#include "bcm.h"
+// C++ standard library headers
+#include <vector>   // std::vector;
+using std::vector;
+//#include <cmath>
+
+// Neurofield headers
+#include "configf.h"    // Configf;
+#include "de.h"         // RK4;
+#include "bcm.h"        // BCM;
 
 void BCM::BCMDE::rhs( const vector<double>& y, vector<double>& dydt ) {
   // y == { binding, H, Ca, nutilde, x, y, dnudt, nu, gNMDA }

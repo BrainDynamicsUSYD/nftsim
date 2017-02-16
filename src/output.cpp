@@ -6,8 +6,14 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#include <utility>
+// C++ standard library headers
+#include <vector>   // std::vector;
+using std::vector;
+#include <string>   // std::string;
+using std::string;
+#include <utility>  // std::move;
 
+// Neurofield headers
 #include "output.h"
 #include "configf.h"
 #include "dumpf.h"
@@ -42,7 +48,8 @@ void Output::singleNode ( const string& name, const vector<double>& field ) {
   }
 }
 
-void Output::singleNode (const string& object, vector<double>::size_type index, const string& name, const vector<double>& field ) {
+void Output::singleNode (const string& object, vector<double>::size_type index,
+                         const string& name, const vector<double>& field ) {
   prefix(object, index);
   singleNode(name,field);
 }

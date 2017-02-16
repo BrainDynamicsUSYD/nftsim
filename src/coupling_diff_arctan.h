@@ -11,8 +11,14 @@
 #ifndef COUPLING_DIFF_ARCTAN_H
 #define COUPLING_DIFF_ARCTAN_H
 
-#include "coupling.h"
-using std::vector;
+// C++ standard library headers
+#include <vector> // std::vector;
+
+// Neurofield headers
+#include "configf.h"    // Configf;
+#include "coupling.h"   // Coupling
+#include "propagator.h" // Propagator;
+#include "population.h" // Population;
 
 class CouplingDiffArctan : public Coupling {
   CouplingDiffArctan();
@@ -25,7 +31,7 @@ class CouplingDiffArctan : public Coupling {
   double diff_atan, diff_atan_min,  diff_atan_max;
   double time;
   double time_int;
-  vector<double> deltanu;
+  std::vector<double> deltanu;
 
  public:
   void init( Configf& configf );

@@ -6,8 +6,19 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#include <cstdlib>
-#include <cmath>
+// C++ standard library headers
+#include <vector>   // std::vector;
+using std::vector;
+
+//#include <cstdlib>
+//#include <cmath>
+
+// Neurofield headers
+#include "configf.h"    // Configf;
+#include "de.h"         // RK4;
+#include "output.h"     // Output;
+#include "coupling.h"   // Coupling;
+#include "propagator.h" // Propagator;
 #include "dendriteramp.h"
 
 /**

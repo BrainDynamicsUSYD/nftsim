@@ -9,20 +9,12 @@
 #ifndef NEUROFIELD_SRC_CONFIGF_H
 #define NEUROFIELD_SRC_CONFIGF_H
 
-#include <sstream>
-using std::stringstream;
-#include <string>
-using std::string;
-
-#include <fstream>
-#include <iostream>
-#include <string>
-using std::string;
-#include <vector>
-using std::vector;
-#include <cstdlib>
-using std::cerr;
-using std::endl;
+// C++ standard library headers
+#include <cstdlib>  // std::cerr;
+#include <fstream>  // std::ifstream;
+#include <iostream> // std::endl; std::cerr; std::streamsize; std::ios::beg;
+#include <string>   // std::string;
+#include <vector>   // std::vector;
 
 class Configf : protected std::ifstream { // derived class
   Configf(const Configf& other); // No copy constructor
@@ -37,21 +29,21 @@ class Configf : protected std::ifstream { // derived class
 
   // Looks for the next parameter called "param" and stores it in T
   // If "param" is not found, terminate program
-  template<class T> void param(const string& param, T& ret, int delim=':' );
+  template<class T> void param(const std::string& param, T& ret, int delim=':' );
   // Looks for the next parameter called "param" and stores it in T
   // If "param" is not found, return false
-  template<class T> bool optional( const string& param, T& ret, int delim=':' );
+  template<class T> bool optional( const std::string& param, T& ret, int delim=':' );
   // Read & return an arbitrary array of doubles
-  vector<double> numbers(void);
+  std::vector<double> numbers(void);
   // Return all whitespace separated strings before delimiting string
-  vector<string> arb( const string& delim );
+  std::vector<std::string> arb( const std::string& delim );
   // Find the next "Check", then returns the next input entry as string
-  string find( const string& Check );
+  std::string find( const std::string& Check );
 
   // points to next delim, and verify it is "check"+"delim"
-  bool next( const string& Check, int delim=':' );
+  bool next( const std::string& Check, int delim=':' );
   // searches and points to next keyword
-  void go2( const string& keyword );
+  void go2( const std::string& keyword );
 
   std::streamsize tell(void) {
     return std::ifstream::tellg();
@@ -65,13 +57,13 @@ class Configf : protected std::ifstream { // derived class
 
 // global function that returns string=="Object#" for config file parsing
 // also useful in naming outputf "solution.phi.#"
-string label( const string& prefix, size_t index );
+std::string label( const std::string& prefix, size_t index );
 
-template<class T> void Configf::param(const string& param, T& ret, int delim ) {
+template<class T> void Configf::param(const std::string& param, T& ret, int delim ) {
   if( next(param,delim) ) {
     if( !good() ) {
-      cerr << "Input variable '" << param << "' is given a wrong type."
-           << endl;
+      std::cerr << "Input variable '" << param << "' is given a wrong type."
+           << std::endl;
       exit(EXIT_FAILURE);
     }
     *this >> ret;
@@ -80,34 +72,35 @@ template<class T> void Configf::param(const string& param, T& ret, int delim ) {
     seekg(0,std::ios::beg);
     read(buffer,position);
     buffer[position] = '\0';
-    cerr << "Unable to find next input variable: "
-         << param << endl
-         << "From configuration file:" << endl
-         << buffer << endl;
+    std::cerr << "Unable to find next input variable: "
+         << param << std::endl
+         << "From configuration file:" << std::endl
+         << buffer << std::endl;
     exit(EXIT_FAILURE);
   }
 }
 
-template<> inline void Configf::param<string>(const string& param, string& ret, int delim ) {
+template<> inline void Configf::param<std::string>(const std::string& param, 
+                                                   std::string& ret, int delim ) {
   if( next(param,delim) ) {
     *this >> buffer;
     if( !good() ) {
-      cerr << "Input variable '" << param << "' is given a wrong type."
-           << endl;
+      std::cerr << "Input variable '" << param << "' is given a wrong type."
+           << std::endl;
       exit(EXIT_FAILURE);
     }
-    ret = string(buffer);
+    ret = std::string(buffer);
   } else {
     exit(EXIT_FAILURE);
   }
 }
 
-template<class T> bool Configf::optional( const string& param, T& ret, int delim ) {
+template<class T> bool Configf::optional( const std::string& param, T& ret, int delim ) {
   if( next(param,delim) ) {
     *this >> ret;
     if( !good() ) {
-      cerr << "Input variable '" << param << "' is given a wrong type."
-           << endl;
+      std::cerr << "Input variable '" << param << "' is given a wrong type."
+           << std::endl;
       exit(EXIT_FAILURE);
     }
     return true;

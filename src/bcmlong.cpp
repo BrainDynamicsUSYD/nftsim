@@ -6,7 +6,18 @@
   @author Peter Drysdale, Felix Fung,
 */
 
+// C++ standard library headers
+#include <vector>   // std::vector;
+using std::vector;
 #include <cstring>
+#include <iostream> // std::endl; std::cerr; std::streamoff;
+using std::endl; 
+using std::cerr; 
+
+// Neurofield headers
+#include "configf.h"    // Configf;
+#include "de.h"         // RK4;
+#include "output.h"     // Output;
 #include "bcmlong.h"
 
 void BCMLong::init( Configf& configf ) {

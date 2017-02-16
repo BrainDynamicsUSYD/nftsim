@@ -9,9 +9,18 @@
 #ifndef NEUROFIELD_SRC_DENDRITE_H
 #define NEUROFIELD_SRC_DENDRITE_H
 
-#include "population.h"
+// C++ standard library headers
+#include <vector> // std::vector;
 
-using std::vector;
+// Neurofield headers
+#include "configf.h"    // Configf;
+#include "de.h"         // DE; RK4;
+#include "output.h"     // Output;
+#include "nf.h"         // NF;
+#include "coupling.h"   // Coupling;
+#include "propagator.h" // Propagator;
+#include "population.h" // Population;
+
 
 class Dendrite : public NF {
   Dendrite(void); // default constructor
@@ -27,7 +36,7 @@ class Dendrite : public NF {
     virtual void init( const double vinit);
     DendriteDE( size_type nodes, double deltat) : DE(nodes, deltat, 3) {}
     ~DendriteDE(void) override = default;
-    void rhs( const vector<double>& y, vector<double>& dydt ) override;
+    void rhs( const std::vector<double>& y, std::vector<double>& dydt ) override;
   };
   DendriteDE* de;
   RK4* rk4;
@@ -35,7 +44,7 @@ class Dendrite : public NF {
   double alpha; ///< Mean decay rate of the soma response to a delta-function synaptic input (needed here for DendriteRamp).
   double beta; ///< Mean rise rate of the soma response to a delta-function synaptic input.
 
-  vector<double> v; ///< Membrane potential.
+  std::vector<double> v; ///< Membrane potential.
 
   void init( Configf& configf ) override;
   //virtual void restart( Restartf& restartf );
@@ -48,11 +57,11 @@ class Dendrite : public NF {
             const Propagator& prepropag, const Coupling& precouple );
   ~Dendrite(void) override;
   void step(void) override;
-  inline const vector<double>& V(void) const;
+  inline const std::vector<double>& V(void) const;
   void output( Output& output ) const override;
 };
 
-const vector<double>& Dendrite::V(void) const {
+const std::vector<double>& Dendrite::V(void) const {
   return v;
 }
 

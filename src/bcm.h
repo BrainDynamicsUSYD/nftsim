@@ -9,7 +9,15 @@
 #ifndef NEUROFIELD_SRC_BCM_H
 #define NEUROFIELD_SRC_BCM_H
 
-#include "cadp.h"
+// C++ standard library headers
+#include <vector> // std::vector;
+
+// Neurofield headers
+#include "configf.h"    // Configf;
+#include "output.h"     // Output;
+#include "propagator.h" // Propagator;
+#include "cadp.h"       // CaDP;
+#include "population.h" // Population;
 
 class BCM : public CaDP {
   BCM(BCM&);
@@ -53,7 +61,7 @@ class BCM : public CaDP {
     }
     ~BCMDE(void) override = default;
     void init( Configf& configf ) override;
-    void rhs( const vector<double>& y, vector<double>& dydt ) override;
+    void rhs( const std::vector<double>& y, std::vector<double>& dydt ) override;
   };
  public:
   BCM( size_type nodes, double deltat, size_type index,

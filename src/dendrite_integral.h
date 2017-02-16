@@ -11,7 +11,14 @@
 #ifndef NEUROFIELD_SRC_DENDRITE_INTEGRAL_H
 #define NEUROFIELD_SRC_DENDRITE_INTEGRAL_H
 
-#include "dendrite.h"
+// C++ standard library headers
+#include <vector> // std::vector;
+
+// Neurofield headers
+#include "configf.h"    // Configf;
+#include "coupling.h"   // Coupling;
+#include "dendrite.h"   // Dendrite;
+#include "propagator.h" // Propagator;
 
 class DendriteIntegral : public Dendrite {
   DendriteIntegral(void); // default constructor
@@ -33,9 +40,8 @@ class DendriteIntegral : public Dendrite {
   double C1dtplusC2;
 
  protected:
-  vector<double> dvdt; ///< Temporal derivative of the membrane potential.
-  //vector<double> np; ///< Pulse density (nu*phi).
-  vector<double> oldnp; ///< Pulse density (nu*phi) of the previous time-step.
+  std::vector<double> dvdt; ///< Temporal derivative of the membrane potential.
+  std::vector<double> oldnp; ///< Pulse density (nu*phi) of the previous time-step.
 
   void init( Configf& configf ) override;
 

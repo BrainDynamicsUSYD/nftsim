@@ -6,8 +6,12 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#include<cmath>
-#include"cadp.h"
+// C++ standard library headers
+#include <vector>   // std::vector;
+using std::vector;
+
+#include <cmath>
+#include "cadp.h"
 
 void CaDP::CaDE::rhs( const vector<double>& y, vector<double>& dydt ) {
   // y == { binding, H, Ca, nutilde, x, y, dnudt, nu }

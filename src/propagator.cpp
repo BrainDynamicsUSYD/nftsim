@@ -6,7 +6,17 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#include "propagator.h"
+// C++ standard library headers
+#include <vector>   // std::vector;
+using std::vector;
+#include <string>   // std::string;
+using std::string;
+
+// Neurofield headers
+#include "configf.h"    // Configf;
+#include "output.h"     // Output;
+#include "propagator.h" // Propagator;
+#include "population.h" // Population;
 
 void Propagator::init( Configf& configf ) {
   double Q = prepop.Qinit(configf);

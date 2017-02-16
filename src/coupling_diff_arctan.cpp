@@ -8,14 +8,20 @@
   @author Farah Deeba, Paula Sanz-Leon, Sahand Assadzadeh
 */
 
-#include <iostream>
-#include <vector>
-#include <algorithm>
+// C++ standard library headers
+#include <algorithm> // std::min_element; std::max_element;
+#include <cmath>     // std::atan;
+using std::atan;
+#include <iostream>  // std::cerr; std::endl;
 using std::cerr;
 using std::endl;
-using std::cout;
-#include "coupling_diff_arctan.h"
 
+// Neurofield headers
+#include "configf.h"    // Configf;
+#include "coupling_diff_arctan.h" // CouplingDiffArctan;
+#include "coupling.h"   // Coupling;
+#include "propagator.h" // Propagator;
+#include "population.h" // Population;
 
 void CouplingDiffArctan::init( Configf& configf ) {
   //read initial ramp conditions from config file
@@ -66,7 +72,8 @@ void CouplingDiffArctan::step(void) {
 
 
 CouplingDiffArctan::CouplingDiffArctan( size_type nodes, double deltat, size_type index,
-                                    const Propagator& prepropag, const Population& postpop, double tempf )
+                                        const Propagator& prepropag, const Population& postpop,
+                                        double tempf )
   : Coupling(nodes,deltat,index,prepropag,postpop) {
   // total simulation time is stored in tempf (defined in solver.cpp line 73)
   time_tot = tempf;

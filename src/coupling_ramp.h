@@ -19,19 +19,24 @@
 #ifndef NEUROFIELD_SRC_COUPLINGRAMP_H
 #define NEUROFIELD_SRC_COUPLINGRAMP_H
 
-#include "coupling.h"
+// C++ standard library headers
+#include <vector> // std::vector;
 
-using std::vector;
+// Neurofield headers
+#include "configf.h"    // Configf;
+#include "coupling.h"   // Coupling;
+#include "propagator.h" // Propagator;
+#include "population.h" // Population;
 
 class CouplingRamp : public Coupling {
   CouplingRamp();
   CouplingRamp(CouplingRamp&);
  protected:
-  vector<double> ns;
-  vector<double> tpts;
-  vector<double> deltanu;
+  std::vector<double> ns;
+  std::vector<double> tpts;
+  std::vector<double> deltanu;
   double time;
-  vector<double>::size_type pairs;
+  std::vector<double>::size_type pairs;
  public:
   void init( Configf& configf ) override;
   void step(void) override;

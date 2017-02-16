@@ -7,6 +7,12 @@
   @author Peter Drysdale, Felix Fung,
 */
 
+// C++ standard library headers
+#include <cmath>     // std::exp;
+
+// Neurofield headers
+#include "coupling.h"   // Coupling;
+#include "propagator.h" // Propagator;
 #include "dendrite_integral.h"
 
 

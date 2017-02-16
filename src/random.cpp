@@ -6,7 +6,8 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#include "random.h"
+// Neurofield headers
+#include "random.h" // Random;
 
 uint_fast64_t Random::id = 0;
 
@@ -20,8 +21,8 @@ Random::Random(uint_fast64_t seed, double mean, double std) {
 }
 
 void Random::init(uint_fast64_t seed, double mean, double std) {
-  gen = std::mt19937_64(seed); // Generator
-  dist = std::normal_distribution<double>(mean,std); // Distribution
+  gen = std::mt19937_64(seed); ///< Generator
+  dist = std::normal_distribution<double>(mean,std); ///< Distribution
 }
 
 void Random::get(double& target) {

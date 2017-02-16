@@ -6,6 +6,12 @@
   @author Peter Drysdale, Felix Fung,
 */
 
+// C++ standard library headers
+#include <string>   // std::string;
+using std::string;
+#include <vector>   // std::vector;
+using std::vector;
+
 #include <iostream>
 using std::cerr;
 using std::endl;

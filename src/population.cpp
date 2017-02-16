@@ -6,10 +6,27 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#include "burst.h"
+// C++ standard library headers
+#include <vector>   // std::vector;
+using std::vector;
+#include <string>   // std::string;
+using std::string;
+
+#include <iostream> // std::cerr; std::endl; std::cout;
 using std::cerr;
 using std::endl;
 using std::cout;
+
+// Neurofield headers
+#include "configf.h"    // Configf;
+#include "output.h"     // Output;
+#include "timeseries.h" // Timeseries;
+#include "coupling.h"   // Coupling;
+#include "tau.h"        // Tau; // Must be included before propagator.h
+#include "propagator.h" // Propagator;
+#include "qresponse.h"  // QResponse;
+#include "burst.h"      // BurstResponse;
+#include "population.h" // Population;
 
 void Population::init( Configf& configf ) {
   qinit = Qinit(configf);
@@ -78,8 +95,8 @@ const vector<double>& Population::glu() const {
   exit(EXIT_FAILURE);
 }
 
-void Population::add2Dendrite( size_type index,
-                               const Propagator& prepropag, const Coupling& precouple, Configf& configf ) {
+void Population::add2Dendrite( size_type index, const Propagator& prepropag,
+                               const Coupling& precouple, Configf& configf ) {
   if( settled ) {
     cerr<<"Population is already settled, no more dendrites can be added!"
         <<endl;

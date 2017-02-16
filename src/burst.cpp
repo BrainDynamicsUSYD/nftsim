@@ -6,7 +6,14 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#include "burst.h"
+// C++ standard library headers
+#include <vector>   // std::vector;
+using std::vector;
+
+// Neurofield headers
+#include "configf.h"    // Configf;
+#include "output.h"     // Output;
+#include "burst.h"      // BurstResponse;
 
 void BurstResponse::init( Configf& configf ) {
   configf.param("Sigma",sigma);

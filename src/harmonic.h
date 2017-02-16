@@ -9,9 +9,14 @@
 #ifndef NEUROFIELD_SRC_HARMONIC_H
 #define NEUROFIELD_SRC_HARMONIC_H
 
-#include "propagator.h"
+// C++ standard library headers
+#include <vector> // std::vector;
+#include <string> // std::string;
 
-using std::vector;
+// Neurofield headers
+#include "configf.h"    // Configf;
+#include "propagator.h" // Propagator;
+#include "population.h" // Population;
 
 class Harmonic : public virtual Propagator {
   Harmonic(); // no default constructor
@@ -23,9 +28,9 @@ class Harmonic : public virtual Propagator {
 
   double gamma;  ///< damping coefficient
 
-  vector<double> oldp;
-  vector<double> oldQ;
-  vector<double> dpdt;
+  std::vector<double> oldp;
+  std::vector<double> oldQ;
+  std::vector<double> dpdt;
   double dQdt;
 
   // variables that initializes once
@@ -38,7 +43,7 @@ class Harmonic : public virtual Propagator {
   double C1dtplusC2;
  public:
   Harmonic( size_type nodes, double deltat, size_type index, Population& prepop,
-            Population& postpop, int longside, string topology );
+            Population& postpop, int longside, std::string topology );
   ~Harmonic(void) override;
   void step(void) override;
 };

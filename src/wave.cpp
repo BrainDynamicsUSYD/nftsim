@@ -6,14 +6,25 @@
  *
  */
 
-/**
-   Reads from the configuration file
+// C++ standard library headers
+#include <vector>   // std::vector;
+using std::vector;
+#include <string>   // std::string;
+using std::string;
 
-*/
-#include <cmath>
-#include "wave.h"
+#include <iostream>  // std::cerr; std::endl;
 using std::cerr;
 using std::endl;
+
+#include <cmath>  // std::exp; std::sqrt;
+using std::exp;
+using std::sqrt;
+
+// Neurofield headers
+#include "configf.h"    // Configf;
+#include "stencil.h"    // Stencil;
+#include "wave.h"       // Wave;
+#include "population.h" // Population;
 
 void Wave::init( Configf& configf ) {
   deltax = prepop.sheetlength()/longside;

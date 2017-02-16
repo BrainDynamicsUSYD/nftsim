@@ -17,8 +17,14 @@
 #ifndef NEUROFIELD_SRC_WAVE_H
 #define NEUROFIELD_SRC_WAVE_H
 
-#include "propagator.h"
-#include "stencil.h"
+// C++ standard library headers
+#include <string> // std::string
+
+// Neurofield headers
+#include "configf.h"    // Configf;
+#include "stencil.h"    // Stencil;
+#include "propagator.h" // Propagator;
+#include "population.h" // Population;
 
 class Wave : public Propagator {
   Wave(); // no default constructor
@@ -53,7 +59,7 @@ class Wave : public Propagator {
   double drive;
  public:
   Wave( size_type nodes, double deltat, size_type index, Population& prepop,
-        Population& postpop, int longside, string topology );
+        Population& postpop, int longside, std::string topology );
   ~Wave(void) override;
   void step(void) override;
 };

@@ -9,7 +9,16 @@
 #ifndef NEUROFIELD_SRC_CADP_H
 #define NEUROFIELD_SRC_CADP_H
 
-#include "coupling.h"
+// C++ standard library headers
+#include <vector> // std::vector;
+
+// Neurofield headers
+#include "configf.h"    // Configf;
+#include "de.h"         // DE; RK4;
+#include "output.h"     // Output;
+#include "coupling.h"   // Coupling;
+#include "propagator.h" // Propagator;
+#include "population.h" // Population;
 
 class CaDP : public Coupling {
   CaDP();
@@ -44,7 +53,7 @@ class CaDP : public Coupling {
     CaDE( size_type nodes, double deltat ) : DE(nodes,deltat,8) {}
     ~CaDE(void) override = default;
 
-    void rhs( const vector<double>& y, vector<double>& dydt ) override;
+    void rhs( const std::vector<double>& y, std::vector<double>& dydt ) override;
     double sig( double x, double beta ) const;
     virtual double _x( double Ca ) const; ///< potentiation rate
     virtual double _y( double Ca ) const; ///< depression rate
