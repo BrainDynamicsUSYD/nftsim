@@ -29,12 +29,12 @@ class Dendrite : public NF {
   Dendrite(Dendrite& ); // no copy constructor
 
   // variables that are initialized once to speed up computation
-  double factorab;   ///< == 1./alpha + 1./beta;
-  double alphaxbeta; ///< == alpha * beta;
+  double factorab = 0.0;   ///< == 1./alpha + 1./beta;
+  double alphaxbeta = 0.0; ///< == alpha * beta;
 
  protected:
   struct DendriteDE : public DE {
-    double factorab, alphaxbeta;
+    double factorab = 0.0, alphaxbeta = 0.0;
     virtual void init( const double vinit);
     DendriteDE( size_type nodes, double deltat) : DE(nodes, deltat, 3) {}
     ~DendriteDE(void) override = default;

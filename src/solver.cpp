@@ -18,7 +18,8 @@
 #include "coupling_diff_arctan.h" // CouplingDiffArctan;
 #include "coupling_ramp.h" // CouplingRamp;
 #include "harmonic.h"      // Harmonic;
-#include "long_coupling.h" //LongCoupling;
+#include "harmonic_integral.h" // HarmonicIntegral;
+#include "long_coupling.h" // LongCoupling;
 #include "output.h"        // Output; Outlet;
 #include "population.h"    // Population;
 #include "wave.h"          // Wave;
@@ -158,6 +159,9 @@ void Solver::init( Configf& configf ) {
     } else if(ptype=="Harmonic") {
       propagators.add( new
                    Harmonic(nodes,deltat,i, *pops[cnt.pre[i]], *pops[cnt.post[i]], longside, topology));
+    } else if(ptype=="HarmonicIntegral") {
+      propagators.add( new
+                   HarmonicIntegral(nodes,deltat,i, *pops[cnt.pre[i]], *pops[cnt.post[i]], longside, topology));
     } else {
       cerr<<"Invalid propagator type '"<<ptype<<"'."<<endl;
       exit(EXIT_FAILURE);
