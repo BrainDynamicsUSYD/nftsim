@@ -80,7 +80,7 @@ template<class T> void Configf::param(const std::string& param, T& ret, int deli
   }
 }
 
-template<> inline void Configf::param<std::string>(const std::string& param, 
+template<> inline void Configf::param<std::string>(const std::string& param,
                                                    std::string& ret, int delim ) {
   if( next(param,delim) ) {
     *this >> buffer;

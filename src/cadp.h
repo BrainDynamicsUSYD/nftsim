@@ -24,30 +24,30 @@ class CaDP : public Coupling {
   CaDP();
   CaDP(CaDP&);
  protected:
-  double nu_init;
+  double nu_init = 0.0;
   struct CaDE : public DE {
-    double nu_init;
+    double nu_init = 0.0;
     //double alpha; // for fCaDE
     //double alpha_beta; // for fCaDE, == alpha -beta
 
-    double B; ///< 1/standard deviation of glutamate binding
-    double glu_0; ///< glutamate dose-response threshold
+    double B = 0.0; ///< 1/standard deviation of glutamate binding
+    double glu_0 = 0.0; ///< glutamate dose-response threshold
 
-    double max; ///< maximum synaptic strength
-    double xth; ///< threshold time-scale of plasticity
-    double yth; ///< threshold time-scale of plasticity
-    double ltd; ///< time-scale of depression
-    double ltp; ///< time-scale of potentiation
+    double max = 0.0; ///< maximum synaptic strength
+    double xth = 0.0; ///< threshold time-scale of plasticity
+    double yth = 0.0; ///< threshold time-scale of plasticity
+    double ltd = 0.0; ///< time-scale of depression
+    double ltp = 0.0; ///< time-scale of potentiation
 
-    double dth; ///< calcium threshold to depression
-    double pth; ///< calcium threshold to potentiation
+    double dth = 0.0; ///< calcium threshold to depression
+    double pth = 0.0; ///< calcium threshold to potentiation
 
-    double tCa; ///< time-scale of calcium influx/cascade
+    double tCa = 0.0; ///< time-scale of calcium influx/cascade
 
-    double gnmda; ///< gain for NMDA receptor
-    double z; ///< timescale of protein cascade
+    double gnmda = 0.0; ///< gain for NMDA receptor
+    double z = 0.0; ///< timescale of protein cascade
 
-    double pos; ///< sign of nu
+    double pos = 0.0; ///< sign of nu
 
     virtual void init( Configf& configf );
     CaDE( size_type nodes, double deltat ) : DE(nodes,deltat,8) {}

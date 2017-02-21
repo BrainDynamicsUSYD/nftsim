@@ -25,19 +25,19 @@ class DendriteIntegral : public Dendrite {
   DendriteIntegral(DendriteIntegral& ); // no copy constructor
 
   // variables that are intialized once to speed up computation
-  double aminusb;  ///< == alpha - beta
-  double expa;     ///< == exp(-alpha*deltat)
-  double expb;     ///< == exp(-beta*deltat)
-  double factorab; ///< == 1./alpha + 1./beta;
+  double aminusb = 0.0;  ///< == alpha - beta
+  double expa = 0.0;     ///< == exp(-alpha*deltat)
+  double expb = 0.0;     ///< == exp(-beta*deltat)
+  double factorab = 0.0; ///< == 1./alpha + 1./beta;
 
   // variables that are used every timestep
-  double adjustednp;
-  double deltaPdeltat; //NOTE: doesn't seem to be used anywhere (???maybe replaced by current dpdt???).
-  double C1;
-  double dpdt; ///< Temporal derivative of pulse density.
-  double C1expa;
-  double C2expb;
-  double C1dtplusC2;
+  double adjustednp = 0.0;
+  double deltaPdeltat = 0.0; //NOTE: doesn't seem to be used anywhere (???maybe replaced by current dpdt???).
+  double C1 = 0.0;
+  double dpdt = 0.0; ///< Temporal derivative of pulse density.
+  double C1expa = 0.0;
+  double C2expb = 0.0;
+  double C1dtplusC2 = 0.0;
 
  protected:
   std::vector<double> dvdt; ///< Temporal derivative of the membrane potential.

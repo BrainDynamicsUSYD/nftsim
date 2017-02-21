@@ -26,8 +26,8 @@ class Timeseries : public NF {
 
   std::vector<Timeseries*> series;
   std::vector<double> node;
-  double t;
-  double cease;
+  double t = 0.0;
+  double cease = 0.0;
  public:
   Timeseries( size_type nodes, double deltat, size_type index );
   ~Timeseries(void) override;
@@ -38,14 +38,14 @@ class Timeseries : public NF {
 namespace TIMESERIES {
 
 struct Const : public Timeseries {
-  double mean;
+  double mean = 0.0;
   Const(size_type nodes,double deltat,size_type index) : Timeseries(nodes,deltat,index) {}
   void init( Configf& configf ) override;
   void fire( std::vector<double>& Q ) const override;
 };
 
 struct Pulse : public Timeseries {
-  double amp, width, period, pulses;
+  double amp = 0.0, width = 0.0, period = 0.0, pulses = 0.0;
   Pulse(size_type nodes,double deltat,size_type index) : Timeseries(nodes,deltat,index) {}
   void init( Configf& configf ) override;
   void fire( std::vector<double>& Q ) const override;
@@ -53,7 +53,7 @@ struct Pulse : public Timeseries {
 
 struct White : public Timeseries {
   uint_fast64_t seed;
-  double amp, mean, deltax;
+  double amp = 0.0, mean = 0.0, deltax = 0.0;
   Random* random;
   White(size_type nodes,double deltat,size_type index) : Timeseries(nodes,deltat,index) {}
   ~White(void) override {
@@ -65,7 +65,7 @@ struct White : public Timeseries {
 
 struct WhiteCoherent : public Timeseries {
   uint_fast64_t seed;
-  double amp, mean;
+  double amp = 0.0, mean = 0.0;
   Random* random;
   WhiteCoherent(size_type nodes,double deltat,size_type index) : Timeseries(nodes,deltat,index) {}
   ~WhiteCoherent(void) override {
@@ -76,21 +76,23 @@ struct WhiteCoherent : public Timeseries {
 };
 
 struct PAS : public Timeseries {
-  double n20w, n20h, p25w, p25h, tmsw, tmsh, t_mns, isi;
+  double n20w = 0.0, n20h = 0.0, p25w = 0.0, p25h = 0.0;
+  double tmsw = 0.0, tmsh = 0.0, t_mns = 0.0, isi = 0.0;
   PAS(size_type nodes,double deltat,size_type index) : Timeseries(nodes,deltat,index) {}
   void init( Configf& configf ) override;
   void fire( std::vector<double>& Q ) const override;
 };
 
 struct Burst : public Timeseries {
-  double amp, width, bursts, freq, oscillation_freq, on, off, total;
+  double amp = 0.0, width = 0.0, bursts = 0.0, freq = 0.0;
+  double oscillation_freq = 0.0, on = 0.0, off = 0.0, total = 0.0;
   Burst(size_type nodes,double deltat,size_type index) : Timeseries(nodes,deltat,index) {}
   void init( Configf& configf ) override;
   void fire( std::vector<double>& Q ) const override;
 };
 
 struct Sine : public Timeseries {
-  double amp, width, period, phase, pulses;
+  double amp = 0.0, width = 0.0, period = 0.0, phase = 0.0, pulses = 0.0;
   Sine(size_type nodes,double deltat,size_type index) : Timeseries(nodes,deltat,index) {}
   ~Sine(void) override = default;
   void init( Configf& configf ) override;

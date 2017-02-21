@@ -35,7 +35,7 @@ class CouplingRamp : public Coupling {
   std::vector<double> ns;
   std::vector<double> tpts;
   std::vector<double> deltanu;
-  double time;
+  double time = 0.0;
   std::vector<double>::size_type pairs;
  public:
   void init( Configf& configf ) override;

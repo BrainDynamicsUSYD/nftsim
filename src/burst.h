@@ -28,22 +28,22 @@ class BurstResponse : public QResponse { //derived class; constructor initialize
   std::vector<double> modtheta;
   std::vector<double> gX,gH,xtilde,htilde,xtemp,htemp;
   std::vector<std::vector<double> > xk,hk; // stores temporary values in RK4
-  double Veff;
-  double Vk;
-  double Vx;
-  double ia, ib;
-  double ic;
-  double taux;  // time constant
-  double tauh;  // time constant
-  double ax;    // constant
-  double mu;    // constant
-  double h,h2,h6;
+  double Veff = 0.0;
+  double Vk = 0.0;
+  double Vx = 0.0;
+  double ia = 0.0, ib = 0.0;
+  double ic = 0.0;
+  double taux = 0.0;  // time constant
+  double tauh = 0.0;  // time constant
+  double ax = 0.0;    // constant
+  double mu = 0.0;    // constant
+  double h = 0.0, h2 = 0.0, h6 = 0.0;
   double yt[2],k1[2],k2[2],k3[2],k4[2]; // temporary RK4 values
 
   std::vector<double> thetatemp, qfiring, xinfinity;
 
-  double gX1, gX2, gH1, gH2;
-  double tx1, tx2, tx3, tx4, th1, th2, th3, th4;
+  double gX1 = 0.0, gX2 = 0.0, gH1 = 0.0, gH2 = 0.0;
+  double tx1 = 0.0, tx2 = 0.0, tx3 = 0.0, tx4 = 0.0, th1 = 0.0, th2 = 0.0, th3 = 0.0, th4 = 0.0;
   double time;
 
  protected:

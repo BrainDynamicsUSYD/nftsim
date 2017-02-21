@@ -43,8 +43,8 @@ class Dendrite : public NF {
   DendriteDE* de;
   RK4* rk4;
 
-  double alpha; ///< Mean decay rate of the soma response to a delta-function synaptic input (needed here for DendriteRamp).
-  double beta; ///< Mean rise rate of the soma response to a delta-function synaptic input.
+  double alpha = 0.0; ///< Mean decay rate of the soma response to a delta-function synaptic input (needed here for DendriteRamp).
+  double beta = 0.0; ///< Mean rise rate of the soma response to a delta-function synaptic input.
 
   std::vector<double> v; ///< Membrane potential.
 

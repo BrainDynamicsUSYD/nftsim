@@ -37,10 +37,10 @@ class QResponse : public NF {
   //virtual void dump( Dumpf& dumpf ) const;
 
   std::string mode;
-  double theta; ///< Mean firing threshold.
-  double sigma; ///< Standard deviation of the firing threshold.
-  double Q_max; ///< Maximum firing rate.
-  double a,b,c,d;
+  double theta = 0.0; ///< Mean firing threshold.
+  double sigma = 0.0; ///< Standard deviation of the firing threshold.
+  double Q_max = 0.0; ///< Maximum firing rate.
+  double a = 0.0, b = 0.0, c = 0.0, d = 0.0;
 
   Array<Dendrite> dendrites; ///< array of dendrites
   std::vector<Array<Dendrite>::size_type> dendrite_index; ///< indices of dendrites
@@ -48,8 +48,8 @@ class QResponse : public NF {
 
   // glutamate concentration in synaptic cleft
   struct Glu : public DE {
-    double Lambda; ///< glutamate concentration per action potential
-    double tGlu;   ///< time scale of glutamate
+    double Lambda = 0.0; ///< glutamate concentration per action potential
+    double tGlu = 0.0;   ///< time scale of glutamate
 
     Glu( vvd_size_type nodes, double deltat ) : DE(nodes,deltat,2) {}
     ~Glu(void) override = default;

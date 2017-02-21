@@ -28,7 +28,7 @@ class Solver : public NF {
 
   Dumpf& dumpf;
 
-  int steps; ///< number of integration steps to perform
+  int steps = 0; ///< number of integration steps to perform
 
   struct CntMat : public NF {
     std::vector<double>::size_type npop; ///< number of populations
@@ -49,9 +49,9 @@ class Solver : public NF {
 
   struct Outputs : public NF {
     std::vector<Outlet*> outlets;
-    int t;
-    int outputstart;
-    int outputinterval;
+    int t = 0;
+    int outputstart = 0;
+    int outputinterval = 0;
     std::vector<unsigned int> node;
     Dumpf& dumpf;
     CntMat& cnt;

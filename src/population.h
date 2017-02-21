@@ -35,8 +35,8 @@ class Population : public NF {
   std::vector< std::vector<double> > qhistory; ///< keyring of Q
   std::vector<double> q; ///< current Q, only for output purpose
   bool settled;  ///< if true, forbids add2Dendrite and growHistory
-  double length; ///< spatial length
-  double qinit;  ///< initial firing rate
+  double length = 0.0; ///< spatial length
+  double qinit = 0.0;  ///< initial firing rate
 
   void init( Configf& configf ) override;
  public:

@@ -28,8 +28,8 @@ class DendriteRamp : public Dendrite {
  protected:
   struct DendriteDE : public DE {
     std::vector<double> alpha_vec, beta_vec;
-    double alpha2, beta2;
-    double t1, t2, t3, t4;
+    double alpha2 = 0.0, beta2 = 0.0;
+    double t1 = 0.0, t2 = 0.0, t3 = 0.0, t4 = 0.0;
     virtual void init( const double vinit);
     DendriteDE( size_type nodes, double deltat) : DE(nodes, deltat, 3) {}
     ~DendriteDE(void) override = default;
@@ -38,7 +38,7 @@ class DendriteRamp : public Dendrite {
   DendriteDE* de;
   RK4* rk4;
 
-  double time;
+  double time = 0.0;
 
   void init( Configf& configf ) override;
  public:

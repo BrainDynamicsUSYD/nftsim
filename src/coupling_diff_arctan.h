@@ -24,13 +24,13 @@ class CouplingDiffArctan : public Coupling {
   CouplingDiffArctan();
   CouplingDiffArctan(CouplingDiffArctan&);
  protected:
-  double nu_min, nu_max;
-  double t_half_down, t_half_up;
-  double delta; ///< Time interval [s] in which the function will go from 0.25 to 0.75 of nu_max.
+  double nu_min = 0.0, nu_max = 0.0;
+  double t_half_down = 0.0, t_half_up = 0.0;
+  double delta = 0.0; ///< Time interval [s] in which the function will go from 0.25 to 0.75 of nu_max.
   double time_tot;
-  double diff_atan, diff_atan_min,  diff_atan_max;
-  double time;
-  double time_int;
+  double diff_atan = 0.0, diff_atan_min = 0.0,  diff_atan_max = 0.0;
+  double time = 0.0;
+  double time_int = 0.0;
   std::vector<double> deltanu;
 
  public:
