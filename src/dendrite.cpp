@@ -6,20 +6,22 @@
   @author Peter Drysdale, Felix Fung,
 */
 
+// Main module header
+#include "dendrite.h"   // Dendrite;
+
+// Other neurofield headers
+#include "configf.h"    // Configf;
+#include "coupling.h"   // Coupling;
+#include "de.h"         // RK4;
+#include "output.h"     // Output;
+#include "propagator.h" // Propagator;
+
 // C++ standard library headers
 #include <iostream> // std::endl; std::cerr;
 #include <string>   // std::string;
-using std::string;
 #include <vector>   // std::vector;
+using std::string;
 using std::vector;
-
-// Neurofield headers
-#include "configf.h"    // Configf;
-#include "de.h"         // RK4;
-#include "output.h"     // Output;
-#include "coupling.h"   // Coupling;
-#include "dendrite.h"   // Dendrite;
-#include "propagator.h" // Propagator;
 
 /**
   @brief Computes the derivatives of the dendritic response function.

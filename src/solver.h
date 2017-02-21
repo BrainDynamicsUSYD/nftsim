@@ -9,18 +9,18 @@
 #ifndef NEUROFIELD_SRC_SOLVER_H
 #define NEUROFIELD_SRC_SOLVER_H
 
-// C++ standard library headers
-#include <vector>   // std::vector;
-
-// Neurofield headers
+// Other neurofield headers
 #include "array.h"      // Array;
 #include "configf.h"    // Configf;
-#include "output.h"     // Outlet;
-#include "nf.h"         // NF;
-#include "dumpf.h"      // Dumpf;
-#include "propagator.h" // Propagator;
 #include "coupling.h"   // Coupling;
+#include "dumpf.h"      // Dumpf;
+#include "nf.h"         // NF;
+#include "output.h"     // Outlet;
 #include "population.h" // Population;
+#include "propagator.h" // Propagator;
+
+// C++ standard library headers
+#include <vector>   // std::vector;
 
 class Solver : public NF {
   Solver(); // no default constructor

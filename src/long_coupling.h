@@ -9,15 +9,15 @@
 #ifndef NEUROFIELD_SRC_LONGCOUPLING_H
 #define NEUROFIELD_SRC_LONGCOUPLING_H
 
+// Other neurofield headers
+#include "configf.h"    // Configf;
+#include "coupling.h"   // Coupling;
+#include "output.h"     // Output;
+#include "population.h" // Population;
+#include "propagator.h" // Propagator;
+
 // C++ standard library headers
 #include <vector> // std::vector;
-
-// Neurofield headers
-#include "configf.h"    // Configf;
-#include "output.h"     // Output;
-#include "coupling.h"   // Coupling;
-#include "propagator.h" // Propagator;
-#include "population.h" // Population;
 
 class LongCoupling : public Coupling {
   LongCoupling();

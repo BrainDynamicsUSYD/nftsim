@@ -6,14 +6,16 @@
   @author Peter Drysdale, Felix Fung,
 */
 
+// Main module header
+#include "bcm.h"        // BCM;
+
+// Other neurofield headers
+#include "configf.h"    // Configf;
+#include "de.h"         // RK4;
+
 // C++ standard library headers
 #include <vector>   // std::vector;
 using std::vector;
-
-// Neurofield headers
-#include "configf.h"    // Configf;
-#include "de.h"         // RK4;
-#include "bcm.h"        // BCM;
 
 void BCM::BCMDE::rhs( const vector<double>& y, vector<double>& dydt ) {
   // y == { binding, H, Ca, nutilde, x, y, dnudt, nu, gNMDA }

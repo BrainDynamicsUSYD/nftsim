@@ -6,18 +6,17 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-// C++ standard library headers
-#include <vector>   // std::vector;
-using std::vector;
-#include <string>   // std::string;
-using std::string;
+// Main module header
+#include "stencil.h"
 
-#include <iostream>
+// C++ standard library headers
+#include <iostream> // std::cerr; std::endl;
+#include <string>   // std::string;
+#include <vector>   // std::vector;
 using std::cerr;
 using std::endl;
-
-// Neurofield headers
-#include "stencil.h"
+using std::string;
+using std::vector;
 
 Stencil::Stencil( int nodes, int longside, const string& boundary )
   : nodes(nodes), longside(longside), shortside(nodes/longside),

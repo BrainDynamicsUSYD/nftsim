@@ -10,11 +10,11 @@
 #define NEUROFIELD_SRC_CONFIGF_H
 
 // C++ standard library headers
-#include <cstdlib>  // std::cerr;
-#include <fstream>  // std::ifstream;
+#include <fstream>  // std::ifstream; tellg; seekg;
 #include <iostream> // std::endl; std::cerr; std::streamsize; std::ios::beg;
 #include <string>   // std::string;
 #include <vector>   // std::vector;
+
 
 class Configf : protected std::ifstream { // derived class
   Configf(const Configf& other); // No copy constructor

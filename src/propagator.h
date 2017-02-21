@@ -10,16 +10,19 @@
 #ifndef NEUROFIELD_SRC_PROPAGATOR_H
 #define NEUROFIELD_SRC_PROPAGATOR_H
 
+// Forward declaration to break circular collaboration
+class Propagator;
+
+// Other neurofield headers
+#include "configf.h"    // Configf;
+#include "nf.h"         // NF;
+#include "output.h"     // Output; Outlet;
+#include "population.h" // Population;
+#include "tau.h"        // Tau;
+
 // C++ standard library headers
 #include <string> //std::string;
 #include <vector> //std::vector;
-
-// Neurofield headers
-#include "configf.h"    // Configf;
-#include "output.h"     // Output; Outlet;
-#include "nf.h"         // NF;
-#include "tau.h"        // Tau;
-#include "population.h" // Population;
 
 class Propagator : public NF {
   Propagator(); // no default constructor

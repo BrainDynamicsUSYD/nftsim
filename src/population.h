@@ -9,24 +9,21 @@
 #ifndef NEUROFIELD_SRC_POPULATION_H
 #define NEUROFIELD_SRC_POPULATION_H
 
-// C++ standard library headers
-#include <vector> // std::vector;
-
-class Propagator;
-class Coupling;
+// Forward declaration to break circular collaboration
 class Population;
-class QResponse;
 
-// Neurofield headers
+// Other neurofield headers
 #include "configf.h"    // Configf;
-#include "output.h"     // Output;
-#include "nf.h"         // NF;
-#include "timeseries.h" // Timeseries;
 #include "coupling.h"   // Coupling;
+#include "nf.h"         // NF;
+#include "output.h"     // Output;
 #include "tau.h"        // Tau; // Must be included before propagator.h
 #include "propagator.h" // Propagator;
 #include "qresponse.h"  // QResponse;
+#include "timeseries.h" // Timeseries;
 
+// C++ standard library headers
+#include <vector> // std::vector;
 
 class Population : public NF {
   Population(void); // no default constructor

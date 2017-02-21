@@ -6,26 +6,26 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-// C++ standard library headers
-#include <vector>   // std::vector;
-using std::vector;
-#include <string>   // std::string;
-using std::string;
+// Main module header
+#include "timeseries.h" // Timeseries; TIMESERIES::;
 
-#include <iostream> // std::cerr; std::endl;
-using std::cerr;
-using std::endl;
-
-#include <cmath>    // std::pow; std::sqrt; std::sin; std::fmod;
-using std::pow;
-using std::sqrt;
-using std::sin;
-using std::fmod;
-
-// Neurofield headers
+// Other neurofield headers
 #include "configf.h"    // Configf;
 #include "random.h"     // Random;
-#include "timeseries.h" // Timeseries; TIMESERIES::;
+
+// C++ standard library headers
+#include <cmath>    // std::pow; std::sqrt; std::sin; std::fmod;
+#include <iostream> // std::cerr; std::endl;
+#include <string>   // std::string;
+#include <vector>   // std::vector;
+using std::cerr;
+using std::endl;
+using std::fmod;
+using std::pow;
+using std::sin;
+using std::sqrt;
+using std::string;
+using std::vector;
 
 void Timeseries::init( Configf& configf ) {
   series_size_type superimpose = 1;

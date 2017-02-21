@@ -10,22 +10,22 @@
 #ifndef NEUROFIELD_SRC_QRESPONSE_H
 #define NEUROFIELD_SRC_QRESPONSE_H
 
-#include <vector> // std::vector;
-#include <string> // std::string;
+// Forward declaration to break circular collaboration
+class QResponse;
 
-// Neurofield headers
+// Other neurofield headers
 #include "array.h"      // Array;
-#include "de.h"         // DE; RK4;
 #include "configf.h"    // Configf;
-#include "nf.h"         // NF;
-#include "propagator.h" // Propagator;
 #include "coupling.h"   // Coupling;
+#include "de.h"         // DE; RK4;
 #include "dendrite.h"   // Dendrite;
+#include "nf.h"         // NF;
 #include "population.h" // Population;
+#include "propagator.h" // Propagator;
 
-//class Dendrite;
-//class Propagator;
-//class Coupling;
+// C++ standard library headers
+#include <string> // std::string;
+#include <vector> // std::vector;
 
 class QResponse : public NF {
   QResponse(QResponse& ); // no copy constructor

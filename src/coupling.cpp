@@ -6,16 +6,23 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-// C++ standard library headers
-#include <string>   // std::string;
-using std::string;
-#include <vector>   // std::vector;
-using std::vector;
+// Main module header
+#include "coupling.h"   // Coupling;
 
-#include <iostream>
+// Other neurofield headers
+#include "configf.h"    // Configf;
+#include "output.h"     // Output;
+#include "population.h" // Population;
+#include "propagator.h" // Propagator;
+
+// C++ standard library headers
+#include <iostream>  // std::cerr; std::endl;
+#include <string>    // std::string;
+#include <vector>    // std::vector;
 using std::cerr;
 using std::endl;
-#include "coupling.h"
+using std::string;
+using std::vector;
 
 void Coupling::init( Configf& configf ) {
   configf.next("nu");

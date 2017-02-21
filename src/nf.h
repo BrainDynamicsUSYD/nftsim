@@ -9,13 +9,13 @@
 #ifndef NEUROFIELD_SRC_NF_H
 #define NEUROFIELD_SRC_NF_H
 
-// C++ standard library headers
-#include <vector> // std::vector;
+// Other neurofield headers
+#include "configf.h"   // Configf;
+//#include "dumpf.h"     // Dumpf;
+#include "output.h"    // Output;
 
-// Neurofield headers
-#include "configf.h" // Configf;
-#include "output.h"  // Output;
-//#include "dumpf.h"   // Dumpf;
+// C++ standard library headers
+#include <vector>    // std::vector;
 
 class NF {
   NF(void);    // no default constructor allowed

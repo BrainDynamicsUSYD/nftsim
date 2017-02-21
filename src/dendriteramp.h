@@ -9,17 +9,16 @@
 #ifndef NEUROFIELD_SRC_DENDRITERAMP_H
 #define NEUROFIELD_SRC_DENDRITERAMP_H
 
-// C++ standard library headers
-#include <vector> // std::vector;
-
-// Neurofield headers
+// Other neurofield headers
 #include "configf.h"    // Configf;
-#include "de.h"         // DE; RK4;
-#include "output.h"     // Output;
 #include "coupling.h"   // Coupling;
+#include "de.h"         // DE; RK4;
 #include "dendrite.h"   // Dendrite;
+#include "output.h"     // Output;
 #include "propagator.h" // Propagator;
 
+// C++ standard library headers
+#include <vector> // std::vector;
 using std::vector;
 
 class DendriteRamp : public Dendrite {

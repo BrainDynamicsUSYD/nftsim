@@ -6,7 +6,12 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#include "nf.h"
+// Main module header
+#include "nf.h"         // NF;
+
+// Other neurofield headers
+#include "configf.h"    // Configf;
+#include "output.h"     // Output;
 
 Configf& operator>> ( Configf& configf, NF& nf ) {
   nf.init(configf);

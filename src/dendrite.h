@@ -9,18 +9,20 @@
 #ifndef NEUROFIELD_SRC_DENDRITE_H
 #define NEUROFIELD_SRC_DENDRITE_H
 
+// Forward declaration to break circular collaboration
+class Dendrite;
+
+// Other neurofield headers
+#include "configf.h"    // Configf;
+#include "coupling.h"   // Coupling;
+#include "de.h"         // DE; RK4;
+#include "nf.h"         // NF;
+#include "output.h"     // Output;
+#include "population.h" // Population;
+#include "propagator.h" // Propagator;
+
 // C++ standard library headers
 #include <vector> // std::vector;
-
-// Neurofield headers
-#include "configf.h"    // Configf;
-#include "de.h"         // DE; RK4;
-#include "output.h"     // Output;
-#include "nf.h"         // NF;
-#include "coupling.h"   // Coupling;
-#include "propagator.h" // Propagator;
-#include "population.h" // Population;
-
 
 class Dendrite : public NF {
   Dendrite(void); // default constructor

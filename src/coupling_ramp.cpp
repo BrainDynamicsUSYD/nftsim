@@ -13,19 +13,21 @@
    + @param[in]     pairs   : total number of pairs of (nu, time) to define the segments
 */
 
-// C++ standard library headers
-#include <vector>   // std::vector;
-using std::vector;
-#include <iostream> // std::cerr; std::endl; std::cout;
-using std::cerr;
-using std::endl;
-using std::cout;
-
-// Neurofield headers
-#include "configf.h"    // Configf;
-#include "propagator.h" // Propagator;
+// Main module header
 #include "coupling_ramp.h" // CouplingRamp;
+
+// Other neurofield headers
+#include "configf.h"    // Configf;
 #include "population.h" // Population;
+#include "propagator.h" // Propagator;
+
+// C++ standard library headers
+#include <iostream> // std::cerr; std::endl; std::cout;
+#include <vector>   // std::vector;
+using std::cerr;
+using std::cout;
+using std::endl;
+using std::vector;
 
 void CouplingRamp::init( Configf& configf ) {
 

@@ -7,14 +7,16 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-// C++ standard library headers
-#include <cmath>     // std::exp;
+// Main module header
+#include "dendrite_integral.h" // DendriteIntegral;
 
-// Neurofield headers
+// Other neurofield headers
+#include "configf.h"    // Configf;
 #include "coupling.h"   // Coupling;
 #include "propagator.h" // Propagator;
-#include "dendrite_integral.h"
 
+// C++ standard library headers
+#include <cmath>     // std::exp;
 
 void DendriteIntegral::init( Configf& configf ) {
   Dendrite::init(configf);

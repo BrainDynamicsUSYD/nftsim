@@ -9,13 +9,13 @@
 #ifndef NEUROFIELD_SRC_BURST_H
 #define NEUROFIELD_SRC_BURST_H
 
-// C++ standard library headers
-#include <vector> // std::vector;
-
-// Neurofield headers
+// Other neurofield headers
 #include "configf.h"    // Configf;
 #include "output.h"     // Output;
 #include "qresponse.h"  // QResponse;
+
+// C++ standard library headers
+#include <vector> // std::vector;
 
 class BurstResponse : public QResponse { //derived class; constructor initializer
  private:

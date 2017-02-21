@@ -10,8 +10,8 @@
 #define NEUROFIELD_SRC_OUTPUT_H
 
 // C++ standard library headers
-#include <string> //std::string;
-#include <vector> //std::vector;
+#include <string> // std::string;
+#include <vector> // std::vector;
 
 class Outlet {
  public:

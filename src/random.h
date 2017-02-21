@@ -9,6 +9,7 @@
 #ifndef NEUROFIELD_SRC_RANDOM_H
 #define NEUROFIELD_SRC_RANDOM_H
 
+// C++ standard library headers
 #include <random> // std::mt19937_64; std::normal_distribution;
 
 class Random {

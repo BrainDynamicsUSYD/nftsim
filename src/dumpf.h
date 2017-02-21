@@ -9,12 +9,12 @@
 #ifndef NEUROFIELD_SRC_DUMPF_H
 #define NEUROFIELD_SRC_DUMPF_H
 
-// C++ standard library headers
-#include <iostream> // std::istream;
-#include <string>   // std::string;
-
-// Neurofield headers
+// Other neurofield headers
 #include "configf.h" // Configf;
+
+// C++ standard library headers
+#include <iostream> // std::istream; std::ostream; std::ofstream;
+#include <string>   // std::string;
 
 class Dumpf {
   Dumpf(Dumpf&);

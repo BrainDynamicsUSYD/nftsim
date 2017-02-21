@@ -6,12 +6,18 @@
   @author Peter Drysdale, Felix Fung,
 */
 
+// Main module header
+#include "cadp.h"       // CaDP;
+
+// Other neurofield headers
+#include "configf.h"    // Configf;
+#include "output.h"     // Output;
+#include "population.h" // Population;
+#include "propagator.h" // Propagator;
+
 // C++ standard library headers
 #include <vector>   // std::vector;
 using std::vector;
-
-#include <cmath>
-#include "cadp.h"
 
 void CaDP::CaDE::rhs( const vector<double>& y, vector<double>& dydt ) {
   // y == { binding, H, Ca, nutilde, x, y, dnudt, nu }

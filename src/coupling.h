@@ -9,15 +9,18 @@
 #ifndef NEUROFIELD_SRC_COUPLING_H
 #define NEUROFIELD_SRC_COUPLING_H
 
+// Forward declaration to break circular collaboration
+class Coupling;
+
+// Other neurofield headers
+#include "configf.h"    // Configf;
+#include "nf.h"         // NF;
+#include "output.h"     // Output;
+#include "population.h" // Population;
+#include "propagator.h" // Propagator;
+
 // C++ standard library headers
 #include <vector> // std::vector;
-
-// Neurofield headers
-#include "configf.h"    // Configf;
-#include "output.h"     // Output;
-#include "nf.h"         // NF;
-#include "propagator.h" // Propagator;
-#include "population.h" // Population;
 
 class Coupling : public NF {
   Coupling();

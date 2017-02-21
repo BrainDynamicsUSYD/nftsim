@@ -9,15 +9,15 @@
 #ifndef NEUROFIELD_SRC_TAU_H
 #define NEUROFIELD_SRC_TAU_H
 
-// C++ standard library headers
-#include <vector> //std::vector;
-
-// Neurofield headers
+// Other neurofield headers
 #include "configf.h"    // Configf;
 #include "nf.h"         // NF;
-//#include "population.h" // Population;
 
+// Forward declaration to break circular collaboration
 class Population;
+
+// C++ standard library headers
+#include <vector> //std::vector;
 
 class Tau : public NF {
   Tau(Tau& ); // no copy constructor

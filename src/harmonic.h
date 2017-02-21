@@ -9,14 +9,14 @@
 #ifndef NEUROFIELD_SRC_HARMONIC_H
 #define NEUROFIELD_SRC_HARMONIC_H
 
-// C++ standard library headers
-#include <vector> // std::vector;
-#include <string> // std::string;
-
-// Neurofield headers
+// Other neurofield headers
 #include "configf.h"    // Configf;
-#include "propagator.h" // Propagator;
 #include "population.h" // Population;
+#include "propagator.h" // Propagator;
+
+// C++ standard library headers
+#include <string> // std::string;
+#include <vector> // std::vector;
 
 class Harmonic : public virtual Propagator {
   Harmonic(); // no default constructor

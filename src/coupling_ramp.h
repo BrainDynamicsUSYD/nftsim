@@ -19,14 +19,14 @@
 #ifndef NEUROFIELD_SRC_COUPLINGRAMP_H
 #define NEUROFIELD_SRC_COUPLINGRAMP_H
 
-// C++ standard library headers
-#include <vector> // std::vector;
-
-// Neurofield headers
+// Other neurofield headers
 #include "configf.h"    // Configf;
 #include "coupling.h"   // Coupling;
-#include "propagator.h" // Propagator;
 #include "population.h" // Population;
+#include "propagator.h" // Propagator;
+
+// C++ standard library headers
+#include <vector> // std::vector;
 
 class CouplingRamp : public Coupling {
   CouplingRamp();

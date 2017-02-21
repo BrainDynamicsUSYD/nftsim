@@ -6,17 +6,19 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-// C++ standard library headers
-#include <vector>   // std::vector;
-using std::vector;
-#include <string>   // std::string;
-using std::string;
-#include <utility>  // std::move;
+// Main module header
+#include "output.h"     // Output; Outlet;
 
-// Neurofield headers
-#include "output.h"
-#include "configf.h"
-#include "dumpf.h"
+// Other neurofield headers
+#include "configf.h"    // Configf;
+#include "dumpf.h"      // Dumpf;
+
+// C++ standard library headers
+#include <string>   // std::string;
+#include <utility>  // std::move;
+#include <vector>   // std::vector;
+using std::string;
+using std::vector;
 
 Outlet::Outlet( string  name, const vector<double>& field, bool single_output )
   : name(std::move(name)), field(field), single_output(single_output) {

@@ -6,22 +6,23 @@
   @author Peter Drysdale, Felix Fung,
 */
 
+// Main module header
+#include "dumpf.h"      // Dumpf;
+
+// Other neurofield headers
+#include "configf.h"    // Configf;
+
 // C++ standard library headers
+#include <iomanip>  // std::setw;
+#include <iostream> // std::cerr; std::cout; std::ios::beg; std::ostream; std::scientific;
 #include <string>   // std::string;
-using std::string;
-#include <iomanip>
-using std::scientific;
-#include <cstdlib>
-using std::setw;
-#include <iostream> // std::ios::beg;
-using std::cout;
 using std::cerr;
+using std::cout;
 using std::endl;
 using std::ostream;
-
-// Neurofield headers
-#include "configf.h"    // Configf;
-#include "dumpf.h"      // Dumpf;
+using std::scientific;
+using std::setw;
+using std::string;
 
 Dumpf::Dumpf() {
 }

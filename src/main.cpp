@@ -12,21 +12,20 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-// C++ standard library headers
-#include <string>    // std::string;
-using std::string;
-
-#include <iostream> // std::cout; std::cerr; std::endl;
-using std::cout;
-using std::cerr;
-using std::endl;
-
-#include <cstring>
-
 // Neurofield headers
 #include "configf.h"    // Configf;
 #include "dumpf.h"      // Dumpf;
 #include "solver.h"     // Solver;
+
+// C++ standard library headers
+#include <iostream>  // std::cerr; std::cout; std::endl;
+#include <string>    // std::string;
+using std::cerr;
+using std::cout;
+using std::endl;
+using std::string;
+
+#include <cstring>
 
 int main(int argc, char* argv[]) {
   // print help message

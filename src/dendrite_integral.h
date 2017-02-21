@@ -11,14 +11,14 @@
 #ifndef NEUROFIELD_SRC_DENDRITE_INTEGRAL_H
 #define NEUROFIELD_SRC_DENDRITE_INTEGRAL_H
 
-// C++ standard library headers
-#include <vector> // std::vector;
-
-// Neurofield headers
+// Other neurofield headers
 #include "configf.h"    // Configf;
 #include "coupling.h"   // Coupling;
 #include "dendrite.h"   // Dendrite;
 #include "propagator.h" // Propagator;
+
+// C++ standard library headers
+#include <vector> // std::vector;
 
 class DendriteIntegral : public Dendrite {
   DendriteIntegral(void); // default constructor

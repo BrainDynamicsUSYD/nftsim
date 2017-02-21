@@ -6,19 +6,20 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-// C++ standard library headers
-#include <vector>   // std::vector;
-using std::vector;
+// Main module header
+#include "tau.h"        // Tau;
 
+// Other neurofield headers
+#include "configf.h"    // Configf;
+
+// C++ standard library headers
+#include <cmath>    // std::remainder;
 #include <iostream> // std::cerr; std::endl;
+#include <vector>   // std::vector;
 using std::cerr;
 using std::endl;
-
-#include <cmath> // std::remainder;
 using std::remainder;
-
-// Neurofield headers
-#include "tau.h"
+using std::vector;
 
 void Tau::init( Configf& configf ) {
   vector<double> temp = configf.numbers();

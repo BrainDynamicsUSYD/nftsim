@@ -6,8 +6,11 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-// Neurofield headers
+// Main module header
 #include "random.h" // Random;
+
+// C++ standard library headers
+#include <random> // std::mt19937_64; std::normal_distribution;
 
 uint_fast64_t Random::id = 0;
 

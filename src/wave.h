@@ -13,14 +13,14 @@
 #ifndef NEUROFIELD_SRC_WAVE_H
 #define NEUROFIELD_SRC_WAVE_H
 
-// C++ standard library headers
-#include <string> // std::string
-
-// Neurofield headers
+// Other neurofield headers
 #include "configf.h"    // Configf;
-#include "stencil.h"    // Stencil;
-#include "propagator.h" // Propagator;
 #include "population.h" // Population;
+#include "propagator.h" // Propagator;
+#include "stencil.h"    // Stencil;
+
+// C++ standard library headers
+#include <string>  // std::string
 
 class Wave : public Propagator {
   Wave(); // no default constructor

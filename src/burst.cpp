@@ -6,14 +6,18 @@
   @author Peter Drysdale, Felix Fung,
 */
 
+// Main module header
+#include "burst.h"      // BurstResponse;
+
+// Other neurofield headers
+#include "array.h"      // Array;
+#include "configf.h"    // Configf;
+#include "dendrite.h"   // Dendrite;
+#include "output.h"     // Output;
+
 // C++ standard library headers
 #include <vector>   // std::vector;
 using std::vector;
-
-// Neurofield headers
-#include "configf.h"    // Configf;
-#include "output.h"     // Output;
-#include "burst.h"      // BurstResponse;
 
 void BurstResponse::init( Configf& configf ) {
   configf.param("Sigma",sigma);

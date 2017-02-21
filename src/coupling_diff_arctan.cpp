@@ -8,20 +8,22 @@
   @author Farah Deeba, Paula Sanz-Leon, Sahand Assadzadeh
 */
 
+// Main module header
+#include "coupling_diff_arctan.h" // CouplingDiffArctan;
+
+// Other neurofield  headers
+#include "configf.h"    // Configf;
+#include "coupling.h"   // Coupling;
+#include "population.h" // Population;
+#include "propagator.h" // Propagator;
+
 // C++ standard library headers
 #include <algorithm> // std::min_element; std::max_element;
 #include <cmath>     // std::atan;
-using std::atan;
 #include <iostream>  // std::cerr; std::endl;
+using std::atan;
 using std::cerr;
 using std::endl;
-
-// Neurofield headers
-#include "configf.h"    // Configf;
-#include "coupling_diff_arctan.h" // CouplingDiffArctan;
-#include "coupling.h"   // Coupling;
-#include "propagator.h" // Propagator;
-#include "population.h" // Population;
 
 void CouplingDiffArctan::init( Configf& configf ) {
   //read initial ramp conditions from config file

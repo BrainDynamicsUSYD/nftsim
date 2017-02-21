@@ -11,14 +11,14 @@
 #ifndef COUPLING_DIFF_ARCTAN_H
 #define COUPLING_DIFF_ARCTAN_H
 
-// C++ standard library headers
-#include <vector> // std::vector;
-
-// Neurofield headers
+// Other neurofield headers
 #include "configf.h"    // Configf;
 #include "coupling.h"   // Coupling
 #include "propagator.h" // Propagator;
 #include "population.h" // Population;
+
+// C++ standard library headers
+#include <vector> // std::vector;
 
 class CouplingDiffArctan : public Coupling {
   CouplingDiffArctan();

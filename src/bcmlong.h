@@ -9,16 +9,16 @@
 #ifndef NEUROFIELD_SRC_BCMLONG_H
 #define NEUROFIELD_SRC_BCMLONG_H
 
-// C++ standard library headers
-#include <vector> // std::vector;
-
-// Neurofield headers
+// Other neurofield headers
+#include "bcm.h"        // BCM;
 #include "configf.h"    // Configf;
 #include "de.h"         // RK4;
 #include "output.h"     // Output;
-#include "propagator.h" // Propagator;
-#include "bcm.h"        // BCM;
 #include "population.h" // Population;
+#include "propagator.h" // Propagator;
+
+// C++ standard library headers
+#include <vector> // std::vector;
 
 class BCMLong : public BCM {
   BCMLong();

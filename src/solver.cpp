@@ -6,40 +6,36 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-// C++ standard library headers
-#include <vector>   // std::vector;
-using std::vector;
-#include <string>   // std::string;
-using std::string;
-#include <iostream> // std::endl; std::cerr;
-using std::cerr;
-using std::endl;
-#include <string>   //std::string;
-using std::string;
-#include <sstream>  //std::stringstream;
-using std::stringstream;
-#include <cmath>    // std::sqrt; std::remainder;
-using std::sqrt;
-using std::remainder;
-
-
-// Neurofield headers
-#include "configf.h"  // Configf;
-#include "output.h"   // Output; Outlet;
+// Main module header
 #include "solver.h"   // Solver;
-// Propagators
-#include "wave.h"     // Wave;
-#include "harmonic.h" // Harmonic;
-// Couplings
-#include "coupling.h" // Coupling;
-#include "long_coupling.h" //LongCoupling;
+
+// Other neurofield headers
 #include "bcm.h"           // BCM;
 #include "bcmlong.h"       // BCMLong;
 #include "cadp.h"          // CaDP;
-#include "coupling_ramp.h" // CouplingRamp;
+#include "configf.h"       // Configf;
+#include "coupling.h"      // Coupling;
 #include "coupling_diff_arctan.h" // CouplingDiffArctan;
+#include "coupling_ramp.h" // CouplingRamp;
+#include "harmonic.h"      // Harmonic;
+#include "long_coupling.h" //LongCoupling;
+#include "output.h"        // Output; Outlet;
+#include "population.h"    // Population;
+#include "wave.h"          // Wave;
 
-#include "population.h" // Population;
+// C++ standard library headers
+#include <cmath>    // std::remainder; std::sqrt;
+#include <iostream> // std::cerr; std::endl;
+#include <sstream>  // std::stringstream;
+#include <string>   // std::string;
+#include <vector>   // std::vector;
+using std::cerr;
+using std::endl;
+using std::remainder;
+using std::sqrt;
+using std::string;
+using std::stringstream;
+using std::vector;
 
 
 void Solver::CntMat::init( Configf& configf ) {

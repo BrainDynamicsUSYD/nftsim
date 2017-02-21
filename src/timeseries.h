@@ -9,13 +9,13 @@
 #ifndef NEUROFIELD_SRC_TIMESERIES_H
 #define NEUROFIELD_SRC_TIMESERIES_H
 
+// Other neurofield headers
+#include "configf.h"    // Configf;
+#include "nf.h"         // NF;
+#include "random.h"     // Random;
+
 // C++ standard library headers
 #include <vector>   // std::vector;
-
-// Neurofield headers
-#include "configf.h"    // Configf;
-#include "random.h"     // Random;
-#include "nf.h"         // NF;
 
 class Timeseries : public NF {
   Timeseries(Timeseries&);

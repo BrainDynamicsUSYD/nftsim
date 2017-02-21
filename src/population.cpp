@@ -6,27 +6,28 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-// C++ standard library headers
-#include <vector>   // std::vector;
-using std::vector;
-#include <string>   // std::string;
-using std::string;
+// Main module header
+#include "population.h" // Population;
 
-#include <iostream> // std::cerr; std::endl; std::cout;
-using std::cerr;
-using std::endl;
-using std::cout;
-
-// Neurofield headers
+// Other neurofield headers
+#include "burst.h"      // BurstResponse;
 #include "configf.h"    // Configf;
-#include "output.h"     // Output;
-#include "timeseries.h" // Timeseries;
 #include "coupling.h"   // Coupling;
-#include "tau.h"        // Tau; // Must be included before propagator.h
+#include "output.h"     // Output;
 #include "propagator.h" // Propagator;
 #include "qresponse.h"  // QResponse;
-#include "burst.h"      // BurstResponse;
-#include "population.h" // Population;
+#include "tau.h"        // Tau;
+#include "timeseries.h" // Timeseries;
+
+// C++ standard library headers
+#include <iostream> // std::cerr; std::cout; std::endl;
+#include <string>   // std::string;
+#include <vector>   // std::vector;
+using std::cerr;
+using std::cout;
+using std::endl;
+using std::string;
+using std::vector;
 
 void Population::init( Configf& configf ) {
   qinit = Qinit(configf);

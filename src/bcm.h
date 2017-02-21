@@ -9,15 +9,15 @@
 #ifndef NEUROFIELD_SRC_BCM_H
 #define NEUROFIELD_SRC_BCM_H
 
-// C++ standard library headers
-#include <vector> // std::vector;
-
-// Neurofield headers
+// Other neurofield headers
+#include "cadp.h"       // CaDP;
 #include "configf.h"    // Configf;
 #include "output.h"     // Output;
-#include "propagator.h" // Propagator;
-#include "cadp.h"       // CaDP;
 #include "population.h" // Population;
+#include "propagator.h" // Propagator;
+
+// C++ standard library headers
+#include <vector> // std::vector;
 
 class BCM : public CaDP {
   BCM(BCM&);

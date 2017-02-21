@@ -12,8 +12,6 @@
 // C++ standard library headers
 #include <vector> // std::vector;
 
-//#include <omp.h>
-
 template<class T>
 class Array {
   Array(Array&);   // no copy constructor allowed

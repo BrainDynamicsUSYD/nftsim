@@ -6,20 +6,22 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-// C++ standard library headers
-#include <vector>   // std::vector;
-using std::vector;
-#include <string>    // std::string;
-using std::string;
-#include <cstdlib>   // std::atof;
-using std::atof;
-#include <cmath>     // std::exp;
-using std::exp;
-
-// Neurofield headers
-#include "configf.h"    // Configf;
+// Main module header
 #include "harmonic.h"   // Harmonic;
+
+// Other neurofield headers
+#include "configf.h"    // Configf;
 #include "population.h" // Population;
+
+// C++ standard library headers
+#include <cmath>     // std::exp;
+#include <cstdlib>   // std::atof;
+#include <string>    // std::string;
+#include <vector>    // std::vector;
+using std::atof;
+using std::exp;
+using std::string;
+using std::vector;
 
 void Harmonic::init( Configf& configf ) {
   double Q = prepop.Qinit(configf);

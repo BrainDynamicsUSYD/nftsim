@@ -10,23 +10,25 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-// C++ standard library headers
-#include <vector>   // std::vector;
-using std::vector;
-#include <string>   // std::string;
-using std::string;
+// Main module header
+#include "qresponse.h"  // QResponse;
 
-// Neurofield headers
+// Other neurofield headers
 #include "array.h"      // Array;
 #include "configf.h"    // Configf;
-#include "output.h"     // Output;
-#include "fmath.h"      // fmath::expd;
 #include "coupling.h"   // Coupling;
 #include "dendrite.h"   // Dendrite;
-#include "propagator.h" // Propagator;
-#include "dendriteramp.h"      // DendriteRamp;
 #include "dendrite_integral.h" // DendriteIntegral;
-#include "qresponse.h"  // QResponse;
+#include "dendriteramp.h"      // DendriteRamp;
+#include "fmath.h"      // fmath::expd;
+#include "output.h"     // Output;
+#include "propagator.h" // Propagator;
+
+// C++ standard library headers
+#include <string>   // std::string;
+#include <vector>   // std::vector;
+using std::string;
+using std::vector;
 
 void QResponse::init( Configf& configf ) {
   vector<string> temp = configf.arb("-");
