@@ -6,9 +6,19 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#include <cstdlib>
-#include <cmath>
-#include "dendriteramp.h"
+// Main module header
+#include "dendriteramp.h" // DendriteRamp;
+
+// Other neurofield headers
+#include "configf.h"    // Configf;
+#include "coupling.h"   // Coupling;
+#include "de.h"         // RK4;
+#include "output.h"     // Output;
+#include "propagator.h" // Propagator;
+
+// C++ standard library headers
+#include <vector>   // std::vector;
+using std::vector;
 
 /**
   @brief Computes the dendritic ramp.

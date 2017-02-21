@@ -9,10 +9,10 @@
 #ifndef NEUROFIELD_SRC_DE_H
 #define NEUROFIELD_SRC_DE_H
 
-#include <vector>
-using std::vector;
+// C++ standard library headers
+#include <vector> // std::vector;
 
-typedef vector<vector<double>>::size_type vvd_size_type;
+typedef std::vector<std::vector<double>>::size_type vvd_size_type;
 
 class DE {
   DE(void);
@@ -31,7 +31,7 @@ class DE {
   vvd_size_type nodes; ///< number of nodes in the system.
   double deltat;       ///< integration timestep size.
   vvd_size_type n;     ///< dimension of system == y.size()
-  vector<vector<double> > variables;
+  std::vector<std::vector<double> > variables;
 
   DE( vvd_size_type nodes, double deltat, vvd_size_type n )
     : nodes(nodes), deltat(deltat), n(n), variables(n) {
@@ -41,14 +41,14 @@ class DE {
   }
   virtual ~DE(void) = default;
 
-  virtual vector<double>& operator[] ( vvd_size_type index ) {
+  virtual std::vector<double>& operator[] ( vvd_size_type index ) {
     return variables[index];
   }
-  virtual const vector<double>& operator[] ( vvd_size_type index ) const {
+  virtual const std::vector<double>& operator[] ( vvd_size_type index ) const {
     return variables[index];
   }
   // define dydt here
-  virtual void rhs( const vector<double>& y, vector<double>& dydt ) = 0;
+  virtual void rhs( const std::vector<double>& y, std::vector<double>& dydt ) = 0;
 };
 
 class Integrator {
@@ -68,7 +68,7 @@ class Euler : public Integrator {
   Euler(Euler&);
   void operator=(Euler&);
  protected:
-  vector<double> dydt;
+  std::vector<double> dydt;
  public:
   explicit Euler( DE& de ) : Integrator(de), dydt(de.n) {}
   ~Euler(void) override = default;
@@ -90,11 +90,11 @@ class RK4 : public Integrator {
   double h6; ///< == deltat/6
   double deltat5; ///< == deltat*0.5
 
-  vector<double> k1;
-  vector<double> k2;
-  vector<double> k3;
-  vector<double> k4;
-  vector<double> temp;
+  std::vector<double> k1;
+  std::vector<double> k2;
+  std::vector<double> k3;
+  std::vector<double> k4;
+  std::vector<double> temp;
  public:
   explicit RK4( DE& de ) : Integrator(de), h6(de.deltat/6.), deltat5(de.deltat*0.5),
     k1(de.n), k2(de.n), k3(de.n), k4(de.n), temp(de.n) {}

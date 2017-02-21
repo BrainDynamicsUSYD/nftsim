@@ -9,10 +9,15 @@
 #ifndef NEUROFIELD_SRC_HARMONIC_H
 #define NEUROFIELD_SRC_HARMONIC_H
 
-#include "propagator.h"
-#include "de.h"
+// Other neurofield headers
+#include "configf.h"    // Configf;
+#include "de.h"         // DE; RK4;
+#include "population.h" // Population;
+#include "propagator.h" // Propagator;
 
-using std::vector;
+// C++ standard library headers
+#include <string> // std::string;
+#include <vector> // std::vector;
 
 class Harmonic : public virtual Propagator {
   Harmonic(); // no default constructor
@@ -27,7 +32,7 @@ class Harmonic : public virtual Propagator {
     virtual void init( const double pinit);
     HarmonicDE( size_type nodes, double deltat) : DE(nodes, deltat, 3) {}
     ~HarmonicDE(void) override = default;
-    void rhs( const vector<double>& y, vector<double>& dydt ) override;
+    void rhs( const std::vector<double>& y, std::vector<double>& dydt ) override;
   };
   HarmonicDE* de;
   RK4* rk4;
@@ -39,7 +44,7 @@ class Harmonic : public virtual Propagator {
 
  public:
   Harmonic( size_type nodes, double deltat, size_type index, Population& prepop,
-            Population& postpop, int longside, string topology );
+            Population& postpop, int longside, std::string topology );
   ~Harmonic(void) override;
   void step(void) override;
 };

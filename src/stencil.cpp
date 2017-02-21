@@ -6,10 +6,17 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#include <iostream>
+// Main module header
+#include "stencil.h"
+
+// C++ standard library headers
+#include <iostream> // std::cerr; std::endl;
+#include <string>   // std::string;
+#include <vector>   // std::vector;
 using std::cerr;
 using std::endl;
-#include "stencil.h"
+using std::string;
+using std::vector;
 
 Stencil::Stencil( int nodes, int longside, const string& boundary )
   : nodes(nodes), longside(longside), shortside(nodes/longside),

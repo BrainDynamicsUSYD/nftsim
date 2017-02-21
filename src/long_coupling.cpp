@@ -6,9 +6,22 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#include "long_coupling.h"
+// Main module header
+#include "long_coupling.h" // LongCoupling;
+
+// Other neurofield headers
+#include "configf.h"    // Configf;
+#include "output.h"     // Output;
+#include "population.h" // Population;
+#include "propagator.h" // Propagator;
+
+// C++ standard library headers
+#include <cmath>     // std::pow;
+#include <iostream>  // std::cerr; std::endl;
+#include <vector>    // std::vector;
 using std::cerr;
 using std::endl;
+using std::vector;
 
 void LongCoupling::init( Configf& configf ) {
   configf.next("nu");

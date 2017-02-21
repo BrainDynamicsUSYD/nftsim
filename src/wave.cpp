@@ -6,14 +6,25 @@
  *
  */
 
-/**
-   Reads from the configuration file
+// Main module header
+#include "wave.h"       // Wave;
 
-*/
-#include <cmath>
-#include "wave.h"
+// Other neurofield headers
+#include "configf.h"    // Configf;
+#include "population.h" // Population;
+#include "stencil.h"    // Stencil;
+
+// C++ standard library headers
+#include <cmath>     // std::exp; std::sqrt;
+#include <iostream>  // std::cerr; std::endl;
+#include <string>    // std::string;
+#include <vector>    // std::vector;
 using std::cerr;
 using std::endl;
+using std::exp;
+using std::sqrt;
+using std::string;
+using std::vector;
 
 void Wave::init( Configf& configf ) {
   Propagator::init(configf);

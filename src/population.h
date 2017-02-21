@@ -9,21 +9,21 @@
 #ifndef NEUROFIELD_SRC_POPULATION_H
 #define NEUROFIELD_SRC_POPULATION_H
 
-class Propagator;
-class Coupling;
+// Forward declaration to break circular collaboration
 class Population;
-class QResponse;
 
-#include "timeseries.h"
-#include "qresponse.h"
-#include "dendrite.h"
-#include "coupling.h"
-#include "tau.h" // Must be included before propagator.h
-#include "propagator.h"
+// Other neurofield headers
+#include "configf.h"    // Configf;
+#include "coupling.h"   // Coupling;
+#include "nf.h"         // NF;
+#include "output.h"     // Output;
+#include "tau.h"        // Tau; // Must be included before propagator.h
+#include "propagator.h" // Propagator;
+#include "qresponse.h"  // QResponse;
+#include "timeseries.h" // Timeseries;
 
-
-using std::vector;
-
+// C++ standard library headers
+#include <vector> // std::vector;
 
 class Population : public NF {
   Population(void); // no default constructor
@@ -31,28 +31,28 @@ class Population : public NF {
   QResponse* qresponse; ///< qresponse for neural population
   Timeseries* timeseries; ///< timeseries for stimulus
  protected:
-  vector< vector<double> >::size_type qkey; ///< index to the present q in qhistory
-  vector< vector<double> > qhistory; ///< keyring of Q
-  vector<double> q; ///< current Q, only for output purpose
-  bool settled; ///< if true, forbids add2Dendrite and growHistory
-  double length; ///< spatial length
-  double qinit; ///< initial firing rate
+  std::vector< std::vector<double> >::size_type qkey; ///< index to the present q in qhistory
+  std::vector< std::vector<double> > qhistory; ///< keyring of Q
+  std::vector<double> q; ///< current Q, only for output purpose
+  bool settled;  ///< if true, forbids add2Dendrite and growHistory
+  double length = 0.0; ///< spatial length
+  double qinit = 0.0;  ///< initial firing rate
 
   void init( Configf& configf ) override;
  public:
   Population( size_type nodes, double deltat, size_type index );
   ~Population() override;
   void step(void) override;
-  virtual const vector<double>& Q( const Tau& tau ) const;
+  virtual const std::vector<double>& Q( const Tau& tau ) const;
   double Qinit( Configf& configf ) const;
-  virtual const vector<double>& V(void) const;
+  virtual const std::vector<double>& V(void) const;
   inline double operator[]( size_type node ) const;
-  const vector<double>& glu(void) const;
+  const std::vector<double>& glu(void) const;
   inline double sheetlength(void) const {
     return length;
   }
-  virtual void add2Dendrite( size_type index,
-                             const Propagator& prepropag, const Coupling& precouple, Configf& configf );
+  virtual void add2Dendrite( size_type index, const Propagator& prepropag,
+                             const Coupling& precouple, Configf& configf );
   virtual void growHistory( const Tau& tau );
   void output( Output& output ) const override;
   virtual void outputDendrite( size_type

@@ -10,9 +10,19 @@
 #ifndef NEUROFIELD_SRC_PROPAGATOR_H
 #define NEUROFIELD_SRC_PROPAGATOR_H
 
-#include "population.h"
+// Forward declaration to break circular collaboration
+class Propagator;
 
-using std::string;
+// Other neurofield headers
+#include "configf.h"    // Configf;
+#include "nf.h"         // NF;
+#include "output.h"     // Output; Outlet;
+#include "population.h" // Population;
+#include "tau.h"        // Tau;
+
+// C++ standard library headers
+#include <string> //std::string;
+#include <vector> //std::vector;
 
 class Propagator : public NF {
   Propagator(); // no default constructor
@@ -26,18 +36,20 @@ class Propagator : public NF {
   Population& postpop;
   Tau tau; ///< tau_ab
   int longside;
+
   double Q;
-  vector<double> p; ///< phi_ab
+  std::vector<double> p; ///< phi_ab
   double range = 0.0;     ///< Characteristic axonal range
   double velocity = 0.0;  ///< Mean axonal conduction Speed
   double gamma = 0.0;     ///< Damping coefficient
+
  public:
   Propagator( size_type nodes, double deltat, size_type index, Population& prepop,
-          Population& postpop, int longside, string topology );
+              Population& postpop, int longside, std::string topology );
   ~Propagator(void) override;
   void step(void) override;
   double phiinit( Configf& configf ) const;
-  virtual const vector<double>& phi(void) const;
+  virtual const std::vector<double>& phi(void) const;
   inline double operator[]( size_type node ) const;
   void output( Output& output ) const override;
 };

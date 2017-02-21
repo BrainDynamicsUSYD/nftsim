@@ -10,14 +10,26 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-//#include <cmath>
-//#include <iostream>
+// Main module header
+#include "qresponse.h"  // QResponse;
 
-#include "fmath.h"
-#include "dendriteramp.h"
-#include "dendrite_integral.h"
+// Other neurofield headers
+#include "array.h"      // Array;
+#include "configf.h"    // Configf;
+#include "coupling.h"   // Coupling;
+#include "dendrite.h"   // Dendrite;
+#include "dendrite_integral.h" // DendriteIntegral;
+#include "dendriteramp.h"      // DendriteRamp;
+#include "fmath.h"      // fmath::expd;
+#include "output.h"     // Output;
+#include "propagator.h" // Propagator;
 
-using std::endl;
+// C++ standard library headers
+#include <string>   // std::string;
+#include <vector>   // std::vector;
+using std::string;
+using std::vector;
+
 void QResponse::init( Configf& configf ) {
   vector<string> temp = configf.arb("-");
   mode = temp[0];
@@ -100,8 +112,8 @@ void QResponse::step() {
   }
 }
 
-void QResponse::add2Dendrite( size_type index,
-                              const Propagator& prepropag, const Coupling& precouple, Configf& configf ) {
+void QResponse::add2Dendrite( size_type index, const Propagator& prepropag,
+                              const Coupling& precouple, Configf& configf ) {
   string temp(configf.find( label("Dendrite ",index+1)+":" ));
   dendrite_index.push_back(index);
   // PUT YOUR DENDRITE HERE

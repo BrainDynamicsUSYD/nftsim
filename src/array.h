@@ -9,26 +9,21 @@
 #ifndef NEUROFIELD_SRC_ARRAY_H
 #define NEUROFIELD_SRC_ARRAY_H
 
-//#include <omp.h>
-#include <string>
-using std::string;
-#include <vector>
-using std::vector;
-#include <iostream>
-using std::endl;
+// C++ standard library headers
+#include <vector> // std::vector;
 
 template<class T>
 class Array {
   Array(Array&);   // no copy constructor allowed
 
-  vector<T*> m;
+  std::vector<T*> m;
  public:
-  typedef typename vector<T>::size_type size_type;
+  typedef typename std::vector<T>::size_type size_type;
   virtual void step(void);
   virtual void pstep(void); // parallel for loop over elements::loop
 
   void add(T* t);
-  void add(vector<T*> t);
+  void add(std::vector<T*> t);
   bool empty(void) const;
   inline T* operator[]( size_type index ) const;
   size_type size(void) const;
@@ -43,7 +38,7 @@ void Array<T>::add( T* t ) {
 }
 
 template<class T>
-void Array<T>::add( vector<T*> t ) {
+void Array<T>::add( std::vector<T*> t ) {
   for( size_type i=0; i<t.size(); i++ ) {
     m.push_back( t[i] );
   }

@@ -6,8 +6,21 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#include <cmath>
-#include "harmonic.h"
+// Main module header
+#include "harmonic.h"   // Harmonic;
+
+// Other neurofield headers
+#include "configf.h"    // Configf;
+#include "population.h" // Population;
+
+// C++ standard library headers
+#include <iostream>  // std::cerr; std::endl;
+#include <string>    // std::string;
+#include <vector>    // std::vector;
+using std::cerr;
+using std::endl;
+using std::string;
+using std::vector;
 
 /**
   @brief Computes the derivatives of the Harmonic Propagator function.

@@ -9,14 +9,20 @@
 #ifndef NEUROFIELD_SRC_TAU_H
 #define NEUROFIELD_SRC_TAU_H
 
-#include "nf.h"
-using std::vector;
+// Other neurofield headers
+#include "configf.h"    // Configf;
+#include "nf.h"         // NF;
+
+// Forward declaration to break circular collaboration
 class Population;
+
+// C++ standard library headers
+#include <vector> //std::vector;
 
 class Tau : public NF {
   Tau(Tau& ); // no copy constructor
   size_type max; ///< if tau is inhomogeneous, == biggest element
-  vector<size_type> m; ///< tau values across nodes, size()==1 if homogeneous
+  std::vector<size_type> m; ///< tau values across nodes, size()==1 if homogeneous
  protected:
   void init( Configf& configf ) override;
  public:

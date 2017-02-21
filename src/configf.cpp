@@ -6,14 +6,19 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#include <list>
-#include "nf.h"
+// Main module header
+#include "configf.h"    // Configf;
 
-using std::endl;
-using std::list;
-using std::vector;
+// C++ standard library headers
+#include <iostream> // std::streamoff; std::ios::beg; std::ios::end; std::streampos; std::ifstream;
+#include <sstream>  // std::stringstream;
+#include <string>   // std::string;
+#include <vector>   // std::vector;
 using std::cerr;
+using std::endl;
 using std::string;
+using std::stringstream;
+using std::vector;
 
 Configf::Configf( const char* filename )
   : std::ifstream(filename) {

@@ -9,7 +9,18 @@
 #ifndef NEUROFIELD_SRC_COUPLING_H
 #define NEUROFIELD_SRC_COUPLING_H
 
-#include "population.h"
+// Forward declaration to break circular collaboration
+class Coupling;
+
+// Other neurofield headers
+#include "configf.h"    // Configf;
+#include "nf.h"         // NF;
+#include "output.h"     // Output;
+#include "population.h" // Population;
+#include "propagator.h" // Propagator;
+
+// C++ standard library headers
+#include <vector> // std::vector;
 
 class Coupling : public NF {
   Coupling();
@@ -21,9 +32,9 @@ class Coupling : public NF {
 
   const Propagator& prepropag;
   const Population& postpop;
-  vector<double> n; ///< nu
-  vector<double> P; ///< nu*phi
-  int pos;
+  std::vector<double> n; ///< nu
+  std::vector<double> P; ///< nu*phi
+  int pos = 0;
  public:
   Coupling( size_type nodes, double deltat, size_type index,
           const Propagator& prepropag, const Population& postpop );
@@ -31,7 +42,7 @@ class Coupling : public NF {
   void step(void) override;
   double nuinit( Configf& configf ) const;
   void output( Output& output ) const override;
-  virtual const vector<double>& nuphi(void) const;
+  virtual const std::vector<double>& nuphi(void) const;
   inline double operator[]( size_type node ) const;
   virtual bool excite(void) const;
 };

@@ -12,11 +12,22 @@
    + @param[in]     nus, timepoints: vector with the values of nus at specific time points specified in vector timepoints.
    + @param[in]     pairs   : total number of pairs of (nu, time) to define the segments
 */
-#include <iostream>
+
+// Main module header
+#include "coupling_ramp.h" // CouplingRamp;
+
+// Other neurofield headers
+#include "configf.h"    // Configf;
+#include "population.h" // Population;
+#include "propagator.h" // Propagator;
+
+// C++ standard library headers
+#include <iostream> // std::cerr; std::endl; std::cout;
+#include <vector>   // std::vector;
 using std::cerr;
-using std::endl;
 using std::cout;
-#include "coupling_ramp.h"
+using std::endl;
+using std::vector;
 
 void CouplingRamp::init( Configf& configf ) {
 

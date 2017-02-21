@@ -9,14 +9,18 @@
 #ifndef NEUROFIELD_SRC_SOLVER_H
 #define NEUROFIELD_SRC_SOLVER_H
 
+// Other neurofield headers
+#include "array.h"      // Array;
+#include "configf.h"    // Configf;
+#include "coupling.h"   // Coupling;
+#include "dumpf.h"      // Dumpf;
+#include "nf.h"         // NF;
+#include "output.h"     // Outlet;
+#include "population.h" // Population;
+#include "propagator.h" // Propagator;
 
-#include "population.h"
-
-using std::vector;
-
-class Propagator;
-class Coupling;
-class Population;
+// C++ standard library headers
+#include <vector>   // std::vector;
 
 class Solver : public NF {
   Solver(); // no default constructor
@@ -24,16 +28,16 @@ class Solver : public NF {
 
   Dumpf& dumpf;
 
-  int steps; ///< number of integration steps to perform
+  int steps = 0; ///< number of integration steps to perform
 
   struct CntMat : public NF {
-    vector<double>::size_type npop; ///< number of populations
-    vector<int>::size_type ncnt; ///< number of connections
-    vector< vector<double> > raw; // 2D vector of raw connection matrix
+    std::vector<double>::size_type npop; ///< number of populations
+    std::vector<int>::size_type ncnt; ///< number of connections
+    std::vector< std::vector<double> > raw; // 2D vector of raw connection matrix
 
-    vector<vector<double>::size_type> pre;  ///< presynaptic connection index for each population
-    vector<vector<double>::size_type> post; ///< postsynaptic connection index for each population
-    vector<vector<double>::size_type> ndr;  ///< number of dendrites for each population
+    std::vector<std::vector<double>::size_type> pre;  ///< presynaptic connection index for each population
+    std::vector<std::vector<double>::size_type> post; ///< postsynaptic connection index for each population
+    std::vector<std::vector<double>::size_type> ndr;  ///< number of dendrites for each population
 
     void init( Configf& configf ) override;
     //void restart( Restartf& restartf ) {}
@@ -44,11 +48,11 @@ class Solver : public NF {
   } cnt;
 
   struct Outputs : public NF {
-    vector<Outlet*> outlets;
-    int t;
-    int outputstart;
-    int outputinterval;
-    vector<unsigned int> node;
+    std::vector<Outlet*> outlets;
+    int t = 0;
+    int outputstart = 0;
+    int outputinterval = 0;
+    std::vector<unsigned int> node;
     Dumpf& dumpf;
     CntMat& cnt;
     Array<Population>& pops;
@@ -58,10 +62,12 @@ class Solver : public NF {
     void init( Configf& configf ) override;
     //void restart( Restartf& restartf ) {}
     //void dump( Dumpf& dumpf ) const {}
-    Outputs( size_type nodes, double deltat, Dumpf& dumpf,
-             CntMat& cnt, Array<Population>& pops, Array<Propagator>& propagators, Array<Coupling>& couplings )
-      : NF(nodes,deltat,0), dumpf(dumpf),
-        cnt(cnt), pops(pops), propagators(propagators), couplings(couplings) {}
+    Outputs( size_type nodes, double deltat, Dumpf& dumpf, CntMat& cnt,
+             Array<Population>& pops, Array<Propagator>& propagators,
+             Array<Coupling>& couplings )
+      : NF(nodes,deltat,0), dumpf(dumpf), cnt(cnt),
+           pops(pops), propagators(propagators),
+           couplings(couplings) {}
     ~Outputs(void) override {
       for(auto & outlet : outlets) {
         delete outlet;
@@ -71,7 +77,7 @@ class Solver : public NF {
     void writeName( Outlet& outlet );
     void writeNode( Outlet& outlet );
     void writeOutlet( Outlet& outlet );
-    void add( vector<Outlet*> _outlets ) {
+    void add( std::vector<Outlet*> _outlets ) {
       for(auto & _outlet : _outlets) {
         outlets.push_back( _outlet );
       }

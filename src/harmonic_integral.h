@@ -9,9 +9,14 @@
 #ifndef NEUROFIELD_SRC_HARMONIC_INTEGRAL_H
 #define NEUROFIELD_SRC_HARMONIC_INTEGRAL_H
 
-#include "propagator.h"
+// Other neurofield headers
+#include "configf.h"    // Configf;
+#include "population.h" // Population;
+#include "propagator.h" // Propagator;
 
-using std::vector;
+// C++ standard library headers
+#include <string> // std::string;
+#include <vector> // std::vector;
 
 class HarmonicIntegral : public virtual Propagator {
   HarmonicIntegral(); // no default constructor
@@ -21,9 +26,9 @@ class HarmonicIntegral : public virtual Propagator {
   //virtual void restart( Restartf& restartf );
   //virtual void dump( Dumpf& dumpf ) const;
 
-  vector<double> oldp;
-  vector<double> oldQ;
-  vector<double> dpdt;
+  std::vector<double> oldp;
+  std::vector<double> oldQ;
+  std::vector<double> dpdt;
   double dQdt;
 
   // variables that initializes once
@@ -36,7 +41,7 @@ class HarmonicIntegral : public virtual Propagator {
   double C1dtplusC2;
  public:
   HarmonicIntegral( size_type nodes, double deltat, size_type index, Population& prepop,
-            Population& postpop, int longside, string topology );
+            Population& postpop, int longside, std::string topology );
   ~HarmonicIntegral(void) override;
   void step(void) override;
 };

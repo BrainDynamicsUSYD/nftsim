@@ -6,19 +6,38 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#include "solver.h"
-#include "wave.h"
-#include "harmonic.h"
-#include "harmonic_integral.h"
-#include "long_coupling.h"
-#include "bcmlong.h"
-#include "coupling_ramp.h"
-#include "coupling_diff_arctan.h"
+// Main module header
+#include "solver.h"   // Solver;
 
+// Other neurofield headers
+#include "bcm.h"           // BCM;
+#include "bcmlong.h"       // BCMLong;
+#include "cadp.h"          // CaDP;
+#include "configf.h"       // Configf;
+#include "coupling.h"      // Coupling;
+#include "coupling_diff_arctan.h" // CouplingDiffArctan;
+#include "coupling_ramp.h" // CouplingRamp;
+#include "harmonic.h"      // Harmonic;
+#include "harmonic_integral.h" // HarmonicIntegral;
+#include "long_coupling.h" // LongCoupling;
+#include "output.h"        // Output; Outlet;
+#include "population.h"    // Population;
+#include "wave.h"          // Wave;
+
+// C++ standard library headers
+#include <cmath>    // std::remainder; std::sqrt;
+#include <iostream> // std::cerr; std::endl;
+#include <sstream>  // std::stringstream;
+#include <string>   // std::string;
+#include <vector>   // std::vector;
 using std::cerr;
 using std::endl;
-using std::stringstream;
+using std::remainder;
+using std::sqrt;
 using std::string;
+using std::stringstream;
+using std::vector;
+
 
 void Solver::CntMat::init( Configf& configf ) {
   // Read the number of populations

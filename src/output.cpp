@@ -6,11 +6,19 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#include <utility>
+// Main module header
+#include "output.h"     // Output; Outlet;
 
-#include "output.h"
-#include "configf.h"
-#include "dumpf.h"
+// Other neurofield headers
+#include "configf.h"    // Configf;
+#include "dumpf.h"      // Dumpf;
+
+// C++ standard library headers
+#include <string>   // std::string;
+#include <utility>  // std::move;
+#include <vector>   // std::vector;
+using std::string;
+using std::vector;
 
 Outlet::Outlet( string  name, const vector<double>& field, bool single_output )
   : name(std::move(name)), field(field), single_output(single_output) {
@@ -42,7 +50,8 @@ void Output::singleNode ( const string& name, const vector<double>& field ) {
   }
 }
 
-void Output::singleNode (const string& object, vector<double>::size_type index, const string& name, const vector<double>& field ) {
+void Output::singleNode (const string& object, vector<double>::size_type index,
+                         const string& name, const vector<double>& field ) {
   prefix(object, index);
   singleNode(name,field);
 }
