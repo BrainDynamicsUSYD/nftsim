@@ -14,7 +14,7 @@
 #include "random.h"     // Random;
 
 // C++ standard library headers
-#include <cmath>    // std::pow; std::sqrt; std::sin; std::fmod;
+#include <cmath>    // std::pow; std::sqrt; std::sin; std::fmod; M_PI;
 #include <iostream> // std::cerr; std::endl;
 #include <string>   // std::string;
 #include <vector>   // std::vector;
