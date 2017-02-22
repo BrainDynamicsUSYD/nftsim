@@ -94,7 +94,7 @@ void Timeseries::init( Configf& configf ) {
 }
 
 Timeseries::Timeseries( size_type nodes, double deltat, size_type index )
-  : NF(nodes,deltat,index), series(), t(0), cease(1000) {
+  : NF(nodes,deltat,index), series(), t(0.0), cease(1000.0) {
 }
 
 Timeseries::~Timeseries() {
@@ -139,14 +139,14 @@ void Const::fire( vector<double>& Q ) const {
 }
 
 void Pulse::init( Configf& configf ) {
-  period = 1000;
+  period = 1000.0;
   pulses = 1;
   // Amplitude: 1 Width: .5e-3 "Period/Frequency": 1 "Pulses": 1
   configf.param("Amplitude",amp);
   configf.param("Width",width);
   if( !configf.optional("Period",period) ) {
     if( configf.optional("Frequency",period) ) {
-      period = 1/period;
+      period = 1.0/period;
     }
   }
   configf.optional("Pulses",pulses);
@@ -171,7 +171,7 @@ void White::init( Configf& configf ) {
     if(nodes>1) {
       deltax = atof(configf.find(
                       label("Population ",index+1)+"*Length").c_str()) /sqrt(nodes);
-      amp = sqrt(4*pow(M_PI,3)*pow(amp,2)/deltat/pow(deltax,2));
+      amp = sqrt(4.0*pow(M_PI,3)*pow(amp,2)/deltat/pow(deltax,2));
     } else {
       amp = sqrt(M_PI*pow(amp,2)/deltat);
     }
@@ -199,7 +199,7 @@ void WhiteCoherent::init( Configf& configf ) {
     // index of timeseries the same as that of population
     double deltax = atof(configf.find(
                            label("Population ",index+1)+"*Length").c_str()) /sqrt(nodes);
-    amp = sqrt(4*pow(M_PI,3)*pow(amp,2)/deltat/pow(deltax,2));
+    amp = sqrt(4.0*pow(M_PI,3.0)*pow(amp,2)/deltat/pow(deltax,2));
   }
   if(configf.optional("Ranseed",seed)) {
     random = new Random(seed,mean,amp);
@@ -232,7 +232,7 @@ void PAS::init( Configf& configf ) {
     t -= isi;
     t_mns = -isi;
   } else {
-    t_mns = 0;
+    t_mns = 0.0;
   }
 }
 
@@ -281,9 +281,9 @@ void Sine::init( Configf& configf ) {
   // Amp: 1 Width: .5 Period: 1 Phase: 0
   configf.param("Amp",amp);
   configf.param("Width",width);
-  period = 1;
+  period = 1.0;
   configf.optional("Period",period);
-  phase  = 0;
+  phase  = 0.0;
   configf.optional("Phase",phase);
   pulses = 1;
   configf.optional("Pulses",pulses);
@@ -292,7 +292,7 @@ void Sine::init( Configf& configf ) {
 void Sine::fire( vector<double>& Q ) const {
   if( fmod(t,period)>=0 && fmod(t,period)<width && t/period<pulses ) {
     for( size_type i=0; i<nodes; i++ ) {
-      Q[i] = amp*sin( 2*M_PI*( fmod(t,period)/width -phase/360 ) );
+      Q[i] = amp*sin( 2.0*M_PI*( fmod(t,period)/width -phase/360.0 ) );
     }
   }
 }
