@@ -240,11 +240,11 @@ void PAS::fire( vector<double>& Q ) const {
   // MNS
   if( t_mns<=t && t<t_mns+n20w ) {
     for( size_type i=0; i<nodes; i++ ) {
-      Q[i] = -n20h*sin(3.14159*(t-t_mns)/n20w);
+      Q[i] = -n20h*sin(M_PI*(t-t_mns)/n20w);
     }
   } else if( t_mns+n20w<=t && t<t_mns+n20w+p25w ) {
     for( size_type i=0; i<nodes; i++ ) {
-      Q[i] =  p25h*sin(3.14159*(t-t_mns-n20w)/p25w);
+      Q[i] =  p25h*sin(M_PI*(t-t_mns-n20w)/p25w);
     }
   }
 
@@ -292,7 +292,7 @@ void Sine::init( Configf& configf ) {
 void Sine::fire( vector<double>& Q ) const {
   if( fmod(t,period)>=0 && fmod(t,period)<width && t/period<pulses ) {
     for( size_type i=0; i<nodes; i++ ) {
-      Q[i] = amp*sin( 2*3.14159*( fmod(t,period)/width -phase/360 ) );
+      Q[i] = amp*sin( 2*M_PI*( fmod(t,period)/width -phase/360 ) );
     }
   }
 }
