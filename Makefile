@@ -98,9 +98,7 @@ intel: neurofield
 #   target: $(BINDIR)$(BIN) - Main target for the final build, linking objects into an executable.
 $(BINDIR)$(BIN): $(OBJ) | make_bin_dir
 	$(CXX) $(CXXFLAGS) $(OBJ) -o $@
-	@echo "====="
 	@$(CAT) conditions.txt
-	@echo "====="
 	@echo "USE OF NEUROFIELD CONSTITUTES ACCEPTANCE OF THE APACHE LICENSE 2.0"
 
 #   target: make_bin_dir - Create the directory $BINDIR if it doesn't already exist.
