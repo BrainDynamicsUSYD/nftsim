@@ -99,9 +99,9 @@ intel: neurofield
 $(BINDIR)$(BIN): $(OBJ) | make_bin_dir
 	$(CXX) $(CXXFLAGS) $(OBJ) -o $@
 	@echo "====="
-	@$(CAT) license.txt
+	@$(CAT) conditions.txt
 	@echo "====="
-	@echo "USE OF NEUROFIELD CONSTITUTES ACCEPTANCE OF THE LICENSE CONDITIONS ABOVE"
+	@echo "USE OF NEUROFIELD CONSTITUTES ACCEPTANCE OF THE APACHE LICENSE 2.0"
 
 #   target: make_bin_dir - Create the directory $BINDIR if it doesn't already exist.
 make_bin_dir:

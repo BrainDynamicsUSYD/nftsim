@@ -16,7 +16,7 @@
 2) The latest stable release can be found at: 
    https://github.com/BrainDynamicsUSYD/neurofield/releases/latest
 
-4) You can get the most recent version here:
+3) You can get the most recent version here:
    https://github.com/BrainDynamicsUSYD/neurofield
 
  
