@@ -82,17 +82,18 @@ ifeq ($(MAKECMDGOALS), clang)
 endif
 clang: neurofield
 
-#   target: icc - Build using intel C++ compiler.
-ifeq ($(MAKECMDGOALS), icc)
-  CXX := $(shell command -v icc 2> /dev/null)
+#   target: intel - Build using intel C++ compiler.
+ifeq ($(MAKECMDGOALS), intel)
+  CXX := $(shell command -v icpc 2> /dev/null)
   ifndef CXX
-    $(error "You don't appear to have icc installed. If it is installed make sure it's in your PATH.")
+    $(error "You don't appear to have icpc installed. If it is installed make sure it's in your PATH.")
   endif
-  #TODO: consider/test -ipp -mkl -unroll-aggressive -static
+  #TODO: consider/test -ipp -mkl -unroll-aggressive
+  #NOTE: -fast => -static -ipo -xHost -O3... build system needs dev stuff for -static to work...
   CXXFLAGS := -std=c++11 -Wall -Wremarks -Wchecks -Weffec++ -xHost -funroll-loops -ipo -O3
   DEPFLAGS = -std=c++11 -MM -MP -MT $(OBJDIR)$*.o
 endif
-icc: neurofield
+intel: neurofield
 
 #   target: $(BINDIR)$(BIN) - Main target for the final build, linking objects into an executable.
 $(BINDIR)$(BIN): $(OBJ) | make_bin_dir
@@ -153,6 +154,8 @@ info:
 	@echo "  DEP: $(DEP)"
 	@echo "  CXX: $(CXX)"
 	@echo "  CXXFLAGS: $(CXXFLAGS)"
+	@echo "  AR: $(AR)"
+	@echo "  LD: $(LD)"
 	@echo "  DEBUG: $(DEBUG)"
 	@echo "  NO_DEPS: $(NO_DEPS)"
 
