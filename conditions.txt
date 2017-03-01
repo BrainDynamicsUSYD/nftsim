@@ -1,5 +1,5 @@
 ==============================================================================
-=           NEUROFIELD is licensed under the Apache License 2.0              =
+=           NEUROFIELD is licensed under the Apache 2.0 License              =
 ==============================================================================
 
                             (c) Copyright 
@@ -16,7 +16,7 @@
 2) The latest stable release can be found at: 
    https://github.com/BrainDynamicsUSYD/neurofield/releases/latest
 
-3) You can get the most recent version here:
+3) The latest development version can be found at:
    https://github.com/BrainDynamicsUSYD/neurofield
 
  
