@@ -148,7 +148,6 @@ const vector<double>& Stencil::operator= ( const vector<double>& field ) {
   return field;
 }
 
-
 void Stencil::set( int node ) const {
   if( node>=0 && node<nodes ) {
     int x = node%longside;

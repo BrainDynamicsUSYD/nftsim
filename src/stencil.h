@@ -13,12 +13,6 @@
 #include <string> // std::string;
 #include <vector> // std::vector;
 
-enum Moore {
-  nw=-4, n, ne,
-  w,     c,  e,
-  sw,    s, se
-};
-
 class Stencil {
   Stencil();
   Stencil& operator=(const Stencil&);
@@ -32,6 +26,12 @@ class Stencil {
 
   mutable int ptr;
  public:
+  enum Moore {
+    nw=-4, n, ne,
+    w,     c,  e,
+    sw,    s, se
+  };
+
   Stencil( int nodes, int longside, const std::string& boundary );
   virtual ~Stencil(void);
 

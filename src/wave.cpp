@@ -49,12 +49,12 @@ void Wave::init( Configf& configf ) {
   *oldQ[0] = vector<double>(nodes,Q);
   *oldQ[1] = vector<double>(nodes,Q);
 
-  dt2on12 = deltat*deltat/12.;
+  dt2on12 = deltat*deltat/12.0;
   dfact = dt2on12*gamma*gamma;
   dt2ondx2 = (deltat*deltat)/(deltax*deltax);
   p2 = dt2ondx2*range*range*gamma*gamma;
-  tenminus3p2 = 10.0-3.*p2;
-  twominus3p2 =  2.0-3.*p2;
+  tenminus3p2 = 10.0 - 3.0*p2;
+  twominus3p2 =  2.0 - 3.0*p2;
   expfact1 = exp(-1.0*deltat*gamma);
   expfact2 = exp(-2.0*deltat*gamma);
 
@@ -67,12 +67,12 @@ void Wave::init( Configf& configf ) {
     exit(EXIT_FAILURE);
   }
 
-  if( gamma*range*deltat/deltax > 1/sqrt(2.0)) {
+  if( gamma*range*deltat/deltax > 1.0/sqrt(2.0)) {
     cerr << "Wave equation with gamma: " << gamma << " axonal range: " << range << endl;
     cerr << "and deltat: " << deltat << " deltax: " << deltax << endl;
     cerr << "does not fulfill the Courant condition" << endl;
     cerr << "Courant number is: " << (gamma*range*deltat/deltax) << endl;
-    cerr << "and should be less than " << 1/sqrt(2.0) << endl;
+    cerr << "and should be less than " << 1.0/sqrt(2.0) << endl;
     exit(EXIT_FAILURE);
   }
 }
@@ -99,12 +99,13 @@ void Wave::step() {
   Stencil& stencil_oldp = *oldp[key == 0];
   Stencil& stencilQ = *oldQ[key];
   Stencil& stencil_oldQ = *oldQ[key == 0];
+
   for( size_type i=0; i<nodes; i++,
        stencilp++, stencilQ++, stencil_oldp++, stencil_oldQ++ ) {
-    sump     = stencilp(n)  +stencilp(s)  +stencilp(w)  +stencilp(e) ; // sum of the von Neumann (orthogonal) neighbourhood (phi)
-    diagsump = stencilp(nw) +stencilp(ne) +stencilp(sw) +stencilp(se); // sum of the diagonal neighbourhood (phi)
-    sumQ     = stencilQ(n)  +stencilQ(s)  +stencilQ(w)  +stencilQ(e) ; // sum of the von Neumann (orthogonal) neighbourhood (Q)
-    diagsumQ = stencilQ(nw) +stencilQ(ne) +stencilQ(sw) +stencilQ(se); // sum of the diagonal neighbourhood (Q)
+    sump     = stencilp(stencilp.n)  +stencilp(stencilp.s)  +stencilp(stencilp.w)  +stencilp(stencilp.e) ; // sum of the von Neumann (orthogonal) neighbourhood (phi)
+    diagsump = stencilp(stencilp.nw) +stencilp(stencilp.ne) +stencilp(stencilp.sw) +stencilp(stencilp.se); // sum of the diagonal neighbourhood (phi)
+    sumQ     = stencilQ(stencilQ.n)  +stencilQ(stencilQ.s)  +stencilQ(stencilQ.w)  +stencilQ(stencilQ.e) ; // sum of the von Neumann (orthogonal) neighbourhood (Q)
+    diagsumQ = stencilQ(stencilQ.nw) +stencilQ(stencilQ.ne) +stencilQ(stencilQ.sw) +stencilQ(stencilQ.se); // sum of the diagonal neighbourhood (Q)
     drive    = dfact*( tenminus3p2*expfact1* stencilQ +prepop.Q(tau)[i]
                        +expfact2* stencil_oldQ +expfact1*.5*p2*(sumQ+.5*diagsumQ) );
     p[i]     = twominus3p2*expfact1 *stencilp +expfact1*.5*p2*(sump+.5*diagsump)
