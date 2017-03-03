@@ -1,8 +1,15 @@
 /**
  * @file wave.cpp
- * @brief The wave propagator, including the method to step forward in time.
+ * @brief Wave propagator definitions.
  *
- * @author Peter Drysdale, Felix Fung, Romesh Abeysuriya, Paula Sanz-Leon
+ * As well as a constructor and destructor, this file defines the init and
+ * step member functions. This Wave Propagator is based on the version described
+ * by Rennie 2001. Something about discrete numerical approximations to Laplacian
+ * operators here...
+ *
+ * Rennie, Christopher; "Modeling the Large-scale Electrical Activity of the Brain."; PhD Thesis, 2001.
+ *
+ * @author Peter Drysdale, Felix Fung, Romesh Abeysuriya, Paula Sanz-Leon,
  *
  */
 
@@ -106,10 +113,10 @@ void Wave::step() {
     diagsump = stencilp(stencilp.nw) +stencilp(stencilp.ne) +stencilp(stencilp.sw) +stencilp(stencilp.se); // sum of the diagonal neighbourhood (phi)
     sumQ     = stencilQ(stencilQ.n)  +stencilQ(stencilQ.s)  +stencilQ(stencilQ.w)  +stencilQ(stencilQ.e) ; // sum of the von Neumann (orthogonal) neighbourhood (Q)
     diagsumQ = stencilQ(stencilQ.nw) +stencilQ(stencilQ.ne) +stencilQ(stencilQ.sw) +stencilQ(stencilQ.se); // sum of the diagonal neighbourhood (Q)
-    drive    = dfact*( tenminus3p2*expfact1* stencilQ +prepop.Q(tau)[i]
-                       +expfact2* stencil_oldQ +expfact1*.5*p2*(sumQ+.5*diagsumQ) );
-    p[i]     = twominus3p2*expfact1 *stencilp +expfact1*.5*p2*(sump+.5*diagsump)
-               -expfact2 *stencil_oldp +drive;
+    drive    = dfact*( tenminus3p2*expfact1* stencilQ(stencilQ.c) +prepop.Q(tau)[i]
+                       +expfact2* stencil_oldQ(stencil_oldQ.c) +expfact1*0.5*p2*(sumQ+0.5*diagsumQ) );
+    p[i]     = twominus3p2*expfact1 *stencilp(stencilp.c) +expfact1*0.5*p2*(sump+0.5*diagsump)
+               -expfact2 *stencil_oldp(stencil_oldp.c) +drive;
   }
 
   key = static_cast<int>(key == 0);
