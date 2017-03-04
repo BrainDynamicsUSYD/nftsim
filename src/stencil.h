@@ -1,7 +1,19 @@
 /** @file stencil.h
-  @brief A brief, one sentence description.
+  @brief The Stencil, standard five-point stencil declaration.
 
-  A more detailed multiline description...
+  The Stencil declaration, including a definition of the Moore neighbourhood,
+  the stencil's Moore-grid increment operator (ie, ++), and the parentheses
+  operator (ie, ()). The specific Moore neighbourhood used here implements a
+  standard five-point stencil.
+
+  \f{matrix}{
+      & n &   \\
+    w & c & e \\
+      & s
+  \f}
+
+  #TODO: a reference to a good review paper or textbook would be better here.
+  https://en.wikipedia.org/wiki/Stencil_code
 
   @author Peter Drysdale, Felix Fung,
 */
@@ -27,9 +39,9 @@ class Stencil {
   mutable int ptr;
  public:
   enum Moore {
-    nw=-4, n, ne,
-    w,     c,  e,
-    sw,    s, se
+       n=-2,
+    w, c, e,
+       s
   };
 
   Stencil( int nodes, int longside, const std::string& boundary );
@@ -41,10 +53,10 @@ class Stencil {
   int get(void) const; // get ptr
 
   inline double operator() ( Moore moore=c ) const {
-    int arr[9] = {ptr-longside-2-1, ptr-longside-2, ptr-longside-2+1,
-                  ptr-1,            ptr,            ptr+1,
-                  ptr+longside+2-1, ptr+longside+2, ptr+longside+2+1};
-    return m[arr[moore+4]];
+    int arr[5] = {       ptr-longside-2,
+                  ptr-1,       ptr,      ptr+1,
+                         ptr+longside+2};
+    return m[arr[moore+2]];
   }
 
   inline operator double (void) const {
