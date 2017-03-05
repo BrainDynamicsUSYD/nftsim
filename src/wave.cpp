@@ -61,13 +61,6 @@ void Wave::init( Configf& configf ) {
   dfact = dt2on12*gamma*gamma;
   dt2ondx2 = (deltat*deltat)/(deltax*deltax);
   p2 = dt2ondx2*range*range*gamma*gamma;
-  //Validate (0 < p < sqrt(2)), see after A.13 in Rennie 2001, or A. R. Mitchell.
-  //Computational methods in partial differential equations. John Wiley & Sons, London, 1969.
-  if ( p2 >= 2 ){
-    cerr << "Dimensionless step size 'p' must be less than sqrt(2). Currently p=" << sqrt(p2) << endl;
-    cerr << "You need larger dx or smaller dt." << endl;
-    exit(EXIT_FAILURE);
-  }
   tenminus4p2 = 10.0 - 4.0*p2;
   twominus4p2 =  2.0 - 4.0*p2;
   expfact1 = exp(-1.0*deltat*gamma);
@@ -82,12 +75,16 @@ void Wave::init( Configf& configf ) {
     exit(EXIT_FAILURE);
   }
 
-  if( gamma*range*deltat/deltax > 1.0/sqrt(2.0)) {
+  //Validate (0 < p <= 1/sqrt(2)), NOTE: there is a typo after A.13 in Rennie 2001, see, A. R. Mitchell.
+  //Computational methods in partial differential equations. John Wiley & Sons, London, 1969.
+  if( sqrt(p2) > 1.0/sqrt(2.0)) {
     cerr << "Wave equation with gamma: " << gamma << " axonal range: " << range << endl;
     cerr << "and deltat: " << deltat << " deltax: " << deltax << endl;
     cerr << "does not fulfill the Courant condition" << endl;
     cerr << "Courant number is: " << (gamma*range*deltat/deltax) << endl;
     cerr << "and should be less than " << 1.0/sqrt(2.0) << endl;
+    cerr << "Currently, the dimensionless step size is: p = " << sqrt(p2) << endl;
+    cerr << "You need larger dx or smaller dt." << endl;
     exit(EXIT_FAILURE);
   }
 }
@@ -161,7 +158,7 @@ Wave::~Wave() {
   \f]
   with the requirement:
   \f[
-    0 \lt p \lt \sqrt{2}.
+    0 \lt p \leq \frac{1}{\sqrt{2}}.
   \f]
 
 */
