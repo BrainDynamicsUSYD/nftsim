@@ -63,8 +63,8 @@ void Wave::init( Configf& configf ) {
   p2 = dt2ondx2*range*range*gamma*gamma;
   tenminus4p2 = 10.0 - 4.0*p2;
   twominus4p2 =  2.0 - 4.0*p2;
-  expfact1 = exp(-1.0*deltat*gamma);
-  expfact2 = exp(-2.0*deltat*gamma);
+  expfactneg = exp(-deltat*gamma);
+  expfactpos = exp(deltat*gamma);
 
   if(gamma/2.0 < deltat || range/2.0 < deltax) {
     cerr << "Wave equation with gamma: " << gamma << " and range: " << range << endl;
@@ -81,10 +81,9 @@ void Wave::init( Configf& configf ) {
     cerr << "Wave equation with gamma: " << gamma << " axonal range: " << range << endl;
     cerr << "and deltat: " << deltat << " deltax: " << deltax << endl;
     cerr << "does not fulfill the Courant condition" << endl;
-    cerr << "Courant number is: " << (gamma*range*deltat/deltax) << endl;
+    cerr << "Courant number is: " << sqrt(p2) << endl;
     cerr << "and should be less than " << 1.0/sqrt(2.0) << endl;
-    cerr << "Currently, the dimensionless step size is: p = " << sqrt(p2) << endl;
-    cerr << "You need larger dx or smaller dt." << endl;
+    cerr << "You need larger deltax or smaller deltat." << endl;
     exit(EXIT_FAILURE);
   }
 }
@@ -144,13 +143,8 @@ Wave::~Wave() {
                      &=& \exp(-\gamma{\Delta}t) \left((2 - 4p^2)\phi_{l,m}^n +
                          p^2(\phi_{l+1,m}^n + \phi_{l-1,m}^n + \phi_{l,m+1}^n + \phi_{l,m-1}^n) -
                          \phi_{l,m}^{n-1}\exp(-\gamma{\Delta}t) +
-                         \frac{k^2\gamma^2}{12}\left[(10 - 4p^2)Q_{l,m}^n + (Q_{l,m}^{n+1}\exp(\gamma{\Delta}t) + Q_{l,m}^{n-1}\exp(-\gamma{\Delta}t)) +
-                                                  p^2(Q_{l+1,m}^n + Q_{l-1,m}^n + Q_{l,m+1}^n + Q_{l,m-1}^n)\right]\right) \\
-                     &=& (2 - 4p^2)\phi_{l,m}^n\exp(-\gamma{\Delta}t) +
-                         p^2(\phi_{l+1,m}^n + \phi_{l-1,m}^n + \phi_{l,m+1}^n + \phi_{l,m-1}^n)\exp(-\gamma{\Delta}t) -
-                         \phi_{l,m}^{n-1}\exp(-2\gamma{\Delta}t) +
-                         \frac{k^2\gamma^2}{12}\left[(10 - 4p^2)Q_{l,m}^n\exp(-\gamma{\Delta}t) + (Q_{l,m}^{n+1} + Q_{l,m}^{n-1}\exp(-2\gamma{\Delta}t)) +
-                                                  p^2(Q_{l+1,m}^n + Q_{l-1,m}^n + Q_{l,m+1}^n + Q_{l,m-1}^n)\exp(-\gamma{\Delta}t)\right]
+                         \frac{k^2\gamma^2}{12}\left[(10 - 4p^2)Q_{l,m}^n + Q_{l,m}^{n+1}\exp(\gamma{\Delta}t) + Q_{l,m}^{n-1}\exp(-\gamma{\Delta}t) +
+                                                  p^2(Q_{l+1,m}^n + Q_{l-1,m}^n + Q_{l,m+1}^n + Q_{l,m-1}^n)\right]\right)
   \f}
   and as \f$k={\Delta}t\f$ and \f$h={\Delta}x\f$:
   \f[
@@ -163,7 +157,7 @@ Wave::~Wave() {
 
 */
 void Wave::step() {
-  //Most recent phi and Q are at key; key == 0 evaluates second most recent phi and Q.
+  //Most recent phi and Q are at key; key == 0 evaluates to second most recent phi and Q.
   Stencil& stencilp = *oldp[key];
   Stencil& stencil_oldp = *oldp[key == 0];
   Stencil& stencilQ = *oldQ[key];
@@ -174,11 +168,14 @@ void Wave::step() {
        stencilp++, stencilQ++, stencil_oldp++, stencil_oldQ++ ) {
     sump  = stencilp(stencilp.n) + stencilp(stencilp.s) + stencilp(stencilp.w) + stencilp(stencilp.e) ; // sum of the von Neumann (orthogonal) neighbourhood (phi)
     sumQ  = stencilQ(stencilQ.n) + stencilQ(stencilQ.s) + stencilQ(stencilQ.w) + stencilQ(stencilQ.e) ; // sum of the von Neumann (orthogonal) neighbourhood (Q)
-    drive = dfact*( tenminus4p2*stencilQ(stencilQ.c)*expfact1 +
-                    (prepop.Q(tau)[i] + stencil_oldQ(stencil_oldQ.c)*expfact2) +
-                    p2*sumQ*expfact1);
-    p[i]  = twominus4p2*stencilp(stencilp.c)*expfact1 + p2*sump*expfact1 -
-            stencil_oldp(stencil_oldp.c)*expfact2 + drive ;
+    drive = dfact * (tenminus4p2*stencilQ(stencilQ.c) +
+                     prepop.Q(tau)[i]*expfactpos +
+                     stencil_oldQ(stencil_oldQ.c)*expfactneg +
+                     p2*sumQ);
+    p[i]  = expfactneg * (twominus4p2*stencilp(stencilp.c) +
+                          p2*sump -
+                          stencil_oldp(stencil_oldp.c)*expfactneg +
+                          drive);
   }
 
   //If key==1, set it to 0; if key==0, set it to 1.

@@ -42,8 +42,8 @@ class Wave : public Propagator {
   double p2;          ///< Dimensionless step-size squared. Square of the mesh ratio.
   double tenminus4p2; ///< Factor in wave algorithm
   double twominus4p2; ///< Factor in wave algorithm
-  double expfact1;    ///< Exp(- gamma deltat)   - related to substitutions \f$u={\phi}e^{\gamma t}\f$; \f$w=Q e^{\gamma t}\f$.
-  double expfact2;    ///< Exp(- 2 gamma deltat) - related to substitutions \f$u={\phi}e^{\gamma t}\f$; \f$w=Q e^{\gamma t}\f$.
+  double expfactneg;  ///< Exp(- gamma deltat) - invert substitutions \f$u={\phi}e^{\gamma t}\f$; \f$w=Q e^{\gamma t}\f$.
+  double expfactpos;  ///< Exp(gamma deltat) - invert substitutions \f$u={\phi}e^{\gamma t}\f$; \f$w=Q e^{\gamma t}\f$.
 
   // variables that are changed every timestep
   double sump;     ///< sum of the points in the von Neumann neighbourhood (phi)
