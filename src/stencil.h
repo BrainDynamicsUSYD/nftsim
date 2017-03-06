@@ -1,11 +1,10 @@
 /** @file stencil.h
-  @brief The Stencil, standard five-point stencil declaration.
+  @brief Stencil declaration -- spatial neighbourhood use to evaluate \f[{\Delta}x\f].
 
-  The Stencil declaration, including a definition of the Moore neighbourhood,
-  the stencil's Moore-grid increment operator (ie, ++), and the parentheses
-  operator (ie, ()). The specific Moore neighbourhood used here implements a
-  standard five-point stencil.
-
+  This file contains the Stencil declaration, including a definition of Stencil's
+  grid increment operator (ie, ++), and the parentheses operator (ie, ()). The
+  default neighbourhood is the orthogonal or von Neumann neighbourhood of a
+  two-dimensional five-point stencil, that is:
   \f{matrix}{
       & n &   \\
     w & c & e \\
@@ -13,6 +12,7 @@
   \f}
 
   #TODO: a reference to a good review paper or textbook would be better here.
+  https://en.wikipedia.org/wiki/Five-point_stencil
   https://en.wikipedia.org/wiki/Stencil_code
 
   @author Peter Drysdale, Felix Fung,
@@ -38,7 +38,7 @@ class Stencil {
 
   mutable int ptr;
  public:
-  enum Moore {
+  enum Neighbours {
        n=-2,
     w, c, e,
        s
@@ -48,22 +48,21 @@ class Stencil {
   virtual ~Stencil(void);
 
   const std::vector<double>& operator= ( const std::vector<double>& field );
-  inline void operator++ (int) const; // increment Moore grid
+  inline void operator++ (int) const; // increment Neighbours grid
   void set( int node ) const; // point to node
   int get(void) const; // get ptr
 
-  inline double operator() ( Moore moore=c ) const {
+  inline double operator() ( Neighbours neighbour=c ) const {
     int arr[5] = {       ptr-longside-2,
                   ptr-1,       ptr,      ptr+1,
                          ptr+longside+2};
-    return m[arr[moore+2]];
+    return m[arr[neighbour+2]];
   }
 
   inline operator double (void) const {
     return (*this)(c);
   }
 };
-
 
 void Stencil::operator++ (int) const {
   ptr++;
