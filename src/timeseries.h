@@ -21,7 +21,7 @@ class Timeseries : public NF {
   Timeseries(const Timeseries&);  // No copy constructor allowed.
   Timeseries();                   // No default constructor allowed.
  protected:
-  typedef std::vector<double>::size_type series_size_type;
+  using series_size_type = std::vector<double>::size_type;
   void init( Configf& configf ) override;
 
   std::vector<Timeseries*> series;

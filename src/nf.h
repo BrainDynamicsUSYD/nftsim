@@ -20,7 +20,7 @@
 class NF {
   NF();  // No default constructor allowed.
  protected:
-  typedef std::vector<double>::size_type size_type;
+  using size_type = std::vector<double>::size_type;
   virtual void init( Configf& configf ) = 0;
   //virtual void restart( Restartf& restartf ) = 0;
   //virtual void dump( Dumpf& dumpf ) const = 0;

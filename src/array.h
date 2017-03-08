@@ -18,7 +18,7 @@ class Array {
 
   std::vector<T*> m;
  public:
-  typedef typename std::vector<T>::size_type size_type;
+  using size_type = typename std::vector<T>::size_type;
   virtual void step();
   virtual void pstep(); // parallel for loop over elements::loop
 

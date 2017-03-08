@@ -12,7 +12,7 @@
 // C++ standard library headers
 #include <vector> // std::vector;
 
-typedef std::vector<std::vector<double>>::size_type vvd_size_type;
+using vvd_size_type = std::vector<std::vector<double>>::size_type;
 
 class DE {
   DE();          // No default constructor allowed.
