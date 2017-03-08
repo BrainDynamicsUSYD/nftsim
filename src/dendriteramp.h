@@ -35,6 +35,7 @@ class DendriteRamp : public Dendrite {
     ~DendriteDE() override = default;
     void rhs( const std::vector<double>& y, std::vector<double>& dydt ) override;
   };
+  DendriteDE* de; //Must redeclare here otherwise we get Dendrite::DendriteDE.
 
   double time = 0.0;
 
