@@ -31,7 +31,7 @@ class Harmonic : public virtual Propagator {
     double gammasquared = 0.0, twoongamma = 0.0;
     virtual void init( const double pinit);
     HarmonicDE( size_type nodes, double deltat) : DE(nodes, deltat, 3) {}
-    ~HarmonicDE(void) override = default;
+    ~HarmonicDE() override = default;
     void rhs( const std::vector<double>& y, std::vector<double>& dydt ) override;
   };
   HarmonicDE* de;
@@ -45,8 +45,8 @@ class Harmonic : public virtual Propagator {
  public:
   Harmonic( size_type nodes, double deltat, size_type index, Population& prepop,
             Population& postpop, int longside, std::string topology );
-  ~Harmonic(void) override;
-  void step(void) override;
+  ~Harmonic() override;
+  void step() override;
 };
 
 #endif //NEUROFIELD_SRC_HARMONIC_H

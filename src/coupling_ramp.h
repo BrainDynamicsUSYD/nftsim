@@ -39,10 +39,10 @@ class CouplingRamp : public Coupling {
   std::vector<double>::size_type pairs;
  public:
   void init( Configf& configf ) override;
-  void step(void) override;
+  void step() override;
   CouplingRamp( size_type nodes, double deltat, size_type index,
               const Propagator& prepropag, const Population& postpop );
-  ~CouplingRamp(void) override;
+  ~CouplingRamp() override;
 };
 
 #endif // NEUROFIELD_SRC_COUPLINGRAMP_H

@@ -35,11 +35,11 @@ class CouplingDiffArctan : public Coupling {
 
  public:
   void init( Configf& configf );
-  void step(void);
-  void find(void);
+  void step();
+  void find();
   CouplingDiffArctan( size_type nodes, double deltat, size_type index,
                     const Propagator& prepropag, const Population& postpop, double tempf );
-  virtual ~CouplingDiffArctan(void);
+  virtual ~CouplingDiffArctan();
 };
 
 #endif //COUPLING_DIFF_ARCTAN_H

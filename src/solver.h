@@ -42,9 +42,9 @@ class Solver : public NF {
     void init( Configf& configf ) override;
     //void restart( Restartf& restartf ) {}
     //void dump( Dumpf& dumpf ) const;
-    CntMat(void) : NF(0,0,0) {}
-    ~CntMat(void) override = default;
-    void step(void) override {}
+    CntMat() : NF(0,0,0) {}
+    ~CntMat() override = default;
+    void step() override {}
   } cnt;
 
   struct Outputs : public NF {
@@ -68,12 +68,12 @@ class Solver : public NF {
       : NF(nodes,deltat,0), dumpf(dumpf), cnt(cnt),
            pops(pops), propagators(propagators),
            couplings(couplings) {}
-    ~Outputs(void) override {
+    ~Outputs() override {
       for(auto & outlet : outlets) {
         delete outlet;
       }
     }
-    void step(void) override;
+    void step() override;
     void writeName( Outlet& outlet );
     void writeNode( Outlet& outlet );
     void writeOutlet( Outlet& outlet );
@@ -94,10 +94,10 @@ class Solver : public NF {
   //virtual void dump( Dumpf& dumpf ) const;
  public:
   explicit Solver( Dumpf& dumpf );
-  ~Solver(void) override;
+  ~Solver() override;
 
-  void solve(void); ///< main integration loop
-  void step(void) override;
+  void solve(); ///< main integration loop
+  void step() override;
 };
 
 #endif //NEUROFIELD_SRC_SOLVER_H

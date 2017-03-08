@@ -34,8 +34,8 @@ class Output {
   void singleNode( const std::string& name, const std::vector<double>& field );
   void singleNode( const std::string& object, std::vector<double>::size_type index,
                    const std::string& name, const std::vector<double>& field );
-  bool empty(void) const;
-  operator std::vector<Outlet*>(void) const;
+  bool empty() const;
+  operator std::vector<Outlet*>() const;
 };
 
 #endif //NEUROFIELD_SRC_OUTPUT_H

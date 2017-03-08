@@ -49,8 +49,8 @@ class DendriteIntegral : public Dendrite {
 
   DendriteIntegral( size_type nodes, double deltat, size_type index,
             const Propagator& prepropag, const Coupling& precouple );
-  ~DendriteIntegral(void) override;
-  void step(void) override;
+  ~DendriteIntegral() override;
+  void step() override;
 };
 
 #endif //NEUROFIELD_SRC_DENDRITE_INTEGRAL_H

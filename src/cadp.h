@@ -51,14 +51,14 @@ class CaDP : public Coupling {
 
     virtual void init( Configf& configf );
     CaDE( size_type nodes, double deltat ) : DE(nodes,deltat,8) {}
-    ~CaDE(void) override = default;
+    ~CaDE() override = default;
 
     void rhs( const std::vector<double>& y, std::vector<double>& dydt ) override;
     double sig( double x, double beta ) const;
     virtual double _x( double Ca ) const; ///< potentiation rate
     virtual double _y( double Ca ) const; ///< depression rate
-    virtual void pot(void);
-    virtual void dep(void);
+    virtual void pot();
+    virtual void dep();
   };
   CaDE* de;
   RK4* rk4;
@@ -66,8 +66,8 @@ class CaDP : public Coupling {
  public:
   CaDP( size_type nodes, double deltat, size_type index,
         const Propagator& prepropag, const Population& postpop );
-  ~CaDP(void) override;
-  void step(void) override;
+  ~CaDP() override;
+  void step() override;
   void output( Output& output ) const override;
 };
 

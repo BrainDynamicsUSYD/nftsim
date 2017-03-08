@@ -37,7 +37,7 @@ class Dendrite : public NF {
     double factorab = 0.0, alphaxbeta = 0.0;
     virtual void init( const double vinit);
     DendriteDE( size_type nodes, double deltat) : DE(nodes, deltat, 3) {}
-    ~DendriteDE(void) override = default;
+    ~DendriteDE() override = default;
     void rhs( const std::vector<double>& y, std::vector<double>& dydt ) override;
   };
   DendriteDE* de;
@@ -57,13 +57,13 @@ class Dendrite : public NF {
 
   Dendrite( size_type nodes, double deltat, size_type index,
             const Propagator& prepropag, const Coupling& precouple );
-  ~Dendrite(void) override;
-  void step(void) override;
-  inline const std::vector<double>& V(void) const;
+  ~Dendrite() override;
+  void step() override;
+  inline const std::vector<double>& V() const;
   void output( Output& output ) const override;
 };
 
-const std::vector<double>& Dendrite::V(void) const {
+const std::vector<double>& Dendrite::V() const {
   return v;
 }
 

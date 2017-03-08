@@ -22,7 +22,7 @@ class BurstResponse : public QResponse { //derived class; constructor initialize
   BurstResponse(const BurstResponse& ); // No copy constructor allowed.
   BurstResponse();                      // No default constructor allowed.
 
-  void rk4(void);
+  void rk4();
   void rkderivs(std::vector<double>& xtemp, std::vector<double>& htemp,
                 std::vector<double>& xk, std::vector<double>& hk);
   std::vector<double> modtheta;
@@ -50,9 +50,9 @@ class BurstResponse : public QResponse { //derived class; constructor initialize
   void init( Configf& configf ) override;
  public:
   BurstResponse( size_type nodes, double deltat, size_type index );
-  ~BurstResponse(void) override; //destructor mem fnctn
+  ~BurstResponse() override; //destructor mem fnctn
 
-  void step(void) override;
+  void step() override;
   void fire( std::vector<double>& Q ) const override;
   void output( Output& output ) const override; //vector of Output ptrs filled by
 };

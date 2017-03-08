@@ -24,9 +24,9 @@ class Random {
   Random(double mean, double std);
   explicit Random(uint_fast64_t seed, double mean = 0.0, double std = 1.0);
   void init(uint_fast64_t seed, double mean, double std);
-  double get(void);
+  double get();
   void get(double& target);
-  ~Random(void);
+  ~Random();
 };
 
 #endif // NEUROFIELD_SRC_RANDOM_H

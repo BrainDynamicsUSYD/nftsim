@@ -39,7 +39,7 @@ class DE {
       variables[i].resize(nodes);
     }
   }
-  virtual ~DE(void) = default;
+  virtual ~DE() = default;
 
   virtual std::vector<double>& operator[] ( vvd_size_type index ) {
     return variables[index];
@@ -52,27 +52,27 @@ class DE {
 };
 
 class Integrator {
-  Integrator(void);
+  Integrator();
   Integrator(Integrator&);
   void operator=(Integrator&);
  protected:
   DE& de;
  public:
   explicit Integrator( DE& de ) : de(de) {}
-  virtual ~Integrator(void) = default;
-  virtual void step(void) = 0;
+  virtual ~Integrator() = default;
+  virtual void step() = 0;
 };
 
 class Euler : public Integrator {
-  Euler(void);
+  Euler();
   Euler(Euler&);
   void operator=(Euler&);
  protected:
   std::vector<double> dydt;
  public:
   explicit Euler( DE& de ) : Integrator(de), dydt(de.n) {}
-  ~Euler(void) override = default;
-  void step(void) override {
+  ~Euler() override = default;
+  void step() override {
     for( vvd_size_type j=0; j<de.nodes; j++ ) {
       de.rhs( de.variables[j], dydt );
       for( vvd_size_type i=0; i<de.n; i++ ) {
@@ -83,7 +83,7 @@ class Euler : public Integrator {
 };
 
 class RK4 : public Integrator {
-  RK4(void);
+  RK4();
   RK4(RK4&);
   void operator=(RK4&);
  protected:
@@ -98,9 +98,9 @@ class RK4 : public Integrator {
  public:
   explicit RK4( DE& de ) : Integrator(de), h6(de.deltat/6.), deltat5(de.deltat*0.5),
     k1(de.n), k2(de.n), k3(de.n), k4(de.n), temp(de.n) {}
-  ~RK4(void) override = default;
+  ~RK4() override = default;
 
-  void step(void) override {
+  void step() override {
     for( vvd_size_type j=0; j<de.nodes; j++ ) {
       for( vvd_size_type i=0; i<de.n; i++ ) {
         temp[i] = de.variables[i][j];

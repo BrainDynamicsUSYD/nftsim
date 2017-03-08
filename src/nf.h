@@ -32,10 +32,10 @@ class NF {
   friend Configf&  operator>> ( Configf& configf, NF& nf );
   //friend Restartf& operator>> ( Restartf& restartf, NF& nf );
   //friend Dumpf&    operator<< ( Dumpf& dumpf, const NF& nf );
-  virtual void step(void) = 0;
+  virtual void step() = 0;
   virtual void output( Output&  /*unused*/) const;
 
-  virtual ~NF(void);
+  virtual ~NF();
 };
 
 #endif //NEUROFIELD_SRC_NF_H

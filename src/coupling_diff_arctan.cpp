@@ -63,7 +63,7 @@ void CouplingDiffArctan::init( Configf& configf ) {
   time = 0;
 }
 
-void CouplingDiffArctan::step(void) {
+void CouplingDiffArctan::step() {
   // Return the right value at each time point
   time += deltat;
   for( size_type i=0; i<nodes; i++ ) {
@@ -81,5 +81,5 @@ CouplingDiffArctan::CouplingDiffArctan( size_type nodes, double deltat, size_typ
   time_tot = tempf;
 }
 
-CouplingDiffArctan::~CouplingDiffArctan(void) {
+CouplingDiffArctan::~CouplingDiffArctan() {
 }

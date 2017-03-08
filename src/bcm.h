@@ -59,14 +59,14 @@ class BCM : public CaDP {
       }
       return *this;
     }
-    ~BCMDE(void) override = default;
+    ~BCMDE() override = default;
     void init( Configf& configf ) override;
     void rhs( const std::vector<double>& y, std::vector<double>& dydt ) override;
   };
  public:
   BCM( size_type nodes, double deltat, size_type index,
        const Propagator& prepropag, const Population& postpop );
-  ~BCM(void) override;
+  ~BCM() override;
   void output( Output& output ) const override;
 };
 

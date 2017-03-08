@@ -28,8 +28,8 @@ class Tau : public NF {
   void init( Configf& configf ) override;
  public:
   Tau( size_type nodes, double deltat, size_type index );
-  ~Tau(void) override;
-  void step(void) override;
+  ~Tau() override;
+  void step() override;
 
   friend class Population;
 };

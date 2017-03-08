@@ -52,7 +52,7 @@ class QResponse : public NF {
     double tGlu = 0.0;   ///< time scale of glutamate
 
     Glu( vvd_size_type nodes, double deltat ) : DE(nodes,deltat,2) {}
-    ~Glu(void) override = default;
+    ~Glu() override = default;
     void init( Configf& configf );
     void rhs( const std::vector<double>& y, std::vector<double>& dydt ) override;
   };
@@ -60,19 +60,19 @@ class QResponse : public NF {
   RK4 glu_rk4;
  public:
   QResponse( size_type nodes, double deltat, size_type index );
-  ~QResponse(void) override;
-  void step(void) override;
+  ~QResponse() override;
+  void step() override;
   virtual void add2Dendrite( size_type index, const Propagator& prepropag,
                              const Coupling& precouple, Configf& configf );
-  const std::vector<double>& glu(void) const;
+  const std::vector<double>& glu() const;
 
   virtual void fire( std::vector<double>& Q ) const;
-  inline const std::vector<double>& V(void) const;
+  inline const std::vector<double>& V() const;
   void output( Output& output ) const override;
   virtual void outputDendrite( size_type index, Output& output ) const;
 };
 
-const std::vector<double>& QResponse::V(void) const {
+const std::vector<double>& QResponse::V() const {
   return v;
 }
 

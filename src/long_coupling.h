@@ -30,8 +30,8 @@ class LongCoupling : public Coupling {
  public:
   LongCoupling( size_type nodes, double deltat, size_type index,
               const Propagator& prepropag, const Population& postpop );
-  ~LongCoupling(void) override;
-  void step(void) override;
+  ~LongCoupling() override;
+  void step() override;
   void output( Output& output ) const override;
 };
 

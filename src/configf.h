@@ -25,7 +25,7 @@ class Configf : protected std::ifstream { // derived class
   std::streamsize filesize;
  public:
   explicit Configf( const char* filename ); // const ptr to filename for ifstream
-  ~Configf(void) override;
+  ~Configf() override;
 
   // Looks for the next parameter called "param" and stores it in T
   // If "param" is not found, terminate program
@@ -34,7 +34,7 @@ class Configf : protected std::ifstream { // derived class
   // If "param" is not found, return false
   template<class T> bool optional( const std::string& param, T& ret, int delim=':' );
   // Read & return an arbitrary array of doubles
-  std::vector<double> numbers(void);
+  std::vector<double> numbers();
   // Return all whitespace separated strings before delimiting string
   std::vector<std::string> arb( const std::string& delim );
   // Find the next "Check", then returns the next input entry as string
@@ -45,7 +45,7 @@ class Configf : protected std::ifstream { // derived class
   // searches and points to next keyword
   void go2( const std::string& keyword );
 
-  std::streamsize tell(void) {
+  std::streamsize tell() {
     return std::ifstream::tellg();
   }
   void seek( std::streamsize position ) {

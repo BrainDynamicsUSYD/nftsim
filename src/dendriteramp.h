@@ -32,7 +32,7 @@ class DendriteRamp : public Dendrite {
     double t1 = 0.0, t2 = 0.0, t3 = 0.0, t4 = 0.0;
     virtual void init( const double vinit);
     DendriteDE( size_type nodes, double deltat) : DE(nodes, deltat, 3) {}
-    ~DendriteDE(void) override = default;
+    ~DendriteDE() override = default;
     void rhs( const std::vector<double>& y, std::vector<double>& dydt ) override;
   };
 
@@ -42,10 +42,10 @@ class DendriteRamp : public Dendrite {
  public:
   DendriteRamp( size_type nodes, double deltat, size_type index,
                 const Propagator& prepropag, const Coupling& precouple );
-  ~DendriteRamp(void) override;
-  void step(void) override;
+  ~DendriteRamp() override;
+  void step() override;
 
-  inline const std::vector<double>& V(void) const {
+  inline const std::vector<double>& V() const {
     return (*de)[1]; //NOTE: Pretty sure this is an error: index=1 points to dv/dt, to get voltage, which is what I think is wanted here, it should be index=0
   }
   void output( Output& output ) const override;

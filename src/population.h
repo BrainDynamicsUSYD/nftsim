@@ -43,13 +43,13 @@ class Population : public NF {
  public:
   Population( size_type nodes, double deltat, size_type index );
   ~Population() override;
-  void step(void) override;
+  void step() override;
   virtual const std::vector<double>& Q( const Tau& tau ) const;
   double Qinit( Configf& configf ) const;
-  virtual const std::vector<double>& V(void) const;
+  virtual const std::vector<double>& V() const;
   inline double operator[]( size_type node ) const;
-  const std::vector<double>& glu(void) const;
-  inline double sheetlength(void) const {
+  const std::vector<double>& glu() const;
+  inline double sheetlength() const {
     return length;
   }
   virtual void add2Dendrite( size_type index, const Propagator& prepropag,

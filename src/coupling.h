@@ -38,13 +38,13 @@ class Coupling : public NF {
  public:
   Coupling( size_type nodes, double deltat, size_type index,
           const Propagator& prepropag, const Population& postpop );
-  ~Coupling(void) override;
-  void step(void) override;
+  ~Coupling() override;
+  void step() override;
   double nuinit( Configf& configf ) const;
   void output( Output& output ) const override;
-  virtual const std::vector<double>& nuphi(void) const;
+  virtual const std::vector<double>& nuphi() const;
   inline double operator[]( size_type node ) const;
-  virtual bool excite(void) const;
+  virtual bool excite() const;
 };
 
 double Coupling::operator[]( size_type node ) const {
