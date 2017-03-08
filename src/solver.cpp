@@ -324,8 +324,8 @@ void Solver::Outputs::init( Configf& configf ) {
       exit(EXIT_FAILURE);
     }
     string key;
-    if( i.find(".")!=string::npos ) {
-      key = i.substr( i.find(".")+1, string::npos );
+    if( i.find('.')!=string::npos ) {
+      key = i.substr( i.find('.')+1, string::npos );
     }
     Output output(key);
     pops[obj_index-1]->output(output);
@@ -347,8 +347,8 @@ void Solver::Outputs::init( Configf& configf ) {
       exit(EXIT_FAILURE);
     }
     string key;
-    if( i.find(".")!=string::npos ) {
-      key = i.substr( i.find(".")+1, string::npos );
+    if( i.find('.')!=string::npos ) {
+      key = i.substr( i.find('.')+1, string::npos );
     }
     Output output(key);
     for( size_t j=0; j<pops.size(); j++ ) {
@@ -372,8 +372,8 @@ void Solver::Outputs::init( Configf& configf ) {
       exit(EXIT_FAILURE);
     }
     string key;
-    if( i.find(".")!=string::npos ) {
-      key = i.substr( i.find(".")+1, string::npos );
+    if( i.find('.')!=string::npos ) {
+      key = i.substr( i.find('.')+1, string::npos );
     }
     Output output(key);
     propagators[obj_index-1]->output(output);
