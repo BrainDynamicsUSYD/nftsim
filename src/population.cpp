@@ -20,11 +20,10 @@
 #include "timeseries.h" // Timeseries;
 
 // C++ standard library headers
-#include <iostream> // std::cerr; std::cout; std::endl;
+#include <iostream> // std::cerr; std::endl;
 #include <string>   // std::string;
 #include <vector>   // std::vector;
 using std::cerr;
-using std::cout;
 using std::endl;
 using std::string;
 using std::vector;
