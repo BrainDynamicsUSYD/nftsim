@@ -35,8 +35,6 @@ class DendriteRamp : public Dendrite {
     ~DendriteDE(void) override = default;
     void rhs( const std::vector<double>& y, std::vector<double>& dydt ) override;
   };
-  DendriteDE* de;
-  RK4* rk4;
 
   double time = 0.0;
 
