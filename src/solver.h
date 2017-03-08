@@ -31,8 +31,8 @@ class Solver : public NF {
   int steps = 0; ///< number of integration steps to perform
 
   struct CntMat : public NF {
-    std::vector<double>::size_type npop; ///< number of populations
-    std::vector<int>::size_type ncnt; ///< number of connections
+    std::vector<double>::size_type npop=0; ///< number of populations
+    std::vector<int>::size_type ncnt=0; ///< number of connections
     std::vector< std::vector<double> > raw; // 2D vector of raw connection matrix
 
     std::vector<std::vector<double>::size_type> pre;  ///< presynaptic connection index for each population

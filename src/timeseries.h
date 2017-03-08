@@ -52,7 +52,7 @@ struct Pulse : public Timeseries {
 };
 
 struct White : public Timeseries {
-  uint_fast64_t seed;
+  uint_fast64_t seed=0;
   double amp = 0.0, mean = 0.0, deltax = 0.0;
   Random* random;
   White(size_type nodes,double deltat,size_type index) : Timeseries(nodes,deltat,index) {}
@@ -64,7 +64,7 @@ struct White : public Timeseries {
 };
 
 struct WhiteCoherent : public Timeseries {
-  uint_fast64_t seed;
+  uint_fast64_t seed=0;
   double amp = 0.0, mean = 0.0;
   Random* random;
   WhiteCoherent(size_type nodes,double deltat,size_type index) : Timeseries(nodes,deltat,index) {}
