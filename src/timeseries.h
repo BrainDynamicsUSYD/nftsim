@@ -18,8 +18,8 @@
 #include <vector>   // std::vector;
 
 class Timeseries : public NF {
-  Timeseries(Timeseries&);
-  Timeseries(void);
+  Timeseries(const Timeseries&);  // No copy constructor allowed.
+  Timeseries();                   // No default constructor allowed.
  protected:
   typedef std::vector<double>::size_type series_size_type;
   void init( Configf& configf ) override;

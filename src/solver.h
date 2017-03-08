@@ -23,8 +23,8 @@
 #include <vector>   // std::vector;
 
 class Solver : public NF {
-  Solver(); // no default constructor
-  Solver(Solver& ); // no copy constructor
+  Solver();              // No default constructor allowed.
+  Solver(const Solver&); // No copy constructor allowed.
 
   Dumpf& dumpf;
 

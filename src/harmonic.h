@@ -20,8 +20,8 @@
 #include <vector> // std::vector;
 
 class Harmonic : public virtual Propagator {
-  Harmonic(); // no default constructor
-  Harmonic(Harmonic&); // no copy constructor
+  Harmonic();                // No default constructor allowed.
+  Harmonic(const Harmonic&); // No copy constructor allowed.
 
   // variables that are initialized once to speed up computation
   double gammasquared = 0.0; ///< == gamma^2;

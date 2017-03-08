@@ -21,8 +21,8 @@
 #include <vector> // std::vector;
 
 class CaDP : public Coupling {
-  CaDP();
-  CaDP(CaDP&);
+  CaDP();            // No default constructor allowed.
+  CaDP(const CaDP&); // No copy constructor allowed.
  protected:
   double nu_init = 0.0;
   struct CaDE : public DE {

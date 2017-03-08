@@ -17,9 +17,9 @@
 
 
 class Configf : protected std::ifstream { // derived class
-  Configf(const Configf& other); // No copy constructor
-  Configf(); // No default constructor
-  Configf& operator=(const Configf& other); // No assignment operator
+  Configf(const Configf&);  // No copy constructor allowed.
+  Configf();                // No default constructor allowed.
+  Configf& operator=(const Configf&); // No copy assignment operator allowed.
 
   char* buffer;
   std::streamsize filesize;

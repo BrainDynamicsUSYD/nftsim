@@ -25,8 +25,8 @@ class Propagator;
 #include <vector> //std::vector;
 
 class Propagator : public NF {
-  Propagator(); // no default constructor
-  Propagator(Propagator&); // no copy constructor
+  Propagator();                  // No default constructor allowed.
+  Propagator(const Propagator&); // No copy constructor allowed.
  protected:
   void init( Configf& configf ) override;
   //void restart( Restartf& restartf );

@@ -26,8 +26,9 @@ class Population;
 #include <vector> // std::vector;
 
 class Population : public NF {
-  Population(void); // no default constructor
-  Population(Population& ); // no copy constructor
+  Population();                   // No default constructor allowed.
+  Population(const Population& ); // No copy constructor allowed.
+
   QResponse* qresponse; ///< qresponse for neural population
   Timeseries* timeseries; ///< timeseries for stimulus
  protected:

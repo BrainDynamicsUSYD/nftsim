@@ -19,8 +19,8 @@
 
 class BurstResponse : public QResponse { //derived class; constructor initializer
  private:
-  BurstResponse(BurstResponse& ); // no copy constructor; no explicit var name
-  BurstResponse(void);      // no copy constructor; void no return value
+  BurstResponse(const BurstResponse& ); // No copy constructor allowed.
+  BurstResponse();                      // No default constructor allowed.
 
   void rk4(void);
   void rkderivs(std::vector<double>& xtemp, std::vector<double>& htemp,

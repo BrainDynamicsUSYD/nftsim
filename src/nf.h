@@ -18,7 +18,7 @@
 #include <vector>    // std::vector;
 
 class NF {
-  NF(void);    // no default constructor allowed
+  NF();  // No default constructor allowed.
  protected:
   typedef std::vector<double>::size_type size_type;
   virtual void init( Configf& configf ) = 0;

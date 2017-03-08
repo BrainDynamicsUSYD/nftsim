@@ -20,8 +20,8 @@
 #include <vector> // std::vector;
 
 class BCM : public CaDP {
-  BCM(BCM&);
-  BCM();
+  BCM(const BCM&); // No copy constructor allowed.
+  BCM();           // No default constructor allowed.
  protected:
   //double t_BCM;
   struct BCMDE : public CaDE {

@@ -29,8 +29,8 @@
 #include <vector> // std::vector;
 
 class CouplingRamp : public Coupling {
-  CouplingRamp();
-  CouplingRamp(CouplingRamp&);
+  CouplingRamp();                    // No default constructor allowed.
+  CouplingRamp(const CouplingRamp&); // No copy constructor allowed.
  protected:
   std::vector<double> ns;
   std::vector<double> tpts;

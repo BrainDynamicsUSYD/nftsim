@@ -20,8 +20,8 @@
 #include <vector> // std::vector;
 
 class LongCoupling : public Coupling {
-  LongCoupling();
-  LongCoupling(LongCoupling&);
+  LongCoupling();                    // No default constructor allowed.
+  LongCoupling(const LongCoupling&); // No copy constructor allowed.
  protected:
   void init( Configf& configf ) override;
 

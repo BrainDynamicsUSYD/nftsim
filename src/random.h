@@ -13,7 +13,7 @@
 #include <random> // std::mt19937_64; std::normal_distribution;
 
 class Random {
-  Random(Random& ); // no copy constructor
+  Random(const Random&); // No copy constructor allowed.
 
   static uint_fast64_t id; // Auto-increment the ID of each Random instance to use as the default seed
 

@@ -22,8 +22,8 @@
 using std::vector;
 
 class DendriteRamp : public Dendrite {
-  DendriteRamp(void);  // default constructor
-  DendriteRamp(DendriteRamp& );  // no copy constructor
+  DendriteRamp();                    // No default constructor allowed.
+  DendriteRamp(const DendriteRamp&); // No copy constructor allowed.
 
  protected:
   struct DendriteDE : public DE {

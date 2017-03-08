@@ -21,8 +21,8 @@
 #include <vector> // std::vector;
 
 class BCMLong : public BCM {
-  BCMLong();
-  BCMLong(BCMLong&);
+  BCMLong();               // No default constructor allowed.
+  BCMLong(const BCMLong&); // No copy constructor allowed.
  protected:
   void init( Configf& configf ) override;
 

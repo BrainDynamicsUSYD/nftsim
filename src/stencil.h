@@ -20,9 +20,9 @@ enum Moore {
 };
 
 class Stencil {
-  Stencil();
-  Stencil& operator=(const Stencil&);
-  Stencil(const Stencil&);
+  Stencil();               // No default constructor allowed.
+  Stencil(const Stencil&); // No copy constructor allowed.
+  Stencil& operator=(const Stencil&); // No copy assignment operator allowed.
  protected:
   int nodes;
   int longside;

@@ -28,8 +28,8 @@ class QResponse;
 #include <vector> // std::vector;
 
 class QResponse : public NF {
-  QResponse(QResponse& ); // no copy constructor
-  QResponse(void);      // no copy constructor
+  QResponse(const QResponse& ); // No copy constructor allowed.
+  QResponse();                  // No default constructor allowed.
 
  protected:
   void init( Configf& configf ) override;

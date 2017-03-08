@@ -14,7 +14,7 @@
 
 template<class T>
 class Array {
-  Array(Array&);   // no copy constructor allowed
+  Array(const Array&);   // No copy constructor allowed.
 
   std::vector<T*> m;
  public:

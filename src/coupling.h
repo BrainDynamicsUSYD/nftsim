@@ -23,8 +23,8 @@ class Coupling;
 #include <vector> // std::vector;
 
 class Coupling : public NF {
-  Coupling();
-  Coupling(Coupling&);
+  Coupling();                // No default constructor allowed.
+  Coupling(const Coupling&); // No copy constructor allowed.
  protected:
   void init( Configf& configf ) override;
   //virtual void restart( Restartf& restartf );

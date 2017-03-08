@@ -25,8 +25,8 @@ class Dendrite;
 #include <vector> // std::vector;
 
 class Dendrite : public NF {
-  Dendrite(void); // default constructor
-  Dendrite(Dendrite& ); // no copy constructor
+  Dendrite();                // No default constructor allowed.
+  Dendrite(const Dendrite&); // No copy constructor allowed.
 
   // variables that are initialized once to speed up computation
   double factorab = 0.0;   ///< == 1./alpha + 1./beta;

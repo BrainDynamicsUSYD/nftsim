@@ -21,8 +21,8 @@
 #include <vector> // std::vector;
 
 class CouplingDiffArctan : public Coupling {
-  CouplingDiffArctan();
-  CouplingDiffArctan(CouplingDiffArctan&);
+  CouplingDiffArctan();                          // No default constructor allowed.
+  CouplingDiffArctan(const CouplingDiffArctan&); // No copy constructor allowed.
  protected:
   double nu_min = 0.0, nu_max = 0.0;
   double t_half_down = 0.0, t_half_up = 0.0;

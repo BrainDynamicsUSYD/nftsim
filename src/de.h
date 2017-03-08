@@ -15,8 +15,8 @@
 typedef std::vector<std::vector<double>>::size_type vvd_size_type;
 
 class DE {
-  DE(void);
-  DE(DE&);
+  DE();          // No default constructor allowed.
+  DE(const DE&); // No copy constructor allowed.
   void operator=(DE&);
  protected:
   // if the number of field variables need to be extended, use this function

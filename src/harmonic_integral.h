@@ -19,8 +19,8 @@
 #include <vector> // std::vector;
 
 class HarmonicIntegral : public virtual Propagator {
-  HarmonicIntegral(); // no default constructor
-  HarmonicIntegral(HarmonicIntegral&); // no copy constructor
+  HarmonicIntegral();                        // No default constructor allowed.
+  HarmonicIntegral(const HarmonicIntegral&); // No copy constructor allowed.
  protected:
   void init( Configf& configf ) override;
   //virtual void restart( Restartf& restartf );

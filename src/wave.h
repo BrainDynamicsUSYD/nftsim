@@ -23,8 +23,8 @@
 #include <string>  // std::string
 
 class Wave : public Propagator {
-  Wave(); // no default constructor
-  Wave(Wave&); // no copy constructor
+  Wave();            // No default constructor allowed.
+  Wave(const Wave&); // No copy constructor allowed.
  protected:
   void init( Configf& configf ) override;
   //void restart( Restartf& restartf );
