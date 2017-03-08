@@ -26,7 +26,7 @@ class LongCoupling : public Coupling {
   void init( Configf& configf ) override;
 
   std::vector< std::vector<double> > n2d; ///< nu tensor, nu[i][j] = from i to j
-  int pos = 0;
+
  public:
   LongCoupling( size_type nodes, double deltat, size_type index,
               const Propagator& prepropag, const Population& postpop );
