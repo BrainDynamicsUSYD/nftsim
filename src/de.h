@@ -52,8 +52,8 @@ class DE {
 };
 
 class Integrator {
-  Integrator();
-  Integrator(Integrator&);
+  Integrator();                  // No default constructor allowed.
+  Integrator(const Integrator&); // No copy constructor allowed.
   void operator=(Integrator&);
  protected:
   DE& de;
@@ -64,8 +64,8 @@ class Integrator {
 };
 
 class Euler : public Integrator {
-  Euler();
-  Euler(Euler&);
+  Euler();             // No default constructor allowed.
+  Euler(const Euler&); // No copy constructor allowed.
   void operator=(Euler&);
  protected:
   std::vector<double> dydt;
@@ -83,8 +83,8 @@ class Euler : public Integrator {
 };
 
 class RK4 : public Integrator {
-  RK4();
-  RK4(RK4&);
+  RK4();           // No default constructor allowed.
+  RK4(const RK4&); // No copy constructor allowed.
   void operator=(RK4&);
  protected:
   double h6; ///< == deltat/6
