@@ -34,12 +34,12 @@ class CouplingDiffArctan : public Coupling {
   std::vector<double> deltanu;
 
  public:
-  void init( Configf& configf );
-  void step();
+  void init( Configf& configf ) override;
+  void step() override;
   void find();
   CouplingDiffArctan( size_type nodes, double deltat, size_type index,
                     const Propagator& prepropag, const Population& postpop, double tempf );
-  virtual ~CouplingDiffArctan();
+  ~CouplingDiffArctan() override;
 };
 
 #endif //COUPLING_DIFF_ARCTAN_H
