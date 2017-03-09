@@ -54,8 +54,8 @@ class WaveLegacy : public Propagator {
  public:
   WaveLegacy( size_type nodes, double deltat, size_type index, Population& prepop,
         Population& postpop, int longside, std::string topology );
-  ~WaveLegacy(void) override;
-  void step(void) override;
+  ~WaveLegacy() override;
+  void step() override;
 };
 
 #endif //NEUROFIELD_SRC_WAVE_LEGACY_H

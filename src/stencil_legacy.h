@@ -39,12 +39,12 @@ class StencilLegacy {
   };
 
   StencilLegacy( int nodes, int longside, const std::string& boundary );
-  virtual ~StencilLegacy(void);
+  virtual ~StencilLegacy();
 
   const std::vector<double>& operator= ( const std::vector<double>& field );
   inline void operator++ (int) const; // increment Moore grid
   void set( int node ) const; // point to node
-  int get(void) const; // get ptr
+  int get() const; // get ptr
 
   inline double operator() ( Moore moore=c ) const {
     int arr[9] = {ptr-longside-2-1, ptr-longside-2, ptr-longside-2+1,
@@ -53,7 +53,7 @@ class StencilLegacy {
     return m[arr[moore+4]];
   }
 
-  inline operator double (void) const {
+  inline operator double () const {
     return (*this)(c);
   }
 };
