@@ -25,7 +25,7 @@ using std::vector;
 /**
   @brief Computes the derivatives of the Harmonic Propagator function.
 
-  The Harmonic propgator equation is given by:
+  The Harmonic propagator equation is given by:
   \f{eqnarray*}{
     \frac{d^2\phi}{dt^2}&=& \gamma^2 \left(Q - \frac{2}{\gamma} \frac{d\phi}{dt} - \phi \right)
   \f}

@@ -1,7 +1,12 @@
 /** @file solver.cpp
-  @brief A brief, one sentence description.
+  @brief Solver member function definitions.
 
-  A more detailed multiline description...
+  The Solver class pulls together Population, Propagator, and Coupling classes.
+
+  If you define your own Propagators or Couplings, then, it is in the init
+  member-function of this class that you must create appropriate entries in
+  order to make those Propagators and Couplings specifiable via neurofield's
+  configuration (.conf) files.
 
   @author Peter Drysdale, Felix Fung,
 */
@@ -23,6 +28,7 @@
 #include "output.h"        // Output; Outlet;
 #include "population.h"    // Population;
 #include "wave.h"          // Wave;
+#include "wave_legacy.h"   // WaveLegacy;
 
 // C++ standard library headers
 #include <cmath>    // std::remainder; std::sqrt;
@@ -162,6 +168,14 @@ void Solver::init( Configf& configf ) {
     } else if(ptype=="HarmonicIntegral") {
       propagators.add( new
                    HarmonicIntegral(nodes,deltat,i, *pops[cnt.pre[i]], *pops[cnt.post[i]], longside, topology));
+    } else if(ptype=="WaveLegacy") {
+      if( nodes==1 ) {
+        propagators.add( new
+                     Harmonic(nodes,deltat,i, *pops[cnt.pre[i]], *pops[cnt.post[i]], longside, topology));
+      } else {
+        propagators.add( new
+                     WaveLegacy(nodes,deltat,i, *pops[cnt.pre[i]], *pops[cnt.post[i]], longside, topology));
+      }
     } else {
       cerr<<"Invalid propagator type '"<<ptype<<"'."<<endl;
       exit(EXIT_FAILURE);
