@@ -51,12 +51,12 @@ void CouplingDiffArctan::init( Configf& configf ) {
   diff_atan_min=*std::min_element(deltanu.begin(), deltanu.end());
   diff_atan_max=*std::max_element(deltanu.begin(), deltanu.end());
 
-  n.clear();
-  n.resize(nodes, nu_min);
+  nu.clear();
+  nu.resize(nodes, nu_min);
   pos = (nu_min>0)?1:-1;
 
   for( size_type i=0; i<nodes; i++) {
-    P[i] = n[i]*prepropag.phiinit(configf);
+    P[i] = nu[i]*prepropag.phiinit(configf);
   }
 
   //initial time
@@ -67,7 +67,7 @@ void CouplingDiffArctan::step() {
   // Return the right value at each time point
   time += deltat;
   for( size_type i=0; i<nodes; i++ ) {
-    n[i]= nu_min + (nu_max-nu_min)*(((atan((time-t_half_up)/delta)-atan((time-t_half_down)/delta))-diff_atan_min)/(diff_atan_max-diff_atan_min));
+    nu[i]= nu_min + (nu_max-nu_min)*(((atan((time-t_half_up)/delta)-atan((time-t_half_down)/delta))-diff_atan_min)/(diff_atan_max-diff_atan_min));
   }
   Coupling::step();
 }

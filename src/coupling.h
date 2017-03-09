@@ -32,8 +32,8 @@ class Coupling : public NF {
 
   const Propagator& prepropag;
   const Population& postpop;
-  std::vector<double> n; ///< nu
-  std::vector<double> P; ///< nu*phi
+  std::vector<double> nu; ///< \f$\nu\f$
+  std::vector<double> P;  ///< \f$\nu\phi\f$
   int pos = 0;
  public:
   Coupling( size_type nodes, double deltat, size_type index,
