@@ -77,6 +77,7 @@ void Wave::init( Configf& configf ) {
 
   //Validate (0 < p <= 1/sqrt(2)), NOTE: there is a typo after A.13 in Rennie 2001, see, A. R. Mitchell.
   //Computational methods in partial differential equations. John Wiley & Sons, London, 1969.
+  //The general formula for the maximum value of p is given in page 205 of the book reference above.
   if( sqrt(p2) > 1.0/sqrt(2.0)) {
     cerr << "Wave equation with gamma: " << gamma << " axonal range: " << range << endl;
     cerr << "and deltat: " << deltat << " deltax: " << deltax << endl;
