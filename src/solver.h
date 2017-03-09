@@ -1,5 +1,5 @@
 /** @file solver.h
-  @brief Defines the Solver class, a high level container for managing a simulation.
+  @brief Declares the Solver class, a high level container for managing a simulation.
 
   The Solver class pulls together Population, Propagator, and Coupling classes.
 

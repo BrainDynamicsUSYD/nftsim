@@ -6,7 +6,7 @@
  * and coefficients related to the nine-point stencil implementation.
  *
  *
- * @author Peter Drysdale, Felix Fung, Romesh Abeysuriya, Paula Sanz-Leon
+ * @author Peter Drysdale, Felix Fung, Romesh Abeysuriya, Paula Sanz-Leon,
  *
  */
 
@@ -32,24 +32,22 @@ class Wave : public Propagator {
 
   Stencil* oldp[2]; ///< keyring stencil to past phi, oldp[key]==most recent
   Stencil* oldQ[2]; ///< keyring stencil to past Q, oldQ[key]==most recent
-  int key;
+  int key;          ///< used as an index into a length 2 cyclical history of phi and Q.
 
-  // variables that's initialized once only
-  double deltax; ///< Grid spacing in space - spatial resolution
+  // variables that are initialized once only
+  double deltax;      ///< Grid spacing in space - spatial resolution
   double dt2on12;
   double dfact;
   double dt2ondx2;    ///< Factor in wave equation equal to ((gamma deltat)^2)/12.
-  double p2;          ///< Fquare of the mesh ratio
-  double tenminus3p2; ///< Factor in wave algorithm
-  double twominus3p2; ///< Factor in wave algorithm
-  double expfact1;    ///< Factor of Exp(- gamma deltat) - scale factor applied to each step due to damping
-  double expfact2;    ///< Factor of Exp(- 2 gamma deltat)
+  double p2;          ///< Dimensionless step-size squared. Square of the mesh ratio.
+  double tenminus4p2; ///< Factor in wave algorithm
+  double twominus4p2; ///< Factor in wave algorithm
+  double expfactneg;  ///< Exp(- gamma deltat) - invert substitutions \f$u={\phi}e^{\gamma t}\f$; \f$w=Q e^{\gamma t}\f$.
+  double expfactpos;  ///< Exp(gamma deltat) - invert substitutions \f$u={\phi}e^{\gamma t}\f$; \f$w=Q e^{\gamma t}\f$.
 
   // variables that are changed every timestep
   double sump;     ///< sum of the points in the von Neumann neighbourhood (phi)
-  double diagsump; ///< sum of the points in the diagonal neighbourhood (phi)
   double sumQ;     ///< sum of the points in the von Neumann neighbourhood (Q)
-  double diagsumQ; ///< sum of the points in the diagonal neighbourhood (Q)
   double drive;
  public:
   Wave( size_type nodes, double deltat, size_type index, Population& prepop,
