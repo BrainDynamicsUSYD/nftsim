@@ -8,7 +8,9 @@ based on Robinson's Neural Field Theory.
 
 1. Fork and clone; or,
 
-2. download the latest [release](https://github.com/BrainDynamicsUSYD/neurofield/releases) as a `.zip` or `tar.gz` file.
+2. download the latest [release](https://github.com/BrainDynamicsUSYD/neurofield/releases) as a `.zip` or `tar.gz` file and extarct the folder.
+
+3. After doing 1) or 2) type `cd neurofield`.
 
 ### Build/compilation
 
@@ -37,6 +39,10 @@ On MacOS: TBD.
 ## Demos
 
 Example configurations including examples for published results are available in the `configs` folder.
+
+To run the basic example type
+
+    ./bin/neurofield -i ./configs/example.conf -o example.output
 
 ## Troubleshooting
 
