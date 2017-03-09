@@ -30,7 +30,7 @@ class DendriteRamp : public Dendrite {
     std::vector<double> alpha_vec, beta_vec;
     double alpha2 = 0.0, beta2 = 0.0;
     double t1 = 0.0, t2 = 0.0, t3 = 0.0, t4 = 0.0;
-    virtual void init( const double vinit);
+    virtual void init(double vinit);
     DendriteDE( size_type nodes, double deltat) : DE(nodes, deltat, 3) {}
     ~DendriteDE() override = default;
     void rhs( const std::vector<double>& y, std::vector<double>& dydt ) override;

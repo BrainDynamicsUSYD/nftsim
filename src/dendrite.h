@@ -35,7 +35,7 @@ class Dendrite : public NF {
  protected:
   struct DendriteDE : public DE {
     double factorab = 0.0, alphaxbeta = 0.0;
-    virtual void init( const double vinit);
+    virtual void init(double vinit);
     DendriteDE( size_type nodes, double deltat) : DE(nodes, deltat, 3) {}
     ~DendriteDE() override = default;
     void rhs( const std::vector<double>& y, std::vector<double>& dydt ) override;
