@@ -20,13 +20,14 @@
 #include "dendrite.h"   // Dendrite;
 #include "dendrite_integral.h" // DendriteIntegral;
 #include "dendriteramp.h"      // DendriteRamp;
-#include "fmath.h"      // fmath::expd;
 #include "output.h"     // Output;
 #include "propagator.h" // Propagator;
 
 // C++ standard library headers
+#include <cmath>    // std::exp;
 #include <string>   // std::string;
 #include <vector>   // std::vector;
+using std::exp;
 using std::string;
 using std::vector;
 
@@ -134,7 +135,7 @@ const vector<double>& QResponse::glu() const {
 void QResponse::fire( vector<double>& Q ) const {
   if(mode == "Sigmoid") {
     for( size_type i=0; i<nodes; i++ ) {
-      Q[i] = Q_max/( 1.0F+ fmath::expd( -(v[i]-theta)/sigma ) );
+      Q[i] = Q_max/( 1.0 + exp( -(v[i]-theta)/sigma ) );
     }
   } else if (mode == "Linear") {
     for( size_type i=0; i<nodes; i++ ) {

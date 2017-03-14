@@ -16,7 +16,9 @@
 #include "output.h"     // Output;
 
 // C++ standard library headers
+#include <cmath>     // std::exp;
 #include <vector>   // std::vector;
+using std::exp;
 using std::vector;
 
 void BurstResponse::init( Configf& configf ) {

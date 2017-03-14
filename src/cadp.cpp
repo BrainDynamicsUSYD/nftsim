@@ -16,7 +16,9 @@
 #include "propagator.h" // Propagator;
 
 // C++ standard library headers
+#include <cmath>     // std::exp;
 #include <vector>   // std::vector;
+using std::exp;
 using std::vector;
 
 void CaDP::CaDE::rhs( const vector<double>& y, vector<double>& dydt ) {
