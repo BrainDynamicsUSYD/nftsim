@@ -17,6 +17,11 @@
 # Originally Written: 2016-11-23
 #
 
+#Colourise some of our output.
+declare -gr DIFFERS_CLR='\e[1;33mDIFFERS!\e[0m' # Bold Yellow-ish
+declare -gr ERROR_CLR='\e[1;31mERROR:\e[0m'     # Bold Red
+declare -gr SAME_CLR='\e[1;32mSAME\e[0m'        # Bold Green
+
 #Capture args the script was called with.
 INPUTARG1="$1" ; INPUTARG2="$2"
 #Make them read-only so we can't accidentally modify them.
@@ -48,13 +53,8 @@ parse_command_flags(){
     --check|-c)
       neurofield_exists || return 1
       if [[ "$INPUTARG2" = 'all' ]]; then
-        local check_all_errors
         check_all
-        check_all_errors="$?"
-        if [[ "$check_all_errors" != '0' ]]; then
-          printf '%s\n' "There were '$check_all_errors' config files that could not be checked."
-        fi
-        return "$check_all_errors"
+        return "$?"
       else
         check_output_file "$INPUTARG2"
         [[ "$?" != '0' ]] && return 1
@@ -142,7 +142,7 @@ run_config(){
   if ((neurofield_status == 0)); then
     gzip --force "$output_file"
   else
-    printf '%s\n' "Failed running: $SCRIPTDIR/bin/neurofield -i $config_file -o $output_file"
+    printf "$ERROR_CLR %s\n" "Failed running: $SCRIPTDIR/bin/neurofield -i $config_file -o $output_file"
   fi
   
   return "$neurofield_status"
@@ -203,19 +203,24 @@ check_all(){
   local -r changed_ouput_list="/tmp/neurofield_changed_output_list_$(whoami).txt"
   [[ -f "$changed_ouput_list" ]] && rm -f "$changed_ouput_list"
   local error_count=0
+  local conf_count=0
   get_all_config_files
   for (( i = 0; i < ${#CONFIG_FILES[@]}; i++ )) ; do
+    ((++conf_count))
     printf '%s' "Checking '${CONFIG_FILES[i]}'... "
     check_output_file "${CONFIG_FILES[i]}"
     [[ "$?" != 0 ]] && ((++error_count))
     if [[ "$DIFF_STATUS" = '0' ]]; then
-      printf '%s\n' "output the same."
+      printf "output the ${SAME_CLR}.\n"
       rm -f "${OUTPUT_FILE_TMP}.gz"
     elif [[ "$DIFF_STATUS" = '1' ]]; then
-      printf '%s\n' "output DIFFERS!"
+      printf "output ${DIFFERS_CLR}\n"
       printf '%s\n' "$(readlink -f "${OUTPUT_FILE}.gz")" >> "$changed_ouput_list"
     fi
   done
+  if [[ "$error_count" != '0' ]]; then
+    printf '%s\n' "There were '$error_count' of '$conf_count' config files that could not be checked."
+  fi
   return "$error_count"
 }
 
@@ -235,7 +240,7 @@ check_output_file(){
   #Compare the current output of neurofield against stored output.
   if [[ -f "$config_file" ]]; then
     set_output_file "$config_file"
-    [[ -f "${OUTPUT_FILE}.gz" ]] || { printf '%s\n' "No existing file to check against."; return 1; }
+    [[ -f "${OUTPUT_FILE}.gz" ]] || { printf "$ERROR_CLR %s\n" "No existing file to check against."; return 1; }
     config_file_name="$(basename "$config_file")"
     OUTPUT_FILE_TMP="$(mktemp --tmpdir="/tmp" --suffix=.output neurofield_"$config_file_name"-XXXX 2>/dev/null \
                      || mktemp /tmp/neurofield_"$config_file_name".XXXX)" #Alternative for OSX
