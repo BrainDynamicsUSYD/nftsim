@@ -166,6 +166,23 @@ regenerate_output_file(){
       run_config "${CONFIG_FILES[i]}"
     done
     return 0
+  elif [[ "$config_file" == "changed" ]]; then
+    [[ -f "/tmp/neurofield_changed_output_list_$(whoami).txt" ]] || { printf '%s\n' 'No changed list.'; return 1; }
+    local regen_file
+    local -i regen_errors=0
+    while read -r output_to_regenerate ; do
+      regen_file="${output_to_regenerate##*/}"
+      regen_file="${regen_file%*.output.gz}"
+      printf '%s\n' "Regenerating '$regen_file'..."
+      set_output_file "$regen_file"
+      run_config "$regen_file"
+      [[ "$?" != '0' ]] && ((++regen_errors))
+    done < "/tmp/neurofield_changed_output_list_$(whoami).txt"
+    if ((regen_errors!=0)); then
+      printf '%s\n' "There were '$regen_errors' errors while regenerating changed output."
+      return "$regen_errors"
+    fi
+    return 0
   fi
   if [[ ! -f "$config_file" ]]; then
     config_file="$(find "$SCRIPTDIR/configs" -maxdepth 3 -type f -name "${config_file}.conf")"
@@ -183,6 +200,8 @@ regenerate_output_file(){
 }
 
 check_all(){
+  local -r changed_ouput_list="/tmp/neurofield_changed_output_list_$(whoami).txt"
+  [[ -f "$changed_ouput_list" ]] && rm -f "$changed_ouput_list"
   local error_count=0
   get_all_config_files
   for (( i = 0; i < ${#CONFIG_FILES[@]}; i++ )) ; do
@@ -192,8 +211,10 @@ check_all(){
     if [[ "$DIFF_STATUS" = '0' ]]; then
       printf '%s\n' "output the same."
       rm -f "${OUTPUT_FILE_TMP}.gz"
+    elif [[ "$DIFF_STATUS" = '1' ]]; then
+      printf '%s\n' "output DIFFERS!"
+      printf '%s\n' "$(readlink -f "${OUTPUT_FILE}.gz")" >> "$changed_ouput_list"
     fi
-    [[ "$DIFF_STATUS" = '1' ]] && printf '%s\n' "output DIFFERS!"
   done
   return "$error_count"
 }
