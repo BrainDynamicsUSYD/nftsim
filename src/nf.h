@@ -18,9 +18,9 @@
 #include <vector>    // std::vector;
 
 class NF {
-  NF(void);    // no default constructor allowed
+  NF();  // No default constructor allowed.
  protected:
-  typedef std::vector<double>::size_type size_type;
+  using size_type = std::vector<double>::size_type;
   virtual void init( Configf& configf ) = 0;
   //virtual void restart( Restartf& restartf ) = 0;
   //virtual void dump( Dumpf& dumpf ) const = 0;
@@ -32,10 +32,10 @@ class NF {
   friend Configf&  operator>> ( Configf& configf, NF& nf );
   //friend Restartf& operator>> ( Restartf& restartf, NF& nf );
   //friend Dumpf&    operator<< ( Dumpf& dumpf, const NF& nf );
-  virtual void step(void) = 0;
+  virtual void step() = 0;
   virtual void output( Output&  /*unused*/) const;
 
-  virtual ~NF(void);
+  virtual ~NF();
 };
 
 #endif //NEUROFIELD_SRC_NF_H

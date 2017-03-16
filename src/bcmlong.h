@@ -21,8 +21,8 @@
 #include <vector> // std::vector;
 
 class BCMLong : public BCM {
-  BCMLong();
-  BCMLong(BCMLong&);
+  BCMLong();               // No default constructor allowed.
+  BCMLong(const BCMLong&); // No copy constructor allowed.
  protected:
   void init( Configf& configf ) override;
 
@@ -32,8 +32,8 @@ class BCMLong : public BCM {
  public:
   BCMLong( size_type nodes, double deltat, size_type index,
            const Propagator& prepropag, const Population& postpop );
-  ~BCMLong(void) override;
-  void step(void) override;
+  ~BCMLong() override;
+  void step() override;
   void output( Output& output ) const override;
 };
 

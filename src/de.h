@@ -12,34 +12,34 @@
 // C++ standard library headers
 #include <vector> // std::vector;
 
-typedef std::vector<std::vector<double>>::size_type vvd_size_type;
+using vvd_size_type = std::vector<std::vector<double>>::size_type;
 
 class DE {
-  DE(void);
-  DE(DE&);
+  DE();          // No default constructor allowed.
+  DE(const DE&); // No copy constructor allowed.
   void operator=(DE&);
  protected:
   // if the number of field variables need to be extended, use this function
   void extend( vvd_size_type extension ) {
-    n += extension;
-    variables.resize(n);
-    for( vvd_size_type i=0; i<n; i++ ) {
+    ndim += extension;
+    variables.resize(ndim);
+    for( vvd_size_type i=0; i<ndim; i++ ) {
       variables[i].resize(nodes,0);
     }
   }
  public:
   vvd_size_type nodes; ///< number of nodes in the system.
   double deltat;       ///< integration timestep size.
-  vvd_size_type n;     ///< dimension of system == y.size()
+  vvd_size_type ndim;  ///< dimension of system == y.size()
   std::vector<std::vector<double> > variables;
 
-  DE( vvd_size_type nodes, double deltat, vvd_size_type n )
-    : nodes(nodes), deltat(deltat), n(n), variables(n) {
-    for( vvd_size_type i=0; i<n; i++ ) {
+  DE( vvd_size_type nodes, double deltat, vvd_size_type ndim )
+    : nodes(nodes), deltat(deltat), ndim(ndim), variables(ndim) {
+    for( vvd_size_type i=0; i<ndim; i++ ) {
       variables[i].resize(nodes);
     }
   }
-  virtual ~DE(void) = default;
+  virtual ~DE() = default;
 
   virtual std::vector<double>& operator[] ( vvd_size_type index ) {
     return variables[index];
@@ -52,30 +52,30 @@ class DE {
 };
 
 class Integrator {
-  Integrator(void);
-  Integrator(Integrator&);
+  Integrator();                  // No default constructor allowed.
+  Integrator(const Integrator&); // No copy constructor allowed.
   void operator=(Integrator&);
  protected:
   DE& de;
  public:
   explicit Integrator( DE& de ) : de(de) {}
-  virtual ~Integrator(void) = default;
-  virtual void step(void) = 0;
+  virtual ~Integrator() = default;
+  virtual void step() = 0;
 };
 
 class Euler : public Integrator {
-  Euler(void);
-  Euler(Euler&);
+  Euler();             // No default constructor allowed.
+  Euler(const Euler&); // No copy constructor allowed.
   void operator=(Euler&);
  protected:
   std::vector<double> dydt;
  public:
-  explicit Euler( DE& de ) : Integrator(de), dydt(de.n) {}
-  ~Euler(void) override = default;
-  void step(void) override {
+  explicit Euler( DE& de ) : Integrator(de), dydt(de.ndim) {}
+  ~Euler() override = default;
+  void step() override {
     for( vvd_size_type j=0; j<de.nodes; j++ ) {
       de.rhs( de.variables[j], dydt );
-      for( vvd_size_type i=0; i<de.n; i++ ) {
+      for( vvd_size_type i=0; i<de.ndim; i++ ) {
         de.variables[i][j] += dydt[i]*de.deltat;
       }
     }
@@ -83,8 +83,8 @@ class Euler : public Integrator {
 };
 
 class RK4 : public Integrator {
-  RK4(void);
-  RK4(RK4&);
+  RK4();           // No default constructor allowed.
+  RK4(const RK4&); // No copy constructor allowed.
   void operator=(RK4&);
  protected:
   double h6; ///< == deltat/6
@@ -96,30 +96,30 @@ class RK4 : public Integrator {
   std::vector<double> k4;
   std::vector<double> temp;
  public:
-  explicit RK4( DE& de ) : Integrator(de), h6(de.deltat/6.), deltat5(de.deltat*0.5),
-    k1(de.n), k2(de.n), k3(de.n), k4(de.n), temp(de.n) {}
-  ~RK4(void) override = default;
+  explicit RK4( DE& de ) : Integrator(de), h6(de.deltat/6.0), deltat5(de.deltat*0.5),
+    k1(de.ndim), k2(de.ndim), k3(de.ndim), k4(de.ndim), temp(de.ndim) {}
+  ~RK4() override = default;
 
-  void step(void) override {
+  void step() override {
     for( vvd_size_type j=0; j<de.nodes; j++ ) {
-      for( vvd_size_type i=0; i<de.n; i++ ) {
+      for( vvd_size_type i=0; i<de.ndim; i++ ) {
         temp[i] = de.variables[i][j];
       }
       de.rhs(temp,k1);
-      for( vvd_size_type i=0; i<de.n; i++ ) {
-        temp[i] = de.variables[i][j] +deltat5*k1[i];
+      for( vvd_size_type i=0; i<de.ndim; i++ ) {
+        temp[i] = de.variables[i][j] + (deltat5 * k1[i]);
       }
       de.rhs(temp,k2);
-      for( vvd_size_type i=0; i<de.n; i++ ) {
-        temp[i] = de.variables[i][j] +deltat5*k2[i];
+      for( vvd_size_type i=0; i<de.ndim; i++ ) {
+        temp[i] = de.variables[i][j] + (deltat5 * k2[i]);
       }
       de.rhs(temp,k3);
-      for( vvd_size_type i=0; i<de.n; i++ ) {
-        temp[i] = de.variables[i][j] +de.deltat*k3[i];
+      for( vvd_size_type i=0; i<de.ndim; i++ ) {
+        temp[i] = de.variables[i][j] + (de.deltat * k3[i]);
       }
       de.rhs(temp,k4);
-      for( vvd_size_type i=0; i<de.n; i++ ) {
-        de.variables[i][j] += h6*( k1[i] +2.0*k2[i] +2.0*k3[i] +k4[i] );
+      for( vvd_size_type i=0; i<de.ndim; i++ ) {
+        de.variables[i][j] += h6*(k1[i] + (2.0 * k2[i]) + (2.0 * k3[i]) + k4[i]);
       }
     }
   }

@@ -21,8 +21,8 @@
 #include <vector> // std::vector;
 
 class DendriteIntegral : public Dendrite {
-  DendriteIntegral(void); // default constructor
-  DendriteIntegral(DendriteIntegral& ); // no copy constructor
+  DendriteIntegral();                        // No default constructor allowed.
+  DendriteIntegral(const DendriteIntegral&); // No copy constructor allowed.
 
   // variables that are intialized once to speed up computation
   double aminusb = 0.0;  ///< == alpha - beta
@@ -49,8 +49,8 @@ class DendriteIntegral : public Dendrite {
 
   DendriteIntegral( size_type nodes, double deltat, size_type index,
             const Propagator& prepropag, const Coupling& precouple );
-  ~DendriteIntegral(void) override;
-  void step(void) override;
+  ~DendriteIntegral() override;
+  void step() override;
 };
 
 #endif //NEUROFIELD_SRC_DENDRITE_INTEGRAL_H

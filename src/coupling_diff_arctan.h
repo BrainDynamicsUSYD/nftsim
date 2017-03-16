@@ -21,8 +21,8 @@
 #include <vector> // std::vector;
 
 class CouplingDiffArctan : public Coupling {
-  CouplingDiffArctan();
-  CouplingDiffArctan(CouplingDiffArctan&);
+  CouplingDiffArctan();                          // No default constructor allowed.
+  CouplingDiffArctan(const CouplingDiffArctan&); // No copy constructor allowed.
  protected:
   double nu_min = 0.0, nu_max = 0.0;
   double t_half_down = 0.0, t_half_up = 0.0;
@@ -34,12 +34,12 @@ class CouplingDiffArctan : public Coupling {
   std::vector<double> deltanu;
 
  public:
-  void init( Configf& configf );
-  void step(void);
-  void find(void);
+  void init( Configf& configf ) override;
+  void step() override;
+  void find();
   CouplingDiffArctan( size_type nodes, double deltat, size_type index,
                     const Propagator& prepropag, const Population& postpop, double tempf );
-  virtual ~CouplingDiffArctan(void);
+  ~CouplingDiffArctan() override;
 };
 
 #endif //COUPLING_DIFF_ARCTAN_H

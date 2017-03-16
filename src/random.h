@@ -13,7 +13,7 @@
 #include <random> // std::mt19937_64; std::normal_distribution;
 
 class Random {
-  Random(Random& ); // no copy constructor
+  Random(const Random&); // No copy constructor allowed.
 
   static uint_fast64_t id; // Auto-increment the ID of each Random instance to use as the default seed
 
@@ -24,9 +24,9 @@ class Random {
   Random(double mean, double std);
   explicit Random(uint_fast64_t seed, double mean = 0.0, double std = 1.0);
   void init(uint_fast64_t seed, double mean, double std);
-  double get(void);
+  double get();
   void get(double& target);
-  ~Random(void);
+  ~Random();
 };
 
 #endif // NEUROFIELD_SRC_RANDOM_H

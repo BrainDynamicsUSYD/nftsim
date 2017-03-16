@@ -60,12 +60,12 @@ void CouplingRamp::init( Configf& configf ) {
     deltanu.push_back(temp);
   }
   // Assume that at t=0, nu=nus[0], ie, the segment between t=0 and timepoints[0] is constant.
-  n.clear();
-  n.resize(nodes,tempn[0]);
+  nu.clear();
+  nu.resize(nodes,tempn[0]);
   pos = (tempn[0]>0)?1:-1;
 
   for( size_type i=0; i<nodes; i++ ) {
-    P[i] = n[i]*prepropag.phiinit(configf);
+    P[i] = nu[i]*prepropag.phiinit(configf);
   }
 
   time = 0;
@@ -79,7 +79,7 @@ void CouplingRamp::step() {
   for ( vector<double>::size_type j=1; j<pairs; j++ ) {
     if( time >= tpts[j-1] && time < tpts[j] ) {
       for( size_type i=0; i<nodes; i++ ) {
-        n[i] += deltanu[j-1];
+        nu[i] += deltanu[j-1];
       }
     }
   }

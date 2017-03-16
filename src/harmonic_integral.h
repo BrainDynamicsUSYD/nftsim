@@ -19,8 +19,8 @@
 #include <vector> // std::vector;
 
 class HarmonicIntegral : public virtual Propagator {
-  HarmonicIntegral(); // no default constructor
-  HarmonicIntegral(HarmonicIntegral&); // no copy constructor
+  HarmonicIntegral();                        // No default constructor allowed.
+  HarmonicIntegral(const HarmonicIntegral&); // No copy constructor allowed.
  protected:
   void init( Configf& configf ) override;
   //virtual void restart( Restartf& restartf );
@@ -42,8 +42,8 @@ class HarmonicIntegral : public virtual Propagator {
  public:
   HarmonicIntegral( size_type nodes, double deltat, size_type index, Population& prepop,
             Population& postpop, int longside, std::string topology );
-  ~HarmonicIntegral(void) override;
-  void step(void) override;
+  ~HarmonicIntegral() override;
+  void step() override;
 };
 
 #endif //NEUROFIELD_SRC_HARMONIC_INTEGRAL_H

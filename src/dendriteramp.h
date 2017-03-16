@@ -22,21 +22,20 @@
 using std::vector;
 
 class DendriteRamp : public Dendrite {
-  DendriteRamp(void);  // default constructor
-  DendriteRamp(DendriteRamp& );  // no copy constructor
+  DendriteRamp();                    // No default constructor allowed.
+  DendriteRamp(const DendriteRamp&); // No copy constructor allowed.
 
  protected:
   struct DendriteDE : public DE {
     std::vector<double> alpha_vec, beta_vec;
     double alpha2 = 0.0, beta2 = 0.0;
     double t1 = 0.0, t2 = 0.0, t3 = 0.0, t4 = 0.0;
-    virtual void init( const double vinit);
+    virtual void init(double vinit);
     DendriteDE( size_type nodes, double deltat) : DE(nodes, deltat, 3) {}
-    ~DendriteDE(void) override = default;
+    ~DendriteDE() override = default;
     void rhs( const std::vector<double>& y, std::vector<double>& dydt ) override;
   };
-  DendriteDE* de;
-  RK4* rk4;
+  DendriteDE* de; //Must redeclare here otherwise we get Dendrite::DendriteDE.
 
   double time = 0.0;
 
@@ -44,10 +43,10 @@ class DendriteRamp : public Dendrite {
  public:
   DendriteRamp( size_type nodes, double deltat, size_type index,
                 const Propagator& prepropag, const Coupling& precouple );
-  ~DendriteRamp(void) override;
-  void step(void) override;
+  ~DendriteRamp() override;
+  void step() override;
 
-  inline const std::vector<double>& V(void) const {
+  inline const std::vector<double>& V() const {
     return (*de)[1]; //NOTE: Pretty sure this is an error: index=1 points to dv/dt, to get voltage, which is what I think is wanted here, it should be index=0
   }
   void output( Output& output ) const override;
