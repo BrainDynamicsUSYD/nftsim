@@ -26,9 +26,9 @@
 #include <vector> // std::vector;
 
 class Stencil {
-  Stencil();
-  Stencil& operator=(const Stencil&);
-  Stencil(const Stencil&);
+  Stencil();               // No default constructor allowed.
+  Stencil(const Stencil&); // No copy constructor allowed.
+  Stencil& operator=(const Stencil&); // No copy assignment operator allowed.
  protected:
   int nodes;
   int longside;
@@ -45,12 +45,12 @@ class Stencil {
   };
 
   Stencil( int nodes, int longside, const std::string& boundary );
-  virtual ~Stencil(void);
+  virtual ~Stencil();
 
   const std::vector<double>& operator= ( const std::vector<double>& field );
   inline void operator++ (int) const; // increment Neighbours grid
   void set( int node ) const; // point to node
-  int get(void) const; // get ptr
+  int get() const; // get ptr
 
   inline double operator() ( Neighbours neighbour=c ) const {
     int arr[5] = {       ptr-longside-2,
@@ -59,7 +59,7 @@ class Stencil {
     return m[arr[neighbour+2]];
   }
 
-  inline operator double (void) const {
+  inline operator double () const {
     return (*this)(c);
   }
 };

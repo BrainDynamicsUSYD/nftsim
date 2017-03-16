@@ -25,8 +25,8 @@ class Propagator;
 #include <vector> //std::vector;
 
 class Propagator : public NF {
-  Propagator(); // no default constructor
-  Propagator(Propagator&); // no copy constructor
+  Propagator();                  // No default constructor allowed.
+  Propagator(const Propagator&); // No copy constructor allowed.
  protected:
   void init( Configf& configf ) override;
   //void restart( Restartf& restartf );
@@ -46,10 +46,10 @@ class Propagator : public NF {
  public:
   Propagator( size_type nodes, double deltat, size_type index, Population& prepop,
               Population& postpop, int longside, std::string topology );
-  ~Propagator(void) override;
-  void step(void) override;
+  ~Propagator() override;
+  void step() override;
   double phiinit( Configf& configf ) const;
-  virtual const std::vector<double>& phi(void) const;
+  virtual const std::vector<double>& phi() const;
   inline double operator[]( size_type node ) const;
   void output( Output& output ) const override;
 };

@@ -23,8 +23,8 @@
 #include <string>  // std::string
 
 class Wave : public Propagator {
-  Wave(); // no default constructor
-  Wave(Wave&); // no copy constructor
+  Wave();            // No default constructor allowed.
+  Wave(const Wave&); // No copy constructor allowed.
  protected:
   void init( Configf& configf ) override;
   //void restart( Restartf& restartf );
@@ -52,8 +52,8 @@ class Wave : public Propagator {
  public:
   Wave( size_type nodes, double deltat, size_type index, Population& prepop,
         Population& postpop, int longside, std::string topology );
-  ~Wave(void) override;
-  void step(void) override;
+  ~Wave() override;
+  void step() override;
 };
 
 #endif //NEUROFIELD_SRC_WAVE_H

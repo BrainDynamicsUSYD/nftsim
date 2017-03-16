@@ -18,10 +18,10 @@
 #include <vector>   // std::vector;
 
 class Timeseries : public NF {
-  Timeseries(Timeseries&);
-  Timeseries(void);
+  Timeseries(const Timeseries&);  // No copy constructor allowed.
+  Timeseries();                   // No default constructor allowed.
  protected:
-  typedef std::vector<double>::size_type series_size_type;
+  using series_size_type = std::vector<double>::size_type;
   void init( Configf& configf ) override;
 
   std::vector<Timeseries*> series;
@@ -30,8 +30,8 @@ class Timeseries : public NF {
   double cease = 0.0;
  public:
   Timeseries( size_type nodes, double deltat, size_type index );
-  ~Timeseries(void) override;
-  void step(void) override;
+  ~Timeseries() override;
+  void step() override;
   virtual void fire( std::vector<double>& Q ) const;
 };
 
@@ -52,11 +52,11 @@ struct Pulse : public Timeseries {
 };
 
 struct White : public Timeseries {
-  uint_fast64_t seed;
+  uint_fast64_t seed=0;
   double amp = 0.0, mean = 0.0, deltax = 0.0;
   Random* random;
   White(size_type nodes,double deltat,size_type index) : Timeseries(nodes,deltat,index) {}
-  ~White(void) override {
+  ~White() override {
     delete random;
   }
   void init( Configf& configf ) override;
@@ -64,11 +64,11 @@ struct White : public Timeseries {
 };
 
 struct WhiteCoherent : public Timeseries {
-  uint_fast64_t seed;
+  uint_fast64_t seed=0;
   double amp = 0.0, mean = 0.0;
   Random* random;
   WhiteCoherent(size_type nodes,double deltat,size_type index) : Timeseries(nodes,deltat,index) {}
-  ~WhiteCoherent(void) override {
+  ~WhiteCoherent() override {
     delete random;
   }
   void init( Configf& configf ) override;
@@ -94,7 +94,7 @@ struct Burst : public Timeseries {
 struct Sine : public Timeseries {
   double amp = 0.0, width = 0.0, period = 0.0, phase = 0.0, pulses = 0.0;
   Sine(size_type nodes,double deltat,size_type index) : Timeseries(nodes,deltat,index) {}
-  ~Sine(void) override = default;
+  ~Sine() override = default;
   void init( Configf& configf ) override;
   void fire( std::vector<double>& Q ) const override;
 };

@@ -23,16 +23,16 @@
 #include <vector>   // std::vector;
 
 class Solver : public NF {
-  Solver(); // no default constructor
-  Solver(Solver& ); // no copy constructor
+  Solver();              // No default constructor allowed.
+  Solver(const Solver&); // No copy constructor allowed.
 
   Dumpf& dumpf;
 
   int steps = 0; ///< number of integration steps to perform
 
   struct CntMat : public NF {
-    std::vector<double>::size_type npop; ///< number of populations
-    std::vector<int>::size_type ncnt; ///< number of connections
+    std::vector<double>::size_type npop=0; ///< number of populations
+    std::vector<int>::size_type ncnt=0; ///< number of connections
     std::vector< std::vector<double> > raw; // 2D vector of raw connection matrix
 
     std::vector<std::vector<double>::size_type> pre;  ///< presynaptic connection index for each population
@@ -42,9 +42,9 @@ class Solver : public NF {
     void init( Configf& configf ) override;
     //void restart( Restartf& restartf ) {}
     //void dump( Dumpf& dumpf ) const;
-    CntMat(void) : NF(0,0,0) {}
-    ~CntMat(void) override = default;
-    void step(void) override {}
+    CntMat() : NF(0,0,0) {}
+    ~CntMat() override = default;
+    void step() override {}
   } cnt;
 
   struct Outputs : public NF {
@@ -68,12 +68,12 @@ class Solver : public NF {
       : NF(nodes,deltat,0), dumpf(dumpf), cnt(cnt),
            pops(pops), propagators(propagators),
            couplings(couplings) {}
-    ~Outputs(void) override {
+    ~Outputs() override {
       for(auto & outlet : outlets) {
         delete outlet;
       }
     }
-    void step(void) override;
+    void step() override;
     void writeName( Outlet& outlet );
     void writeNode( Outlet& outlet );
     void writeOutlet( Outlet& outlet );
@@ -94,10 +94,10 @@ class Solver : public NF {
   //virtual void dump( Dumpf& dumpf ) const;
  public:
   explicit Solver( Dumpf& dumpf );
-  ~Solver(void) override;
+  ~Solver() override;
 
-  void solve(void); ///< main integration loop
-  void step(void) override;
+  void solve(); ///< main integration loop
+  void step() override;
 };
 
 #endif //NEUROFIELD_SRC_SOLVER_H

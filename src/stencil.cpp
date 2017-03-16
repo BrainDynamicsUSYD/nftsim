@@ -165,12 +165,12 @@ int Stencil::get() const {
   return x+y*longside;
 }
 
-/*double Stencil::nw(void) const { return m[ ptr-longside-2-1]; }
-double Stencil::n (void) const { return m[ ptr-longside-2  ]; }
-double Stencil::ne(void) const { return m[ ptr-longside-2+1]; }
-double Stencil:: w(void) const { return m[ ptr           -1]; }
-double Stencil:: c(void) const { return m[ ptr             ]; }
-double Stencil:: e(void) const { return m[ ptr           +1]; }
-double Stencil::sw(void) const { return m[ ptr+longside+2-1]; }
-double Stencil::s (void) const { return m[ ptr+longside+2  ]; }
-double Stencil::se(void) const { return m[ ptr+longside+2+1]; }*/
+/*double Stencil::nw() const { return m[ ptr-longside-2-1]; }
+double Stencil::n () const { return m[ ptr-longside-2  ]; }
+double Stencil::ne() const { return m[ ptr-longside-2+1]; }
+double Stencil:: w() const { return m[ ptr           -1]; }
+double Stencil:: c() const { return m[ ptr             ]; }
+double Stencil:: e() const { return m[ ptr           +1]; }
+double Stencil::sw() const { return m[ ptr+longside+2-1]; }
+double Stencil::s () const { return m[ ptr+longside+2  ]; }
+double Stencil::se() const { return m[ ptr+longside+2+1]; }*/
