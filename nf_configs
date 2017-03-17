@@ -173,9 +173,11 @@ regenerate_output_file(){
     while read -r output_to_regenerate ; do
       regen_file="${output_to_regenerate##*/}"
       regen_file="${regen_file%*.output.gz}"
+      regen_file="$(find "$SCRIPTDIR/configs" -maxdepth 3 -type f -name "${regen_file}.conf")"
       printf '%s\n' "Regenerating '$regen_file'..."
       set_output_file "$regen_file"
       run_config "$regen_file"
+      #printf '%s\n' "$SCRIPTDIR/bin/neurofield -i '$regen_file' -o '$OUTPUT_FILE'"
       [[ "$?" != '0' ]] && ((++regen_errors))
     done < "/tmp/neurofield_changed_output_list_$(whoami).txt"
     if ((regen_errors!=0)); then
