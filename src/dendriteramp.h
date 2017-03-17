@@ -36,6 +36,7 @@ class DendriteRamp : public Dendrite {
     void rhs( const std::vector<double>& y, std::vector<double>& dydt ) override;
   };
   DendriteDE* de; //Must redeclare here otherwise we get Dendrite::DendriteDE.
+  RK4* rk4;       //Must redeclare here otherwise we get seg-fault
 
   double time = 0.0;
 
