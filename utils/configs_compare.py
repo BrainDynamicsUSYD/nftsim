@@ -27,7 +27,7 @@ REQUIRES:
 .. moduleauthor:: Stuart Knock <>
 """
 
-__version__ = '0.0.1'
+__version__ = '0.1.4'
 
 # First, import from python standard library
 import logging
