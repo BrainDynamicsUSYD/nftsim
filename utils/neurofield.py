@@ -33,9 +33,12 @@ REQUIRES:
 """
 
 __version__ = '0.1.4'
-
+import logging
+logging.basicConfig(level=logging.DEBUG)
+LOG = logging.getLogger(__name__)
 import os
 import sys
+
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -105,13 +108,15 @@ class NF:
         """
         This function returns a gridded version of a single parameter in a
         3D matrix e.g. a 9x9x100 system will have a 100x81 matrix contained in
-        data. This function returns a 9x9x100
+        data. This function returns a 9x9x100. 
+        + TODO: this function will need 'Longside'
         """
-        return
+        raise NotImplementedError
 
     def plot(self, trace):
         """
         Plot trace...
+        + TODO: this overlaps with functionality included in configs_compare
         """
         plt.plot(self.time, self.data[trace])
         plt.show()
@@ -135,7 +140,7 @@ class NF:
 
 def run(filename, neurofield_path='./bin/neurofield'):
     """
-    Run neurofield and store output in NF class...
+    Run neurofield and store output in NF object...
     """
     filename = filename.replace('.conf', '')
     cmd = '%s -i %s.conf -o %s.output' % (neurofield_path, filename, filename)
