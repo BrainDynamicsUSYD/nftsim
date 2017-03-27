@@ -144,14 +144,14 @@ def run(filename, neurofield_path='./bin/neurofield'):
     """
     filename = filename.replace('.conf', '')
     cmd = '%s -i %s.conf -o %s.output' % (neurofield_path, filename, filename)
-    print('\n\nRunning neurofield with command: \n %s \n' % cmd)
+    LOG.info('\n\nRunning neurofield with command: \n %s \n' % cmd)
     result = os.system(cmd)
 
     if result:
-        print('Error! NeuroField did not exit cleanly')
+        LOG.error('The execution of NeuroField did finish cleanly.')
         sys.exit()
     else:
-        print('\n...finished. Output written to %s.output\n' % filename)
+        LOG.info('\nFinished. Output file is written to %s.output\n' % filename)
 
     nf_obj = NF('%s.output' % filename)
     return nf_obj
