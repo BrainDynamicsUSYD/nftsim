@@ -17,6 +17,11 @@
 # Originally Written: 2016-11-23
 #
 
+#Colourise some of our output.
+declare -gr DIFFERS_CLR='\e[1;33mDIFFERS!\e[0m' # Bold Yellow-ish
+declare -gr ERROR_CLR='\e[1;31mERROR:\e[0m'     # Bold Red
+declare -gr SAME_CLR='\e[1;32mSAME\e[0m'        # Bold Green
+
 #Capture args the script was called with.
 INPUTARG1="$1" ; INPUTARG2="$2"
 #Make them read-only so we can't accidentally modify them.
@@ -47,8 +52,15 @@ parse_command_flags(){
     ;;
     --check|-c)
       neurofield_exists || return 1
-      check_output_file "$INPUTARG2"
-      return "$?"
+      if [[ "$INPUTARG2" = 'all' ]]; then
+        check_all
+        return "$?"
+      else
+        check_output_file "$INPUTARG2"
+        [[ "$?" != '0' ]] && return 1
+        veiw_diff "$INPUTARG2"
+      fi
+      return "$DIFF_STATUS"
     ;;
     --clean)
       #Remove files left around by calls to --check that found differences.
@@ -70,8 +82,12 @@ msg_help(){
   printf ' %s\n' "Modes:"
   printf '\n%s\n' "  --check"
   printf '%s\n'   "    Check if the output from neurofield has changed for a specified config file."
-  printf '%s\n'   "    eg: ./nf_configs --check 'example'"
-  printf '%s\n'   "    eg: ./nf_configs --check './configs/example.conf'"
+  printf '%s\n'   "    For example, to check the output of the 'example.conf' file, run:"
+  printf '%s\n'   "        ./nf_configs --check 'example'"
+  printf '%s\n'   "    or:"
+  printf '%s\n'   "        ./nf_configs --check './configs/example.conf'"
+  printf '%s\n'   "    or to check all configurations specified in the configs directory, run:"
+  printf '%s\n'   "        ./nf_configs --check 'all'"
   printf '\n%s\n' "  --regenerate"
   printf '%s\n'   "    Regenerates the test output for the specified config file. This should ONLY be"
   printf '%s\n'   "    used when you've intentionally made a change to the code or config file"
@@ -126,24 +142,48 @@ run_config(){
   if ((neurofield_status == 0)); then
     gzip --force "$output_file"
   else
-    printf '%s\n' "Failed runnning: $SCRIPTDIR/bin/neurofield -i $config_file -o $output_file"
+    printf "$ERROR_CLR %s\n" "Failed running: $SCRIPTDIR/bin/neurofield -i $config_file -o $output_file"
   fi
   
   return "$neurofield_status"
+}
+
+get_all_config_files(){
+  #NOTE: currently restricting the search for conf files to a max-depth of 2 to avoid
+  #      running the conf files from Abeysuriya_2014, as they generate GB of output.
+  declare -ga CONFIG_FILES
+  CONFIG_FILES=($(find "$SCRIPTDIR/configs" -maxdepth 2 -type f -name '*.conf'))
+  return 0
 }
 
 #Creates an output file in ./test/data/configs/ corresponding to the specified .conf file.
 regenerate_output_file(){
   local config_file="$1"
   if [[ "$config_file" == "all" ]]; then
-    #NOTE: currently restricting the search for conf files to a max-depth of 2 to avoid
-    #      running the conf files from Abeysuriya_2014, as they generate GB of output.
-    local -a config_files
-    config_files=($(find "$SCRIPTDIR/configs" -maxdepth 2 -type f -name '*.conf'))
-    for (( i = 0; i < ${#config_files[@]}; i++ )) ; do
-      set_output_file "${config_files[i]}"
-      run_config "${config_files[i]}"
+    get_all_config_files
+    for (( i = 0; i < ${#CONFIG_FILES[@]}; i++ )) ; do
+      set_output_file "${CONFIG_FILES[i]}"
+      run_config "${CONFIG_FILES[i]}"
     done
+    return 0
+  elif [[ "$config_file" == "changed" ]]; then
+    [[ -f "/tmp/neurofield_changed_output_list_$(whoami).txt" ]] || { printf '%s\n' 'No changed list.'; return 1; }
+    local regen_file
+    local -i regen_errors=0
+    while read -r output_to_regenerate ; do
+      regen_file="${output_to_regenerate##*/}"
+      regen_file="${regen_file%*.output.gz}"
+      regen_file="$(find "$SCRIPTDIR/configs" -maxdepth 3 -type f -name "${regen_file}.conf")"
+      printf '%s\n' "Regenerating '$regen_file'..."
+      set_output_file "$regen_file"
+      run_config "$regen_file"
+      #printf '%s\n' "$SCRIPTDIR/bin/neurofield -i '$regen_file' -o '$OUTPUT_FILE'"
+      [[ "$?" != '0' ]] && ((++regen_errors))
+    done < "/tmp/neurofield_changed_output_list_$(whoami).txt"
+    if ((regen_errors!=0)); then
+      printf '%s\n' "There were '$regen_errors' errors while regenerating changed output."
+      return "$regen_errors"
+    fi
     return 0
   fi
   if [[ ! -f "$config_file" ]]; then
@@ -161,44 +201,79 @@ regenerate_output_file(){
   return 1
 }
 
+check_all(){
+  local -r changed_ouput_list="/tmp/neurofield_changed_output_list_$(whoami).txt"
+  [[ -f "$changed_ouput_list" ]] && rm -f "$changed_ouput_list"
+  local error_count=0
+  local conf_count=0
+  get_all_config_files
+  for (( i = 0; i < ${#CONFIG_FILES[@]}; i++ )) ; do
+    ((++conf_count))
+    printf '%s' "Checking '${CONFIG_FILES[i]}'... "
+    check_output_file "${CONFIG_FILES[i]}"
+    [[ "$?" != 0 ]] && ((++error_count))
+    if [[ "$DIFF_STATUS" = '0' ]]; then
+      printf "output the ${SAME_CLR}.\n"
+      rm -f "${OUTPUT_FILE_TMP}.gz"
+    elif [[ "$DIFF_STATUS" = '1' ]]; then
+      printf "output ${DIFFERS_CLR}\n"
+      printf '%s\n' "$(readlink -f "${OUTPUT_FILE}.gz")" >> "$changed_ouput_list"
+    fi
+  done
+  if [[ "$error_count" != '0' ]]; then
+    printf '%s\n' "There were '$error_count' of '$conf_count' config files that could not be checked."
+  fi
+  return "$error_count"
+}
+
 #Generates a temporary output file in /tmp/ for a specified config file and
 #compares it to the corresponding output file in neurofield/test/data/configs/
 check_output_file(){
   local config_file="$1"
   local config_file_name
-  local diff_status
+  declare -g OUTPUT_FILE_TMP #Path to file containing output of current neurofield.
+  DIFF_STATUS=42
+
+  #If arg isn't a file, try mapping it to a file name.
   if [[ ! -f "$config_file" ]]; then
     config_file="$(find "$SCRIPTDIR/configs" -maxdepth 3 -type f -name "${config_file}.conf")"
   fi
+
+  #Compare the current output of neurofield against stored output.
   if [[ -f "$config_file" ]]; then
     set_output_file "$config_file"
-    [[ -f "${OUTPUT_FILE}.gz" ]] || { printf '%s\n' "No existing file to check against."; return 1; }
+    [[ -f "${OUTPUT_FILE}.gz" ]] || { printf "$ERROR_CLR %s\n" "No existing file to check against."; return 1; }
     config_file_name="$(basename "$config_file")"
-    output_file_tmp="$(mktemp --tmpdir="/tmp" --suffix=.output neurofield_"$config_file_name"-XXXX 2>/dev/null \
+    OUTPUT_FILE_TMP="$(mktemp --tmpdir="/tmp" --suffix=.output neurofield_"$config_file_name"-XXXX 2>/dev/null \
                      || mktemp /tmp/neurofield_"$config_file_name".XXXX)" #Alternative for OSX
-    run_config "$config_file" "$output_file_tmp" || return 1
-    zdiff "${output_file_tmp}.gz" "${OUTPUT_FILE}.gz"  &> /dev/null
-    diff_status="$?" #NOTE: No-diff = 0; diff = 1; error = 2
-    case "$diff_status" in
-      0)
-        printf '%s\n' "$config_file output hasn't changed."
-        rm -f "${output_file_tmp}.gz"
-    ;;
-      1)
-        zdiff --side-by-side --suppress-common-lines --width=180 "${OUTPUT_FILE}.gz" "${output_file_tmp}.gz" | less
-        printf '%s\n' "$config_file output DIFFERS!"
-        printf '%s\n' "See: ${output_file_tmp}.gz"
-    ;;
-      2)
-        printf '%s\n' "Error while running diff."
-    ;;
-    esac
-    return "$diff_status"
+    run_config "$config_file" "$OUTPUT_FILE_TMP" || return 1
+    zdiff "${OUTPUT_FILE_TMP}.gz" "${OUTPUT_FILE}.gz"  &> /dev/null
+    DIFF_STATUS="$?" #NOTE: No-diff = 0; diff = 1; error = 2
+    return 0
   else
     printf '%s\n' "You need to specify which config file to regenerate output for."
     printf '%s\n' "eg. nf_configs --regenerate 'example'"
   fi
   return 1
+}
+
+veiw_diff(){
+  local config_file="$1"
+  case "$DIFF_STATUS" in
+    0)
+      printf '%s\n' "'$config_file' output hasn't changed."
+      rm -f "${OUTPUT_FILE_TMP}.gz"
+  ;;
+    1)
+      zdiff --side-by-side --suppress-common-lines --width=180 "${OUTPUT_FILE}.gz" "${OUTPUT_FILE_TMP}.gz" | less
+      printf '%s\n' "'$config_file' output DIFFERS!"
+      printf '%s\n' "See: '${OUTPUT_FILE_TMP}.gz'"
+  ;;
+    2)
+      printf '%s\n' "Error while running diff."
+  ;;
+  esac
+  return "$DIFF_STATUS"
 }
 
 #The function run when the script is called
