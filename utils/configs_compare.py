@@ -101,7 +101,7 @@ if __name__ == "__main__":
     PARSER.add_argument('--node',
                         type=int,
                         default=0,
-                        help="Node to look at.")
+                        help="Node to look at (0-based indexing).")
 
     PARSER.add_argument('--overlay',
                         action='store_true',
@@ -122,7 +122,7 @@ if __name__ == "__main__":
     PARSER.add_argument('--version',
                         action='version',
                         version=__version__,
-                        help="Displays version information")
+                        help="Displays version information.")
     #Logging arg
     PARSER.add_argument("--verbosity",
                         type=int,
@@ -151,7 +151,7 @@ if __name__ == "__main__":
     #Load the stored data into a neurofield object.
     stored = neurofield.NF(tmp_stored_filename)
 
-    #Run the config file with the current version, data to a neurofield object.
+    #Run the config file with the current version, and load data to a neurofield object.
     config_path = 'configs/%s' % ARGS.conf
     current = neurofield.run(config_path)
 
