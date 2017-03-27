@@ -34,7 +34,8 @@ REQUIRES:
 
 __version__ = '0.1.4'
 import logging
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(filename='neurofield.log',level=logging.INFO,
+                    format='%(asctime)s:%(levelname)s:%(message)s')
 LOG = logging.getLogger(__name__)
 import os
 import sys
@@ -144,7 +145,7 @@ def run(filename, neurofield_path='./bin/neurofield'):
     """
     filename = filename.replace('.conf', '')
     cmd = '%s -i %s.conf -o %s.output' % (neurofield_path, filename, filename)
-    LOG.info('\n\nRunning neurofield with command: \n %s \n' % cmd)
+    LOG.info('Running neurofield with command: \n %s \n' % cmd)
     result = os.system(cmd)
 
     if result:
