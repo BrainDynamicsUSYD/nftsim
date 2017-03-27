@@ -17,7 +17,7 @@ OPTIONS:
 EXAMPLES:
   #Compare current Vs stored 'example.conf', plotting an overlay and diff for node 0.
   #From the main neurofield directory run:
-  ./utils/configs_compare.py --config=example.conf --overlay --diff
+  ./utils/configs_compare.py --conf=example.conf --overlay --diff
 
 REQUIRES:
   Recommend using Anaconda.
