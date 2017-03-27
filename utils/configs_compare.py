@@ -20,7 +20,7 @@ EXAMPLES:
   ./utils/configs_compare.py --conf=example.conf --overlay --diff
 
 REQUIRES:
-  Recommend using Anaconda.
+  Recommend using Anaconda on Linux.
   numpy
   matplotlib
 
