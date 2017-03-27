@@ -1,25 +1,28 @@
 # -*- coding: utf-8 -*-
 
 """
-  Defines a Neurofield Python class that supports...
+  Defines a NeuroField Python class that supports
+  + running a configuration file
+  + loading the output file for visualization and analysis
 
 USAGE:
     import neurofield
-    nf = neurofield.run('filename.conf','path_to_NeuroField')
-    print(nf)
-    nf.plot('trace') #traces have the form obj.node.variable
+    nfobj = neurofield.run('filename.conf','path_to_neurofield_executable')
+    print(nfobj)
+    this_trace = 'propagator.1.phi' # traces have the form class.node_index.variable
+    nfobj.plot(this_trace) 
 
 OPTIONS:
 
 EXAMPLES:
     # From the root neurofield directory
     import utils.neurofield as neurofield
-    nf = neurofield.run('configs/example.conf', './bin/neurofield')
-    print(nf)
-    nf.plot('propagator.1.phi')
+    nfobj = neurofield.run('configs/example.conf', './bin/neurofield')
+    print(nfobj)
+    nfobj.plot('propagator.1.phi')
 
 REQUIRES:
-  We recommend Anaconda.
+  We recommend Anaconda on Linux.
   Python 3 or a recent python 2.7.
   numpy 
   matplotlib
@@ -29,7 +32,7 @@ REQUIRES:
 .. moduleauthor:: John Griffiths <>
 """
 
-__version__ = '0.0.1'
+__version__ = '0.1.4'
 
 import os
 import sys
