@@ -153,5 +153,5 @@ def run(filename, neurofield_path='./bin/neurofield'):
     else:
         print('\n...finished. Output written to %s.output\n' % filename)
 
-    nf = NF('%s.output' % filename)
-    return nf
+    nf_obj = NF('%s.output' % filename)
+    return nf_obj
