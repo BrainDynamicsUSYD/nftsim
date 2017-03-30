@@ -67,11 +67,11 @@ void Wave::init( Configf& configf ) {
   expfactpos = exp(deltat*gamma);
 
   if(gamma/2.0 < deltat || range/2.0 < deltax) {
-    cerr << "Wave equation with gamma: " << gamma << " and range: " << range << endl;
+    cerr << "Wave equation with gamma: " << gamma << " [s^-1] and range: " << range << " [m]" << endl;
     cerr << "is neither adequately captured by grid spacing chosen" << endl;
     cerr << "nor sufficiently localized so the potential can be approximated by Q" << endl;
-    cerr << "gamma = " << gamma << " requires deltat < " << gamma/2.0 << endl;
-    cerr << "and range = " << range << " requires deltax < " << range/2.0 << endl;
+    cerr << "gamma = " << gamma << " [s^-1] requires deltat < " << gamma/2.0 << endl;
+    cerr << "and range = " << range << " [m] requires deltax < " << range/2.0 << endl;
     exit(EXIT_FAILURE);
   }
 
