@@ -71,7 +71,8 @@ void Wave::init( Configf& configf ) {
     cerr << "is neither adequately captured by grid spacing chosen" << endl;
     cerr << "nor sufficiently localized so the potential can be approximated by Q" << endl;
     cerr << "gamma = " << gamma << " [s^-1] requires deltat < " << gamma/2.0 << endl;
-    cerr << "and range = " << range << " [m] requires deltax < " << range/2.0 << endl;
+    cerr << "and range = " << range << " [m] requires deltax < " << range/2.0 << " [m]" << endl;
+    cerr << "Current deltax is = " << deltax << " [m]" << endl;
     exit(EXIT_FAILURE);
   }
 
