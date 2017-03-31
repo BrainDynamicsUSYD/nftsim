@@ -13,6 +13,7 @@
 #include "burst.h"      // BurstResponse;
 #include "configf.h"    // Configf;
 #include "coupling.h"   // Coupling;
+#include "glutamate_response.h"  // GlutamateResponse;
 #include "output.h"     // Output;
 #include "propagator.h" // Propagator;
 #include "qresponse.h"  // QResponse;
@@ -30,17 +31,17 @@ using std::vector;
 
 void Population::init( Configf& configf ) {
   qinit = Qinit(configf);
-  qhistory.push_back( vector<double>(nodes,qinit) );
-  q.resize(nodes,qinit);
+  qhistory.push_back( vector<double>(nodes, qinit) );
+  q.resize(nodes, qinit);
 
-  configf.param("Length",length);
+  configf.param("Length", length);
 
   if( qresponse != nullptr ) { // neural population
     double temp;
-    configf.param("Q",temp);
+    configf.param("Q", temp);
     configf.param( "Firing", *qresponse );
   } else { // stimulus population
-    timeseries = new Timeseries(nodes,deltat,index);
+    timeseries = new Timeseries(nodes, deltat, index);
     configf.param( "Stimulus", *timeseries );
   }
   settled = true;
@@ -89,7 +90,13 @@ double Population::Qinit( Configf& configf ) const {
 
 const vector<double>& Population::glu() const {
   if( qresponse != nullptr ) {
-    return qresponse->glu();
+    GlutamateResponse* local_qr = dynamic_cast<GlutamateResponse*>(qresponse);
+    if( local_qr == nullptr ){
+      cerr<<"Trying to access glu of a non-GlutatmateResponse population."<<endl;
+      exit(EXIT_FAILURE);
+    } else {
+      return local_qr->glu();
+    }
   }
   cerr<<"Trying to access glu of a stimulus population."<<endl;
   exit(EXIT_FAILURE);
@@ -104,15 +111,17 @@ void Population::add2Dendrite( size_type index, const Propagator& prepropag,
   }
 
   if( qresponse == nullptr ) {
-    string temp(configf.find( label("Population ",this->index+1)+"*Firing:" ));
+    string temp(configf.find( label("Population ", this->index+1)+"*Firing:" ));
     // PUT YOUR QRESPONSE HERE
     if( temp == "Bursting" ) {
-      qresponse = new BurstResponse(nodes,deltat,this->index);
+      qresponse = new BurstResponse(nodes, deltat, this->index);
+    } else if( temp == "GlutamateResponse" ){
+      qresponse = new GlutamateResponse(nodes, deltat, this->index);
       //else if( temp == "FS" )
       //qresponse = new FS(nodes,deltat,this->index);
-      // END PUT YOUR QRESPONSE HERE
+    // END PUT YOUR QRESPONSE HERE
     } else {
-      qresponse = new QResponse(nodes,deltat,this->index);
+      qresponse = new QResponse(nodes, deltat, this->index);
     }
   }
   qresponse->add2Dendrite( index, prepropag, precouple, configf );
