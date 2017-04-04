@@ -9,7 +9,7 @@ USAGE:
     import neurofield
     nfobj = neurofield.run('filename.conf','path_to_neurofield_executable')
     print(nfobj)
-    this_trace = 'propagator.1.phi' # traces have the form class.node_index.variable
+    this_trace = 'propagator.1.phi' # traces have the form class.obj_index.variable
     nfobj.plot(this_trace) 
 
 OPTIONS:
