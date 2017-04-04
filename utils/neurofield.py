@@ -34,7 +34,7 @@ REQUIRES:
 
 __version__ = '0.1.4'
 import logging
-logging.basicConfig(filename='neurofield.log',level=logging.INFO,
+logging.basicConfig(filename='neurofield.log', level=logging.INFO,
                     format='%(asctime)s:%(levelname)s:%(message)s')
 LOG = logging.getLogger(__name__)
 import os
@@ -103,7 +103,7 @@ class NF:
         """
         Return a matrix for a particular trace/field at a subset of the nodes.
         """
-        return
+        raise NotImplementedError
 
     def nf_grid(self, trace):
         """
@@ -130,7 +130,7 @@ class NF:
         skiprows = 0
         while not l.startswith('======================='):
             if 'Time  |' in l:
-                print('Did you try to open an old style output file?')
+                LOG.error('Did you try to open an old style output file?')
                 sys.exit()
             l = fid.readline()
             skiprows += 1
@@ -149,10 +149,10 @@ def run(filename, neurofield_path='./bin/neurofield'):
     result = os.system(cmd)
 
     if result:
-        LOG.error('The execution of NeuroField did finish cleanly.')
+        LOG.error('The execution of NeuroField did not finish cleanly.')
         sys.exit()
     else:
-        LOG.info('\nFinished. Output file is written to %s.output\n' % filename)
+        LOG.info('\nFinished. Output file was written to %s.output\n' % filename)
 
     nf_obj = NF('%s.output' % filename)
     return nf_obj
