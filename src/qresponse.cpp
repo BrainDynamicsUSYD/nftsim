@@ -32,8 +32,7 @@ using std::string;
 using std::vector;
 
 void QResponse::init( Configf& configf ) {
-  vector<string> temp = configf.arb("-");
-  mode = temp[0];
+  configf.param("Function", mode);
   if( mode == "Sigmoid" ) {
     configf.param("Theta",theta);
     configf.param("Sigma",sigma);
@@ -55,32 +54,10 @@ void QResponse::init( Configf& configf ) {
   for( Array<Dendrite>::size_type i=0; i<dendrites.size(); i++ ) {
     configf>>*dendrites[i];
   }
-
-  glu_m.init(configf);
-}
-
-void QResponse::Glu::init( Configf& configf ) {
-  Lambda = 0;
-  tGlu = 0;
-  configf.optional("Lambda",Lambda);
-  configf.optional("tGlu",tGlu);
-  variables[0].resize(nodes,1e-6);
-  variables[1].resize(nodes);
-}
-
-void QResponse::Glu::rhs( const vector<double>& y, vector<double>& dydt ) {
-  // y = { glu, excitatory phi }
-  // glu
-  dydt[0] = Lambda*y[1] -y[0]/tGlu;
-  if( y[0]+dydt[0]*deltat <0 ) {
-    dydt[0] = -y[0];
-  }
-  // excitatory phi, leave alone
-  dydt[1] = 0;
 }
 
 QResponse::QResponse( size_type nodes, double deltat, size_type index )
-  : NF(nodes,deltat,index), v(nodes), glu_m(nodes,deltat), glu_rk4(glu_m) {
+  : NF(nodes,deltat,index), v(nodes) {
 }
 
 QResponse::~QResponse() = default;
@@ -96,21 +73,6 @@ void QResponse::step() {
       v[j] += dendrites[i]->V()[j];
     }
   }
-
-  // glutamate dynamics
-  if( glu_m.Lambda != 0 ) {
-    for( size_type j=0; j<nodes; j++ ) {
-      glu_m[1][j] = 0; // reset excitatory phi
-    }
-    for( Array<Dendrite>::size_type  i=0; i<dendrites.size(); i++ ) {
-      if( dendrites[i]->precouple.excite() ) {
-        for( size_type j=0; j<nodes; j++ ) {
-          glu_m[1][j] += dendrites[i]->prepropag[j]; // put in excitatory phi
-        }
-      }
-    }
-    glu_rk4.step();
-  }
 }
 
 void QResponse::add2Dendrite( size_type index, const Propagator& prepropag,
@@ -119,17 +81,13 @@ void QResponse::add2Dendrite( size_type index, const Propagator& prepropag,
   dendrite_index.push_back(index);
   // PUT YOUR DENDRITE HERE
   if( temp == "Ramp" ) {
-    dendrites.add( new DendriteRamp(nodes,deltat,index,prepropag,precouple) );
+    dendrites.add( new DendriteRamp(nodes, deltat, index, prepropag, precouple) );
   } else if ( temp == "Integral" ) {
-    dendrites.add( new DendriteIntegral(nodes,deltat,index,prepropag,precouple) );
-    // END PUT YOUR DENDRITE HERE
+    dendrites.add( new DendriteIntegral(nodes, deltat, index, prepropag, precouple) );
+  // END PUT YOUR DENDRITE HERE
   } else {
-    dendrites.add( new Dendrite(nodes,deltat,index,prepropag,precouple) );
+    dendrites.add( new Dendrite(nodes, deltat, index, prepropag, precouple) );
   }
-}
-
-const vector<double>& QResponse::glu() const {
-  return glu_m[0];
 }
 
 void QResponse::fire( vector<double>& Q ) const {
