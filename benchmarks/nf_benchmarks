@@ -42,7 +42,7 @@ do
   if ((number_of_nodes < 1000)); then 
 
   #Run and write to memory
-  /usr/bin/time -v ../bin/neurofield -i "/dev/shm/$config_file" -o "$output_file"  >> "$results_file"
+  /usr/bin/time -v ../bin/neurofield -i "$config_file" -o "/dev/shm/$output_file"  >> "$results_file"
   file_size=$(wc --bytes < "$output_file")
   file_size_gb=$((file_size/(1048576*1024))) # in GB
   file_size_mb=$((file_size/(1048576))) # in MB
