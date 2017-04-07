@@ -29,7 +29,7 @@ class Population : public NF {
   Population();                   // No default constructor allowed.
   Population(const Population& ); // No copy constructor allowed.
 
-  QResponse* qresponse; ///< qresponse for neural population
+  QResponse* qresponse;   ///< qresponse for neural population
   Timeseries* timeseries; ///< timeseries for stimulus
  protected:
   std::vector< std::vector<double> >::size_type qkey; ///< index to the present q in qhistory
@@ -56,8 +56,7 @@ class Population : public NF {
                              const Coupling& precouple, Configf& configf );
   virtual void growHistory( const Tau& tau );
   void output( Output& output ) const override;
-  virtual void outputDendrite( size_type
-   index, Output& output ) const;
+  virtual void outputDendrite( size_type index, Output& output ) const;
 };
 
 #endif //NEUROFIELD_SRC_POPULATION_H
