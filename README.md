@@ -12,6 +12,16 @@ based on Robinson's Neural Field Theory.
 
 3. After doing 1) or 2) type `cd neurofield`.
 
+## Requirements
+
+Make sure you have a compiler that supports the `C++11` standard.  
+On Linux: `gcc` 4.8 or higher; `clang 3.7` or higher.
+On MacOS: `clang` 3.3 or later version;
+
+Additionally, to build the reference manual you'll need `doxygen` and `graphviz`.
+The user manual is built using `pdflatex`.
+
+
 ### Build/compilation
 
 To build the executable on Linux or Mac, open a terminal in the neurofield directory and type:
@@ -31,10 +41,6 @@ For a brief description of available Makefile targets, type:
     make help
 
 
-
-**NOTE**: Ensure you have a compiler that supports the `C++11` standard.  
-On Linux: g++ 4.8 or higher; clang 3.7 or higher.
-On MacOS: TBD.
 
 ## Demos
 
