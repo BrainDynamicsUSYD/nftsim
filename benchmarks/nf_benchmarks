@@ -3,7 +3,7 @@
 # nf_benchmarks
 #
 #USAGE:
-#  ./nf_configs --help
+#  ./nf_benchmarks --help
 #
 #DESCRIPTION:
 #  A script for running the benchmarks config files  
@@ -17,13 +17,14 @@
 
 
 # TODO:
+# add messages for help
 # get information about OS
 # append info when started running
 # add line for different number of nodes
 # add differen cases: eg, testing for nodes or testing for time step
 # check if neurofield exists otherwise try to build or throw an error message
 # try to get git tag information to append to file 
-# 
+
 
 
 for config_file in *.conf
@@ -39,32 +40,32 @@ do
   number_of_nodes=$(sed 's/^0*//' <<< "$nodes_string")
   echo "$number_of_nodes"
 
-  if ((number_of_nodes < 1000)); then 
+  if ((number_of_nodes < 150)); then 
 
   #Run and write to memory
-  /usr/bin/time -v ../bin/neurofield -i "$config_file" -o "/dev/shm/$output_file"  >> "$results_file"
+  { /usr/bin/time -v ../bin/neurofield -i "$config_file" -o "/dev/shm/$output_file" ;} 2>> "$results_file"
   file_size=$(wc --bytes < "$output_file")
   file_size_gb=$((file_size/(1048576*1024))) # in GB
-  file_size_mb=$((file_size/(1048576))) # in MB
+  file_size_mb=$((file_size/(1048576)))      # in MB
   
   {
     echo "Storage size:" 
     echo "$file_size_gb GB" 
-    echo "$file_size_mb GB" 
+    echo "$file_size_mb MB" 
   } >> "$results_file"
 
   fi
 
-  #Run and write to disk
-  /usr/bin/time -v ../bin/neurofield -i "$config_file" -o "$output_file"  >> "$results_file"
-  file_size=$(wc --bytes < "$output_file")
-  file_size_gb=$((file_size/(1048576*1024))) # in GB
-  file_size_mb=$((file_size/(1048576))) # in MB
-  {
-    echo "Storage size:" 
-    echo "$file_size_gb GB" 
-    echo "$file_size_mb GB" 
-  } >> "$results_file"
+  # #Run and write to disk
+  # (/usr/bin/time -v ../bin/neurofield -i "$config_file" -o "$output_file")  >> "$results_file"
+  # file_size=$(wc --bytes < "$output_file")
+  # file_size_gb=$((file_size/(1048576*1024))) # in GB
+  # file_size_mb=$((file_size/(1048576))) # in MB
+  # {
+  #   echo "Storage size:" 
+  #   echo "$file_size_gb GB" 
+  #   echo "$file_size_mb MB" 
+  # } >> "$results_file"
 
 
 
