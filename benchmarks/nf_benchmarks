@@ -3,7 +3,7 @@
 # nf_benchmarks
 #
 #USAGE:
-#  ./nf_configs --help
+#  ./nf_benchmarks --help
 #
 #DESCRIPTION:
 #  A script for running the benchmarks config files  
@@ -17,13 +17,14 @@
 
 
 # TODO:
+# add messages for help
 # get information about OS
 # append info when started running
 # add line for different number of nodes
 # add differen cases: eg, testing for nodes or testing for time step
 # check if neurofield exists otherwise try to build or throw an error message
 # try to get git tag information to append to file 
-# 
+
 
 
 for config_file in *.conf
