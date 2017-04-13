@@ -187,13 +187,13 @@ A list of available switches can be displayed by using the \type{-h} or \type{--
 
 To write a configuration file, follow these steps:
 \begin{enumerate}
-\item Determine your population model by drawing a schematic diagram, thereby constructing a connection matrix. An example is shown in Fig.~\ref{fig:pop}.
+\item Determine your population model by drawing a schematic diagram, thereby constructing a connection matrix. An example is shown in Fig.~\ref{fig:cortical}.
 \item Look up existing configuration files in \type{configs/}. By checking the comment located at the top of a configuration file, and also the connection matrix, a user should find the most suitable existing file to construct his own. This is less tedious (and less error prone) than writing a new one from scratch.
 \item Specify the global parameters and connectivity matrix (Sec.~\ref{sec:global}).
-\item Specify all populations (Sec.~\ref{sec:pop}).
+\item Specify all populations (Sec.~\ref{sec:pop_conf}).
 \item Specify all propagators (Sec.~\ref{sec:prop}).
-\item Specify all couplings (Sec.~\ref{sec:coupling}).
-\item Specify all output requests (Sec.~\ref{sec:output}).
+\item Specify all couplings (Sec.~\ref{sec:coupling_conf}).
+\item Specify all output requests (Sec.~\ref{sec:output_conf}).
 \end{enumerate}
 
 General rules on the entries within a configuration file:
@@ -285,7 +285,7 @@ Nodes: 4 Longside: 2
 
 Both spatial dimensions have periodic boundary conditions, so that populations have the topology of a torus.
 
-{\bf Note that the physical size of each neural population is specified in the definition of the population - see Sec.~\ref{sec:pop}. For each population, $\Delta x$ is automatically computed based on the number of grid points and the physical size of the population.} This ensures that the physical size of the system does not change when the number of grid points is changed. When a wave propagator is included, the value of $\Delta x$ is automatically selected from the presynaptic population.
+{\bf Note that the physical size of each neural population is specified in the definition of the population - see Sec.~\ref{sec:pop_conf}. For each population, $\Delta x$ is automatically computed based on the number of grid points and the physical size of the population.} This ensures that the physical size of the system does not change when the number of grid points is changed. When a wave propagator is included, the value of $\Delta x$ is automatically selected from the presynaptic population.
 
 \item {\em Specifying connectivity}
 \begin{lstlisting}
@@ -302,7 +302,7 @@ The size of this matrix determines the number of neural populations in the simul
 \end{itemize}
 
 \subsubsection{Population data}
-\label{sec:pop}
+\label{sec:pop_conf}
 This section contains population information sections. There are two types of neural populations: ordinary populations and stimulus populations:
 \begin{description}
 
@@ -479,7 +479,7 @@ Harmonic - phi: Steady Tau: 0 gamma: 116
 
 \begin{itemize}
 
-\item The type of coupling between each pair of popoulations can be specified for separately. The coupling data is given as $n$ lines  corresponding to each nonzero connection in the connection matrix defined at the top of the file. Different types of coupling has their own input form.
+\item The type of coupling between each pair of populations can be specified for separately. The coupling data is given as $n$ lines  corresponding to each nonzero connection in the connection matrix defined at the top of the file. Different types of coupling has their own input form.
 \item \begin{lstlisting}
 Coupling 1:
 \end{lstlisting}
@@ -488,7 +488,7 @@ Coupling 1:
 
 \item[Map]\ \\
     Linear synaptic coupling with input parameter \type{nu}, constant time.
-    This parameter may be a single number or take a vector of lenght
+    This parameter may be a single number or take a vector of length
     \texttt{Nodes}, which allows for the expression of nonuniform models.
     \begin{lstlisting}
         Map - nu: 0.0012
@@ -523,7 +523,7 @@ Coupling 1:
 
     \item[Matrix]\ \\
 
-    The coupling may be expressed as a connection matrix, where the couping
+    The coupling may be expressed as a connection matrix, where the coupling
     strengths do not change with time. The format of the \texttt{nu} matrix is
     the same as the population connection matrix, each row is to the same
     node, each column is from the same node. When outputting, each specified
@@ -560,13 +560,13 @@ CaDP - nu: 13e-6 nu_max: 80e-6 Dth: .25e-6 Pth: .45e-6 xyth: 1e-4 x: 2.3e-2 y: 2
     \begin{lstlisting}
 DiffArctan - nu_min: 0.002  nu_max: 0.006  delta: 10  t_half_up:50  t_half_down:100
     \end{lstlisting}
-where \type{nu\_min} and \type{nu\_max} are the min and max $\nu$'s respectively. \type{delta} determines the slope of the ramp (1/\type{delta}) and is the time interval in which the connection strenght increases (decreases) from 0.25 to 0.75 of \type{nu\_max}. \type{t\_half\_up} and \type{t\_half\_down} are the half way times to maximum and minimum  amplitude, respectively.
+where \type{nu\_min} and \type{nu\_max} are the min and max $\nu$'s respectively. \type{delta} determines the slope of the ramp (1/\type{delta}) and is the time interval in which the connection strength increases (decreases) from 0.25 to 0.75 of \type{nu\_max}. \type{t\_half\_up} and \type{t\_half\_down} are the half way times to maximum and minimum  amplitude, respectively.
 
 \end{description}
 \end{itemize}
 
 \subsubsection{Output data}
-\label{sec:output}
+\label{sec:output_conf}
 
 \NF outputs field quantities (i.e. a neurodynamic quantity which takes a value for each node) with respect to nodes and time. By default, the output file is \type{neurofield.output}, which can be changed by launching the program with the \type{-o} switch.
 
@@ -913,7 +913,7 @@ To ``register" your propagator, look for the
 subsection in \type{solver.cpp}.
 
 \subsubsection{Coupling}
-\label{sec:coupling}
+\label{sec:coupling_conf}
 
 The \type{Coupling} class manages \(\nu_{ab}\), which is constant in space and time.
 
@@ -966,7 +966,7 @@ To ``register" your dendritic response, look for the
 \begin{lstlisting}
 // PUT YOUR DENDRITE HERE
 \end{lstlisting}
-subsection in \type{firing_response.cpp}.
+subsection in \type{firing\_response.cpp}.
 
 \subsection{Adding variables to the configuration file}
 \label{sec:init}
@@ -1154,7 +1154,7 @@ Most of the computational {\em load} comes from integrating wave equations and h
 
 Wave equations are integrated by explicit finite differences integration. A nine point spatial stencil is used to reduce high frequency spatial instabilities when driven by random noise. Other parts of code are unaffected by spatial geometry so this can be switched to irregular gridding easily.
 
-Harmonic oscillators with dendritic rseponse are integrated using a heavily strength reduced explicit direct integration assuming constant drive. This was more efficient than a constant drive RK4 algorithm which would not be fourth order in any case due to the constant drive. Rennie used a constant drive RK4 for his 1997 code.
+Harmonic oscillators with dendritic response are integrated using a heavily strength reduced explicit direct integration assuming constant drive. This was more efficient than a constant drive RK4 algorithm which would not be fourth order in any case due to the constant drive. Rennie used a constant drive RK4 for his 1997 code.
 
 \subsubsection{Class Array}
 \label{sec:array}
