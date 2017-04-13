@@ -90,7 +90,7 @@ To get the most out of \NF, you will require a working knowledge of neural field
 \begin{align*}
     P &= \nu_{ab}\phi_{ab}, & \mathtt{Coupling}\\
     D_{ab}V_{ab} &= P, & \mathtt{Dendrite}\\
-    Q_a &= S_a \big[\sum_b V_{ab} \big], & \mathtt{QResponse}\\
+    Q_a &= S_a \big[\sum_b V_{ab} \big], & \mathtt{FiringResponse}\\
     \mathcal{D}_{ab}\phi_{ab} &= Q_b.&  \mathtt{Propagator}
 \end{align*}
 A detailed understanding of these equations is not essential to use \NF. However, you should be familiar with the roles of these components in neural field models. TODO - GO HERE TO FIND OUT MORE
@@ -718,7 +718,7 @@ We have adopted the {\em fork and pull} development model using GitHub. If you w
 
 Note that you do not have write access to the main repository, so all changes must be proposed via pull requests. If your proposed changes are accepted, we may make modifications to ensure they integrate seamlessly with the rest of the program.
 
-As discussed at the start of manual, \NF encapsulates each component of the model with an object: \type{Coupling}, \type{Dendrite}, \type{QResponse}, \type{Propagator}. The \type{Dendrite} and \type{QResponse} (and also \type{Timeseries}) are contained within \type{Population}.
+As discussed at the start of manual, \NF encapsulates each component of the model with an object: \type{Coupling}, \type{Dendrite}, \type{FiringResponse}, \type{Propagator}. The \type{Dendrite} and \type{FiringResponse} (and also \type{Timeseries}) are contained within \type{Population}.
 
 Each object class may be overloaded for more sophisticated behaviour; for example, \type{Propagator} may be overloaded to perform wave propagation, or \type{Coupling} may be overloaded for synaptic plasticity.
 
@@ -751,8 +751,8 @@ Most new functionalities may be introduced by inheriting existing classes and ov
     \hline
     \type{Timeseries}&A function of time, predominantly used as stimulus.&\\
     \type{Dendrite}&Dendritic response.&$V_{ab}$\\
-    \type{QResponse}&Firing response of population.&$V_a$\\
-    \type{Population}&Contains \type{Timeseries}, \type{Dendrite}, and \type{QResponse}.&$Q_a$\\
+    \type{FiringResponse}&Firing response of population.&$V_a$\\
+    \type{Population}&Contains \type{Timeseries}, \type{Dendrite}, and \type{FiringResponse}.&$Q_a$\\
     \type{Propagator}&Axonal firing propagation&$\phi_{ab}$\\
     \type{Tau}&Axonal propagation time latency&$\tau_{ab}$\\
     \type{Coupling}&Synaptic coupling&$\nu_{ab}$
@@ -817,7 +817,7 @@ The diagram in Figure \ref{fig:classes} shows the inheritance hierarchy for the 
 
     \node[below of=vs,node distance=3em](s){\type{Timeseries}};
     \draw (vs) -- (s);
-    \node[below of=vq,node distance=3em](q){\type{QResponse} $\ni V_a$};
+    \node[below of=vq,node distance=3em](q){\type{FiringResponse} $\ni V_a$};
     \draw (vq) -- (q);
 
     \node[below of=q](adendrite){\type{Array$\langle$Dendrite$\rangle$}};
@@ -884,7 +884,7 @@ When appropriate, the default constructor, copy constructor, and \type{operator=
 
 Models a neural population, which may be either a stimulus or normal population. If it has any \type{Dendrites}, i.e. it has presynaptic connections, then it is a normal population, and it is a stimulus if it does not have \type{Dendrites}.
 
-In the former case, it contains the \type{QResponse} class and have a soma potential; in the latter case it contains the \type{Timeseries} class, and does not have a soma potential.
+In the former case, it contains the \type{FiringResponse} class and have a soma potential; in the latter case it contains the \type{Timeseries} class, and does not have a soma potential.
 
 In either cases, the \type{Population} class has a keyring storing the firing rate history, coded as a 2D array plus an integer key.
 
@@ -929,9 +929,9 @@ To ``register" your coupling, look for the
 \end{lstlisting}
 subsection in \type{solver.cpp}.
 
-\subsubsection{QResponse}
+\subsubsection{FiringResponse}
 
-To implement new firing response dynamics, inherit from class \type{QResponse}, where \type{init()} and \type{fire()} should be overloaded.
+To implement new firing response dynamics, inherit from class \type{FiringResponse}, where \type{init()} and \type{fire()} should be overloaded.
 
 Object \type{dendrites} is an array of presynaptic \type{Dendrite}.
 
@@ -939,7 +939,7 @@ Objects \type{glu\_m} and \type{glu\_rk4} calculates glutamate concentration in 
 
 To ``register" your firing response, look for the
 \begin{lstlisting}
-// PUT YOUR QRESPONSE HERE
+// PUT YOUR FIRING_RESPONSE HERE
 \end{lstlisting}
 subsection in \type{population.cpp}.
 
@@ -966,7 +966,7 @@ To ``register" your dendritic response, look for the
 \begin{lstlisting}
 // PUT YOUR DENDRITE HERE
 \end{lstlisting}
-subsection in \type{qresponse.cpp}.
+subsection in \type{firing_response.cpp}.
 
 \subsection{Adding variables to the configuration file}
 \label{sec:init}
@@ -1180,9 +1180,9 @@ We use the semicolon to denote a succession of functions/procedures, and \type{a
 &&Read configurations for \type{Population}, \type{Propagator}, \type{Coupling}, and \type{Output}.\\[6pt]
 \type{Solver::solve()}& $\Rightarrow$ & \type{for(...) \{ Solver::step(); \type{Output::step()}; \} }\\[6pt]
 \type{Solver::step()}& $\Rightarrow$ & \type{Population::step()}; \type{Propagator::step()}; \type{Coupling::step()};\\[6pt]
-\type{Population::step()}& $\Rightarrow$ & \type{QResponse::step()} if neural population;\\[6pt]
+\type{Population::step()}& $\Rightarrow$ & \type{FiringResponse::step()} if neural population;\\[6pt]
 &&\type{Timeseries::step()} if stimulus\\[6pt]
-\type{QResponse::step()}& $\Rightarrow$ & \type{Dendrite::step()}; sum over \(V_{ab}\)
+\type{FiringResponse::step()}& $\Rightarrow$ & \type{Dendrite::step()}; sum over \(V_{ab}\)
 
 \\\hline
 \end{tabular}

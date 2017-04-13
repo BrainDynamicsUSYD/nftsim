@@ -1,7 +1,7 @@
-/** @file qresponse.cpp
-  @brief Implements the QResponse class, for the soma response of neural populations.
+/** @file firing_response.cpp
+  @brief Implements the FiringResponse class, for the soma response of neural populations.
 
-  Each neural population is associated with a QResponse object which produces
+  Each neural population is associated with a FiringResponse object which produces
   the soma response governed by a specified equation, for example Sigmoid:
   \f[
     Insert equation 9 from draft neurofield paper here.
@@ -11,7 +11,7 @@
 */
 
 // Main module header
-#include "qresponse.h"  // QResponse;
+#include "firing_response.h"  // FiringResponse;
 
 // Other neurofield headers
 #include "array.h"      // Array;
@@ -31,7 +31,7 @@ using std::exp;
 using std::string;
 using std::vector;
 
-void QResponse::init( Configf& configf ) {
+void FiringResponse::init( Configf& configf ) {
   configf.param("Function", mode);
   if( mode == "Sigmoid" ) {
     configf.param("Theta",theta);
@@ -56,13 +56,13 @@ void QResponse::init( Configf& configf ) {
   }
 }
 
-QResponse::QResponse( size_type nodes, double deltat, size_type index )
+FiringResponse::FiringResponse( size_type nodes, double deltat, size_type index )
   : NF(nodes,deltat,index), v(nodes) {
 }
 
-QResponse::~QResponse() = default;
+FiringResponse::~FiringResponse() = default;
 
-void QResponse::step() {
+void FiringResponse::step() {
   // step through dendrites, then sum up soma potential
   dendrites.step();
   for( size_type i=0; i<nodes; i++ ) {
@@ -75,7 +75,7 @@ void QResponse::step() {
   }
 }
 
-void QResponse::add2Dendrite( size_type index, const Propagator& prepropag,
+void FiringResponse::add2Dendrite( size_type index, const Propagator& prepropag,
                               const Coupling& precouple, Configf& configf ) {
   string temp(configf.find( label("Dendrite ",index+1)+":" ));
   dendrite_index.push_back(index);
@@ -90,7 +90,7 @@ void QResponse::add2Dendrite( size_type index, const Propagator& prepropag,
   }
 }
 
-void QResponse::fire( vector<double>& Q ) const {
+void FiringResponse::fire( vector<double>& Q ) const {
   if(mode == "Sigmoid") {
     for( size_type i=0; i<nodes; i++ ) {
       Q[i] = Q_max/( 1.0 + exp( -(v[i]-theta)/sigma ) );
@@ -110,11 +110,11 @@ void QResponse::fire( vector<double>& Q ) const {
   }
 }
 
-void QResponse::output( Output& output ) const {
+void FiringResponse::output( Output& output ) const {
   output("Pop",index+1,"V",v);
 }
 
-void QResponse::outputDendrite( size_type index, Output& output ) const {
+void FiringResponse::outputDendrite( size_type index, Output& output ) const {
   for( Array<Dendrite>::size_type  i=0; i<dendrites.size(); i++ ) {
     if( dendrite_index[i] == index ) {
       dendrites[i]->output(output);

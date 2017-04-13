@@ -1,17 +1,17 @@
-/** @file qresponse.h
-  @brief Defines the QResponse class, for the soma response of neural populations.
+/** @file firing_response.h
+  @brief Defines the FiringResponse class, for the soma response of neural populations.
 
-  Each neural population is associated with a QResponse object, which produces
+  Each neural population is associated with a FiringResponse object, which produces
   the soma response.
 
   @author Peter Drysdale, Felix Fung,
 */
 
-#ifndef NEUROFIELD_SRC_QRESPONSE_H
-#define NEUROFIELD_SRC_QRESPONSE_H
+#ifndef NEUROFIELD_SRC_FIRING_RESPONSE_H
+#define NEUROFIELD_SRC_FIRING_RESPONSE_H
 
 // Forward declaration to break circular collaboration
-class QResponse;
+class FiringResponse;
 
 // Other neurofield headers
 #include "array.h"      // Array;
@@ -26,9 +26,9 @@ class QResponse;
 #include <string> // std::string;
 #include <vector> // std::vector;
 
-class QResponse : public NF {
-  QResponse(const QResponse& ); // No copy constructor allowed.
-  QResponse();                  // No default constructor allowed.
+class FiringResponse : public NF {
+  FiringResponse(const FiringResponse& ); // No copy constructor allowed.
+  FiringResponse();                       // No default constructor allowed.
 
  protected:
   void init( Configf& configf ) override;
@@ -46,8 +46,8 @@ class QResponse : public NF {
   std::vector<double> v; ///< soma potential for the population
 
  public:
-  QResponse( size_type nodes, double deltat, size_type index );
-  ~QResponse() override;
+  FiringResponse( size_type nodes, double deltat, size_type index );
+  ~FiringResponse() override;
   void step() override;
   virtual void add2Dendrite( size_type index, const Propagator& prepropag,
                              const Coupling& precouple, Configf& configf );
@@ -58,8 +58,8 @@ class QResponse : public NF {
   virtual void outputDendrite( size_type index, Output& output ) const;
 };
 
-const std::vector<double>& QResponse::V() const {
+const std::vector<double>& FiringResponse::V() const {
   return v;
 }
 
-#endif //NEUROFIELD_SRC_QRESPONSE_H
+#endif //NEUROFIELD_SRC_FIRING_RESPONSE_H

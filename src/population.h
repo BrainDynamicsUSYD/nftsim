@@ -19,7 +19,7 @@ class Population;
 #include "output.h"     // Output;
 #include "tau.h"        // Tau; // Must be included before propagator.h
 #include "propagator.h" // Propagator;
-#include "qresponse.h"  // QResponse;
+#include "firing_response.h"  // FiringResponse;
 #include "timeseries.h" // Timeseries;
 
 // C++ standard library headers
@@ -29,7 +29,7 @@ class Population : public NF {
   Population();                   // No default constructor allowed.
   Population(const Population& ); // No copy constructor allowed.
 
-  QResponse* qresponse;   ///< qresponse for neural population
+  FiringResponse* firing_response;   ///< firing_response for neural population
   Timeseries* timeseries; ///< timeseries for stimulus
  protected:
   std::vector< std::vector<double> >::size_type qkey; ///< index to the present q in qhistory

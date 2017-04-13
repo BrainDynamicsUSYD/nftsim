@@ -13,12 +13,12 @@ class GlutamateResponse;
 // Other neurofield headers
 #include "configf.h"    // Configf;
 #include "de.h"         // DE; RK4;
-#include "qresponse.h"  // QResponse;
+#include "firing_response.h"  // FiringResponse;
 
 // C++ standard library headers
 #include <vector> // std::vector;
 
-class GlutamateResponse : public QResponse {
+class GlutamateResponse : public FiringResponse {
   GlutamateResponse(const GlutamateResponse& ); // No copy constructor allowed.
   GlutamateResponse();                          // No default constructor allowed.
 

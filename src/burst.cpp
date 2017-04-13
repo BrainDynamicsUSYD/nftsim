@@ -68,7 +68,7 @@ void BurstResponse::init( Configf& configf ) {
   for(Array<Dendrite>::size_type i = 0; i<dendrites.size(); i++) {
     configf>>*dendrites[i];  // array.h vector<T*> vector of ptrs info and inserts into this from the ifstream configf
   }
-// read config file- see qresponse.init()
+// read config file- see firing_response.init()
 // initialize any other private variables (i.e. current)
 
   htilde.resize(nodes,hinit);
@@ -87,7 +87,7 @@ void BurstResponse::init( Configf& configf ) {
 }
 
 BurstResponse::BurstResponse( size_type nodes, double deltat, size_type index )  // constructor
-  : QResponse(nodes,deltat,index), xtemp(nodes), htemp(nodes) {
+  : FiringResponse(nodes,deltat,index), xtemp(nodes), htemp(nodes) {
   h=deltat;
   h2=deltat/2;
   h6=deltat/6;
@@ -123,7 +123,7 @@ void BurstResponse::step() {
     gH[0] = gH1;
   }
 
-  QResponse::step(); // sum soma potential
+  FiringResponse::step(); // sum soma potential
   rk4(); // update dynamic variables in y
   ib = -gX[0] * (Veff -Vx) / 3;
   ia = ib - gH[0] * (Veff - Vk);
