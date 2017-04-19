@@ -90,7 +90,7 @@ To get the most out of \NF, you will require a working knowledge of neural field
 \begin{align*}
     P &= \nu_{ab}\phi_{ab}, & \mathtt{Coupling}\\
     D_{ab}V_{ab} &= P, & \mathtt{Dendrite}\\
-    Q_a &= S_a \big[\sum_b V_{ab} \big], & \mathtt{QResponse}\\
+    Q_a &= S_a \big[\sum_b V_{ab} \big], & \mathtt{FiringResponse}\\
     \mathcal{D}_{ab}\phi_{ab} &= Q_b.&  \mathtt{Propagator}
 \end{align*}
 A detailed understanding of these equations is not essential to use \NF. However, you should be familiar with the roles of these components in neural field models. TODO - GO HERE TO FIND OUT MORE
@@ -187,13 +187,13 @@ A list of available switches can be displayed by using the \type{-h} or \type{--
 
 To write a configuration file, follow these steps:
 \begin{enumerate}
-\item Determine your population model by drawing a schematic diagram, thereby constructing a connection matrix. An example is shown in Fig.~\ref{fig:pop}.
+\item Determine your population model by drawing a schematic diagram, thereby constructing a connection matrix. An example is shown in Fig.~\ref{fig:cortical}.
 \item Look up existing configuration files in \type{configs/}. By checking the comment located at the top of a configuration file, and also the connection matrix, a user should find the most suitable existing file to construct his own. This is less tedious (and less error prone) than writing a new one from scratch.
 \item Specify the global parameters and connectivity matrix (Sec.~\ref{sec:global}).
-\item Specify all populations (Sec.~\ref{sec:pop}).
+\item Specify all populations (Sec.~\ref{sec:pop_conf}).
 \item Specify all propagators (Sec.~\ref{sec:prop}).
-\item Specify all couplings (Sec.~\ref{sec:coupling}).
-\item Specify all output requests (Sec.~\ref{sec:output}).
+\item Specify all couplings (Sec.~\ref{sec:coupling_conf}).
+\item Specify all output requests (Sec.~\ref{sec:output_conf}).
 \end{enumerate}
 
 General rules on the entries within a configuration file:
@@ -285,7 +285,7 @@ Nodes: 4 Longside: 2
 
 Both spatial dimensions have periodic boundary conditions, so that populations have the topology of a torus.
 
-{\bf Note that the physical size of each neural population is specified in the definition of the population - see Sec.~\ref{sec:pop}. For each population, $\Delta x$ is automatically computed based on the number of grid points and the physical size of the population.} This ensures that the physical size of the system does not change when the number of grid points is changed. When a wave propagator is included, the value of $\Delta x$ is automatically selected from the presynaptic population.
+{\bf Note that the physical size of each neural population is specified in the definition of the population - see Sec.~\ref{sec:pop_conf}. For each population, $\Delta x$ is automatically computed based on the number of grid points and the physical size of the population.} This ensures that the physical size of the system does not change when the number of grid points is changed. When a wave propagator is included, the value of $\Delta x$ is automatically selected from the presynaptic population.
 
 \item {\em Specifying connectivity}
 \begin{lstlisting}
@@ -302,7 +302,7 @@ The size of this matrix determines the number of neural populations in the simul
 \end{itemize}
 
 \subsubsection{Population data}
-\label{sec:pop}
+\label{sec:pop_conf}
 This section contains population information sections. There are two types of neural populations: ordinary populations and stimulus populations:
 \begin{description}
 
@@ -479,7 +479,7 @@ Harmonic - phi: Steady Tau: 0 gamma: 116
 
 \begin{itemize}
 
-\item The type of coupling between each pair of popoulations can be specified for separately. The coupling data is given as $n$ lines  corresponding to each nonzero connection in the connection matrix defined at the top of the file. Different types of coupling has their own input form.
+\item The type of coupling between each pair of populations can be specified for separately. The coupling data is given as $n$ lines  corresponding to each nonzero connection in the connection matrix defined at the top of the file. Different types of coupling has their own input form.
 \item \begin{lstlisting}
 Coupling 1:
 \end{lstlisting}
@@ -488,7 +488,7 @@ Coupling 1:
 
 \item[Map]\ \\
     Linear synaptic coupling with input parameter \type{nu}, constant time.
-    This parameter may be a single number or take a vector of lenght
+    This parameter may be a single number or take a vector of length
     \texttt{Nodes}, which allows for the expression of nonuniform models.
     \begin{lstlisting}
         Map - nu: 0.0012
@@ -523,7 +523,7 @@ Coupling 1:
 
     \item[Matrix]\ \\
 
-    The coupling may be expressed as a connection matrix, where the couping
+    The coupling may be expressed as a connection matrix, where the coupling
     strengths do not change with time. The format of the \texttt{nu} matrix is
     the same as the population connection matrix, each row is to the same
     node, each column is from the same node. When outputting, each specified
@@ -560,13 +560,13 @@ CaDP - nu: 13e-6 nu_max: 80e-6 Dth: .25e-6 Pth: .45e-6 xyth: 1e-4 x: 2.3e-2 y: 2
     \begin{lstlisting}
 DiffArctan - nu_min: 0.002  nu_max: 0.006  delta: 10  t_half_up:50  t_half_down:100
     \end{lstlisting}
-where \type{nu\_min} and \type{nu\_max} are the min and max $\nu$'s respectively. \type{delta} determines the slope of the ramp (1/\type{delta}) and is the time interval in which the connection strenght increases (decreases) from 0.25 to 0.75 of \type{nu\_max}. \type{t\_half\_up} and \type{t\_half\_down} are the half way times to maximum and minimum  amplitude, respectively.
+where \type{nu\_min} and \type{nu\_max} are the min and max $\nu$'s respectively. \type{delta} determines the slope of the ramp (1/\type{delta}) and is the time interval in which the connection strength increases (decreases) from 0.25 to 0.75 of \type{nu\_max}. \type{t\_half\_up} and \type{t\_half\_down} are the half way times to maximum and minimum  amplitude, respectively.
 
 \end{description}
 \end{itemize}
 
 \subsubsection{Output data}
-\label{sec:output}
+\label{sec:output_conf}
 
 \NF outputs field quantities (i.e. a neurodynamic quantity which takes a value for each node) with respect to nodes and time. By default, the output file is \type{neurofield.output}, which can be changed by launching the program with the \type{-o} switch.
 
@@ -718,7 +718,7 @@ We have adopted the {\em fork and pull} development model using GitHub. If you w
 
 Note that you do not have write access to the main repository, so all changes must be proposed via pull requests. If your proposed changes are accepted, we may make modifications to ensure they integrate seamlessly with the rest of the program.
 
-As discussed at the start of manual, \NF encapsulates each component of the model with an object: \type{Coupling}, \type{Dendrite}, \type{QResponse}, \type{Propagator}. The \type{Dendrite} and \type{QResponse} (and also \type{Timeseries}) are contained within \type{Population}.
+As discussed at the start of manual, \NF encapsulates each component of the model with an object: \type{Coupling}, \type{Dendrite}, \type{FiringResponse}, \type{Propagator}. The \type{Dendrite} and \type{FiringResponse} (and also \type{Timeseries}) are contained within \type{Population}.
 
 Each object class may be overloaded for more sophisticated behaviour; for example, \type{Propagator} may be overloaded to perform wave propagation, or \type{Coupling} may be overloaded for synaptic plasticity.
 
@@ -751,8 +751,8 @@ Most new functionalities may be introduced by inheriting existing classes and ov
     \hline
     \type{Timeseries}&A function of time, predominantly used as stimulus.&\\
     \type{Dendrite}&Dendritic response.&$V_{ab}$\\
-    \type{QResponse}&Firing response of population.&$V_a$\\
-    \type{Population}&Contains \type{Timeseries}, \type{Dendrite}, and \type{QResponse}.&$Q_a$\\
+    \type{FiringResponse}&Firing response of population.&$V_a$\\
+    \type{Population}&Contains \type{Timeseries}, \type{Dendrite}, and \type{FiringResponse}.&$Q_a$\\
     \type{Propagator}&Axonal firing propagation&$\phi_{ab}$\\
     \type{Tau}&Axonal propagation time latency&$\tau_{ab}$\\
     \type{Coupling}&Synaptic coupling&$\nu_{ab}$
@@ -817,7 +817,7 @@ The diagram in Figure \ref{fig:classes} shows the inheritance hierarchy for the 
 
     \node[below of=vs,node distance=3em](s){\type{Timeseries}};
     \draw (vs) -- (s);
-    \node[below of=vq,node distance=3em](q){\type{QResponse} $\ni V_a$};
+    \node[below of=vq,node distance=3em](q){\type{FiringResponse} $\ni V_a$};
     \draw (vq) -- (q);
 
     \node[below of=q](adendrite){\type{Array$\langle$Dendrite$\rangle$}};
@@ -884,7 +884,7 @@ When appropriate, the default constructor, copy constructor, and \type{operator=
 
 Models a neural population, which may be either a stimulus or normal population. If it has any \type{Dendrites}, i.e. it has presynaptic connections, then it is a normal population, and it is a stimulus if it does not have \type{Dendrites}.
 
-In the former case, it contains the \type{QResponse} class and have a soma potential; in the latter case it contains the \type{Timeseries} class, and does not have a soma potential.
+In the former case, it contains the \type{FiringResponse} class and have a soma potential; in the latter case it contains the \type{Timeseries} class, and does not have a soma potential.
 
 In either cases, the \type{Population} class has a keyring storing the firing rate history, coded as a 2D array plus an integer key.
 
@@ -913,7 +913,7 @@ To ``register" your propagator, look for the
 subsection in \type{solver.cpp}.
 
 \subsubsection{Coupling}
-\label{sec:coupling}
+\label{sec:coupling_conf}
 
 The \type{Coupling} class manages \(\nu_{ab}\), which is constant in space and time.
 
@@ -929,9 +929,9 @@ To ``register" your coupling, look for the
 \end{lstlisting}
 subsection in \type{solver.cpp}.
 
-\subsubsection{QResponse}
+\subsubsection{FiringResponse}
 
-To implement new firing response dynamics, inherit from class \type{QResponse}, where \type{init()} and \type{fire()} should be overloaded.
+To implement new firing response dynamics, inherit from class \type{FiringResponse}, where \type{init()} and \type{fire()} should be overloaded.
 
 Object \type{dendrites} is an array of presynaptic \type{Dendrite}.
 
@@ -939,7 +939,7 @@ Objects \type{glu\_m} and \type{glu\_rk4} calculates glutamate concentration in 
 
 To ``register" your firing response, look for the
 \begin{lstlisting}
-// PUT YOUR QRESPONSE HERE
+// PUT YOUR FIRING_RESPONSE HERE
 \end{lstlisting}
 subsection in \type{population.cpp}.
 
@@ -966,7 +966,7 @@ To ``register" your dendritic response, look for the
 \begin{lstlisting}
 // PUT YOUR DENDRITE HERE
 \end{lstlisting}
-subsection in \type{qresponse.cpp}.
+subsection in \type{firing\_response.cpp}.
 
 \subsection{Adding variables to the configuration file}
 \label{sec:init}
@@ -1154,7 +1154,7 @@ Most of the computational {\em load} comes from integrating wave equations and h
 
 Wave equations are integrated by explicit finite differences integration. A nine point spatial stencil is used to reduce high frequency spatial instabilities when driven by random noise. Other parts of code are unaffected by spatial geometry so this can be switched to irregular gridding easily.
 
-Harmonic oscillators with dendritic rseponse are integrated using a heavily strength reduced explicit direct integration assuming constant drive. This was more efficient than a constant drive RK4 algorithm which would not be fourth order in any case due to the constant drive. Rennie used a constant drive RK4 for his 1997 code.
+Harmonic oscillators with dendritic response are integrated using a heavily strength reduced explicit direct integration assuming constant drive. This was more efficient than a constant drive RK4 algorithm which would not be fourth order in any case due to the constant drive. Rennie used a constant drive RK4 for his 1997 code.
 
 \subsubsection{Class Array}
 \label{sec:array}
@@ -1180,9 +1180,9 @@ We use the semicolon to denote a succession of functions/procedures, and \type{a
 &&Read configurations for \type{Population}, \type{Propagator}, \type{Coupling}, and \type{Output}.\\[6pt]
 \type{Solver::solve()}& $\Rightarrow$ & \type{for(...) \{ Solver::step(); \type{Output::step()}; \} }\\[6pt]
 \type{Solver::step()}& $\Rightarrow$ & \type{Population::step()}; \type{Propagator::step()}; \type{Coupling::step()};\\[6pt]
-\type{Population::step()}& $\Rightarrow$ & \type{QResponse::step()} if neural population;\\[6pt]
+\type{Population::step()}& $\Rightarrow$ & \type{FiringResponse::step()} if neural population;\\[6pt]
 &&\type{Timeseries::step()} if stimulus\\[6pt]
-\type{QResponse::step()}& $\Rightarrow$ & \type{Dendrite::step()}; sum over \(V_{ab}\)
+\type{FiringResponse::step()}& $\Rightarrow$ & \type{Dendrite::step()}; sum over \(V_{ab}\)
 
 \\\hline
 \end{tabular}
