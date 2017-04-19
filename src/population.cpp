@@ -16,7 +16,7 @@
 #include "glutamate_response.h"  // GlutamateResponse;
 #include "output.h"     // Output;
 #include "propagator.h" // Propagator;
-#include "qresponse.h"  // QResponse;
+#include "firing_response.h"  // FiringResponse;
 #include "tau.h"        // Tau;
 #include "timeseries.h" // Timeseries;
 
@@ -36,10 +36,10 @@ void Population::init( Configf& configf ) {
 
   configf.param("Length", length);
 
-  if( qresponse != nullptr ) { // neural population
+  if( firing_response != nullptr ) { // neural population
     double temp;
     configf.param("Q", temp);
-    configf.param( "Firing", *qresponse );
+    configf.param( "Firing", *firing_response );
   } else { // stimulus population
     timeseries = new Timeseries(nodes, deltat, index);
     configf.param( "Stimulus", *timeseries );
@@ -49,12 +49,12 @@ void Population::init( Configf& configf ) {
 
 Population::Population( size_type nodes, double deltat, size_type index )
   : NF(nodes,deltat,index),
-    qresponse(nullptr), timeseries(nullptr), qkey(0), settled(false) {
+    firing_response(nullptr), timeseries(nullptr), qkey(0), settled(false) {
 }
 
 Population::~Population() {
-  if(qresponse != nullptr) {
-    delete qresponse;
+  if(firing_response != nullptr) {
+    delete firing_response;
   }
   if(timeseries != nullptr) {
     delete timeseries;
@@ -64,9 +64,9 @@ Population::~Population() {
 void Population::step() {
   // move pointer to keyring
   qkey = (qkey+1) % qhistory.size();
-  if( qresponse != nullptr ) { // neural population
-    qresponse->step();
-    qresponse->fire( qhistory[qkey] );
+  if( firing_response != nullptr ) { // neural population
+    firing_response->step();
+    firing_response->fire( qhistory[qkey] );
   } else { // stimulus population
     timeseries->step();
     timeseries->fire( qhistory[qkey] );
@@ -79,7 +79,7 @@ void Population::step() {
 }
 
 double Population::Qinit( Configf& configf ) const {
-  if( qresponse != nullptr ) {
+  if( firing_response != nullptr ) {
     string buffer = configf.find( label("Population ",index+1)+"*Q:");
     return atof(buffer.c_str());
   }
@@ -89,8 +89,8 @@ double Population::Qinit( Configf& configf ) const {
 }
 
 const vector<double>& Population::glu() const {
-  if( qresponse != nullptr ) {
-    GlutamateResponse* local_qr = dynamic_cast<GlutamateResponse*>(qresponse);
+  if( firing_response != nullptr ) {
+    GlutamateResponse* local_qr = dynamic_cast<GlutamateResponse*>(firing_response);
     if( local_qr == nullptr ){
       cerr<<"Trying to access glu of a non-GlutatmateResponse population."<<endl;
       exit(EXIT_FAILURE);
@@ -110,21 +110,21 @@ void Population::add2Dendrite( size_type index, const Propagator& prepropag,
     exit(EXIT_FAILURE);
   }
 
-  if( qresponse == nullptr ) {
+  if( firing_response == nullptr ) {
     string temp(configf.find( label("Population ", this->index+1)+"*Firing:" ));
-    // PUT YOUR QRESPONSE HERE
+    // PUT YOUR FIRING_RESPONSE HERE
     if( temp == "Bursting" ) {
-      qresponse = new BurstResponse(nodes, deltat, this->index);
+      firing_response = new BurstResponse(nodes, deltat, this->index);
     } else if( temp == "GlutamateResponse" ){
-      qresponse = new GlutamateResponse(nodes, deltat, this->index);
+      firing_response = new GlutamateResponse(nodes, deltat, this->index);
       //else if( temp == "FS" )
-      //qresponse = new FS(nodes,deltat,this->index);
-    // END PUT YOUR QRESPONSE HERE
+      //firing_response = new FS(nodes,deltat,this->index);
+    // END PUT YOUR FIRING_RESPONSE HERE
     } else {
-      qresponse = new QResponse(nodes, deltat, this->index);
+      firing_response = new FiringResponse(nodes, deltat, this->index);
     }
   }
-  qresponse->add2Dendrite( index, prepropag, precouple, configf );
+  firing_response->add2Dendrite( index, prepropag, precouple, configf );
 }
 
 const vector<double>& Population::Q( const Tau& tau) const {
@@ -139,8 +139,8 @@ const vector<double>& Population::Q( const Tau& tau) const {
 }
 
 const vector<double>& Population::V() const {
-  if( qresponse != nullptr ) {
-    return qresponse->V();
+  if( firing_response != nullptr ) {
+    return firing_response->V();
   }
   cerr<<"Trying to access V of a stimulus population."<<endl;
   exit(EXIT_FAILURE);
@@ -163,15 +163,15 @@ void Population::growHistory( const Tau& tau ) {
 
 void Population::output( Output& output ) const {
   output("Pop",index+1,"Q",q);
-  if(qresponse != nullptr) {
-    qresponse->output(output);
+  if(firing_response != nullptr) {
+    firing_response->output(output);
   } else {
     timeseries->output(output);
   }
 }
 
 void Population::outputDendrite( size_type index, Output& output ) const {
-  if(qresponse != nullptr) {
-    return qresponse->outputDendrite(index,output);
+  if(firing_response != nullptr) {
+    return firing_response->outputDendrite(index,output);
   }
 }

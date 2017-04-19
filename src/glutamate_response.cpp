@@ -11,18 +11,18 @@
 #include "array.h"      // Array;
 #include "configf.h"    // Configf;
 #include "dendrite.h"   // Dendrite;
-#include "qresponse.h"  // QResponse;
+#include "firing_response.h"  // FiringResponse;
 
 // C++ standard library headers
 #include <vector>   // std::vector;
 using std::vector;
 
 void GlutamateResponse::init( Configf& configf ) {
-  // Glu::init() must be called before QResponse::init() as the latter
+  // Glu::init() must be called before FiringResponse::init() as the latter
   // expects to be able to consume the Dendrite lines following Firing.
   glu_m.init(configf);
 
-  QResponse::init(configf);
+  FiringResponse::init(configf);
 
 }
 
@@ -45,13 +45,13 @@ void GlutamateResponse::Glu::rhs( const vector<double>& y, vector<double>& dydt 
 }
 
 GlutamateResponse::GlutamateResponse( size_type nodes, double deltat, size_type index )
-  : QResponse(nodes, deltat, index), glu_m(nodes, deltat), glu_rk4(glu_m) {
+  : FiringResponse(nodes, deltat, index), glu_m(nodes, deltat), glu_rk4(glu_m) {
 }
 
 GlutamateResponse::~GlutamateResponse() = default;
 
 void GlutamateResponse::step() {
-  QResponse::step();
+  FiringResponse::step();
 
   // glutamate dynamics
   if( glu_m.Lambda != 0 ) {
