@@ -48,7 +48,7 @@ class DE {
     return variables[index];
   }
   // define dydt here
-  virtual void rhs( const std::vector<double>& y, std::vector<double>& dydt ) = 0;
+  virtual void rhs( const std::vector<double>& y, std::vector<double>& dydt, std::vector<double>::size_type n ) = 0;
 };
 
 class Integrator {
@@ -74,7 +74,7 @@ class Euler : public Integrator {
   ~Euler() override = default;
   void step() override {
     for( vvd_size_type j=0; j<de.nodes; j++ ) {
-      de.rhs( de.variables[j], dydt );
+      de.rhs( de.variables[j], dydt, j );
       for( vvd_size_type i=0; i<de.ndim; i++ ) {
         de.variables[i][j] += dydt[i]*de.deltat;
       }
@@ -105,19 +105,19 @@ class RK4 : public Integrator {
       for( vvd_size_type i=0; i<de.ndim; i++ ) {
         temp[i] = de.variables[i][j];
       }
-      de.rhs(temp,k1);
+      de.rhs(temp, k1, j);
       for( vvd_size_type i=0; i<de.ndim; i++ ) {
         temp[i] = de.variables[i][j] + (deltat5 * k1[i]);
       }
-      de.rhs(temp,k2);
+      de.rhs(temp, k2, j);
       for( vvd_size_type i=0; i<de.ndim; i++ ) {
         temp[i] = de.variables[i][j] + (deltat5 * k2[i]);
       }
-      de.rhs(temp,k3);
+      de.rhs(temp, k3, j);
       for( vvd_size_type i=0; i<de.ndim; i++ ) {
         temp[i] = de.variables[i][j] + (de.deltat * k3[i]);
       }
-      de.rhs(temp,k4);
+      de.rhs(temp, k4, j);
       for( vvd_size_type i=0; i<de.ndim; i++ ) {
         de.variables[i][j] += h6*(k1[i] + (2.0 * k2[i]) + (2.0 * k3[i]) + k4[i]);
       }

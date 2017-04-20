@@ -30,7 +30,7 @@ using std::vector;
     \frac{d^2\phi}{dt^2}&=& \gamma^2 \left(Q - \frac{2}{\gamma} \frac{d\phi}{dt} - \phi \right)
   \f}
 */
-void Harmonic::HarmonicDE::rhs( const vector<double>& y, vector<double>& dydt ) {
+void Harmonic::HarmonicDE::rhs( const vector<double>& y, vector<double>& dydt, size_type /*unused*/ ) {
   // y = {phi,dphi/dt,Q}
   // dydt = {dphi/dt, d^2phi/dt^2,dQ/dt}
   dydt[0] = y[1];

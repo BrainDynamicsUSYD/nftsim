@@ -33,7 +33,7 @@ void GlutamateResponse::Glu::init( Configf& configf ) {
   variables[1].resize(nodes);
 }
 
-void GlutamateResponse::Glu::rhs( const vector<double>& y, vector<double>& dydt ) {
+void GlutamateResponse::Glu::rhs( const vector<double>& y, vector<double>& dydt, size_type /*unused*/ ) {
   // y = { glu, excitatory phi }
   // glu
   dydt[0] = Lambda*y[1] -y[0]/tGlu;

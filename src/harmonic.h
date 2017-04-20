@@ -32,7 +32,7 @@ class Harmonic : public virtual Propagator {
     virtual void init(double pinit);
     HarmonicDE( size_type nodes, double deltat) : DE(nodes, deltat, 3) {}
     ~HarmonicDE() override = default;
-    void rhs( const std::vector<double>& y, std::vector<double>& dydt ) override;
+    void rhs( const std::vector<double>& y, std::vector<double>& dydt, size_type /*unused*/ ) override;
   };
   HarmonicDE* de;
   RK4* rk4;
