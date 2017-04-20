@@ -175,7 +175,7 @@ void BurstResponse::fire( vector<double>& Q ) const {
 }
 
 /**
-  @brief Computes the derivatives of the Harmonic Propagator function.
+  @brief Computes the derivatives of the BurstResponse function.
 
   The BurstResponse equation is given by:
   \f{eqnarray*}{
