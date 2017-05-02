@@ -28,7 +28,7 @@ class Solver : public NF {
 
   Dumpf& dumpf;
 
-  int steps = 0; ///< number of integration steps to perform
+  long steps = 0; ///< number of integration steps to perform
 
   struct CntMat : public NF {
     std::vector<double>::size_type npop=0; ///< number of populations

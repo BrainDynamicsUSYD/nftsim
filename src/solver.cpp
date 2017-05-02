@@ -31,13 +31,14 @@
 #include "wave_legacy.h"   // WaveLegacy;
 
 // C++ standard library headers
-#include <cmath>    // std::remainder; std::sqrt;
+#include <cmath>    // std::lround; std::remainder; std::sqrt;
 #include <iostream> // std::cerr; std::endl;
 #include <sstream>  // std::stringstream;
 #include <string>   // std::string;
 #include <vector>   // std::vector;
 using std::cerr;
 using std::endl;
+using std::lround;
 using std::remainder;
 using std::sqrt;
 using std::string;
@@ -104,7 +105,7 @@ void Solver::init( Configf& configf ) {
     cerr<<"Value of total simulation time not divisible by Deltat."<<endl;
     exit(EXIT_FAILURE);
   } else {
-    steps = tempf/deltat +.5;
+    steps = lround(tempf/deltat);
   }
 
   // read in grid size and grid geometry
@@ -323,7 +324,7 @@ void Solver::Outputs::init( Configf& configf ) {
       cerr<<"Value of output interval not divisible by Deltat."<<endl;
       exit(EXIT_FAILURE);
     } else {
-      outputinterval = tempf/deltat+.5;
+      outputinterval = lround(tempf/deltat);
     }
   }
 
