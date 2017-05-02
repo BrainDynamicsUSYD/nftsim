@@ -45,7 +45,7 @@ class CaDP : public Coupling {
     double gnmda = 0.0; ///< gain for NMDA receptor
     double z = 0.0; ///< timescale of protein cascade
 
-    double pos = 0.0; ///< sign of nu
+    int pos = 0; ///< sign of nu
 
     virtual void init( Configf& configf );
     CaDE( size_type nodes, double deltat ) : DE(nodes,deltat,8) {}
