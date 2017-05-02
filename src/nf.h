@@ -18,7 +18,6 @@
 #include <vector>    // std::vector;
 
 class NF {
-  NF();  // No default constructor allowed.
  protected:
   using size_type = std::vector<double>::size_type;
   virtual void init( Configf& configf ) = 0;
@@ -29,6 +28,8 @@ class NF {
   double deltat;    ///< time increment per timestep
   size_type index;  ///< object index within the population/connection model
  public:
+  NF() = delete;  // No default constructor allowed.
+
   friend Configf&  operator>> ( Configf& configf, NF& nf );
   //friend Restartf& operator>> ( Restartf& restartf, NF& nf );
   //friend Dumpf&    operator<< ( Dumpf& dumpf, const NF& nf );
