@@ -105,7 +105,7 @@ void Solver::init( Configf& configf ) {
     cerr<<"Value of total simulation time not divisible by Deltat."<<endl;
     exit(EXIT_FAILURE);
   } else {
-    steps = lround(tempf/deltat);
+    steps = static_cast<int>(lround(tempf/deltat));
   }
 
   // read in grid size and grid geometry
@@ -324,7 +324,7 @@ void Solver::Outputs::init( Configf& configf ) {
       cerr<<"Value of output interval not divisible by Deltat."<<endl;
       exit(EXIT_FAILURE);
     } else {
-      outputinterval = lround(tempf/deltat);
+      outputinterval = static_cast<int>(lround(tempf/deltat));
     }
   }
 
