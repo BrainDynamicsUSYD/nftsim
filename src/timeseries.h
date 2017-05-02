@@ -18,8 +18,6 @@
 #include <vector>   // std::vector;
 
 class Timeseries : public NF {
-  Timeseries(const Timeseries&);  // No copy constructor allowed.
-  Timeseries();                   // No default constructor allowed.
  protected:
   using series_size_type = std::vector<double>::size_type;
   void init( Configf& configf ) override;
@@ -29,6 +27,9 @@ class Timeseries : public NF {
   double t = 0.0;
   double cease = 0.0;
  public:
+  Timeseries(const Timeseries&) = delete;  // No copy constructor allowed.
+  Timeseries() = delete;                   // No default constructor allowed.
+
   Timeseries( size_type nodes, double deltat, size_type index );
   ~Timeseries() override;
   void step() override;

@@ -27,7 +27,7 @@ class DE {
  public:
   DE() = delete;          // No default constructor allowed.
   DE(const DE&) = delete; // No copy constructor allowed.
-  void operator=(DE&) = delete;
+  void operator=(const DE&) = delete;
 
   vvd_size_type nodes; ///< number of nodes in the system.
   double deltat;       ///< integration timestep size.
@@ -58,7 +58,7 @@ class Integrator {
  public:
   Integrator() = delete;                  // No default constructor allowed.
   Integrator(const Integrator&) = delete; // No copy constructor allowed.
-  void operator=(Integrator&) = delete;
+  void operator=(const Integrator&) = delete;
 
   explicit Integrator( DE& de ) : de(de) {}
   virtual ~Integrator() = default;
@@ -71,7 +71,7 @@ class Euler : public Integrator {
  public:
   Euler() = delete;             // No default constructor allowed.
   Euler(const Euler&) = delete; // No copy constructor allowed.
-  void operator=(Euler&) = delete;
+  void operator=(const Euler&) = delete;
 
   explicit Euler( DE& de ) : Integrator(de), dydt(de.ndim) {}
   ~Euler() override = default;
@@ -98,7 +98,7 @@ class RK4 : public Integrator {
  public:
   RK4() = delete;           // No default constructor allowed.
   RK4(const RK4&) = delete; // No copy constructor allowed.
-  void operator=(RK4&) = delete;
+  void operator=(const RK4&) = delete;
 
   explicit RK4( DE& de ) : Integrator(de), h6(de.deltat/6.0), deltat5(de.deltat*0.5),
     k1(de.ndim), k2(de.ndim), k3(de.ndim), k4(de.ndim), temp(de.ndim) {}

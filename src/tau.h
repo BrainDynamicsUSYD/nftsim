@@ -20,13 +20,13 @@ class Population;
 #include <vector> //std::vector;
 
 class Tau : public NF {
-  Tau(const Tau&);  // No copy constructor allowed.
-
   size_type max; ///< if tau is inhomogeneous, == biggest element
   std::vector<size_type> m; ///< tau values across nodes, size()==1 if homogeneous
  protected:
   void init( Configf& configf ) override;
  public:
+  Tau(const Tau&) = delete;  // No copy constructor allowed.
+
   Tau( size_type nodes, double deltat, size_type index );
   ~Tau() override;
   void step() override;

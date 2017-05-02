@@ -17,13 +17,12 @@
 #include <string>   // std::string;
 
 class Dumpf {
-  Dumpf& operator=(Dumpf&); // No assignment operator allowed.
-
   std::ofstream file;  ///< stream to a file, if outputting to file
   std::ostream* s;     ///< pointer to output, maybe to file, or to cout
   std::string filename;
  public:
   Dumpf(const Dumpf&) = delete; // No copy constructor allowed.
+  Dumpf& operator=(const Dumpf&) = delete; // No assignment operator allowed.
 
   Dumpf();
   ~Dumpf();

@@ -32,7 +32,7 @@ class BCM : public CaDP {
     BCMDE( BCMDE& bcmDE ) : CaDE(bcmDE.nodes,bcmDE.deltat) {
       *this = bcmDE;
     }
-    BCMDE& operator= ( BCMDE& bcmDE ) {
+    BCMDE& operator= ( const BCMDE& bcmDE ) {
       this->nu_init = bcmDE.nu_init;
       this->B = bcmDE.B;
       this->glu_0 = bcmDE.glu_0;
