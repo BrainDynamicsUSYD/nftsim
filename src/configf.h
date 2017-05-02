@@ -17,13 +17,14 @@
 
 
 class Configf : protected std::ifstream { // derived class
-  Configf(const Configf&);  // No copy constructor allowed.
-  Configf();                // No default constructor allowed.
   Configf& operator=(const Configf&); // No copy assignment operator allowed.
 
   char* buffer;
   std::streamsize filesize;
  public:
+  Configf(const Configf&) = delete;  // No copy constructor allowed.
+  Configf() = delete;                // No default constructor allowed.
+
   explicit Configf( const char* filename ); // const ptr to filename for ifstream
   ~Configf() override;
 

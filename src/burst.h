@@ -19,8 +19,6 @@
 
 class BurstResponse : public FiringResponse { //derived class; constructor initializer
  private:
-  BurstResponse(const BurstResponse& ); // No copy constructor allowed.
-  BurstResponse();                      // No default constructor allowed.
 
   void rk4();
   void rkderivs(std::vector<double>& xtemp, std::vector<double>& htemp,
@@ -49,6 +47,9 @@ class BurstResponse : public FiringResponse { //derived class; constructor initi
  protected:
   void init( Configf& configf ) override;
  public:
+  BurstResponse(const BurstResponse& ) = delete; // No copy constructor allowed.
+  BurstResponse() = delete;                      // No default constructor allowed.
+
   BurstResponse( size_type nodes, double deltat, size_type index );
   ~BurstResponse() override; //destructor mem fnctn
 

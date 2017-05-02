@@ -25,8 +25,6 @@ class Propagator;
 #include <vector> //std::vector;
 
 class Propagator : public NF {
-  Propagator();                  // No default constructor allowed.
-  Propagator(const Propagator&); // No copy constructor allowed.
  protected:
   void init( Configf& configf ) override;
   //void restart( Restartf& restartf );
@@ -44,6 +42,9 @@ class Propagator : public NF {
   double gamma = 0.0;     ///< Damping coefficient
 
  public:
+  Propagator() = delete;                  // No default constructor allowed.
+  Propagator(const Propagator&) = delete; // No copy constructor allowed.
+
   Propagator( size_type nodes, double deltat, size_type index, Population& prepop,
               Population& postpop, int longside, std::string topology );
   ~Propagator() override;

@@ -26,8 +26,6 @@
 #include <vector> // std::vector;
 
 class Stencil {
-  Stencil();               // No default constructor allowed.
-  Stencil(const Stencil&); // No copy constructor allowed.
   Stencil& operator=(const Stencil&); // No copy assignment operator allowed.
  protected:
   int nodes;
@@ -38,6 +36,9 @@ class Stencil {
 
   mutable int ptr;
  public:
+  Stencil() = delete;               // No default constructor allowed.
+  Stencil(const Stencil&) = delete; // No copy constructor allowed.
+
   enum Neighbours {
        n=-2,
     w, c, e,

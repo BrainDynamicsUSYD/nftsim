@@ -21,9 +21,6 @@
 #include <vector> // std::vector;
 
 class DendriteIntegral : public Dendrite {
-  DendriteIntegral();                        // No default constructor allowed.
-  DendriteIntegral(const DendriteIntegral&); // No copy constructor allowed.
-
   // variables that are intialized once to speed up computation
   double aminusb = 0.0;  ///< == alpha - beta
   double expa = 0.0;     ///< == exp(-alpha*deltat)
@@ -46,6 +43,8 @@ class DendriteIntegral : public Dendrite {
   void init( Configf& configf ) override;
 
  public:
+  DendriteIntegral() = delete;                        // No default constructor allowed.
+  DendriteIntegral(const DendriteIntegral&) = delete; // No copy constructor allowed.
 
   DendriteIntegral( size_type nodes, double deltat, size_type index,
             const Propagator& prepropag, const Coupling& precouple );

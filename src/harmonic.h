@@ -20,9 +20,6 @@
 #include <vector> // std::vector;
 
 class Harmonic : public virtual Propagator {
-  Harmonic();                // No default constructor allowed.
-  Harmonic(const Harmonic&); // No copy constructor allowed.
-
   // variables that are initialized once to speed up computation
   double gammasquared = 0.0; ///< == gamma^2;
   double twoongamma = 0.0;   ///< == 2.0/gamma;
@@ -43,6 +40,9 @@ class Harmonic : public virtual Propagator {
   //virtual void dump( Dumpf& dumpf ) const;
 
  public:
+  Harmonic() = delete;                // No default constructor allowed.
+  Harmonic(const Harmonic&) = delete; // No copy constructor allowed.
+
   Harmonic( size_type nodes, double deltat, size_type index, Population& prepop,
             Population& postpop, int longside, std::string topology );
   ~Harmonic() override;

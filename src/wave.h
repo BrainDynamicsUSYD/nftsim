@@ -23,8 +23,6 @@
 #include <string>  // std::string
 
 class Wave : public Propagator {
-  Wave();            // No default constructor allowed.
-  Wave(const Wave&); // No copy constructor allowed.
  protected:
   void init( Configf& configf ) override;
   //void restart( Restartf& restartf );
@@ -49,7 +47,11 @@ class Wave : public Propagator {
   double sump;     ///< sum of the points in the von Neumann neighbourhood (phi)
   double sumQ;     ///< sum of the points in the von Neumann neighbourhood (Q)
   double drive;
+
  public:
+  Wave() = delete;            // No default constructor allowed.
+  Wave(const Wave&) = delete; // No copy constructor allowed.
+
   Wave( size_type nodes, double deltat, size_type index, Population& prepop,
         Population& postpop, int longside, std::string topology );
   ~Wave() override;

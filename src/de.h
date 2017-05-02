@@ -15,9 +15,6 @@
 using vvd_size_type = std::vector<std::vector<double>>::size_type;
 
 class DE {
-  DE();          // No default constructor allowed.
-  DE(const DE&); // No copy constructor allowed.
-  void operator=(DE&);
  protected:
   // if the number of field variables need to be extended, use this function
   void extend( vvd_size_type extension ) {
@@ -28,6 +25,10 @@ class DE {
     }
   }
  public:
+  DE() = delete;          // No default constructor allowed.
+  DE(const DE&) = delete; // No copy constructor allowed.
+  void operator=(DE&) = delete;
+
   vvd_size_type nodes; ///< number of nodes in the system.
   double deltat;       ///< integration timestep size.
   vvd_size_type ndim;  ///< dimension of system == y.size()
@@ -52,24 +53,26 @@ class DE {
 };
 
 class Integrator {
-  Integrator();                  // No default constructor allowed.
-  Integrator(const Integrator&); // No copy constructor allowed.
-  void operator=(Integrator&);
  protected:
   DE& de;
  public:
+  Integrator() = delete;                  // No default constructor allowed.
+  Integrator(const Integrator&) = delete; // No copy constructor allowed.
+  void operator=(Integrator&) = delete;
+
   explicit Integrator( DE& de ) : de(de) {}
   virtual ~Integrator() = default;
   virtual void step() = 0;
 };
 
 class Euler : public Integrator {
-  Euler();             // No default constructor allowed.
-  Euler(const Euler&); // No copy constructor allowed.
-  void operator=(Euler&);
  protected:
   std::vector<double> dydt;
  public:
+  Euler() = delete;             // No default constructor allowed.
+  Euler(const Euler&) = delete; // No copy constructor allowed.
+  void operator=(Euler&) = delete;
+
   explicit Euler( DE& de ) : Integrator(de), dydt(de.ndim) {}
   ~Euler() override = default;
   void step() override {
@@ -83,9 +86,6 @@ class Euler : public Integrator {
 };
 
 class RK4 : public Integrator {
-  RK4();           // No default constructor allowed.
-  RK4(const RK4&); // No copy constructor allowed.
-  void operator=(RK4&);
  protected:
   double h6; ///< == deltat/6
   double deltat5; ///< == deltat*0.5
@@ -96,6 +96,10 @@ class RK4 : public Integrator {
   std::vector<double> k4;
   std::vector<double> temp;
  public:
+  RK4() = delete;           // No default constructor allowed.
+  RK4(const RK4&) = delete; // No copy constructor allowed.
+  void operator=(RK4&) = delete;
+
   explicit RK4( DE& de ) : Integrator(de), h6(de.deltat/6.0), deltat5(de.deltat*0.5),
     k1(de.ndim), k2(de.ndim), k3(de.ndim), k4(de.ndim), temp(de.ndim) {}
   ~RK4() override = default;

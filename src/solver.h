@@ -23,12 +23,9 @@
 #include <vector>   // std::vector;
 
 class Solver : public NF {
-  Solver();              // No default constructor allowed.
-  Solver(const Solver&); // No copy constructor allowed.
-
   Dumpf& dumpf;
 
-  long steps = 0; ///< number of integration steps to perform
+  int steps = 0; ///< number of integration steps to perform
 
   struct CntMat : public NF {
     std::vector<double>::size_type npop=0; ///< number of populations
@@ -93,6 +90,9 @@ class Solver : public NF {
   //virtual void restart( Restartf& restartf );
   //virtual void dump( Dumpf& dumpf ) const;
  public:
+  Solver() = delete;              // No default constructor allowed.
+  Solver(const Solver&) = delete; // No copy constructor allowed.
+
   explicit Solver( Dumpf& dumpf );
   ~Solver() override;
 

@@ -19,8 +19,6 @@
 #include <vector> // std::vector;
 
 class HarmonicIntegral : public virtual Propagator {
-  HarmonicIntegral();                        // No default constructor allowed.
-  HarmonicIntegral(const HarmonicIntegral&); // No copy constructor allowed.
  protected:
   void init( Configf& configf ) override;
   //virtual void restart( Restartf& restartf );
@@ -40,6 +38,9 @@ class HarmonicIntegral : public virtual Propagator {
   double C1;
   double C1dtplusC2;
  public:
+  HarmonicIntegral() = delete;                        // No default constructor allowed.
+  HarmonicIntegral(const HarmonicIntegral&) = delete; // No copy constructor allowed.
+
   HarmonicIntegral( size_type nodes, double deltat, size_type index, Population& prepop,
             Population& postpop, int longside, std::string topology );
   ~HarmonicIntegral() override;

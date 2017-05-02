@@ -21,8 +21,6 @@
 #include <vector> // std::vector;
 
 class CaDP : public Coupling {
-  CaDP();            // No default constructor allowed.
-  CaDP(const CaDP&); // No copy constructor allowed.
  protected:
   double nu_init = 0.0;
   struct CaDE : public DE {
@@ -64,6 +62,9 @@ class CaDP : public Coupling {
   RK4* rk4;
   void init( Configf& configf ) override;
  public:
+  CaDP() = delete;            // No default constructor allowed.
+  CaDP(const CaDP&) = delete; // No copy constructor allowed.
+
   CaDP( size_type nodes, double deltat, size_type index,
         const Propagator& prepropag, const Population& postpop );
   ~CaDP() override;
