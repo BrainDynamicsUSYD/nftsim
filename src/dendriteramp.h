@@ -33,7 +33,7 @@ class DendriteRamp : public Dendrite {
     virtual void init(double vinit);
     DendriteDE( size_type nodes, double deltat) : DE(nodes, deltat, 3) {}
     ~DendriteDE() override = default;
-    void rhs( const std::vector<double>& y, std::vector<double>& dydt ) override;
+    void rhs( const std::vector<double>& y, std::vector<double>& dydt, size_type /*unused*/ ) override;
   };
   DendriteDE* de; //Must redeclare here otherwise we get Dendrite::DendriteDE.
   RK4* rk4;       //Must redeclare here otherwise we get seg-fault

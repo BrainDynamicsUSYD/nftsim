@@ -30,7 +30,7 @@ using std::vector;
     \frac{d\nu\phi}{dt}&=&0
   \f}
 */
-void DendriteRamp::DendriteDE::rhs( const vector<double>& y, vector<double>& dydt ) {
+void DendriteRamp::DendriteDE::rhs( const vector<double>& y, vector<double>& dydt, size_type /*unused*/ ) {
   // y = {V,W==dv/dt,nuphi}
   // dydt = {dv/dt==W, dW/dt==d^2V/dt^2,dnuphi/dt}  d(nuphi)/dt from precouple
   dydt[0] = y[1];

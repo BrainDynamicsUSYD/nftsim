@@ -53,7 +53,7 @@ class CaDP : public Coupling {
     CaDE( size_type nodes, double deltat ) : DE(nodes,deltat,8) {}
     ~CaDE() override = default;
 
-    void rhs( const std::vector<double>& y, std::vector<double>& dydt ) override;
+    void rhs( const std::vector<double>& y, std::vector<double>& dydt, size_type /*unused*/ ) override;
     double sig( double x, double beta ) const;
     virtual double _x( double Ca ) const; ///< potentiation rate
     virtual double _y( double Ca ) const; ///< depression rate

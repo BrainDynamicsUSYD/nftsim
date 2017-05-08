@@ -11,6 +11,7 @@
 
 // Other neurofield headers
 #include "configf.h"    // Configf;
+#include "de.h"         // DE; RK4;
 #include "output.h"     // Output;
 #include "firing_response.h"  // FiringResponse;
 
@@ -22,12 +23,19 @@ class BurstResponse : public FiringResponse { //derived class; constructor initi
   BurstResponse(const BurstResponse& ); // No copy constructor allowed.
   BurstResponse();                      // No default constructor allowed.
 
-  void rk4();
-  void rkderivs(std::vector<double>& xtemp, std::vector<double>& htemp,
-                std::vector<double>& xk, std::vector<double>& hk);
+  struct BurstResponseDE : public DE {
+    double taux = 0.0, tauh = 0.0;
+    std::vector<double> xinfinity;
+    virtual void init(double xinit, double hinit);
+    BurstResponseDE( size_type nodes, double deltat) : DE(nodes, deltat, 2) {}
+    ~BurstResponseDE() override = default;
+    void rhs( const std::vector<double>& y, std::vector<double>& dydt, size_type n ) override;
+  };
+  BurstResponseDE* de;
+  RK4* rk4;
+
   std::vector<double> modtheta;
-  std::vector<double> gX,gH,xtilde,htilde,xtemp,htemp;
-  std::vector<std::vector<double> > xk,hk; // stores temporary values in RK4
+  std::vector<double> gX,gH,xtilde,htilde;
   double Veff = 0.0;
   double Vk = 0.0;
   double Vx = 0.0;
@@ -37,8 +45,6 @@ class BurstResponse : public FiringResponse { //derived class; constructor initi
   double tauh = 0.0;  // time constant
   double ax = 0.0;    // constant
   double mu = 0.0;    // constant
-  double h = 0.0, h2 = 0.0, h6 = 0.0;
-  double yt[2],k1[2],k2[2],k3[2],k4[2]; // temporary RK4 values
 
   std::vector<double> thetatemp, qfiring, xinfinity;
 

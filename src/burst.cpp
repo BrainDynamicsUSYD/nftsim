@@ -71,30 +71,36 @@ void BurstResponse::init( Configf& configf ) {
 // read config file- see firing_response.init()
 // initialize any other private variables (i.e. current)
 
-  htilde.resize(nodes,hinit);
-  xtilde.resize(nodes,xinit);
-  modtheta.resize(nodes,0);
-  thetatemp.resize(nodes,0);
-  qfiring.resize(nodes,0);
-  xinfinity.resize(nodes,0);
+  htilde.resize(nodes, hinit);
+  xtilde.resize(nodes, xinit);
+  modtheta.resize(nodes, 0.0);
+  thetatemp.resize(nodes, 0.0);
+  qfiring.resize(nodes, 0.0);
+  xinfinity.resize(nodes, 0.0);
 
-  xk.resize(4);  // vector<vector<double>>
-  hk.resize(4);
-  for(int i=0; i<4; i++) {
-    xk[i].resize(nodes,0);
-    hk[i].resize(nodes,0);
-  }
+  de->init(xinit, hinit); // call BurstResponse::BurstResponseDE::init
+  de->taux = taux;
+  de->tauh = tauh;
+}
+
+void BurstResponse::BurstResponseDE::init(const double xinit, const double hinit) {
+  variables[0].clear();
+  variables[1].clear();
+  variables[0].resize(nodes, xinit);
+  variables[1].resize(nodes, hinit);
 }
 
 BurstResponse::BurstResponse( size_type nodes, double deltat, size_type index )  // constructor
-  : FiringResponse(nodes,deltat,index), xtemp(nodes), htemp(nodes) {
-  h=deltat;
-  h2=deltat/2;
-  h6=deltat/6;
+  : FiringResponse(nodes,deltat,index) {
+  de = new BurstResponseDE(nodes, deltat);
+  rk4 = new RK4(*de);
   time = 0;
 }
 
-BurstResponse::~BurstResponse() = default;
+BurstResponse::~BurstResponse() {
+  delete de;
+  delete rk4;
+}
 
 void BurstResponse::step() {
   time++;
@@ -124,77 +130,62 @@ void BurstResponse::step() {
   }
 
   FiringResponse::step(); // sum soma potential
-  rk4(); // update dynamic variables in y
-  ib = -gX[0] * (Veff -Vx) / 3;
+
+  ib = -gX[0] * (Veff -Vx) / 3.0;
   ia = ib - gH[0] * (Veff - Vk);
 
+  for( size_type i=0; i<nodes; i++ ) {
+    thetatemp[i] = (ic-3.0*ib*xtilde[i]+(ib-ia)*htilde[i])/mu;
+    qfiring[i] = Q_max/(1.0 + exp(-(v[i]-thetatemp[i])/sigma));
+    xinfinity[i] = qfiring[i]*ax;
+    if(xinfinity[i] < 0.0) {
+      xinfinity[i] = 0.0;
+    }
+  }
+  de->xinfinity = xinfinity;
+
+  //Integrate the burst response one step forward in time.
+  rk4->step();
+  //Copy the burst response from the updated DE to the local variables.
+  for( size_type i=0; i<nodes; i++ ) {
+    xtilde[i] = (*de)[0][i];
+    htilde[i] = (*de)[1][i];
+  }
+
   for(size_type i=0; i<nodes; i++ ) {
-    modtheta[i] = (ic-3*ib*xtilde[i]+(ib-ia)*htilde[i])/mu; // use updated y to calculate theta
+    modtheta[i] = (ic-3.0*ib*xtilde[i]+(ib-ia)*htilde[i])/mu; // use updated y to calculate theta
   }
 }
 
 void BurstResponse::output(Output& output) const {
   // write a field into an output file
-  output.prefix("Pop",index+1);
-  output("HTilde",htilde);
-  output("XTilde",xtilde);
-  output("modtheta",modtheta);
-  output("V",v);
-  output("gX",gX);
-  output("gH",gH);
+  output.prefix("Pop", index+1);
+  output("HTilde", htilde);
+  output("XTilde", xtilde);
+  output("modtheta", modtheta);
+  output("V", v);
+  output("gX", gX);
+  output("gH", gH);
 }
 
 void BurstResponse::fire( vector<double>& Q ) const {
   for(size_type i=0; i<nodes; i++ ) {
-    Q[i] = Q_max/( 1.0F+ exp( -(v[i]-modtheta[i])/sigma ) );
+    Q[i] = Q_max/( 1.0 + exp( -(v[i]-modtheta[i])/sigma ) );
   }
 }
 
-void BurstResponse::rk4() {
-  // Takes current values of htilde and xtilde
-  // Updates them by one time step in place
+/**
+  @brief Computes the derivatives of the BurstResponse function.
 
-  rkderivs(xtilde,htilde,xk[0],hk[0]);
-  for(size_type i=0; i<nodes; i++) {
-    xtemp[i] = xtilde[i] + h2*xk[0][i];
-    htemp[i] = htilde[i] + h2*hk[0][i];
-  }
-
-  rkderivs(xtemp,htemp,xk[1],hk[1]);
-  for(size_type i=0; i<nodes; i++) {
-    xtemp[i] = xtilde[i] + h2*xk[1][i];
-    htemp[i] = htilde[i] + h2*hk[1][i];
-  }
-
-  rkderivs(xtemp,htemp,xk[2],hk[2]);
-  for(size_type i=0; i<nodes; i++) {
-    xtemp[i] = xtilde[i] + h*xk[2][i];
-    htemp[i] = htilde[i] + h*hk[2][i];
-  }
-
-  rkderivs(xtemp,htemp,xk[3],hk[3]);
-
-  for(size_type i=0; i<nodes; i++) {
-    xtilde[i] = xtilde[i] + h6*(xk[0][i] + 2*xk[1][i] + 2*xk[2][i] + xk[3][i]);
-    htilde[i] = htilde[i] + h6*(hk[0][i] + 2*hk[1][i] + 2*hk[2][i] + hk[3][i]);
-  }
-}
-
-void BurstResponse::rkderivs(vector<double>& xtemp, vector<double>& htemp,vector<double>& xk, vector<double>& hk) {
+  The BurstResponse equation is given by:
+  \f{eqnarray*}{
+    equation &=& goes here
+  \f}
+*/
+void BurstResponse::BurstResponseDE::rhs( const vector<double>& y, vector<double>& dydt, size_type n ){
   //function returns the derivatives for modulated threshold eqns
-  //y[0] is Htilde , y[1] is Xtilde
-  ib = -gX[0] * (Veff -Vx) / 3;
-  ia = ib - gH[0] * (Veff - Vk);
-  for(size_type i = 0; i < nodes; i++) {
-    thetatemp[i] = (ic-3*ib*xtilde[i]+(ib-ia)*htilde[i])/mu;
-    qfiring[i] = Q_max/(1+exp(-(v[i]-thetatemp[i])/sigma));
+  //y[1] is Htilde , y[0] is Xtilde
 
-    xinfinity[i] = qfiring[i]*ax;
-    if(xinfinity[i] < 0) {
-      xinfinity[i] = 0;
-    }
-
-    hk[i] = (3*xtemp[i]-htemp[i])/tauh;
-    xk[i] = (xinfinity[i] - xtemp[i])/taux;
-  }
+  dydt[0] = (xinfinity[n] - y[0])/taux;
+  dydt[1] = (3.0*y[0] - y[1])/tauh;
 }

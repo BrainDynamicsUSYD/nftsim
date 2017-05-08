@@ -17,9 +17,9 @@
 #include <vector>   // std::vector;
 using std::vector;
 
-void BCM::BCMDE::rhs( const vector<double>& y, vector<double>& dydt ) {
+void BCM::BCMDE::rhs( const vector<double>& y, vector<double>& dydt, size_type n ) {
   // y == { binding, H, Ca, nutilde, x, y, dnudt, nu, gNMDA }
-  CaDE::rhs(y,dydt);
+  CaDE::rhs(y, dydt, n);
   // recalculate dCadt with NMDAR plasticity
 
   // Ca

@@ -61,7 +61,7 @@ class BCM : public CaDP {
     }
     ~BCMDE() override = default;
     void init( Configf& configf ) override;
-    void rhs( const std::vector<double>& y, std::vector<double>& dydt ) override;
+    void rhs( const std::vector<double>& y, std::vector<double>& dydt, size_type /*unused*/ ) override;
   };
  public:
   BCM( size_type nodes, double deltat, size_type index,
