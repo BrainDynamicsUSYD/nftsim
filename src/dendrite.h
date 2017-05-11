@@ -35,7 +35,7 @@ class Dendrite : public NF {
     virtual void init(double vinit);
     DendriteDE( size_type nodes, double deltat) : DE(nodes, deltat, 3) {}
     ~DendriteDE() override = default;
-    void rhs( const std::vector<double>& y, std::vector<double>& dydt ) override;
+    void rhs( const std::vector<double>& y, std::vector<double>& dydt, size_type /*unused*/ ) override;
   };
   DendriteDE* de;
   RK4* rk4;

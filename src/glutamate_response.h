@@ -30,7 +30,7 @@ class GlutamateResponse : public FiringResponse {
     Glu( vvd_size_type nodes, double deltat ) : DE(nodes,deltat,2) {}
     ~Glu() override = default;
     void init( Configf& configf );
-    void rhs( const std::vector<double>& y, std::vector<double>& dydt ) override;
+    void rhs( const std::vector<double>& y, std::vector<double>& dydt, size_type /*unused*/ ) override;
   };
   Glu glu_m;
   RK4 glu_rk4;

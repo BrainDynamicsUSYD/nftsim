@@ -21,7 +21,7 @@
 using std::exp;
 using std::vector;
 
-void CaDP::CaDE::rhs( const vector<double>& y, vector<double>& dydt ) {
+void CaDP::CaDE::rhs( const vector<double>& y, vector<double>& dydt, size_type /*unused*/ ) {
   // y == { binding, H, Ca, nutilde, x, y, dnudt, nu }
   // binding, leave alone
   dydt[0] = 0;
