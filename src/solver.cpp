@@ -332,7 +332,7 @@ void Solver::Outputs::init( Configf& configf ) {
   configf.next("Population");
   vector<string> temp = configf.arb("Dendrite:");
   for(auto & i : temp) {
-    vector<double>::size_type obj_index = static_cast<vector<double>::size_type>(atoi(i.c_str())); // atoi() takes only 1 of "1.V"
+    auto obj_index = static_cast<vector<double>::size_type>(atoi(i.c_str())); // atoi() takes only 1 of "1.V"
     if( obj_index > cnt.npop || obj_index<1 ) {
       cerr<<"Trying to output population "<<obj_index
           <<", which is an invalid population."<<endl;
@@ -355,7 +355,7 @@ void Solver::Outputs::init( Configf& configf ) {
   configf.next("Dendrite");
   temp = configf.arb("Propagator:");
   for(auto & i : temp) {
-    vector<double>::size_type obj_index = static_cast<vector<double>::size_type>(atoi(i.c_str()));
+    auto obj_index = static_cast<vector<double>::size_type>(atoi(i.c_str()));
     if( obj_index > cnt.ncnt || obj_index<1 ) {
       cerr<<"Trying to output dendrite "<<obj_index
           <<", which is an invalid dendrite."<<endl;
@@ -380,7 +380,7 @@ void Solver::Outputs::init( Configf& configf ) {
   configf.next("Propagator");
   temp = configf.arb("Coupling:");
   for(auto & i : temp) {
-    vector<double>::size_type obj_index = static_cast<vector<double>::size_type>(atoi(i.c_str()));
+    auto obj_index = static_cast<vector<double>::size_type>(atoi(i.c_str()));
     if( obj_index > cnt.ncnt || obj_index<1 ) {
       cerr<<"Trying to output propagator "<<obj_index
           <<", which is an invalid propagator."<<endl;
@@ -406,7 +406,7 @@ void Solver::Outputs::init( Configf& configf ) {
   // and forbids any further reading of the config file
   temp = configf.arb("EOF");
   for(auto & i : temp) {
-    vector<double>::size_type obj_index = static_cast<vector<double>::size_type>(atoi(i.c_str()));
+    auto obj_index = static_cast<vector<double>::size_type>(atoi(i.c_str()));
     if( obj_index > cnt.ncnt || obj_index<1 ) {
       cerr<<"Trying to output coupling "<<obj_index
           <<", which is an invalid coupling."<<endl;
