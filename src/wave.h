@@ -53,7 +53,7 @@ class Wave : public Propagator {
   Wave(const Wave&) = delete; // No copy constructor allowed.
 
   Wave( size_type nodes, double deltat, size_type index, Population& prepop,
-        Population& postpop, int longside, std::string topology );
+        Population& postpop, size_type longside, std::string topology );
   ~Wave() override;
   void step() override;
 };

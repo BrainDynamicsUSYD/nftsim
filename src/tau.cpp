@@ -28,7 +28,7 @@ void Tau::init( Configf& configf ) {
       cerr<<"Value of tau not divisible by Deltat!"<<endl;
       exit(EXIT_FAILURE);
     }
-    m[0] = temp[0]/deltat;
+    m[0] = static_cast<size_type>(temp[0]/deltat);
     max = m[0];
   } else if( temp.size() == nodes ) {
     if( remainder(temp[0],deltat) >deltat ) {

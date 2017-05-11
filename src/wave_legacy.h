@@ -53,7 +53,7 @@ class WaveLegacy : public Propagator {
   double drive;
  public:
   WaveLegacy( size_type nodes, double deltat, size_type index, Population& prepop,
-        Population& postpop, int longside, std::string topology );
+        Population& postpop, size_type longside, std::string topology );
   ~WaveLegacy() override;
   void step() override;
 };

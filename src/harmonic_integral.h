@@ -42,7 +42,7 @@ class HarmonicIntegral : public virtual Propagator {
   HarmonicIntegral(const HarmonicIntegral&) = delete; // No copy constructor allowed.
 
   HarmonicIntegral( size_type nodes, double deltat, size_type index, Population& prepop,
-            Population& postpop, int longside, std::string topology );
+            Population& postpop, size_type longside, std::string topology );
   ~HarmonicIntegral() override;
   void step() override;
 };

@@ -45,7 +45,7 @@ void Propagator::init( Configf& configf ) {
 }
 
 Propagator::Propagator( size_type nodes, double deltat, size_type index, Population& prepop,
-                Population& postpop, int longside, string  /*unused*/)
+                Population& postpop, size_type longside, string  /*unused*/)
   : NF(nodes,deltat,index), prepop(prepop), postpop(postpop),
     tau(nodes,deltat,index), longside(longside), p(nodes) {
 }

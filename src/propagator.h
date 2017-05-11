@@ -33,7 +33,7 @@ class Propagator : public NF {
   Population& prepop;
   Population& postpop;
   Tau tau; ///< tau_ab
-  int longside;
+  size_type longside;
 
   double Q;
   std::vector<double> p; ///< phi_ab
@@ -46,7 +46,7 @@ class Propagator : public NF {
   Propagator(const Propagator&) = delete; // No copy constructor allowed.
 
   Propagator( size_type nodes, double deltat, size_type index, Population& prepop,
-              Population& postpop, int longside, std::string topology );
+              Population& postpop, size_type longside, std::string topology );
   ~Propagator() override;
   void step() override;
   double phiinit( Configf& configf ) const;
