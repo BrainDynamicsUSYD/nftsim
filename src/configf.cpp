@@ -20,7 +20,7 @@ using std::string;
 using std::stringstream;
 using std::vector;
 
-Configf::Configf( const char* filename )
+Configf::Configf( const string filename )
   : std::ifstream(filename) {
   if( !*this ) {
     cerr << "Unable to open configuration file." << endl;

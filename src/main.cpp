@@ -64,13 +64,14 @@ int main(int argc, char* argv[]) {
       }
     }
   }
-  const char* confname = iconfarg != 0?argv[iconfarg]:"neurofield.conf";
+  const string confname = string(iconfarg != 0?argv[iconfarg]:"neurofield.conf");
   if(iconfarg == 0) {
     cerr << "Warning: Using neurofield.conf for input by default" << endl;
   }
-  auto  inputf = new Configf(confname);
+  auto inputf = new Configf(confname);
 
-  // open file for outputting data - default is neurofield.output
+  // open file for outputting data - default is confname with .conf suffix
+  // replaced by .output, so neurofield.conf => neurofield.output.
   Dumpf dumpf;
   int ioutarg = 0;
   if( argc>2 ) {
@@ -80,9 +81,10 @@ int main(int argc, char* argv[]) {
       }
     }
   }
-  dumpf.open(string(ioutarg != 0?argv[ioutarg]:"neurofield.output"));
+  const string default_output_name = confname.substr(0, confname.find_last_of(".")) + ".output";
+  dumpf.open(string(ioutarg != 0?argv[ioutarg]:default_output_name));
   if(ioutarg == 0) {
-    cerr << "Warning: Using neurofield.output for output by default" << endl;
+    cerr << "Warning: Using " << default_output_name << " for output by default." << endl;
   }
 
   if( argc>1 ) {
