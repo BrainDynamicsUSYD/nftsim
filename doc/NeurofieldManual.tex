@@ -108,16 +108,16 @@ A detailed understanding of these equations is not essential to use \NF. However
 
 \subsection{Directory layout}
 
-All of the files associated with \NF are contained in a folder called \type{neurofield}. This folder is referred to as the `root directory', and it contains the following:
+All of the files associated with \NF are contained in a directory called \type{neurofield}. This directory is referred to as the `root directory', and it contains the following:
 
 \begin{tabular}{l p{13cm}}
 \type{src/}& \type{C++} source code.\\
-\type{(obj/)}& This folder is created during compilation and stores intermediate object code.\\
-\type{(dep/)}& This folder is created during compilation and stores dependency information.\\
+\type{(obj/)}& This directory is created during compilation and stores intermediate object code.\\
+\type{(dep/)}& This directory is created during compilation and stores dependency information.\\
 \type{(bin/)}& The compiled binary \type{neurofield} is created here.\\
 \type{configs/}& Stores example configuration files for \NF.\\
 \type{doc/}& Contains this manual and the reference manual once it's built.\\
-\type{+nf/}& Matlab package folder containing \NF helper scripts.\\
+\type{+nf/}& Matlab package directory containing \NF helper scripts.\\
 \type{test/}& Directory for development testing and is irrelevant for users.\\
 \end{tabular}
 
@@ -158,7 +158,7 @@ You can run \NF directly using
 ./bin/neurofield
 \end{lstlisting}
 
-from the main \NF folder. For ease of use, you may consider adding the \type{neurofield} binary to your system path.
+from the main \NF directory. For ease of use, you may consider adding the \type{neurofield} binary to your system path.
 
 By default, \NF will check if a configuration file called \type{neurofield.conf} exists in the current directory. If this file exists, \NF will run it and write output to the file \type{neurofield.output} in the current directory. When these default files are used, a warning is displayed:
 
@@ -176,7 +176,7 @@ You can optionally provide an input file using the \type{-i} switch. For example
 ./bin/neurofield -i configs/example.conf
 \end{lstlisting}
 
-will use the configuration file \type{example.conf} within the \type{configs} folder, and will write output to \type{example.output} also in the \type{configs} folder.
+will use the configuration file \type{example.conf} within the \type{configs} directory, and will write output to \type{example.output} also in the \type{configs} directory.
 
 Or specify both input and output files, using the \type{-i} and \type{-o} switches. For example, if you want your configuration files and output data to be in different directories,
 
@@ -184,7 +184,7 @@ Or specify both input and output files, using the \type{-i} and \type{-o} switch
 ./bin/neurofield -i configs/example.conf -o example.output
 \end{lstlisting}
 
-will use the configuration file \type{example.conf} within the \type{configs} folder, and will write output to \type{example.output} in the current folder.
+will use the configuration file \type{example.conf} within the \type{configs} directory, and will write output to \type{example.output} in the current directory.
 
 A list of available switches can be displayed by using the \type{-h} or \type{--help} option i.e., \type{./bin/neurofield -h}
 
@@ -624,7 +624,7 @@ Each column is a time series with its name indicated in the first line. The firs
 It is also worth noting that traces will be written in the order that they are specified. For example, if you write \type{Population: 3 1} then the columns in the output file will be arranged in this order.
 
 \subsection{Matlab}
-A number of Matlab functions are provided to make it easy to manipulate \NF data from within Matlab. The functions are generally self-documenting with comments at the start of the file. To use these functions, you should add the \NF root directory to your Matlab path. All of the programs in the \type{+nf} folder will then be available for use within Matlab as part of the \type{nf} package (e.g., typing \type{nf.run()} will execute the function specified in \type{+nf/run.m}).
+A number of Matlab functions are provided to make it easy to manipulate \NF data from within Matlab. The functions are generally self-documenting with comments at the start of the file. To use these functions, you should add the \NF root directory to your Matlab path. All of the programs in the \type{+nf} directory will then be available for use within Matlab as part of the \type{nf} package (e.g., typing \type{nf.run()} will execute the function specified in \type{+nf/run.m}).
 
 \begin{figure}[b]
 \begin{center}
