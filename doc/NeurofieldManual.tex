@@ -160,7 +160,7 @@ You can run \NF directly using
 
 from the main \NF folder. For ease of use, you may consider adding the \type{neurofield} binary to your system path.
 
-By default, \NF will check if a configuration file called \type{neurofield.conf} exists in the current directory. If this file exists, \NF will run it. Similarly, by default \NF will write output to the file \type{neurofield.output} in the current directory. When these default files are used, a warning is displayed:
+By default, \NF will check if a configuration file called \type{neurofield.conf} exists in the current directory. If this file exists, \NF will run it and write output to the file \type{neurofield.output} in the current directory. When these default files are used, a warning is displayed:
 
 \begin{lstlisting}
 romesha@romeshalt: neurofield > ./bin/neurofield
@@ -170,7 +170,15 @@ Warning: Using neurofield.output for output by default
 
 Note that NeuroField will overwrite the output file if it exists, so it is not a good idea to use \type{neurofield.output} for your work.
 
-You can optionally specify input and output files, using the \type{-i} and \type{-o} switches. For example,
+You can optionally provide an input file using the \type{-i} switch. For example,
+
+\begin{lstlisting}
+./bin/neurofield -i configs/example.conf
+\end{lstlisting}
+
+will use the configuration file \type{example.conf} within the \type{configs} folder, and will write output to \type{example.output} also in the \type{configs} folder.
+
+Or specify both input and output files, using the \type{-i} and \type{-o} switches. For example, if you want your configuration files and output data to be in different directories,
 
 \begin{lstlisting}
 ./bin/neurofield -i configs/example.conf -o example.output
