@@ -18,8 +18,11 @@
 #include "solver.h"     // Solver;
 
 // C++ standard library headers
+#include <ctime>     // std::time; std::localtime
+#include <iomanip>   // std::setfill; std::setw;
 #include <iostream>  // std::cerr; std::cout; std::endl;
-#include <string>    // std::string;
+#include <string>    // std::string; std::to_string;
+#include <sstream>   // std::ostringstream;
 using std::cerr;
 using std::cout;
 using std::endl;
@@ -39,10 +42,11 @@ int main(int argc, char* argv[]) {
              << "  to neurofield.output" << endl
              << endl
              << "Options:" << endl
-             << "  -i, --input [FILE]          Read from a particular configuration" << endl
-             << "  -o, --output [FILE]         Write to a particular output file" << endl
-             << "  -h, -?, --help              Print this message" << endl
-             << "  -v, --verbose               Send output to stdout" << endl << endl
+             << "  -i, --input [FILE]         Read from a particular configuration;" << endl
+             << "  -o, --output [FILE]        Write to a particular output file;" << endl
+             << "  -t, --time-stamp           Add time-stamp to auto-generated output file name;" << endl
+             << "  -h, -?, --help             Print this message;" << endl
+             << "  -v, --verbose              Send output to stdout." << endl << endl
              << "Examples:" << endl
              << "  NeuroField " << endl
              << "  NeuroField -i alternate.conf -o alternate.output" << endl
@@ -64,13 +68,34 @@ int main(int argc, char* argv[]) {
       }
     }
   }
-  const char* confname = iconfarg != 0?argv[iconfarg]:"neurofield.conf";
+  const string confname = string(iconfarg != 0?argv[iconfarg]:"neurofield.conf");
   if(iconfarg == 0) {
     cerr << "Warning: Using neurofield.conf for input by default" << endl;
   }
-  auto  inputf = new Configf(confname);
+  auto inputf = new Configf(confname);
 
-  // open file for outputting data - default is neurofield.output
+  // Current local time, optionally appended to auto-generated output file name.
+  // The time-stamp format used is ISO 8601: YYYY-mm-ddThhMMSS.
+  string current_time = "";
+  if( argc>1 ) {
+    for( int i=1; i<=argc-1; i++) {
+      if( strcmp(argv[i],"-t")==0 || strcmp(argv[i],"--time-stamp")==0 ) {
+        auto t = std::time(nullptr);
+        auto tm = *std::localtime(&t);
+        std::ostringstream date_time_stream;
+        date_time_stream << "_" << tm.tm_year + 1900 << "-";
+        date_time_stream << std::setw( 2 ) << std::setfill( '0' ) << (tm.tm_mon + 1) << "-";
+        date_time_stream << std::setw( 2 ) << std::setfill( '0' ) << tm.tm_mday << "T";
+        date_time_stream << std::setw( 2 ) << std::setfill( '0' ) << tm.tm_hour;
+        date_time_stream << std::setw( 2 ) << std::setfill( '0' ) << tm.tm_min;
+        date_time_stream << std::setw( 2 ) << std::setfill( '0' ) << tm.tm_sec;
+        current_time = date_time_stream.str();
+      }
+    }
+  }
+
+  // open file for outputting data - default is confname with .conf suffix
+  // replaced by .output, so neurofield.conf => neurofield.output.
   Dumpf dumpf;
   int ioutarg = 0;
   if( argc>2 ) {
@@ -80,9 +105,10 @@ int main(int argc, char* argv[]) {
       }
     }
   }
-  dumpf.open(string(ioutarg != 0?argv[ioutarg]:"neurofield.output"));
+  const string default_output_name = confname.substr(0, confname.find_last_of(".")) + current_time + ".output";
+  dumpf.open(string(ioutarg != 0?argv[ioutarg]:default_output_name));
   if(ioutarg == 0) {
-    cerr << "Warning: Using neurofield.output for output by default" << endl;
+    cerr << "Warning: Using " << default_output_name << " for output by default." << endl;
   }
 
   if( argc>1 ) {

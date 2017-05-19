@@ -25,7 +25,7 @@ class Configf : protected std::ifstream { // derived class
   Configf& operator=(const Configf&) = delete; // No copy assignment operator allowed.
 
 
-  explicit Configf( const char* filename ); // const ptr to filename for ifstream
+  explicit Configf( const std::string filename ); // const string of filename for ifstream
   ~Configf() override;
 
   // Looks for the next parameter called "param" and stores it in T
