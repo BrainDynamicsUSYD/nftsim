@@ -29,8 +29,6 @@
 #include <vector> // std::vector;
 
 class CouplingRamp : public Coupling {
-  CouplingRamp();                    // No default constructor allowed.
-  CouplingRamp(const CouplingRamp&); // No copy constructor allowed.
  protected:
   std::vector<double> ns;
   std::vector<double> tpts;
@@ -38,6 +36,9 @@ class CouplingRamp : public Coupling {
   double time = 0.0;
   std::vector<double>::size_type pairs;
  public:
+  CouplingRamp() = delete;                    // No default constructor allowed.
+  CouplingRamp(const CouplingRamp&) = delete; // No copy constructor allowed.
+
   void init( Configf& configf ) override;
   void step() override;
   CouplingRamp( size_type nodes, double deltat, size_type index,

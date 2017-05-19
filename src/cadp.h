@@ -21,8 +21,6 @@
 #include <vector> // std::vector;
 
 class CaDP : public Coupling {
-  CaDP();            // No default constructor allowed.
-  CaDP(const CaDP&); // No copy constructor allowed.
  protected:
   double nu_init = 0.0;
   struct CaDE : public DE {
@@ -47,7 +45,7 @@ class CaDP : public Coupling {
     double gnmda = 0.0; ///< gain for NMDA receptor
     double z = 0.0; ///< timescale of protein cascade
 
-    double pos = 0.0; ///< sign of nu
+    int pos = 0; ///< sign of nu
 
     virtual void init( Configf& configf );
     CaDE( size_type nodes, double deltat ) : DE(nodes,deltat,8) {}
@@ -64,6 +62,9 @@ class CaDP : public Coupling {
   RK4* rk4;
   void init( Configf& configf ) override;
  public:
+  CaDP() = delete;            // No default constructor allowed.
+  CaDP(const CaDP&) = delete; // No copy constructor allowed.
+
   CaDP( size_type nodes, double deltat, size_type index,
         const Propagator& prepropag, const Population& postpop );
   ~CaDP() override;

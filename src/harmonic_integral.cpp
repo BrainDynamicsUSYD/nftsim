@@ -49,7 +49,7 @@ void HarmonicIntegral::init( Configf& configf ) {
 }
 
 HarmonicIntegral::HarmonicIntegral( size_type nodes, double deltat, size_type index,
-                    Population& prepop, Population& postpop, int longside, string topology )
+                    Population& prepop, Population& postpop, size_type longside, string topology )
   : Propagator(nodes,deltat,index,prepop,postpop,longside,topology) {
 }
 

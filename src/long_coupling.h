@@ -20,14 +20,15 @@
 #include <vector> // std::vector;
 
 class LongCoupling : public Coupling {
-  LongCoupling();                    // No default constructor allowed.
-  LongCoupling(const LongCoupling&); // No copy constructor allowed.
  protected:
   void init( Configf& configf ) override;
 
   std::vector< std::vector<double> > n2d; ///< nu tensor, nu[i][j] = from i to j
 
  public:
+  LongCoupling() = delete;                    // No default constructor allowed.
+  LongCoupling(const LongCoupling&) = delete; // No copy constructor allowed.
+
   LongCoupling( size_type nodes, double deltat, size_type index,
               const Propagator& prepropag, const Population& postpop );
   ~LongCoupling() override;

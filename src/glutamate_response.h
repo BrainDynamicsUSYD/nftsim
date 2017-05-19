@@ -19,9 +19,6 @@ class GlutamateResponse;
 #include <vector> // std::vector;
 
 class GlutamateResponse : public FiringResponse {
-  GlutamateResponse(const GlutamateResponse& ); // No copy constructor allowed.
-  GlutamateResponse();                          // No default constructor allowed.
-
  protected:
   void init( Configf& configf ) override;
 
@@ -37,7 +34,11 @@ class GlutamateResponse : public FiringResponse {
   };
   Glu glu_m;
   RK4 glu_rk4;
+
  public:
+  GlutamateResponse(const GlutamateResponse& ) = delete; // No copy constructor allowed.
+  GlutamateResponse() = delete;                          // No default constructor allowed.
+
   void step() override;
   GlutamateResponse( size_type nodes, double deltat, size_type index );
   ~GlutamateResponse() override;

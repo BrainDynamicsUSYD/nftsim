@@ -26,9 +26,6 @@ class Population;
 #include <vector> // std::vector;
 
 class Population : public NF {
-  Population();                   // No default constructor allowed.
-  Population(const Population& ); // No copy constructor allowed.
-
   FiringResponse* firing_response;   ///< firing_response for neural population
   Timeseries* timeseries; ///< timeseries for stimulus
  protected:
@@ -40,7 +37,11 @@ class Population : public NF {
   double qinit = 0.0;  ///< initial firing rate
 
   void init( Configf& configf ) override;
+
  public:
+  Population() = delete;                   // No default constructor allowed.
+  Population(const Population& ) = delete; // No copy constructor allowed.
+
   Population( size_type nodes, double deltat, size_type index );
   ~Population() override;
   void step() override;

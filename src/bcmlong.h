@@ -21,8 +21,6 @@
 #include <vector> // std::vector;
 
 class BCMLong : public BCM {
-  BCMLong();               // No default constructor allowed.
-  BCMLong(const BCMLong&); // No copy constructor allowed.
  protected:
   void init( Configf& configf ) override;
 
@@ -30,6 +28,9 @@ class BCMLong : public BCM {
   std::vector<RK4*> rk4_2d;
 
  public:
+  BCMLong() = delete;               // No default constructor allowed.
+  BCMLong(const BCMLong&) = delete; // No copy constructor allowed.
+
   BCMLong( size_type nodes, double deltat, size_type index,
            const Propagator& prepropag, const Population& postpop );
   ~BCMLong() override;

@@ -24,8 +24,7 @@ using std::scientific;
 using std::setw;
 using std::string;
 
-Dumpf::Dumpf() {
-}
+Dumpf::Dumpf() = default;
 
 Dumpf::~Dumpf() {
   file.close();

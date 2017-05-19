@@ -72,7 +72,7 @@ void Harmonic::HarmonicDE::init(const double pinit) {
 }
 
 Harmonic::Harmonic( size_type nodes, double deltat, size_type index, Population& prepop,
-                    Population& postpop, int longside, string topology )
+                    Population& postpop, size_type longside, string topology )
   : Propagator(nodes,deltat,index,prepop,postpop,longside,topology) {
   de = new HarmonicDE(nodes, deltat);
   rk4 = new RK4(*de);

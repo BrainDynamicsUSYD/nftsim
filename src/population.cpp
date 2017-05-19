@@ -90,7 +90,7 @@ double Population::Qinit( Configf& configf ) const {
 
 const vector<double>& Population::glu() const {
   if( firing_response != nullptr ) {
-    GlutamateResponse* local_qr = dynamic_cast<GlutamateResponse*>(firing_response);
+    auto local_qr = dynamic_cast<GlutamateResponse*>(firing_response);
     if( local_qr == nullptr ){
       cerr<<"Trying to access glu of a non-GlutatmateResponse population."<<endl;
       exit(EXIT_FAILURE);

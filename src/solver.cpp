@@ -31,13 +31,14 @@
 #include "wave_legacy.h"   // WaveLegacy;
 
 // C++ standard library headers
-#include <cmath>    // std::remainder; std::sqrt;
+#include <cmath>    // std::lround; std::remainder; std::sqrt;
 #include <iostream> // std::cerr; std::endl;
 #include <sstream>  // std::stringstream;
 #include <string>   // std::string;
 #include <vector>   // std::vector;
 using std::cerr;
 using std::endl;
+using std::lround;
 using std::remainder;
 using std::sqrt;
 using std::string;
@@ -104,12 +105,12 @@ void Solver::init( Configf& configf ) {
     cerr<<"Value of total simulation time not divisible by Deltat."<<endl;
     exit(EXIT_FAILURE);
   } else {
-    steps = tempf/deltat +.5;
+    steps = static_cast<int>(lround(tempf/deltat));
   }
 
   // read in grid size and grid geometry
   configf.param("Nodes",nodes);
-  int longside;
+  size_type longside;
   if( configf.optional("Longside",longside) ) {
     if( nodes%longside != 0 ) {
       cerr << "To define a rectangular grid nodes: " << nodes <<endl
@@ -118,7 +119,7 @@ void Solver::init( Configf& configf ) {
       exit(EXIT_FAILURE);
     }
   } else {
-    longside = sqrt(nodes);
+    longside = static_cast<size_type>(sqrt(nodes));
   }
   string topology("Torus");
   if( configf.optional("Topology",topology) ) {
@@ -310,7 +311,7 @@ void Solver::Outputs::init( Configf& configf ) {
       cerr<<"Value of output start time not divisible by Deltat."<<endl;
       exit(EXIT_FAILURE);
     } else {
-      outputstart = tempf/deltat;
+      outputstart = static_cast<int>(tempf/deltat);
     }
   }
   t = 0;
@@ -323,7 +324,7 @@ void Solver::Outputs::init( Configf& configf ) {
       cerr<<"Value of output interval not divisible by Deltat."<<endl;
       exit(EXIT_FAILURE);
     } else {
-      outputinterval = tempf/deltat+.5;
+      outputinterval = static_cast<int>(lround(tempf/deltat));
     }
   }
 
@@ -331,8 +332,8 @@ void Solver::Outputs::init( Configf& configf ) {
   configf.next("Population");
   vector<string> temp = configf.arb("Dendrite:");
   for(auto & i : temp) {
-    int obj_index = atoi(i.c_str()); // atoi() takes only 1 of "1.V"
-    if( static_cast<vector<double>::size_type>(obj_index) > cnt.npop || obj_index<1 ) {
+    auto obj_index = static_cast<vector<double>::size_type>(atoi(i.c_str())); // atoi() takes only 1 of "1.V"
+    if( obj_index > cnt.npop || obj_index<1 ) {
       cerr<<"Trying to output population "<<obj_index
           <<", which is an invalid population."<<endl;
       exit(EXIT_FAILURE);
@@ -354,8 +355,8 @@ void Solver::Outputs::init( Configf& configf ) {
   configf.next("Dendrite");
   temp = configf.arb("Propagator:");
   for(auto & i : temp) {
-    int obj_index = atoi(i.c_str());
-    if( static_cast<vector<int>::size_type>(obj_index) > cnt.ncnt || obj_index<1 ) {
+    auto obj_index = static_cast<vector<double>::size_type>(atoi(i.c_str()));
+    if( obj_index > cnt.ncnt || obj_index<1 ) {
       cerr<<"Trying to output dendrite "<<obj_index
           <<", which is an invalid dendrite."<<endl;
       exit(EXIT_FAILURE);
@@ -379,8 +380,8 @@ void Solver::Outputs::init( Configf& configf ) {
   configf.next("Propagator");
   temp = configf.arb("Coupling:");
   for(auto & i : temp) {
-    int obj_index = atoi(i.c_str());
-    if( static_cast<vector<int>::size_type>(obj_index) > cnt.ncnt || obj_index<1 ) {
+    auto obj_index = static_cast<vector<double>::size_type>(atoi(i.c_str()));
+    if( obj_index > cnt.ncnt || obj_index<1 ) {
       cerr<<"Trying to output propagator "<<obj_index
           <<", which is an invalid propagator."<<endl;
       exit(EXIT_FAILURE);
@@ -405,8 +406,8 @@ void Solver::Outputs::init( Configf& configf ) {
   // and forbids any further reading of the config file
   temp = configf.arb("EOF");
   for(auto & i : temp) {
-    int obj_index = atoi(i.c_str());
-    if( static_cast<vector<int>::size_type>(obj_index) > cnt.ncnt || obj_index<1 ) {
+    auto obj_index = static_cast<vector<double>::size_type>(atoi(i.c_str()));
+    if( obj_index > cnt.ncnt || obj_index<1 ) {
       cerr<<"Trying to output coupling "<<obj_index
           <<", which is an invalid coupling."<<endl;
       exit(EXIT_FAILURE);

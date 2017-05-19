@@ -20,8 +20,6 @@
 #include <vector> // std::vector;
 
 class BCM : public CaDP {
-  BCM(const BCM&); // No copy constructor allowed.
-  BCM();           // No default constructor allowed.
  protected:
   //double t_BCM;
   struct BCMDE : public CaDE {
@@ -34,7 +32,7 @@ class BCM : public CaDP {
     BCMDE( BCMDE& bcmDE ) : CaDE(bcmDE.nodes,bcmDE.deltat) {
       *this = bcmDE;
     }
-    BCMDE& operator= ( BCMDE& bcmDE ) {
+    BCMDE& operator= ( const BCMDE& bcmDE ) {
       this->nu_init = bcmDE.nu_init;
       this->B = bcmDE.B;
       this->glu_0 = bcmDE.glu_0;
@@ -64,6 +62,8 @@ class BCM : public CaDP {
     void rhs( const std::vector<double>& y, std::vector<double>& dydt, size_type /*unused*/ ) override;
   };
  public:
+  BCM(const BCM&) = delete; // No copy constructor allowed.
+  BCM() = delete;           // No default constructor allowed.
   BCM( size_type nodes, double deltat, size_type index,
        const Propagator& prepropag, const Population& postpop );
   ~BCM() override;

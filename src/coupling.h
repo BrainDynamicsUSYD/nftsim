@@ -23,8 +23,6 @@ class Coupling;
 #include <vector> // std::vector;
 
 class Coupling : public NF {
-  Coupling();                // No default constructor allowed.
-  Coupling(const Coupling&); // No copy constructor allowed.
  protected:
   void init( Configf& configf ) override;
   //virtual void restart( Restartf& restartf );
@@ -36,6 +34,9 @@ class Coupling : public NF {
   std::vector<double> P;  ///< \f$\nu\phi\f$
   int pos = 0;
  public:
+  Coupling() = delete;                // No default constructor allowed.
+  Coupling(const Coupling&) = delete; // No copy constructor allowed.
+
   Coupling( size_type nodes, double deltat, size_type index,
           const Propagator& prepropag, const Population& postpop );
   ~Coupling() override;

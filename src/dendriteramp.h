@@ -22,9 +22,6 @@
 using std::vector;
 
 class DendriteRamp : public Dendrite {
-  DendriteRamp();                    // No default constructor allowed.
-  DendriteRamp(const DendriteRamp&); // No copy constructor allowed.
-
  protected:
   struct DendriteDE : public DE {
     std::vector<double> alpha_vec, beta_vec;
@@ -42,6 +39,9 @@ class DendriteRamp : public Dendrite {
 
   void init( Configf& configf ) override;
  public:
+  DendriteRamp() = delete;                    // No default constructor allowed.
+  DendriteRamp(const DendriteRamp&) = delete; // No copy constructor allowed.
+
   DendriteRamp( size_type nodes, double deltat, size_type index,
                 const Propagator& prepropag, const Coupling& precouple );
   ~DendriteRamp() override;

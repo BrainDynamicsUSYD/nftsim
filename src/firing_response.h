@@ -27,9 +27,6 @@ class FiringResponse;
 #include <vector> // std::vector;
 
 class FiringResponse : public NF {
-  FiringResponse(const FiringResponse& ); // No copy constructor allowed.
-  FiringResponse();                       // No default constructor allowed.
-
  protected:
   void init( Configf& configf ) override;
   //virtual void restart( Restartf& restartf );
@@ -46,6 +43,9 @@ class FiringResponse : public NF {
   std::vector<double> v; ///< soma potential for the population
 
  public:
+  FiringResponse(const FiringResponse& ) = delete; // No copy constructor allowed.
+  FiringResponse() = delete;                       // No default constructor allowed.
+
   FiringResponse( size_type nodes, double deltat, size_type index );
   ~FiringResponse() override;
   void step() override;
