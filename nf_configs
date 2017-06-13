@@ -243,7 +243,7 @@ check_output_file(){
     OUTPUT_FILE_TMP="$(mktemp --tmpdir="/tmp" --suffix=.output neurofield_"$config_file_name"-XXXX 2>/dev/null \
                      || mktemp /tmp/neurofield_"$config_file_name".XXXX)" #Alternative for OSX
     run_config "$config_file" "$OUTPUT_FILE_TMP" || return 1
-    zdiff "${OUTPUT_FILE_TMP}.gz" "${OUTPUT_FILE}.gz"  &> /dev/null
+    diff -q <(zcat "${OUTPUT_FILE_TMP}.gz") <(zcat "${OUTPUT_FILE}.gz") &> /dev/null
     DIFF_STATUS="$?" #NOTE: No-diff = 0; diff = 1; error = 2
     return 0
   else
