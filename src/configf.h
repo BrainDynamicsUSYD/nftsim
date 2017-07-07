@@ -16,7 +16,7 @@
 #include <vector>   // std::vector;
 
 
-class Configf : protected std::ifstream { // derived class
+class Configf : public std::ifstream { // derived class
   char* buffer;
   std::streamsize filesize;
  public:

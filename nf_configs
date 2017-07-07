@@ -18,9 +18,9 @@
 #
 
 #Colourise some of our output.
-declare -gr DIFFERS_CLR='\e[1;33mDIFFERS!\e[0m' # Bold Yellow-ish
-declare -gr ERROR_CLR='\e[1;31mERROR:\e[0m'     # Bold Red
-declare -gr SAME_CLR='\e[1;32mSAME\e[0m'        # Bold Green
+declare -r DIFFERS_CLR='\e[1;33mDIFFERS!\e[0m' # Bold Yellow-ish
+declare -r ERROR_CLR='\e[1;31mERROR:\e[0m'     # Bold Red
+declare -r SAME_CLR='\e[1;32mSAME\e[0m'        # Bold Green
 
 #Capture args the script was called with.
 INPUTARG1="$1" ; INPUTARG2="$2"
@@ -56,8 +56,7 @@ parse_command_flags(){
         check_all
         return "$?"
       else
-        check_output_file "$INPUTARG2"
-        [[ "$?" != '0' ]] && return 1
+        if ! check_output_file "$INPUTARG2"; then return 1; fi
         veiw_diff "$INPUTARG2"
       fi
       return "$DIFF_STATUS"
@@ -151,7 +150,7 @@ run_config(){
 get_all_config_files(){
   #NOTE: currently restricting the search for conf files to a max-depth of 2 to avoid
   #      running the conf files from Abeysuriya_2014, as they generate GB of output.
-  declare -ga CONFIG_FILES
+  #SAK#requires BASH >=4.2# declare -ga CONFIG_FILES
   CONFIG_FILES=($(find "$SCRIPTDIR/configs" -maxdepth 2 -type f -name '*.conf'))
   return 0
 }
@@ -176,9 +175,7 @@ regenerate_output_file(){
       regen_file="$(find "$SCRIPTDIR/configs" -maxdepth 3 -type f -name "${regen_file}.conf")"
       printf '%s\n' "Regenerating '$regen_file'..."
       set_output_file "$regen_file"
-      run_config "$regen_file"
-      #printf '%s\n' "$SCRIPTDIR/bin/neurofield -i '$regen_file' -o '$OUTPUT_FILE'"
-      [[ "$?" != '0' ]] && ((++regen_errors))
+      if ! run_config "$regen_file"; then ((++regen_errors)); fi
     done < "/tmp/neurofield_changed_output_list_$(whoami).txt"
     if ((regen_errors!=0)); then
       printf '%s\n' "There were '$regen_errors' errors while regenerating changed output."
@@ -210,8 +207,7 @@ check_all(){
   for (( i = 0; i < ${#CONFIG_FILES[@]}; i++ )) ; do
     ((++conf_count))
     printf '%s' "Checking '${CONFIG_FILES[i]}'... "
-    check_output_file "${CONFIG_FILES[i]}"
-    [[ "$?" != 0 ]] && ((++error_count))
+    if ! check_output_file "${CONFIG_FILES[i]}"; then ((++error_count)); fi
     if [[ "$DIFF_STATUS" = '0' ]]; then
       printf "output the ${SAME_CLR}.\n"
       rm -f "${OUTPUT_FILE_TMP}.gz"
@@ -231,7 +227,6 @@ check_all(){
 check_output_file(){
   local config_file="$1"
   local config_file_name
-  declare -g OUTPUT_FILE_TMP #Path to file containing output of current neurofield.
   DIFF_STATUS=42
 
   #If arg isn't a file, try mapping it to a file name.
@@ -244,10 +239,11 @@ check_output_file(){
     set_output_file "$config_file"
     [[ -f "${OUTPUT_FILE}.gz" ]] || { printf "$ERROR_CLR %s\n" "No existing file to check against."; return 1; }
     config_file_name="$(basename "$config_file")"
+    #Path to file containing output of current neurofield.
     OUTPUT_FILE_TMP="$(mktemp --tmpdir="/tmp" --suffix=.output neurofield_"$config_file_name"-XXXX 2>/dev/null \
                      || mktemp /tmp/neurofield_"$config_file_name".XXXX)" #Alternative for OSX
     run_config "$config_file" "$OUTPUT_FILE_TMP" || return 1
-    zdiff "${OUTPUT_FILE_TMP}.gz" "${OUTPUT_FILE}.gz"  &> /dev/null
+    diff -q <(zcat "${OUTPUT_FILE_TMP}.gz") <(zcat "${OUTPUT_FILE}.gz") &> /dev/null
     DIFF_STATUS="$?" #NOTE: No-diff = 0; diff = 1; error = 2
     return 0
   else
