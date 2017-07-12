@@ -53,6 +53,7 @@ if [[ "$DEBUG" = 'true' ]]; then
   printf '%s\n' "INPUT_ARG4: '$INPUT_ARG4'"
 fi
 
+TMP_DIR='/tmp'
 MEM_DIR='/dev/shm'
 SCRIPT_PATH="$( cd "$(dirname "${BASH_SOURCE[0]}")" || exit 1 ; pwd -P )"
 RESULTS_DIR="${SCRIPT_PATH}/results"
