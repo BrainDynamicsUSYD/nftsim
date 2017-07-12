@@ -99,6 +99,12 @@ gather_system_info(){
   RAM_FREE="$(grep 'MemFree' '/proc/meminfo')"
   RAM_FREE="$(sed 's/MemFree:[[:blank:]]*//' <<< "$RAM_FREE")"
   #NOTE: Looks like it will be a pain to reliably grab disk info.
+  #Compiler info
+  if [[ "${PLATFORM,,}" = 'linux' ]]; then
+    COMPILER_VERSION="$(gcc --version | grep --only-matching '[[:digit:]]\.[[:digit:]]*\.\?[[:digit:]]*')"
+  elif [[ "${PLATFORM,,}" = 'darwin' ]]; then
+    COMPILER_VERSION="$(clang --version | grep --only-matching '[[:digit:]]\.[[:digit:]]*\.\?[[:digit:]]*')"
+  fi
   return 0
 } # function gather_system_info()
 
@@ -221,11 +227,11 @@ file_size="$(wc --bytes < "$OUTPUT_FILE")"
 
 USER_TIME="$(grep 'User time' "$TMP_TIMING_FILE")"
 USER_TIME_UNITS="$(grep --only-matching '(.*)' <<< "$USER_TIME" | tr -d '()')"
-USER_TIME="$(grep '[[:digit:]]*\.\?[[:digit:]]*' <<< "$USER_TIME")"
+USER_TIME="$(grep --only-matching '[[:digit:]]*\.\?[[:digit:]]*' <<< "$USER_TIME")"
 
 MAX_RES_SIZE="$(grep 'Maximum resident set size' "$TMP_TIMING_FILE")"
 MAX_RES_SIZE_UNITS="$(grep --only-matching '(.*)' <<< "$MAX_RES_SIZE" | tr -d '()')"
-MAX_RES_SIZE="$(grep '[[:digit:]]*' <<< "$MAX_RES_SIZE")"
+MAX_RES_SIZE="$(grep --only-matching  '[[:digit:]]*' <<< "$MAX_RES_SIZE")"
 
 {
   printf '%s\n' "Added $TODAY at $SCRIPT_START_TIME:"
@@ -270,23 +276,23 @@ file_size_kb=$((file_size/(1024)))         # in KB
 
 #Add an entry to the Simulation Resource Information file -- csv.
 {
-  printf '%s,' "$USER_TIME" "$USER_TIME_UNITS" "$MAX_RES_SIZE" "$MAX_RES_SIZE_UNITS" "$file_size_kb" "kb"
-  printf '\n'
+  printf '%s,' "$USER_TIME" "$USER_TIME_UNITS" "$MAX_RES_SIZE" "$MAX_RES_SIZE_UNITS" "$file_size_kb"
+  printf 'kbytes\n'
 } >> "$RESULTS_DIR/simulation_resources.csv"
 #Add an entry to the System Information file -- csv.
 {
   printf '%s,' "$HOSTNAME" "$PLATFORM" "$CPU_MODEL_NAME" "$CPU_CACHE_SIZE" "$CPU_CORE_COUNT" "$RAM_TOTAL" "$RAM_FREE" "$RAM_AVAILABLE" "$CALLER"
-  printf '\n'
+  printf '%s\n' "$COMPILER_VERSION"
 } >> "$RESULTS_DIR/system_info.csv"
 #Add an entry to the Code Information file -- csv.
 {
-  printf '%s,' "$GIT_BRANCH" "$GIT_COMMIT"
-  printf '\n'
+  printf '%s,' "$GIT_BRANCH"
+  printf '%s\n' "$GIT_COMMIT"
 } >> "$RESULTS_DIR/code_info.csv"
 #Add an entry to the Simulation Configuration file -- csv.
 {
-  printf '%s,' "$SIMULATION_LENGTH" "$TIME_STEP_SIZE" "$NUMBER_OF_NODES" "$NUMBER_OF_PROPAGATORS" "$MAX_TAU"
-  printf '\n'
+  printf '%s,' "$SIMULATION_LENGTH" "$TIME_STEP_SIZE" "$NUMBER_OF_NODES" "$NUMBER_OF_PROPAGATORS"
+  printf '%s\n' "$MAX_TAU"
 } >> "$RESULTS_DIR/simulation_conf.csv"
 
 # if [[ ! -f "$RESULTS_DIR/system_info.md" ]]; then
