@@ -209,66 +209,97 @@ if ! gather_conf_info; then exit 1; fi
 #Unless we have explicitly been told not to, rebuild neurofield.
 [[ "${NF_BENCH_NO_MAKE,,}" = 'true' ]] || if ! fresh_build; then exit 1; fi
 
-{
-  printf '%s\n' "Added $TODAY at $SCRIPT_START_TIME:" 1>&2
-  /usr/bin/time -v "$NEUROFIELD" -i "$CONFIG_FILE" -o "$OUTPUT_FILE"
-} 2>> "$TIMING_FILE"
+if ! TMP_TIMING_FILE="$(mktemp "$TMP_DIR"/nf_timing-XXXX)"; then
+  printf '%s\n' "ERROR: Failed to create temporary timing file."
+  exit 1
+fi
+
+/usr/bin/time -v "$NEUROFIELD" -i "$CONFIG_FILE" -o "$OUTPUT_FILE" 2>> "$TMP_TIMING_FILE"
 
 file_size="$(wc --bytes < "$OUTPUT_FILE")"
+
+USER_TIME="$(grep 'User time' "$TMP_TIMING_FILE")"
+USER_TIME_UNITS="$(grep --only-matching '(.*)' <<< "$USER_TIME" | tr -d '()')"
+USER_TIME="$(grep '[[:digit:]]*\.\?[[:digit:]]*' <<< "$USER_TIME")"
+
+MAX_RES_SIZE="$(grep 'Maximum resident set size' "$TMP_TIMING_FILE")"
+MAX_RES_SIZE_UNITS="$(grep --only-matching '(.*)' <<< "$MAX_RES_SIZE" | tr -d '()')"
+MAX_RES_SIZE="$(grep '[[:digit:]]*' <<< "$MAX_RES_SIZE")"
+
+{
+  printf '%s\n' "Added $TODAY at $SCRIPT_START_TIME:"
+  cat "$TMP_TIMING_FILE"
+} >> "$TIMING_FILE"
+
+rm -f "$TMP_TIMING_FILE"
+[[ "${NF_BENCH_TO_MEM,,}" = 'true' ]] && mv "$OUTPUT_FILE" "$RESULTS_DIR"
+
+
 file_size_gb=$((file_size/(1048576*1024))) # in GB
 file_size_mb=$((file_size/(1048576)))      # in MB
+file_size_kb=$((file_size/(1024)))         # in KB
 {
   printf '%s\n' 'Storage size:'
-  printf '%s\n' "$file_size_gb GB"
-  printf '%s\n' "$file_size_mb MB"
-
-  printf '\n%s\n' 'System Information:'
-  printf '%s: "%s"\n' 'HOSTNAME' "$HOSTNAME"
-  printf '%s: "%s"\n' 'PLATFORM' "$PLATFORM"
-  printf '%s: "%s"\n' 'CPU_MODEL_NAME' "$CPU_MODEL_NAME"
-  printf '%s: "%s"\n' 'CPU_CACHE_SIZE' "$CPU_CACHE_SIZE"
-  printf '%s: "%s"\n' 'CPU_CORE_COUNT' "$CPU_CORE_COUNT"
-  printf '%s: "%s"\n' 'RAM_TOTAL' "$RAM_TOTAL"
-  printf '%s: "%s"\n' 'RAM_FREE' "$RAM_FREE"
-  printf '%s: "%s"\n' 'RAM_AVAILABLE' "$RAM_AVAILABLE"
-  printf '%s: "%s"\n' 'CALLER' "$CALLER"
-
-  printf '\n%s\n' 'Code Information:'
-  printf '%s: "%s"\n' 'GIT_BRANCH' "$GIT_BRANCH"
-  printf '%s: "%s"\n' 'GIT_COMMIT' "$GIT_COMMIT"
-
-  printf '\n%s\n' 'Configuration Information:'
-  printf '%s: "%s"\n' 'SIMULATION_LENGTH' "$SIMULATION_LENGTH"
-  printf '%s: "%s"\n' 'TIME_STEP_SIZE' "$TIME_STEP_SIZE"
-  printf '%s: "%s"\n' 'NUMBER_OF_NODES' "$NUMBER_OF_NODES"
-  printf '%s: "%s"\n' 'NUMBER_OF_PROPAGATORS' "$NUMBER_OF_PROPAGATORS"
-  printf '%s: "%s"\n' 'MAX_TAU' "$MAX_TAU"
+  printf '    %s\n' "$file_size_gb GB"
+  printf '    %s\n' "$file_size_mb MB"
+  printf '    %s\n' "$file_size_kb KB"
+  printf '%s\n' 'System Information:'
+  printf '    %s: "%s"\n' 'HOSTNAME' "$HOSTNAME"
+  printf '    %s: "%s"\n' 'PLATFORM' "$PLATFORM"
+  printf '    %s: "%s"\n' 'CPU_MODEL_NAME' "$CPU_MODEL_NAME"
+  printf '    %s: "%s"\n' 'CPU_CACHE_SIZE' "$CPU_CACHE_SIZE"
+  printf '    %s: "%s"\n' 'CPU_CORE_COUNT' "$CPU_CORE_COUNT"
+  printf '    %s: "%s"\n' 'RAM_TOTAL' "$RAM_TOTAL"
+  printf '    %s: "%s"\n' 'RAM_FREE' "$RAM_FREE"
+  printf '    %s: "%s"\n' 'RAM_AVAILABLE' "$RAM_AVAILABLE"
+  printf '    %s: "%s"\n' 'CALLER' "$CALLER"
+  printf '%s\n' 'Code Information:'
+  printf '    %s: "%s"\n' 'GIT_BRANCH' "$GIT_BRANCH"
+  printf '    %s: "%s"\n' 'GIT_COMMIT' "$GIT_COMMIT"
+  printf '%s\n' 'Configuration Information:'
+  printf '    %s: "%s"\n' 'SIMULATION_LENGTH' "$SIMULATION_LENGTH"
+  printf '    %s: "%s"\n' 'TIME_STEP_SIZE' "$TIME_STEP_SIZE"
+  printf '    %s: "%s"\n' 'NUMBER_OF_NODES' "$NUMBER_OF_NODES"
+  printf '    %s: "%s"\n' 'NUMBER_OF_PROPAGATORS' "$NUMBER_OF_PROPAGATORS"
+  printf '    %s: "%s"\n' 'MAX_TAU' "$MAX_TAU"
 
   printf '\n%s\n' '#---------------------------------------------------------------#'
 } >> "$TIMING_FILE"
 
 
-[[ "${NF_BENCH_TO_MEM,,}" = 'true' ]] && mv "$OUTPUT_FILE" "$RESULTS_DIR"
+#Add an entry to the Simulation Resource Information file -- csv.
+{
+  printf '%s,' "$USER_TIME" "$USER_TIME_UNITS" "$MAX_RES_SIZE" "$MAX_RES_SIZE_UNITS" "$file_size_kb" "kb"
+  printf '\n'
+} >> "$RESULTS_DIR/simulation_resources.csv"
+#Add an entry to the System Information file -- csv.
+{
+  printf '%s,' "$HOSTNAME" "$PLATFORM" "$CPU_MODEL_NAME" "$CPU_CACHE_SIZE" "$CPU_CORE_COUNT" "$RAM_TOTAL" "$RAM_FREE" "$RAM_AVAILABLE" "$CALLER"
+  printf '\n'
+} >> "$RESULTS_DIR/system_info.csv"
+#Add an entry to the Code Information file -- csv.
+{
+  printf '%s,' "$GIT_BRANCH" "$GIT_COMMIT"
+  printf '\n'
+} >> "$RESULTS_DIR/code_info.csv"
+#Add an entry to the Simulation Configuration file -- csv.
+{
+  printf '%s,' "$SIMULATION_LENGTH" "$TIME_STEP_SIZE" "$NUMBER_OF_NODES" "$NUMBER_OF_PROPAGATORS" "$MAX_TAU"
+  printf '\n'
+} >> "$RESULTS_DIR/simulation_conf.csv"
 
-# {
-#   printf '|'
-#   printf '%s |'     'HOSTNAME' 'PLATFORM' 'CPU_MODEL_NAME' 'CPU_CACHE_SIZE' 'CPU_CORE_COUNT' 'RAM_TOTAL' 'RAM_FREE' 'RAM_AVAILABLE' 'CALLER'
-#   printf '\n%s\n' '|:--------:|:--------:|:--------------:|:--------------:|:--------------:|:---------:|:--------:|:-------------:|:------:|'
-# } > "$RESULTS_DIR/system_info.md"
+# if [[ ! -f "$RESULTS_DIR/system_info.md" ]]; then
+#   #Initialise System Information file -- Markdown.
+#   {
+#     printf '|'
+#     printf '%s |'     'HOSTNAME' 'PLATFORM' 'CPU_MODEL_NAME' 'CPU_CACHE_SIZE' 'CPU_CORE_COUNT' 'RAM_TOTAL' 'RAM_FREE' 'RAM_AVAILABLE' 'CALLER'
+#     printf '\n%s\n' '|:--------:|:--------:|:--------------:|:--------------:|:--------------:|:---------:|:--------:|:-------------:|:------:|'
+#   } > "$RESULTS_DIR/system_info.md"
+# fi
 
+# #Add an entry to the System Information file -- Markdown table.
 # {
 #   printf '|'
 #   printf '%s |' "$HOSTNAME" "$PLATFORM" "$CPU_MODEL_NAME" "$CPU_CACHE_SIZE" "$CPU_CORE_COUNT" "$RAM_TOTAL" "$RAM_FREE" "$RAM_AVAILABLE" "$CALLER"
 #   printf '\n'
 # } >> "$RESULTS_DIR/system_info.md"
-
-# {
-#   printf '%s, ' "$HOSTNAME" "$PLATFORM" "$CPU_MODEL_NAME" "$CPU_CACHE_SIZE" "$CPU_CORE_COUNT" "$RAM_TOTAL" "$RAM_FREE" "$RAM_AVAILABLE" "$CALLER"
-#   printf '\n'
-# } >> "$RESULTS_DIR/system_info.csv"
-
-
-# {
-#   printf '%s, ' "$SIMULATION_LENGTH" "$TIME_STEP_SIZE" "$NUMBER_OF_NODES" "$NUMBER_OF_PROPAGATORS" "$MAX_TAU"
-#   printf '\n'
-# } >> "$RESULTS_DIR/simulation_conf.csv"
