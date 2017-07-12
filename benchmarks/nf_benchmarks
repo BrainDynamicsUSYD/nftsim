@@ -1,0 +1,72 @@
+#!/usr/bin/env bash
+
+# nf_benchmarks
+#
+#USAGE:
+#  ./nf_benchmarks --help
+#
+#DESCRIPTION:
+#  A script for running the benchmarks config files  
+#  stored in the directory
+#    ./benchmarks/
+#  The script will run simulations for different cases
+#  w and w/o output, store in disk memory and direct the 
+#  standard output of /usr/bin/time to output_benchmark.txt 
+# Author: Paula Sanz-Leon
+
+
+
+# TODO:
+# add messages for help
+# get information about OS
+# append info when started running
+# add line for different number of nodes
+# add differen cases: eg, testing for nodes or testing for time step
+# check if neurofield exists otherwise try to build or throw an error message
+# try to get git tag information to append to file 
+
+
+
+for config_file in *.conf
+do
+  echo "Processing $config_file file ..."
+  output_file="${config_file%.*}.output"
+  results_file="output-${config_file%.*}.txt"
+  echo "Ouput file is $output_file ..."
+  echo "Results are in $results_file ..."
+
+  # Run and write to memory
+  nodes_string="$(grep -E --only-matching '[0-9]{5}' <<< "$config_file")"
+  number_of_nodes=$(sed 's/^0*//' <<< "$nodes_string")
+  echo "$number_of_nodes"
+
+  if ((number_of_nodes < 150)); then 
+
+  #Run and write to memory
+  { /usr/bin/time -v ../bin/neurofield -i "$config_file" -o "/dev/shm/$output_file" ;} 2>> "$results_file"
+  file_size=$(wc --bytes < "$output_file")
+  file_size_gb=$((file_size/(1048576*1024))) # in GB
+  file_size_mb=$((file_size/(1048576)))      # in MB
+  
+  {
+    echo "Storage size:" 
+    echo "$file_size_gb GB" 
+    echo "$file_size_mb MB" 
+  } >> "$results_file"
+
+  fi
+
+  # #Run and write to disk
+  # (/usr/bin/time -v ../bin/neurofield -i "$config_file" -o "$output_file")  >> "$results_file"
+  # file_size=$(wc --bytes < "$output_file")
+  # file_size_gb=$((file_size/(1048576*1024))) # in GB
+  # file_size_mb=$((file_size/(1048576))) # in MB
+  # {
+  #   echo "Storage size:" 
+  #   echo "$file_size_gb GB" 
+  #   echo "$file_size_mb MB" 
+  # } >> "$results_file"
+
+
+
+done

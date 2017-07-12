@@ -1,0 +1,788 @@
+######################### 00144 NODES #########################################################################
+
+Command being timed: "./bin/neurofield -i benchmarks/benchmark-00144-nodes-nooutput.conf -o benchmarks/benchmark-00144-nodes-nooutput.output"
+	User time (seconds): 24.09
+	System time (seconds): 0.00
+	Percent of CPU this job got: 99%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:24.10
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 5304
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 587
+	Voluntary context switches: 2
+	Involuntary context switches: 39
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 8
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+
+
+Command being timed: "./bin/neurofield -i benchmarks/benchmark-00144-nodes-all-output-512-hz.conf -o benchmarks/benchmark-00144-nodes-all-output-512-hz.output"
+	User time (seconds): 48.77
+	System time (seconds): 0.82
+	Percent of CPU this job got: 99%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:49.60
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 5252
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 586
+	Voluntary context switches: 2
+	Involuntary context switches: 49
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 2131152
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+
+
+Command being timed: "./bin/neurofield -i benchmarks/benchmark-00144-nodes-nooutput.conf -o /dev/shm/benchmark-00144-nodes-nooutput.output"
+	User time (seconds): 24.06
+	System time (seconds): 0.00
+	Percent of CPU this job got: 99%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:24.07
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 5304
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 587
+	Voluntary context switches: 2
+	Involuntary context switches: 31
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 0
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 
+
+
+Command being timed: "./bin/neurofield -i benchmarks/benchmark-00144-nodes-all-output-512-hz.conf -o /dev/shm/benchmark-00144-nodes-all-output-512-hz.output"
+	User time (seconds): 42.85
+	System time (seconds): 0.41
+	Percent of CPU this job got: 99%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:43.27
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 5220
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 585
+	Voluntary context switches: 2
+	Involuntary context switches: 34
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 0
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+
+
+Storage:
+-rw-r--r-- 1 paula users 1.1G Apr  5 13:11 benchmark-00144-nodes-all-output-512-hz.output
+
+######################### 256 NODES #########################################################################3
+Command being timed: "./bin/neurofield -i benchmarks/benchmark-00256-nodes-all-output-512-hz.conf -o benchmarks/benchmark-00256-nodes-all-output-512-hz.output"
+	User time (seconds): 86.42
+	System time (seconds): 1.48
+	Percent of CPU this job got: 99%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 1:27.92
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 6536
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 913
+	Voluntary context switches: 2
+	Involuntary context switches: 168
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 3787376
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+
+
+Command being timed: "./bin/neurofield -i benchmarks/benchmark-00256-nodes-nooutput.conf -o benchmarks/benchmark-00256-nodes-nooutput.output"
+	User time (seconds): 40.00
+	System time (seconds): 0.01
+	Percent of CPU this job got: 99%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:40.04
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 6588
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 914
+	Voluntary context switches: 2
+	Involuntary context switches: 76
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 8
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+
+Command being timed: "./bin/neurofield -i benchmarks/benchmark-00256-nodes-nooutput.conf -o /dev/shm/benchmark-00256-nodes-nooutput.output"
+	User time (seconds): 40.20
+	System time (seconds): 0.01
+	Percent of CPU this job got: 99%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:40.27
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 6432
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 911
+	Voluntary context switches: 2
+	Involuntary context switches: 87
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 0
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+
+
+Command being timed: "./bin/neurofield -i benchmarks/benchmark-00256-nodes-all-output-512-hz.conf -o /dev/shm/benchmark-00256-nodes-all-output-512-hz.output"
+	User time (seconds): 75.71
+	System time (seconds): 0.51
+	Percent of CPU this job got: 99%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 1:16.24
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 6588
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 915
+	Voluntary context switches: 2
+	Involuntary context switches: 140
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 0
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+
+Storage:
+-rw-r--r-- 1 paula users 1.9G Apr  5 21:48 benchmark-00256-nodes-all-output-512-hz.output
+
+######################### 1024 NODES #########################################################################3
+Command being timed: "./bin/neurofield -i benchmarks/benchmark-01024-nodes-all-output-512-hz.conf -o benchmarks/benchmark-01024-nodes-all-output-512-hz.output"
+	User time (seconds): 339.70
+	System time (seconds): 5.19
+	Percent of CPU this job got: 99%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 5:44.91
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 15600
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 3171
+	Voluntary context switches: 4
+	Involuntary context switches: 592
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 15144472
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+
+
+Command being timed: "./bin/neurofield -i benchmarks/benchmark-01024-nodes-nooutput.conf -o benchmarks/benchmark-01024-nodes-nooutput.output"
+	User time (seconds): 161.51
+	System time (seconds): 0.05
+	Percent of CPU this job got: 100%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 2:41.45
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 15460
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 3167
+	Voluntary context switches: 2
+	Involuntary context switches: 196
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 16
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+
+Command being timed: "./bin/neurofield -i benchmarks/benchmark-01024-nodes-nooutput.conf -o /dev/shm/benchmark-01024-nodes-nooutput.output"
+	User time (seconds): 158.93
+	System time (seconds): 0.04
+	Percent of CPU this job got: 99%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 2:39.04
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 15464
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 3166
+	Voluntary context switches: 2
+	Involuntary context switches: 133
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 0
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+
+Command being timed: "./bin/neurofield -i benchmarks/benchmark-01024-nodes-all-output-512-hz.conf -o /dev/shm/benchmark-01024-nodes-all-output-512-hz.output"
+	User time (seconds): 300.82
+	System time (seconds): 1.99
+	Percent of CPU this job got: 99%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 5:02.82
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 15564
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 3169
+	Voluntary context switches: 2
+	Involuntary context switches: 540
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 0
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+
+
+Storage:
+-rw-r--r-- 1 paula users 7.3G Apr  5 20:49 benchmark-01024-nodes-all-output-512-hz.output
+
+
+######################### 4096 NODES #########################################################################3
+Command being timed: "./bin/neurofield -i benchmarks/benchmark-04096-nodes-nooutput.conf -o benchmarks/benchmark-04096-nodes-nooutput.output"
+	User time (seconds): 646.13
+	System time (seconds): 0.19
+	Percent of CPU this job got: 99%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 10:46.59
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 51504
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 2
+	Minor (reclaiming a frame) page faults: 12176
+	Voluntary context switches: 4
+	Involuntary context switches: 20033
+	Swaps: 0
+	File system inputs: 112
+	File system outputs: 16
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+
+
+Command being timed: "./bin/neurofield -i benchmarks/benchmark-04096-nodes-all-output-512-hz.conf -o benchmarks/benchmark-04096-nodes-all-output-512-hz.output"
+	User time (seconds): 1343.34
+	System time (seconds): 19.57
+	Percent of CPU this job got: 99%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 22:42.92
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 51648
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 12186
+	Voluntary context switches: 5
+	Involuntary context switches: 2287
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 60572856
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+
+Storage:
+-rw-r--r-- 1 paula users  29G Apr  5 20:30 benchmark-04096-nodes-all-output-512-hz.output
+
+######################### 16384 NODES #########################################################################3
+
+Command being timed: "./bin/neurofield -i benchmarks/benchmark-16384-nodes-all-output-512-hz.conf -o benchmarks/benchmark-16384-nodes-all-output-512-hz.output"
+	User time (seconds): 5332.84
+	System time (seconds): 65.61
+	Percent of CPU this job got: 99%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 1:29:58
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 199004
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 3
+	Minor (reclaiming a frame) page faults: 49124
+	Voluntary context switches: 10
+	Involuntary context switches: 8335
+	Swaps: 0
+	File system inputs: 3408
+	File system outputs: 242285360
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+
+Storage: 
+-rw-r--r-- 1 paula users 116G Apr  5 17:15 benchmark-16384-nodes-all-output-512-hz.output
+	
+
+Command being timed: "./bin/neurofield -i benchmarks/benchmark-16384-nodes-nooutput.conf -o benchmarks/benchmark-16384-nodes-nooutput.output"
+	User time (seconds): 2601.72
+	System time (seconds): 0.58
+	Percent of CPU this job got: 100%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 43:22.29
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 199000
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 49076
+	Voluntary context switches: 7
+	Involuntary context switches: 2934
+	Swaps: 0
+	File system inputs: 8
+	File system outputs: 16
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+
+
+################################################################################
+################################################################################
+#### ON SAM                                                                   ##
+################################################################################
+################################################################################
+14:56:11-paula123@sam~/HardDrive/Code/Neurofield/neurofield/benchmarks (benchmarks)$ ./nf_benchmarks 
+Processing benchmark-00144-nodes-output-all-512-hz.conf file ...
+Ouput file is benchmark-00144-nodes-output-all-512-hz.output ...
+Results are in output-benchmark-00144-nodes-output-all-512-hz.txt ...
+144
+	Command being timed: "../bin/neurofield -i benchmark-00144-nodes-output-all-512-hz.conf -o /dev/shm/benchmark-00144-nodes-output-all-512-hz.output"
+	User time (seconds): 42.83
+	System time (seconds): 0.25
+	Percent of CPU this job got: 99%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:43.14
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 3388
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 899
+	Voluntary context switches: 1
+	Involuntary context switches: 4365
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 0
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+	Command being timed: "../bin/neurofield -i benchmark-00144-nodes-output-all-512-hz.conf -o benchmark-00144-nodes-output-all-512-hz.output"
+	User time (seconds): 42.71
+	System time (seconds): 0.66
+	Percent of CPU this job got: 97%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:44.36
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 3388
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 899
+	Voluntary context switches: 16
+	Involuntary context switches: 4427
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 2143448
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+Processing benchmark-00144-nodes-output-none.conf file ...
+Ouput file is benchmark-00144-nodes-output-none.output ...
+Results are in output-benchmark-00144-nodes-output-none.txt ...
+144
+	Command being timed: "../bin/neurofield -i benchmark-00144-nodes-output-none.conf -o /dev/shm/benchmark-00144-nodes-output-none.output"
+	User time (seconds): 23.58
+	System time (seconds): 0.00
+	Percent of CPU this job got: 99%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:23.61
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 3376
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 896
+	Voluntary context switches: 1
+	Involuntary context switches: 2392
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 0
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+	Command being timed: "../bin/neurofield -i benchmark-00144-nodes-output-none.conf -o benchmark-00144-nodes-output-none.output"
+	User time (seconds): 23.63
+	System time (seconds): 0.06
+	Percent of CPU this job got: 99%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:23.73
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 3376
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 896
+	Voluntary context switches: 1
+	Involuntary context switches: 2407
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 16
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+Processing benchmark-00256-nodes-output-all-512-hz.conf file ...
+Ouput file is benchmark-00256-nodes-output-all-512-hz.output ...
+Results are in output-benchmark-00256-nodes-output-all-512-hz.txt ...
+256
+	Command being timed: "../bin/neurofield -i benchmark-00256-nodes-output-all-512-hz.conf -o /dev/shm/benchmark-00256-nodes-output-all-512-hz.output"
+	User time (seconds): 75.01
+	System time (seconds): 0.46
+	Percent of CPU this job got: 99%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 1:15.58
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 4708
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 1229
+	Voluntary context switches: 1
+	Involuntary context switches: 7754
+	Swaps: 0
+	File system inputs: 0
+	File system outputs: 0
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+	Command being timed: "../bin/neurofield -i benchmark-00256-nodes-output-all-512-hz.conf -o benchmark-00256-nodes-output-all-512-hz.output"
+	User time (seconds): 75.25
+	System time (seconds): 1.17
+	Percent of CPU this job got: 96%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 1:19.17
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 4704
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 2
+	Minor (reclaiming a frame) page faults: 1226
+	Voluntary context switches: 9842
+	Involuntary context switches: 7915
+	Swaps: 0
+	File system inputs: 296
+	File system outputs: 3792400
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+Processing benchmark-00256-nodes-output-none.conf file ...
+Ouput file is benchmark-00256-nodes-output-none.output ...
+Results are in output-benchmark-00256-nodes-output-none.txt ...
+256
+	Command being timed: "../bin/neurofield -i benchmark-00256-nodes-output-none.conf -o /dev/shm/benchmark-00256-nodes-output-none.output"
+	User time (seconds): 41.83
+	System time (seconds): 0.01
+	Percent of CPU this job got: 99%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:42.04
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 4692
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 1
+	Minor (reclaiming a frame) page faults: 1225
+	Voluntary context switches: 3
+	Involuntary context switches: 4459
+	Swaps: 0
+	File system inputs: 128
+	File system outputs: 0
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+	Command being timed: "../bin/neurofield -i benchmark-00256-nodes-output-none.conf -o benchmark-00256-nodes-output-none.output"
+	User time (seconds): 41.32
+	System time (seconds): 0.00
+	Percent of CPU this job got: 99%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 0:41.40
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 4692
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 0
+	Minor (reclaiming a frame) page faults: 1225
+	Voluntary context switches: 1
+	Involuntary context switches: 4231
+	Swaps: 0
+	File system inputs: 8
+	File system outputs: 24
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+Processing benchmark-01024-nodes-output-all-512-hz.conf file ...
+Ouput file is benchmark-01024-nodes-output-all-512-hz.output ...
+Results are in output-benchmark-01024-nodes-output-all-512-hz.txt ...
+1024
+	Command being timed: "../bin/neurofield -i benchmark-01024-nodes-output-all-512-hz.conf -o benchmark-01024-nodes-output-all-512-hz.output"
+	User time (seconds): 295.41
+	System time (seconds): 3.81
+	Percent of CPU this job got: 98%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 5:02.41
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 13724
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 1
+	Minor (reclaiming a frame) page faults: 3482
+	Voluntary context switches: 6232
+	Involuntary context switches: 30534
+	Swaps: 0
+	File system inputs: 128
+	File system outputs: 15144352
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+Processing benchmark-01024-nodes-output-none.conf file ...
+Ouput file is benchmark-01024-nodes-output-none.output ...
+Results are in output-benchmark-01024-nodes-output-none.txt ...
+1024
+	Command being timed: "../bin/neurofield -i benchmark-01024-nodes-output-none.conf -o benchmark-01024-nodes-output-none.output"
+	User time (seconds): 164.32
+	System time (seconds): 0.04
+	Percent of CPU this job got: 99%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 2:44.72
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 13708
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 2
+	Minor (reclaiming a frame) page faults: 3477
+	Voluntary context switches: 5
+	Involuntary context switches: 16833
+	Swaps: 0
+	File system inputs: 264
+	File system outputs: 24
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+Processing benchmark-04096-nodes-output-all-512-hz.conf file ...
+Ouput file is benchmark-04096-nodes-output-all-512-hz.output ...
+Results are in output-benchmark-04096-nodes-output-all-512-hz.txt ...
+4096
+	Command being timed: "../bin/neurofield -i benchmark-04096-nodes-output-all-512-hz.conf -o benchmark-04096-nodes-output-all-512-hz.output"
+	User time (seconds): 1183.33
+	System time (seconds): 16.13
+	Percent of CPU this job got: 99%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 20:08.51
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 49788
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 1
+	Minor (reclaiming a frame) page faults: 12498
+	Voluntary context switches: 309
+	Involuntary context switches: 122867
+	Swaps: 0
+	File system inputs: 136
+	File system outputs: 60571992
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+Processing benchmark-04096-nodes-output-none.conf file ...
+Ouput file is benchmark-04096-nodes-output-none.output ...
+Results are in output-benchmark-04096-nodes-output-none.txt ...
+4096
+	Command being timed: "../bin/neurofield -i benchmark-04096-nodes-output-none.conf -o benchmark-04096-nodes-output-none.output"
+	User time (seconds): 658.68
+	System time (seconds): 0.17
+	Percent of CPU this job got: 99%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 10:59.75
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 49756
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 4
+	Minor (reclaiming a frame) page faults: 12489
+	Voluntary context switches: 8
+	Involuntary context switches: 66956
+	Swaps: 0
+	File system inputs: 648
+	File system outputs: 16
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+Processing benchmark-16384-nodes-output-all-512-hz.conf file ...
+Ouput file is benchmark-16384-nodes-output-all-512-hz.output ...
+Results are in output-benchmark-16384-nodes-output-all-512-hz.txt ...
+16384
+	Command being timed: "../bin/neurofield -i benchmark-16384-nodes-output-all-512-hz.conf -o benchmark-16384-nodes-output-all-512-hz.output"
+	User time (seconds): 4811.19
+	System time (seconds): 64.90
+	Percent of CPU this job got: 99%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 1:21:48
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 197216
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 10
+	Minor (reclaiming a frame) page faults: 49453
+	Voluntary context switches: 1172
+	Involuntary context switches: 496931
+	Swaps: 0
+	File system inputs: 1632
+	File system outputs: 242282800
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+Processing benchmark-16384-nodes-output-none.conf file ...
+Ouput file is benchmark-16384-nodes-output-none.output ...
+Results are in output-benchmark-16384-nodes-output-none.txt ...
+16384
+	Command being timed: "../bin/neurofield -i benchmark-16384-nodes-output-none.conf -o benchmark-16384-nodes-output-none.output"
+	User time (seconds): 2638.70
+	System time (seconds): 0.56
+	Percent of CPU this job got: 99%
+	Elapsed (wall clock) time (h:mm:ss or m:ss): 44:03.28
+	Average shared text size (kbytes): 0
+	Average unshared data size (kbytes): 0
+	Average stack size (kbytes): 0
+	Average total size (kbytes): 0
+	Maximum resident set size (kbytes): 197076
+	Average resident set size (kbytes): 0
+	Major (requiring I/O) page faults: 8
+	Minor (reclaiming a frame) page faults: 49381
+	Voluntary context switches: 13
+	Involuntary context switches: 267916
+	Swaps: 0
+	File system inputs: 1328
+	File system outputs: 16
+	Socket messages sent: 0
+	Socket messages received: 0
+	Signals delivered: 0
+	Page size (bytes): 4096
+	Exit status: 0
+
+
