@@ -38,16 +38,25 @@
 #Use the header as a basic help message.
 [[ "$1" =~ ^('-h'|'--help')$ ]] && { head -n $((LINENO-4)) "${BASH_SOURCE[0]}"; exit 1; }
 
+DEBUG='true'
+
 #Capture command line arguments
 INPUT_ARG1="$1"
 INPUT_ARG2="$2"
 INPUT_ARG3="$3"
 INPUT_ARG4="$4"
 
+if [[ "$DEBUG" = 'true' ]]; then
+  printf '%s\n' "INPUT_ARG1: '$INPUT_ARG1'"
+  printf '%s\n' "INPUT_ARG2: '$INPUT_ARG2'"
+  printf '%s\n' "INPUT_ARG3: '$INPUT_ARG3'"
+  printf '%s\n' "INPUT_ARG4: '$INPUT_ARG4'"
+fi
+
 MEM_DIR='/dev/shm'
-SCRIPT_PATH="$( cd "$(dirname "${BASH_SOURCE[0]}")" || return 1 ; pwd -P )"
+SCRIPT_PATH="$( cd "$(dirname "${BASH_SOURCE[0]}")" || exit 1 ; pwd -P )"
 RESULTS_DIR="${SCRIPT_PATH}/results"
-NEUROFIELD_DIR="$( cd "$(dirname "${BASH_SOURCE[0]}")" || return 1; cd ../ || return 1; pwd -P )"
+NEUROFIELD_DIR="$( cd "$SCRIPT_PATH" || exit 1; cd ../ || exit 1; pwd -P )"
 NEUROFIELD="$NEUROFIELD_DIR/bin/neurofield"
 
 TODAY="$(date +%F)"  #Date in IEEE standard format, ie YYYY-mm-dd
@@ -124,7 +133,7 @@ gather_conf_info(){
 } #function gather_conf_info()
 
 if [[ '--to-mem' =~ ^("$INPUT_ARG1"|"$INPUT_ARG2"|"$INPUT_ARG3"|"$INPUT_ARG4")$ ]]; then
-  [[ "${PLATFORM,,}" = 'linux' ]] || { printf 'ERROR: %s\n' 'Flag --to-mem is only configured for Linux.'; return 1; }
+  [[ "${PLATFORM,,}" = 'linux' ]] || { printf 'ERROR: %s\n' 'Flag --to-mem is only configured for Linux.'; exit 1; }
   NF_BENCH_TO_MEM='true'
 fi
 if [[ '--no-make' =~ ^("$INPUT_ARG1"|"$INPUT_ARG2"|"$INPUT_ARG3"|"$INPUT_ARG4")$ ]]; then
@@ -135,10 +144,10 @@ if [[ '--store-output' =~ ^("$INPUT_ARG1"|"$INPUT_ARG2"|"$INPUT_ARG3"|"$INPUT_AR
 fi
 
 NON_FLAG_ARG_COUNT=0
-[[ "${INPUT_ARG1:0:1}" != '-' ]] && { ((++NON_FLAG_ARG_COUNT)); CONFIG_FILE="$INPUT_ARG1"; }
-[[ "${INPUT_ARG2:0:1}" != '-' ]] && { ((++NON_FLAG_ARG_COUNT)); CONFIG_FILE="$INPUT_ARG2"; }
-[[ "${INPUT_ARG3:0:1}" != '-' ]] && { ((++NON_FLAG_ARG_COUNT)); CONFIG_FILE="$INPUT_ARG3"; }
-[[ "${INPUT_ARG4:0:1}" != '-' ]] && { ((++NON_FLAG_ARG_COUNT)); CONFIG_FILE="$INPUT_ARG4"; }
+[[ -n "${INPUT_ARG1}" && "${INPUT_ARG1:0:1}" != '-' ]] && { ((++NON_FLAG_ARG_COUNT)); CONFIG_FILE="$INPUT_ARG1"; }
+[[ -n "${INPUT_ARG2}" && "${INPUT_ARG2:0:1}" != '-' ]] && { ((++NON_FLAG_ARG_COUNT)); CONFIG_FILE="$INPUT_ARG2"; }
+[[ -n "${INPUT_ARG3}" && "${INPUT_ARG3:0:1}" != '-' ]] && { ((++NON_FLAG_ARG_COUNT)); CONFIG_FILE="$INPUT_ARG3"; }
+[[ -n "${INPUT_ARG4}" && "${INPUT_ARG4:0:1}" != '-' ]] && { ((++NON_FLAG_ARG_COUNT)); CONFIG_FILE="$INPUT_ARG4"; }
 
 # Decide if we are processing a single .conf file or all our benchmarks/*.conf files.
 if (( NON_FLAG_ARG_COUNT == 0 )); then
@@ -150,7 +159,7 @@ if (( NON_FLAG_ARG_COUNT == 0 )); then
   printf '    %s\n\n' 'file as an argument.'
   read -r -n1 -p "Do you really want to run all the .conf files in benchmarks? y/(n)>" yesorno
   printf '\n'
-  if [[ "$yesorno" != 'y' ]]; then return 1; fi
+  if [[ "$yesorno" != 'y' ]]; then exit 1; fi
   [[ "${NF_BENCH_NO_MAKE,,}" = 'true' ]] || if ! fresh_build; then exit 1; fi
   for config_file in "${SCRIPT_PATH}"/*.conf; do
     if [[ "${NF_BENCH_TO_MEM,,}" = 'true' ]]; then
@@ -175,7 +184,16 @@ elif (( NON_FLAG_ARG_COUNT == 1 )); then
   TIMING_FILE="$RESULTS_DIR/timing_${CONFIG_FILE_BASENAME%.*}.txt"
 else
   printf 'ERROR: %s\n' "${BASH_SOURCE[0]} takes, at most, one .conf file argument."
-  return 1
+  exit 1
+fi
+
+if [[ "$DEBUG" = 'true' ]]; then
+  printf '%s\n' "NEUROFIELD: '$NEUROFIELD'"
+  printf '%s\n' "CONFIG_FILE: '$CONFIG_FILE'"
+  printf '%s\n' "OUTPUT_FILE: '$OUTPUT_FILE'"
+  printf '%s\n' "TIMING_FILE: '$TIMING_FILE'"
+  printf '%s\n' "RESULTS_DIR: '$RESULTS_DIR'"
+  printf '%s\n' "PWD: '$(pwd)'"
 fi
 
 #Gather information relevant to this benchmark run.
@@ -184,7 +202,7 @@ if ! gather_code_info; then exit 1; fi
 if ! gather_conf_info; then exit 1; fi
 
 #Unless we have explicitly been told not to, rebuild neurofield.
-[[ '--no-make' =~ ^("$2"|"$3")$ ]] || if ! fresh_build; then exit 1; fi
+[[ "${NF_BENCH_NO_MAKE,,}" = 'true' ]] || if ! fresh_build; then exit 1; fi
 
 {
   printf '%s\n' "Added $TODAY at $SCRIPT_START_TIME:" 1>&2
