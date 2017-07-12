@@ -101,9 +101,9 @@ gather_system_info(){
   #NOTE: Looks like it will be a pain to reliably grab disk info.
   #Compiler info
   if [[ "${PLATFORM,,}" = 'linux' ]]; then
-    COMPILER_VERSION="$(gcc --version | grep --only-matching '[[:digit:]]\.[[:digit:]]*\.\?[[:digit:]]*')"
+    COMPILER_VERSION="$(gcc --version | grep --only-matching '[[:digit:]]\.[[:digit:]]*\.\?[[:digit:]]* ')"
   elif [[ "${PLATFORM,,}" = 'darwin' ]]; then
-    COMPILER_VERSION="$(clang --version | grep --only-matching '[[:digit:]]\.[[:digit:]]*\.\?[[:digit:]]*')"
+    COMPILER_VERSION="$(clang --version | grep --only-matching '[[:digit:]]\.[[:digit:]]*\.\?[[:digit:]]* ')"
   fi
   return 0
 } # function gather_system_info()
