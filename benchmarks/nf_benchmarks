@@ -137,7 +137,7 @@ gather_conf_info(){
 } #function gather_conf_info()
 
 if [[ '--to-mem' =~ ^("$INPUT_ARG1"|"$INPUT_ARG2"|"$INPUT_ARG3"|"$INPUT_ARG4")$ ]]; then
-  [[ "${PLATFORM,,}" = 'linux' ]] || { printf 'ERROR: %s\n' 'Flag --to-mem is only configured for Linux.'; exit 1; }
+  [[ "$(uname)" = 'Linux' ]] || { printf 'ERROR: %s\n' 'Flag --to-mem is only configured for Linux.'; exit 1; }
   NF_BENCH_TO_MEM='true'
 fi
 if [[ '--no-make' =~ ^("$INPUT_ARG1"|"$INPUT_ARG2"|"$INPUT_ARG3"|"$INPUT_ARG4")$ ]]; then
