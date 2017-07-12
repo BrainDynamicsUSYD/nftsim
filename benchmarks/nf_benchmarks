@@ -2,71 +2,250 @@
 
 # nf_benchmarks
 #
+# NOTE: This script expects to be run from a clone of neurofield's git repo.
+#
 #USAGE:
+#  #Show this header message:
 #  ./nf_benchmarks --help
 #
+#  #Run a benchmark of a specific configuration file.
+#  ./nf_benchmarks <config_filename>
+#
+#  #Run a benchmark of a specific configuration file with output to memory.
+#  #This only works under Linux as it makes use of /dev/shm.
+#  ./nf_benchmarks --to-mem <config_filename>
+#
+#  #Run all .conf files in the benchmarks directory.
+#  ./nf_benchmarks
+#
+#  #Run all .conf files in the benchmarks directory with output to memory.
+#  ./nf_benchmarks --to-mem
+#
+#REQUIRES:
+#  /usr/bin/time
+#
 #DESCRIPTION:
-#  A script for running the benchmarks config files  
-#  stored in the directory
+#  A script for benchmarking neurofield. Runs either a specified .conf file
+#  or all .conf files stored in the benchmarks directory
 #    ./benchmarks/
-#  The script will run simulations for different cases
-#  w and w/o output, store in disk memory and direct the 
-#  standard output of /usr/bin/time to output_benchmark.txt 
-# Author: Paula Sanz-Leon
+#  The script stores timing and configuration information for simulation runs
+#  in the directory:
+#    ./benchmarks/results
+#  Timing information is obtained using /usr/bin/time.
+#
+# Authors: Paula Sanz-Leon; Stuart A. Knock;
+#
+#Use the header as a basic help message.
+[[ "$1" =~ ^('-h'|'--help')$ ]] && { head -n $((LINENO-4)) "${BASH_SOURCE[0]}"; exit 1; }
 
+#Capture command line arguments
+INPUT_ARG1="$1"
+INPUT_ARG2="$2"
+INPUT_ARG3="$3"
+INPUT_ARG4="$4"
 
+MEM_DIR='/dev/shm'
+SCRIPT_PATH="$( cd "$(dirname "${BASH_SOURCE[0]}")" || return 1 ; pwd -P )"
+RESULTS_DIR="${SCRIPT_PATH}/results"
+NEUROFIELD_DIR="$( cd "$(dirname "${BASH_SOURCE[0]}")" || return 1; cd ../ || return 1; pwd -P )"
+NEUROFIELD="$NEUROFIELD_DIR/bin/neurofield"
 
-# TODO:
-# add messages for help
-# get information about OS
-# append info when started running
-# add line for different number of nodes
-# add differen cases: eg, testing for nodes or testing for time step
-# check if neurofield exists otherwise try to build or throw an error message
-# try to get git tag information to append to file 
+TODAY="$(date +%F)"  #Date in IEEE standard format, ie YYYY-mm-dd
+SCRIPT_START_TIME="$(date +%H:%M:%S)" #Time in a readable IEEE standard format, ie HH:MM:SS
+FILE_NAME_NOW="$(date +%FT%H%M%S)"  #ISO 8601: YYYY-mm-ddThhMMSS
 
+#Rebuild neurofield from scratch to make sure the executable matches current code.
+fresh_build(){
+  #Use a subshell to:
+  (
+    #Change into neurofield's base directory.
+    if ! cd "$NEUROFIELD_DIR"; then
+      printf 'ERROR: %s\n' "Failed to change to neurofield directory: '$NEUROFIELD_DIR'"
+      return 1
+    fi
+    #Ensure we are actually running the current version of the code.
+    make clean
+    make
+  )
+} # function fresh_build()
 
+#Gather system information,
+gather_system_info(){
+  CALLER=$(whoami)
+  PLATFORM="$(uname)"
+  #CPU info
+  CPU_MODEL_NAME="$(grep 'model name' '/proc/cpuinfo' | sort -u)"
+  CPU_MODEL_NAME="$(sed 's/model name[[:blank:]]*: //' <<< "$CPU_MODEL_NAME")"
+  CPU_CACHE_SIZE="$(grep 'cache size' '/proc/cpuinfo' | sort -u)"
+  CPU_CACHE_SIZE="$(sed 's/cache size[[:blank:]]*: //' <<< "$CPU_CACHE_SIZE")"
+  CPU_CORE_COUNT="$(grep 'cpu cores' '/proc/cpuinfo' | sort -u)"
+  CPU_CORE_COUNT="$(sed 's/cpu cores[[:blank:]]*: //' <<< "$CPU_CORE_COUNT")"
+  #Memory info
+  RAM_TOTAL="$(grep 'MemTotal' '/proc/meminfo')"
+  RAM_TOTAL="$(sed 's/MemTotal:[[:blank:]]*//' <<< "$RAM_TOTAL")"
+  RAM_AVAILABLE="$(grep 'MemAvailable' '/proc/meminfo')"
+  RAM_AVAILABLE="$(sed 's/MemAvailable:[[:blank:]]*//' <<< "$RAM_AVAILABLE")"
+  RAM_FREE="$(grep 'MemFree' '/proc/meminfo')"
+  RAM_FREE="$(sed 's/MemFree:[[:blank:]]*//' <<< "$RAM_FREE")"
+  #NOTE: Looks like it will be a pain to reliably grab disk info.
+} # function gather_system_info()
 
-for config_file in *.conf
-do
-  echo "Processing $config_file file ..."
-  output_file="${config_file%.*}.output"
-  results_file="output-${config_file%.*}.txt"
-  echo "Ouput file is $output_file ..."
-  echo "Results are in $results_file ..."
-
-  # Run and write to memory
-  nodes_string="$(grep -E --only-matching '[0-9]{5}' <<< "$config_file")"
-  number_of_nodes=$(sed 's/^0*//' <<< "$nodes_string")
-  echo "$number_of_nodes"
-
-  if ((number_of_nodes < 150)); then 
-
-  #Run and write to memory
-  { /usr/bin/time -v ../bin/neurofield -i "$config_file" -o "/dev/shm/$output_file" ;} 2>> "$results_file"
-  file_size=$(wc --bytes < "$output_file")
-  file_size_gb=$((file_size/(1048576*1024))) # in GB
-  file_size_mb=$((file_size/(1048576)))      # in MB
-  
-  {
-    echo "Storage size:" 
-    echo "$file_size_gb GB" 
-    echo "$file_size_mb MB" 
-  } >> "$results_file"
-
+#Gather code information,
+gather_code_info(){
+  git_status="$(git status --untracked-files=no --porcelain)"
+  if [[ -n "$git_status" ]]; then
+    printf 'ERROR: %s\n' 'The git repo you are in has uncommitted changes.'
+    printf '    %s\n' 'Commit, stash or revert changes before running benchmarks.'
+    return 1
   fi
+  GIT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
+  GIT_COMMIT="$(git rev-parse HEAD)"
+} # function gather_code_info()
 
-  # #Run and write to disk
-  # (/usr/bin/time -v ../bin/neurofield -i "$config_file" -o "$output_file")  >> "$results_file"
-  # file_size=$(wc --bytes < "$output_file")
-  # file_size_gb=$((file_size/(1048576*1024))) # in GB
-  # file_size_mb=$((file_size/(1048576))) # in MB
-  # {
-  #   echo "Storage size:" 
-  #   echo "$file_size_gb GB" 
-  #   echo "$file_size_mb MB" 
-  # } >> "$results_file"
+#Gather information from the .conf file.
+gather_conf_info(){
+  local time_conf=''
+  time_conf="$(grep '^[[:space:]]*Time:' "$CONFIG_FILE")"
+  SIMULATION_LENGTH="$(cut -d' ' -f2 <<< "$time_conf")"
+  TIME_STEP_SIZE="$(cut -d' ' -f4 <<< "$time_conf")"
+
+  NUMBER_OF_NODES="$(grep '^[[:space:]]*Nodes:' "$CONFIG_FILE" | sed 's/^[[:space:]]*Nodes:[[:space:]]*//')"
+
+  local propagator_conf=''
+  propagator_conf="$(grep '^[[:space:]]*Propagator[[:space:]]*[[:digit:]]' "$CONFIG_FILE")"
+  NUMBER_OF_PROPAGATORS="$(tail -1<<< "$propagator_conf" | cut -d' ' -f2 |tr -d ':')"
+
+  TAU=($(grep --only-matching 'Tau:.*' <<< "$propagator_conf" | cut -d' ' -f2))
+  local tau
+  MAX_TAU="${TAU[0]}"
+  for tau in "${TAU[@]}" ; do
+    [[ "$tau" > "$MAX_TAU" ]] && MAX_TAU="$tau"
+  done
+} #function gather_conf_info()
+
+if [[ '--to-mem' =~ ^("$INPUT_ARG1"|"$INPUT_ARG2"|"$INPUT_ARG3"|"$INPUT_ARG4")$ ]]; then
+  [[ "${PLATFORM,,}" = 'linux' ]] || { printf 'ERROR: %s\n' 'Flag --to-mem is only configured for Linux.'; return 1; }
+  NF_BENCH_TO_MEM='true'
+fi
+if [[ '--no-make' =~ ^("$INPUT_ARG1"|"$INPUT_ARG2"|"$INPUT_ARG3"|"$INPUT_ARG4")$ ]]; then
+  NF_BENCH_NO_MAKE='true'
+fi
+if [[ '--store-output' =~ ^("$INPUT_ARG1"|"$INPUT_ARG2"|"$INPUT_ARG3"|"$INPUT_ARG4")$ ]]; then
+  NF_BENCH_STORE_OUTPUT='true'
+fi
+
+NON_FLAG_ARG_COUNT=0
+[[ "${INPUT_ARG1:0:1}" != '-' ]] && { ((++NON_FLAG_ARG_COUNT)); CONFIG_FILE="$INPUT_ARG1"; }
+[[ "${INPUT_ARG2:0:1}" != '-' ]] && { ((++NON_FLAG_ARG_COUNT)); CONFIG_FILE="$INPUT_ARG2"; }
+[[ "${INPUT_ARG3:0:1}" != '-' ]] && { ((++NON_FLAG_ARG_COUNT)); CONFIG_FILE="$INPUT_ARG3"; }
+[[ "${INPUT_ARG4:0:1}" != '-' ]] && { ((++NON_FLAG_ARG_COUNT)); CONFIG_FILE="$INPUT_ARG4"; }
+
+# Decide if we are processing a single .conf file or all our benchmarks/*.conf files.
+if (( NON_FLAG_ARG_COUNT == 0 )); then
+  yesorno='n'
+  printf '\n\n'
+  printf '%s\n' 'WARNING: You are about to run benchmarking for all .conf'
+  printf '    %s\n' 'files in the benchmarks directory. To run benchmarking'
+  printf '    %s\n' 'of a specific configuration file, you must specify that'
+  printf '    %s\n\n' 'file as an argument.'
+  read -r -n1 -p "Do you really want to run all the .conf files in benchmarks? y/(n)>" yesorno
+  printf '\n'
+  if [[ "$yesorno" != 'y' ]]; then return 1; fi
+  [[ "${NF_BENCH_NO_MAKE,,}" = 'true' ]] || if ! fresh_build; then exit 1; fi
+  for config_file in "${SCRIPT_PATH}"/*.conf; do
+    if [[ "${NF_BENCH_TO_MEM,,}" = 'true' ]]; then
+      nf_benchmarks --no-make --to-mem "$config_file"
+    else
+      nf_benchmarks --no-make "$config_file"
+    fi
+  done
+elif (( NON_FLAG_ARG_COUNT == 1 )); then
+  [[ -f "$CONFIG_FILE" ]] || { printf 'ERROR: %s\n' "Argument is not a file: '$CONFIG_FILE'"; exit 1; }
+  CONFIG_FILE_BASENAME="$(basename "$CONFIG_FILE")"
+  if [[ "${NF_BENCH_STORE_OUTPUT,,}" = 'true' ]]; then
+    OUTPUT_FILE_BASENAME="${CONFIG_FILE_BASENAME%.*}_${FILE_NAME_NOW}.output"
+  else
+    OUTPUT_FILE_BASENAME="${CONFIG_FILE_BASENAME%.*}.output"
+  fi
+  if [[ "${NF_BENCH_TO_MEM,,}" = 'true' ]]; then
+    OUTPUT_FILE="$MEM_DIR/$OUTPUT_FILE_BASENAME"
+  else
+    OUTPUT_FILE="$RESULTS_DIR/$OUTPUT_FILE_BASENAME"
+  fi
+  TIMING_FILE="$RESULTS_DIR/timing_${CONFIG_FILE_BASENAME%.*}.txt"
+else
+  printf 'ERROR: %s\n' "${BASH_SOURCE[0]} takes, at most, one .conf file argument."
+  return 1
+fi
+
+#Gather information relevant to this benchmark run.
+if ! gather_system_info; then exit 1; fi
+if ! gather_code_info; then exit 1; fi
+if ! gather_conf_info; then exit 1; fi
+
+#Unless we have explicitly been told not to, rebuild neurofield.
+[[ '--no-make' =~ ^("$2"|"$3")$ ]] || if ! fresh_build; then exit 1; fi
+
+{
+  printf '%s\n' "Added $TODAY at $SCRIPT_START_TIME:" 1>&2
+  /usr/bin/time -v "$NEUROFIELD" -i "$CONFIG_FILE" -o "$OUTPUT_FILE"
+} 2>> "$TIMING_FILE"
+
+file_size="$(wc --bytes < "$OUTPUT_FILE")"
+file_size_gb=$((file_size/(1048576*1024))) # in GB
+file_size_mb=$((file_size/(1048576)))      # in MB
+{
+  printf '%s\n' 'Storage size:'
+  printf '%s\n' "$file_size_gb GB"
+  printf '%s\n' "$file_size_mb MB"
+
+  printf '\n%s\n' 'System Information:'
+  printf '%s: "%s"\n' 'HOSTNAME' "$HOSTNAME"
+  printf '%s: "%s"\n' 'PLATFORM' "$PLATFORM"
+  printf '%s: "%s"\n' 'CPU_MODEL_NAME' "$CPU_MODEL_NAME"
+  printf '%s: "%s"\n' 'CPU_CACHE_SIZE' "$CPU_CACHE_SIZE"
+  printf '%s: "%s"\n' 'CPU_CORE_COUNT' "$CPU_CORE_COUNT"
+  printf '%s: "%s"\n' 'RAM_TOTAL' "$RAM_TOTAL"
+  printf '%s: "%s"\n' 'RAM_FREE' "$RAM_FREE"
+  printf '%s: "%s"\n' 'RAM_AVAILABLE' "$RAM_AVAILABLE"
+  printf '%s: "%s"\n' 'CALLER' "$CALLER"
+
+  printf '\n%s\n' 'Code Information:'
+  printf '%s: "%s"\n' 'GIT_BRANCH' "$GIT_BRANCH"
+  printf '%s: "%s"\n' 'GIT_COMMIT' "$GIT_COMMIT"
+
+  printf '\n%s\n' 'Configuration Information:'
+  printf '%s: "%s"\n' 'SIMULATION_LENGTH' "$SIMULATION_LENGTH"
+  printf '%s: "%s"\n' 'TIME_STEP_SIZE' "$TIME_STEP_SIZE"
+  printf '%s: "%s"\n' 'NUMBER_OF_NODES' "$NUMBER_OF_NODES"
+  printf '%s: "%s"\n' 'NUMBER_OF_PROPAGATORS' "$NUMBER_OF_PROPAGATORS"
+  printf '%s: "%s"\n' 'MAX_TAU' "$MAX_TAU"
+
+  printf '\n%s\n' '#---------------------------------------------------------------#'
+} >> "$TIMING_FILE"
 
 
+[[ "${NF_BENCH_TO_MEM,,}" = 'true' ]] && mv "$OUTPUT_FILE" "$RESULTS_DIR"
 
-done
+# {
+#   printf '|'
+#   printf '%s |'     'HOSTNAME' 'PLATFORM' 'CPU_MODEL_NAME' 'CPU_CACHE_SIZE' 'CPU_CORE_COUNT' 'RAM_TOTAL' 'RAM_FREE' 'RAM_AVAILABLE' 'CALLER'
+#   printf '\n%s\n' '|:--------:|:--------:|:--------------:|:--------------:|:--------------:|:---------:|:--------:|:-------------:|:------:|'
+# } > "$RESULTS_DIR/system_info.md"
+
+# {
+#   printf '|'
+#   printf '%s |' "$HOSTNAME" "$PLATFORM" "$CPU_MODEL_NAME" "$CPU_CACHE_SIZE" "$CPU_CORE_COUNT" "$RAM_TOTAL" "$RAM_FREE" "$RAM_AVAILABLE" "$CALLER"
+#   printf '\n'
+# } >> "$RESULTS_DIR/system_info.md"
+
+# {
+#   printf '%s, ' "$HOSTNAME" "$PLATFORM" "$CPU_MODEL_NAME" "$CPU_CACHE_SIZE" "$CPU_CORE_COUNT" "$RAM_TOTAL" "$RAM_FREE" "$RAM_AVAILABLE" "$CALLER"
+#   printf '\n'
+# } >> "$RESULTS_DIR/system_info.csv"
+
+
+# {
+#   printf '%s, ' "$SIMULATION_LENGTH" "$TIME_STEP_SIZE" "$NUMBER_OF_NODES" "$NUMBER_OF_PROPAGATORS" "$MAX_TAU"
+#   printf '\n'
+# } >> "$RESULTS_DIR/simulation_conf.csv"
