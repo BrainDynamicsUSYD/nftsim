@@ -167,11 +167,12 @@ if (( NON_FLAG_ARG_COUNT == 0 )); then
   [[ "${NF_BENCH_NO_MAKE,,}" = 'true' ]] || if ! fresh_build; then exit 1; fi
   for config_file in "${SCRIPT_PATH}"/*.conf; do
     if [[ "${NF_BENCH_TO_MEM,,}" = 'true' ]]; then
-      nf_benchmarks --no-make --to-mem "$config_file"
+      "$SCRIPT_PATH/nf_benchmarks" --no-make --to-mem "$config_file"
     else
-      nf_benchmarks --no-make "$config_file"
+      "$SCRIPT_PATH/nf_benchmarks" --no-make "$config_file"
     fi
   done
+  exit 0
 elif (( NON_FLAG_ARG_COUNT == 1 )); then
   [[ -f "$CONFIG_FILE" ]] || { printf 'ERROR: %s\n' "Argument is not a file: '$CONFIG_FILE'"; exit 1; }
   CONFIG_FILE_BASENAME="$(basename "$CONFIG_FILE")"
