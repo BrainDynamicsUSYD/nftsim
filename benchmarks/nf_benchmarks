@@ -76,6 +76,7 @@ fresh_build(){
     make clean
     make
   )
+  return 0
 } # function fresh_build()
 
 #Gather system information,
@@ -97,6 +98,7 @@ gather_system_info(){
   RAM_FREE="$(grep 'MemFree' '/proc/meminfo')"
   RAM_FREE="$(sed 's/MemFree:[[:blank:]]*//' <<< "$RAM_FREE")"
   #NOTE: Looks like it will be a pain to reliably grab disk info.
+  return 0
 } # function gather_system_info()
 
 #Gather code information,
@@ -109,6 +111,7 @@ gather_code_info(){
   fi
   GIT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
   GIT_COMMIT="$(git rev-parse HEAD)"
+  return 0
 } # function gather_code_info()
 
 #Gather information from the .conf file.
@@ -130,6 +133,7 @@ gather_conf_info(){
   for tau in "${TAU[@]}" ; do
     [[ "$tau" > "$MAX_TAU" ]] && MAX_TAU="$tau"
   done
+  return 0
 } #function gather_conf_info()
 
 if [[ '--to-mem' =~ ^("$INPUT_ARG1"|"$INPUT_ARG2"|"$INPUT_ARG3"|"$INPUT_ARG4")$ ]]; then
