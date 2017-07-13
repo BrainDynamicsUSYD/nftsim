@@ -201,7 +201,7 @@ gather_code_info(){
   fi
   GIT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
   GIT_COMMIT="$(git rev-parse HEAD)"
-  GIT_LATEST_RELEASE="$(git tag --list | tail -1)"
+  GIT_LATEST_RELEASE="$(git tag -l | tail -1)"
   return 0
 } # function gather_code_info()
 
