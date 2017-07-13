@@ -38,6 +38,39 @@
 #Use the header as a basic help message.
 [[ "$1" =~ ^('-h'|'--help')$ ]] && { head -n $((LINENO-4)) "${BASH_SOURCE[0]}"; exit 1; }
 
+TMP_DIR='/tmp'
+MEM_DIR='/dev/shm'
+SCRIPT_PATH="$( cd "$(dirname "${BASH_SOURCE[0]}")" || exit 1 ; pwd -P )"
+RESULTS_DIR="${SCRIPT_PATH}/results"
+NEUROFIELD_DIR="$( cd "$SCRIPT_PATH" || exit 1; cd ../ || exit 1; pwd -P )"
+NEUROFIELD="$NEUROFIELD_DIR/bin/neurofield"
+
+TODAY="$(date +%F)"  #Date in IEEE standard format, ie YYYY-mm-dd
+SCRIPT_START_TIME="$(date +%H:%M:%S)" #Time in a readable IEEE standard format, ie HH:MM:SS
+FILE_NAME_NOW="$(date +%FT%H%M%S)"  #ISO 8601: YYYY-mm-ddThhMMSS
+
+#Delete the last N benchmarks we added, useful when something goes wrong with benchmark run.
+if [[ "$1" =~ ^('--delete')$ ]]; then
+  number_to_delete="$2"
+  #TODO: consider validating our benchmark-db, eg entry_count should be same for all 4 files.
+  entry_count="$(wc --lines < "$SCRIPT_PATH/results/simulation_resources.csv")"
+  keep=$((entry_count-number_to_delete))
+  if ((keep >= 1)); then
+    head -n "$keep" "$SCRIPT_PATH/results/simulation_resources.csv" > "$TMP_DIR/nf_simulation_resources.csv"
+    head -n "$keep" "$SCRIPT_PATH/results/simulation_conf.csv"      > "$TMP_DIR/nf_simulation_conf.csv"
+    head -n "$keep" "$SCRIPT_PATH/results/code_info.csv"            > "$TMP_DIR/nf_code_info.csv"
+    head -n "$keep" "$SCRIPT_PATH/results/system_info.csv"          > "$TMP_DIR/nf_system_info.csv"
+    [[ -s "$TMP_DIR/nf_simulation_resources.csv" ]] && mv "$TMP_DIR/nf_simulation_resources.csv" "$SCRIPT_PATH/results/simulation_resources.csv"
+    [[ -s "$TMP_DIR/nf_simulation_conf.csv"      ]] && mv "$TMP_DIR/nf_simulation_conf.csv"      "$SCRIPT_PATH/results/simulation_conf.csv"
+    [[ -s "$TMP_DIR/nf_code_info.csv"            ]] && mv "$TMP_DIR/nf_code_info.csv"            "$SCRIPT_PATH/results/code_info.csv"
+    [[ -s "$TMP_DIR/nf_system_info.csv"          ]] && mv "$TMP_DIR/nf_system_info.csv"          "$SCRIPT_PATH/results/system_info.csv"
+    exit 0
+  else
+    printf '%s\n' "ERROR: --delete called with >= number-of-entries."
+    exit 1
+  fi
+fi
+
 DEBUG='true'
 
 #Capture command line arguments
@@ -52,17 +85,6 @@ if [[ "$DEBUG" = 'true' ]]; then
   printf '%s\n' "INPUT_ARG3: '$INPUT_ARG3'"
   printf '%s\n' "INPUT_ARG4: '$INPUT_ARG4'"
 fi
-
-TMP_DIR='/tmp'
-MEM_DIR='/dev/shm'
-SCRIPT_PATH="$( cd "$(dirname "${BASH_SOURCE[0]}")" || exit 1 ; pwd -P )"
-RESULTS_DIR="${SCRIPT_PATH}/results"
-NEUROFIELD_DIR="$( cd "$SCRIPT_PATH" || exit 1; cd ../ || exit 1; pwd -P )"
-NEUROFIELD="$NEUROFIELD_DIR/bin/neurofield"
-
-TODAY="$(date +%F)"  #Date in IEEE standard format, ie YYYY-mm-dd
-SCRIPT_START_TIME="$(date +%H:%M:%S)" #Time in a readable IEEE standard format, ie HH:MM:SS
-FILE_NAME_NOW="$(date +%FT%H%M%S)"  #ISO 8601: YYYY-mm-ddThhMMSS
 
 #Rebuild neurofield from scratch to make sure the executable matches current code.
 fresh_build(){
