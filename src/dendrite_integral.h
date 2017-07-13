@@ -29,7 +29,6 @@ class DendriteIntegral : public Dendrite {
 
   // variables that are used every timestep
   double adjustednp = 0.0;
-  double deltaPdeltat = 0.0; //NOTE: doesn't seem to be used anywhere (???maybe replaced by current dpdt???).
   double C1 = 0.0;
   double dpdt = 0.0; ///< Temporal derivative of pulse density.
   double C1expa = 0.0;
