@@ -150,6 +150,7 @@ gather_code_info(){
   fi
   GIT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
   GIT_COMMIT="$(git rev-parse HEAD)"
+  GIT_LATEST_RELEASE="$(git tag --list | tail -1)"
   return 0
 } # function gather_code_info()
 
@@ -301,6 +302,7 @@ file_size_kb=$((file_size/(1024)))         # in KB
   printf '%s\n' 'Code Information:'
   printf '    %s: "%s"\n' 'GIT_BRANCH' "$GIT_BRANCH"
   printf '    %s: "%s"\n' 'GIT_COMMIT' "$GIT_COMMIT"
+  printf '    %s: "%s"\n' 'GIT_LATEST_RELEASE' "$GIT_LATEST_RELEASE"
   printf '%s\n' 'Configuration Information:'
   printf '    %s: "%s"\n' 'SIMULATION_LENGTH' "$SIMULATION_LENGTH"
   printf '    %s: "%s"\n' 'TIME_STEP_SIZE' "$TIME_STEP_SIZE"
@@ -324,7 +326,7 @@ file_size_kb=$((file_size/(1024)))         # in KB
 } >> "$RESULTS_DIR/system_info.csv"
 #Add an entry to the Code Information file -- csv.
 {
-  printf '%s,' "$GIT_BRANCH" "$GIT_COMMIT"
+  printf '%s,' "$GIT_BRANCH" "$GIT_COMMIT" "$GIT_LATEST_RELEASE"
   printf '%s\n' "$TODAY $SCRIPT_START_TIME"
 } >> "$RESULTS_DIR/code_info.csv"
 #Add an entry to the Simulation Configuration file -- csv.
