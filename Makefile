@@ -80,7 +80,7 @@ ifeq ($(MAKECMDGOALS), gcc)
   CXXFLAGS := -std=c++11 -lm -Wall -Wextra -pedantic -msse -msse2 -msse3 -mfpmath=sse -march=native -mtune=native -funroll-loops -flto -O3
   DEPFLAGS = -std=c++11 -MM -MP -MT $(OBJDIR)$*.o
 endif
-clang: neurofield
+gcc: neurofield
 
 #   target: clang - Build using clang++, unnecessary on MacOS unless you want extra warnings as clang++ is default.
 ifeq ($(MAKECMDGOALS), clang)
