@@ -38,7 +38,7 @@ endif
 # Mac OS, default to clang++
 ifeq ($(shell uname -s), Darwin)
   CXX := clang++
-  CXXFLAGS := -std=c++11 -Weverything -Wno-padded -Wno-c++98-compat -Wno-c++98-compat-pedantic -fdiagnostics-fixit-info -Wdocumentation -march=native -funroll-loops -flto -O3
+  CXXFLAGS := -std=c++11 -Wall -Wno-padded -Wno-c++98-compat -Wno-c++98-compat-pedantic -fdiagnostics-fixit-info -Wdocumentation -march=native -funroll-loops -flto -O3
   DEBUG := -std=c++11 -g -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -fdiagnostics-fixit-info -Wdocumentation
   DEPFLAGS = -std=c++11 -MM -MP -MT $(OBJDIR)$*.o
 endif
@@ -71,7 +71,18 @@ debug: neurofield
 # target: all - Compile neurofield and build all documentation.
 all: neurofield docs
 
-#   target: clang - Build using clang++, redundant on MacOS as clang++ is default.
+#   target: gcc - Build using gcc, unnecessary on Linux as gcc is default.
+ifeq ($(MAKECMDGOALS), gcc)
+  CXX := $(shell command -v g++ 2> /dev/null)
+  ifndef CXX
+    $(error "You don't appear to have g++ installed. If it is installed make sure it's in your PATH.")
+  endif
+  CXXFLAGS := -std=c++11 -lm -Wall -Wextra -pedantic -msse -msse2 -msse3 -mfpmath=sse -march=native -mtune=native -funroll-loops -flto -O3
+  DEPFLAGS = -std=c++11 -MM -MP -MT $(OBJDIR)$*.o
+endif
+clang: neurofield
+
+#   target: clang - Build using clang++, unnecessary on MacOS unless you want extra warnings as clang++ is default.
 ifeq ($(MAKECMDGOALS), clang)
   CXX := $(shell command -v clang++ 2> /dev/null)
   ifndef CXX

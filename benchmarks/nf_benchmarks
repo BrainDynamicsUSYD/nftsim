@@ -78,12 +78,15 @@ INPUT_ARG1="$1"
 INPUT_ARG2="$2"
 INPUT_ARG3="$3"
 INPUT_ARG4="$4"
+INPUT_ARG5="$5"
 
 if [[ "$DEBUG" = 'true' ]]; then
+  printf '%s\n' "Number of args: '$#'"
   printf '%s\n' "INPUT_ARG1: '$INPUT_ARG1'"
   printf '%s\n' "INPUT_ARG2: '$INPUT_ARG2'"
   printf '%s\n' "INPUT_ARG3: '$INPUT_ARG3'"
   printf '%s\n' "INPUT_ARG4: '$INPUT_ARG4'"
+  printf '%s\n' "INPUT_ARG5: '$INPUT_ARG5'"
 fi
 
 #Rebuild neurofield from scratch to make sure the executable matches current code.
@@ -97,7 +100,13 @@ fresh_build(){
     fi
     #Ensure we are actually running the current version of the code.
     make clean
-    make
+    if [[ "$COMPILER" = 'clang' ]]; then
+      make clang
+    elif [[ "$COMPILER" = 'gcc' ]]; then
+      make gcc
+    else
+      make
+    fi
   )
   return 0
 } # function fresh_build()
@@ -122,11 +131,12 @@ gather_system_info(){
   RAM_FREE="$(sed 's/MemFree:[[:blank:]]*//' <<< "$RAM_FREE")"
   #NOTE: Looks like it will be a pain to reliably grab disk info.
   #Compiler info
-  if [[ "${PLATFORM,,}" = 'linux' ]]; then
-    COMPILER_VERSION="$(gcc --version | grep --only-matching '[[:digit:]]\.[[:digit:]]*\.\?[[:digit:]]* ')"
-  elif [[ "${PLATFORM,,}" = 'darwin' ]]; then
-    COMPILER_VERSION="$(clang --version | grep --only-matching '[[:digit:]]\.[[:digit:]]*\.\?[[:digit:]]* ')"
+  if [[ -z "$COMPILER" && "${PLATFORM,,}" = 'linux' ]]; then
+    COMPILER='gcc'
+  elif [[ -z "$COMPILER" && "${PLATFORM,,}" = 'darwin' ]]; then
+    COMPILER='clang'
   fi
+  COMPILER_VERSION="$($COMPILER --version | grep --only-matching '[[:digit:]]\.[[:digit:]]*\.\?[[:digit:]]* ' | tr -d ' ')"
   return 0
 } # function gather_system_info()
 
@@ -165,14 +175,19 @@ gather_conf_info(){
   return 0
 } #function gather_conf_info()
 
-if [[ '--to-mem' =~ ^("$INPUT_ARG1"|"$INPUT_ARG2"|"$INPUT_ARG3"|"$INPUT_ARG4")$ ]]; then
+if [[ '--to-mem' =~ ^("$INPUT_ARG1"|"$INPUT_ARG2"|"$INPUT_ARG3"|"$INPUT_ARG4"|"$INPUT_ARG5")$ ]]; then
   [[ "$(uname)" = 'Linux' ]] || { printf 'ERROR: %s\n' 'Flag --to-mem is only configured for Linux.'; exit 1; }
   NF_BENCH_TO_MEM='true'
 fi
-if [[ '--no-make' =~ ^("$INPUT_ARG1"|"$INPUT_ARG2"|"$INPUT_ARG3"|"$INPUT_ARG4")$ ]]; then
+if [[ '--no-make' =~ ^("$INPUT_ARG1"|"$INPUT_ARG2"|"$INPUT_ARG3"|"$INPUT_ARG4"|"$INPUT_ARG5")$ ]]; then
   NF_BENCH_NO_MAKE='true'
 fi
-if [[ '--store-output' =~ ^("$INPUT_ARG1"|"$INPUT_ARG2"|"$INPUT_ARG3"|"$INPUT_ARG4")$ ]]; then
+if [[ '--clang' =~ ^("$INPUT_ARG1"|"$INPUT_ARG2"|"$INPUT_ARG3"|"$INPUT_ARG4"|"$INPUT_ARG5")$ ]]; then
+  COMPILER='clang'
+elif [[ '--gcc' =~ ^("$INPUT_ARG1"|"$INPUT_ARG2"|"$INPUT_ARG3"|"$INPUT_ARG4"|"$INPUT_ARG5")$ ]]; then
+  COMPILER='gcc'
+fi
+if [[ '--store-output' =~ ^("$INPUT_ARG1"|"$INPUT_ARG2"|"$INPUT_ARG3"|"$INPUT_ARG4"|"$INPUT_ARG5")$ ]]; then
   NF_BENCH_STORE_OUTPUT='true'
 fi
 
@@ -181,6 +196,7 @@ NON_FLAG_ARG_COUNT=0
 [[ -n "${INPUT_ARG2}" && "${INPUT_ARG2:0:1}" != '-' ]] && { ((++NON_FLAG_ARG_COUNT)); CONFIG_FILE="$INPUT_ARG2"; }
 [[ -n "${INPUT_ARG3}" && "${INPUT_ARG3:0:1}" != '-' ]] && { ((++NON_FLAG_ARG_COUNT)); CONFIG_FILE="$INPUT_ARG3"; }
 [[ -n "${INPUT_ARG4}" && "${INPUT_ARG4:0:1}" != '-' ]] && { ((++NON_FLAG_ARG_COUNT)); CONFIG_FILE="$INPUT_ARG4"; }
+[[ -n "${INPUT_ARG5}" && "${INPUT_ARG5:0:1}" != '-' ]] && { ((++NON_FLAG_ARG_COUNT)); CONFIG_FILE="$INPUT_ARG5"; }
 
 # Decide if we are processing a single .conf file or all our benchmarks/*.conf files.
 if (( NON_FLAG_ARG_COUNT == 0 )); then
@@ -303,7 +319,7 @@ file_size_kb=$((file_size/(1024)))         # in KB
 } >> "$RESULTS_DIR/simulation_resources.csv"
 #Add an entry to the System Information file -- csv.
 {
-  printf '%s,' "$HOSTNAME" "$PLATFORM" "$CPU_MODEL_NAME" "$CPU_CACHE_SIZE" "$CPU_CORE_COUNT" "$RAM_TOTAL" "$RAM_FREE" "$RAM_AVAILABLE" "$CALLER" "$COMPILER_VERSION"
+  printf '%s,' "$HOSTNAME" "$PLATFORM" "$CPU_MODEL_NAME" "$CPU_CACHE_SIZE" "$CPU_CORE_COUNT" "$RAM_TOTAL" "$RAM_FREE" "$RAM_AVAILABLE" "$CALLER" "$COMPILER" "$COMPILER_VERSION"
   printf '%s\n' "$TODAY $SCRIPT_START_TIME"
 } >> "$RESULTS_DIR/system_info.csv"
 #Add an entry to the Code Information file -- csv.
