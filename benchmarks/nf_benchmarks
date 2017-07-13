@@ -1,42 +1,62 @@
 #!/usr/bin/env bash
 
-# nf_benchmarks
-#
-# NOTE: This script expects to be run from a clone of neurofield's git repo.
+# nf_benchmarks:
+#    A script for benchmarking neurofield and storing the results.
 #
 #USAGE:
 #  #Show this header message:
-#  ./nf_benchmarks --help
+#  nf_benchmarks --help
 #
-#  #Run a benchmark of a specific configuration file.
-#  ./nf_benchmarks <config_filename>
+#  #Benchmark a specific configuration file.
+#  nf_benchmarks <config_filename>
 #
-#  #Run a benchmark of a specific configuration file with output to memory.
+#  #Benchmark a specific configuration file with output to memory.
 #  #This only works under Linux as it makes use of /dev/shm.
-#  ./nf_benchmarks --to-mem <config_filename>
+#  nf_benchmarks --to-mem <config_filename>
 #
-#  #Run all .conf files in the benchmarks directory.
-#  ./nf_benchmarks
+#  #Benchmark a specific configuration file using a non-default compiler.
+#  nf_benchmarks --clang <config_filename>
 #
-#  #Run all .conf files in the benchmarks directory with output to memory.
-#  ./nf_benchmarks --to-mem
+#  #Benchmark all .conf files in the benchmarks directory.
+#  nf_benchmarks
+#
+#  #Benchmark all .conf files in ./benchmarks with output to memory.
+#  nf_benchmarks --to-mem
 #
 #REQUIRES:
 #  /usr/bin/time
 #
 #DESCRIPTION:
-#  A script for benchmarking neurofield. Runs either a specified .conf file
-#  or all .conf files stored in the benchmarks directory
+#  The nf_benchmarks script can run either a specified .conf file or
+#  all .conf files stored in the benchmarks directory
 #    ./benchmarks/
-#  The script stores timing and configuration information for simulation runs
-#  in the directory:
+#  The script stores timing and configuration information for simulation
+#  runs in the directory:
 #    ./benchmarks/results
-#  Timing information is obtained using /usr/bin/time.
+#  Timing information is obtained using /usr/bin/time. Information is
+#  stored in both a "human-readable" format in 'timings_*' files as well
+#  as a pseudo database format in four .csv files:
+#      + ./benchmarks/results/simulation_resources.csv
+#      + ./benchmarks/results/simulation_conf.csv
+#      + ./benchmarks/results/code_info.csv
+#      + ./benchmarks/results/system_info.csv
+#  The script expects/requires:
+#      + to be run from a clean clone of neurofield's repository
+#        (clean here means no uncommitted changes in the working directory);
+#      + neurofield to be building and running properly; and
+#      + valid configuration files as input.
 #
 # Authors: Paula Sanz-Leon; Stuart A. Knock;
 #
 #Use the header as a basic help message.
 [[ "$1" =~ ^('-h'|'--help')$ ]] && { head -n $((LINENO-4)) "${BASH_SOURCE[0]}"; exit 1; }
+
+DEBUG='false'
+
+
+#--------------------------------------------------------------#
+#--------------- Initialise the Where and When ----------------#
+#--------------------------------------------------------------#
 
 TMP_DIR='/tmp'
 MEM_DIR='/dev/shm'
@@ -48,6 +68,27 @@ NEUROFIELD="$NEUROFIELD_DIR/bin/neurofield"
 TODAY="$(date +%F)"  #Date in IEEE standard format, ie YYYY-mm-dd
 SCRIPT_START_TIME="$(date +%H:%M:%S)" #Time in a readable IEEE standard format, ie HH:MM:SS
 FILE_NAME_NOW="$(date +%FT%H%M%S)"  #ISO 8601: YYYY-mm-ddThhMMSS
+
+
+#--------------------------------------------------------------#
+#---------------------- Parse Arguments -----------------------#
+#--------------------------------------------------------------#
+
+#Capture command line arguments
+INPUT_ARG1="$1"
+INPUT_ARG2="$2"
+INPUT_ARG3="$3"
+INPUT_ARG4="$4"
+INPUT_ARG5="$5"
+
+if [[ "${DEBUG,,}" = 'true' ]]; then
+  printf '%s\n' "Number of args: '$#'"
+  printf '%s\n' "INPUT_ARG1: '$INPUT_ARG1'"
+  printf '%s\n' "INPUT_ARG2: '$INPUT_ARG2'"
+  printf '%s\n' "INPUT_ARG3: '$INPUT_ARG3'"
+  printf '%s\n' "INPUT_ARG4: '$INPUT_ARG4'"
+  printf '%s\n' "INPUT_ARG5: '$INPUT_ARG5'"
+fi
 
 #Delete the last N benchmarks we added, useful when something goes wrong with benchmark run.
 if [[ "$1" =~ ^('--delete')$ ]]; then
@@ -71,23 +112,33 @@ if [[ "$1" =~ ^('--delete')$ ]]; then
   fi
 fi
 
-DEBUG='true'
-
-#Capture command line arguments
-INPUT_ARG1="$1"
-INPUT_ARG2="$2"
-INPUT_ARG3="$3"
-INPUT_ARG4="$4"
-INPUT_ARG5="$5"
-
-if [[ "$DEBUG" = 'true' ]]; then
-  printf '%s\n' "Number of args: '$#'"
-  printf '%s\n' "INPUT_ARG1: '$INPUT_ARG1'"
-  printf '%s\n' "INPUT_ARG2: '$INPUT_ARG2'"
-  printf '%s\n' "INPUT_ARG3: '$INPUT_ARG3'"
-  printf '%s\n' "INPUT_ARG4: '$INPUT_ARG4'"
-  printf '%s\n' "INPUT_ARG5: '$INPUT_ARG5'"
+if [[ '--to-mem' =~ ^("$INPUT_ARG1"|"$INPUT_ARG2"|"$INPUT_ARG3"|"$INPUT_ARG4"|"$INPUT_ARG5")$ ]]; then
+  [[ "$(uname)" = 'Linux' ]] || { printf 'ERROR: %s\n' 'Flag --to-mem is only configured for Linux.'; exit 1; }
+  NF_BENCH_TO_MEM='true'
 fi
+if [[ '--no-make' =~ ^("$INPUT_ARG1"|"$INPUT_ARG2"|"$INPUT_ARG3"|"$INPUT_ARG4"|"$INPUT_ARG5")$ ]]; then
+  NF_BENCH_NO_MAKE='true'
+fi
+if [[ '--clang' =~ ^("$INPUT_ARG1"|"$INPUT_ARG2"|"$INPUT_ARG3"|"$INPUT_ARG4"|"$INPUT_ARG5")$ ]]; then
+  COMPILER='clang'
+elif [[ '--gcc' =~ ^("$INPUT_ARG1"|"$INPUT_ARG2"|"$INPUT_ARG3"|"$INPUT_ARG4"|"$INPUT_ARG5")$ ]]; then
+  COMPILER='gcc'
+fi
+if [[ '--store-output' =~ ^("$INPUT_ARG1"|"$INPUT_ARG2"|"$INPUT_ARG3"|"$INPUT_ARG4"|"$INPUT_ARG5")$ ]]; then
+  NF_BENCH_STORE_OUTPUT='true'
+fi
+
+NON_FLAG_ARG_COUNT=0
+[[ -n "${INPUT_ARG1}" && "${INPUT_ARG1:0:1}" != '-' ]] && { ((++NON_FLAG_ARG_COUNT)); CONFIG_FILE="$INPUT_ARG1"; }
+[[ -n "${INPUT_ARG2}" && "${INPUT_ARG2:0:1}" != '-' ]] && { ((++NON_FLAG_ARG_COUNT)); CONFIG_FILE="$INPUT_ARG2"; }
+[[ -n "${INPUT_ARG3}" && "${INPUT_ARG3:0:1}" != '-' ]] && { ((++NON_FLAG_ARG_COUNT)); CONFIG_FILE="$INPUT_ARG3"; }
+[[ -n "${INPUT_ARG4}" && "${INPUT_ARG4:0:1}" != '-' ]] && { ((++NON_FLAG_ARG_COUNT)); CONFIG_FILE="$INPUT_ARG4"; }
+[[ -n "${INPUT_ARG5}" && "${INPUT_ARG5:0:1}" != '-' ]] && { ((++NON_FLAG_ARG_COUNT)); CONFIG_FILE="$INPUT_ARG5"; }
+
+
+#--------------------------------------------------------------#
+#----------------- Begin Function Definitions -----------------#
+#--------------------------------------------------------------#
 
 #Rebuild neurofield from scratch to make sure the executable matches current code.
 fresh_build(){
@@ -176,28 +227,90 @@ gather_conf_info(){
   return 0
 } #function gather_conf_info()
 
-if [[ '--to-mem' =~ ^("$INPUT_ARG1"|"$INPUT_ARG2"|"$INPUT_ARG3"|"$INPUT_ARG4"|"$INPUT_ARG5")$ ]]; then
-  [[ "$(uname)" = 'Linux' ]] || { printf 'ERROR: %s\n' 'Flag --to-mem is only configured for Linux.'; exit 1; }
-  NF_BENCH_TO_MEM='true'
-fi
-if [[ '--no-make' =~ ^("$INPUT_ARG1"|"$INPUT_ARG2"|"$INPUT_ARG3"|"$INPUT_ARG4"|"$INPUT_ARG5")$ ]]; then
-  NF_BENCH_NO_MAKE='true'
-fi
-if [[ '--clang' =~ ^("$INPUT_ARG1"|"$INPUT_ARG2"|"$INPUT_ARG3"|"$INPUT_ARG4"|"$INPUT_ARG5")$ ]]; then
-  COMPILER='clang'
-elif [[ '--gcc' =~ ^("$INPUT_ARG1"|"$INPUT_ARG2"|"$INPUT_ARG3"|"$INPUT_ARG4"|"$INPUT_ARG5")$ ]]; then
-  COMPILER='gcc'
-fi
-if [[ '--store-output' =~ ^("$INPUT_ARG1"|"$INPUT_ARG2"|"$INPUT_ARG3"|"$INPUT_ARG4"|"$INPUT_ARG5")$ ]]; then
-  NF_BENCH_STORE_OUTPUT='true'
-fi
+#
+write_db_entry(){
+  #Add an entry to the Simulation Resource Information file -- csv.
+  {
+    printf '%s,' "$USER_TIME" "$USER_TIME_UNITS" "$MAX_RES_SIZE" "$MAX_RES_SIZE_UNITS" "$file_size_kb" 'kbytes'
+    printf '%s\n' "$TODAY $SCRIPT_START_TIME"
+  } >> "$RESULTS_DIR/simulation_resources.csv"
+  #Add an entry to the System Information file -- csv.
+  {
+    printf '%s,' "$HOSTNAME" "$PLATFORM" "$CPU_MODEL_NAME" "$CPU_CACHE_SIZE" "$CPU_CORE_COUNT" "$RAM_TOTAL" "$RAM_FREE" "$RAM_AVAILABLE" "$CALLER" "$COMPILER" "$COMPILER_VERSION"
+    printf '%s\n' "$TODAY $SCRIPT_START_TIME"
+  } >> "$RESULTS_DIR/system_info.csv"
+  #Add an entry to the Code Information file -- csv.
+  {
+    printf '%s,' "$GIT_BRANCH" "$GIT_COMMIT" "$GIT_LATEST_RELEASE"
+    printf '%s\n' "$TODAY $SCRIPT_START_TIME"
+  } >> "$RESULTS_DIR/code_info.csv"
+  #Add an entry to the Simulation Configuration file -- csv.
+  {
+    printf '%s,' "$SIMULATION_LENGTH" "$TIME_STEP_SIZE" "$NUMBER_OF_NODES" "$NUMBER_OF_PROPAGATORS" "$MAX_TAU"
+    printf '%s\n' "$TODAY $SCRIPT_START_TIME"
+  } >> "$RESULTS_DIR/simulation_conf.csv"
+} #function write_db_entry()
 
-NON_FLAG_ARG_COUNT=0
-[[ -n "${INPUT_ARG1}" && "${INPUT_ARG1:0:1}" != '-' ]] && { ((++NON_FLAG_ARG_COUNT)); CONFIG_FILE="$INPUT_ARG1"; }
-[[ -n "${INPUT_ARG2}" && "${INPUT_ARG2:0:1}" != '-' ]] && { ((++NON_FLAG_ARG_COUNT)); CONFIG_FILE="$INPUT_ARG2"; }
-[[ -n "${INPUT_ARG3}" && "${INPUT_ARG3:0:1}" != '-' ]] && { ((++NON_FLAG_ARG_COUNT)); CONFIG_FILE="$INPUT_ARG3"; }
-[[ -n "${INPUT_ARG4}" && "${INPUT_ARG4:0:1}" != '-' ]] && { ((++NON_FLAG_ARG_COUNT)); CONFIG_FILE="$INPUT_ARG4"; }
-[[ -n "${INPUT_ARG5}" && "${INPUT_ARG5:0:1}" != '-' ]] && { ((++NON_FLAG_ARG_COUNT)); CONFIG_FILE="$INPUT_ARG5"; }
+write_timing_file(){
+  {
+    printf '%s\n' "Added $TODAY at $SCRIPT_START_TIME:"
+    cat "$TMP_TIMING_FILE"
+    printf '%s\n' 'Storage size:'
+    printf '    %s\n' "$file_size_gb GB"
+    printf '    %s\n' "$file_size_mb MB"
+    printf '    %s\n' "$file_size_kb KB"
+    printf '%s\n' 'System Information:'
+    printf '    %s: "%s"\n' 'HOSTNAME' "$HOSTNAME"
+    printf '    %s: "%s"\n' 'PLATFORM' "$PLATFORM"
+    printf '    %s: "%s"\n' 'CPU_MODEL_NAME' "$CPU_MODEL_NAME"
+    printf '    %s: "%s"\n' 'CPU_CACHE_SIZE' "$CPU_CACHE_SIZE"
+    printf '    %s: "%s"\n' 'CPU_CORE_COUNT' "$CPU_CORE_COUNT"
+    printf '    %s: "%s"\n' 'RAM_TOTAL' "$RAM_TOTAL"
+    printf '    %s: "%s"\n' 'RAM_FREE' "$RAM_FREE"
+    printf '    %s: "%s"\n' 'RAM_AVAILABLE' "$RAM_AVAILABLE"
+    printf '    %s: "%s"\n' 'CALLER' "$CALLER"
+    printf '%s\n' 'Code Information:'
+    printf '    %s: "%s"\n' 'GIT_BRANCH' "$GIT_BRANCH"
+    printf '    %s: "%s"\n' 'GIT_COMMIT' "$GIT_COMMIT"
+    printf '    %s: "%s"\n' 'GIT_LATEST_RELEASE' "$GIT_LATEST_RELEASE"
+    printf '%s\n' 'Configuration Information:'
+    printf '    %s: "%s"\n' 'SIMULATION_LENGTH' "$SIMULATION_LENGTH"
+    printf '    %s: "%s"\n' 'TIME_STEP_SIZE' "$TIME_STEP_SIZE"
+    printf '    %s: "%s"\n' 'NUMBER_OF_NODES' "$NUMBER_OF_NODES"
+    printf '    %s: "%s"\n' 'NUMBER_OF_PROPAGATORS' "$NUMBER_OF_PROPAGATORS"
+    printf '    %s: "%s"\n' 'MAX_TAU' "$MAX_TAU"
+
+    printf '\n%s\n' '#---------------------------------------------------------------#'
+  } >> "$TIMING_FILE"
+} #function write_timing_file()
+
+#Write selected fields from entries that match CONDITION to a file formatted
+#as a Markdown table. Called by nf_benchmarks --to-markdown.
+#write_to_markdown(){
+#  local headings=('Run Time' 'Memory Used' 'CPU' 'Cache Size' 'RAM-Total' 'Length' 'dt' 'Nodes' 'git-commit' )
+#  local centred=(':--------:|:-----------:|:---:|:----------:|:---------:|:------:|:---:|:----:|:----------:|')
+#  local fields=('resources: 1' 'resources: 3' 'sys_info: 3' 'sys_info: 4' 'sys_info: 6' 'conf: 1' 'conf: 2' 'conf: 3' 'code: 2' )
+#
+#  #if [[ ! -f "$RESULTS_DIR/benchmarks.md" ]]; then
+#  #  #Initialise System Information file -- Markdown.
+#  #  {
+#  #    printf '|'
+#  #    printf '%s |'     'HOSTNAME' 'PLATFORM' 'CPU_MODEL_NAME' 'CPU_CACHE_SIZE' 'CPU_CORE_COUNT' 'RAM_TOTAL' 'RAM_FREE' 'RAM_AVAILABLE' 'CALLER'
+#  #    printf '\n%s\n' '|:--------:|:--------:|:--------------:|:--------------:|:--------------:|:---------:|:--------:|:-------------:|:------:|'
+#  #  } > "$RESULTS_DIR/benchmarks.md"
+#  #fi
+#  # #Add an entry to the System Information file -- Markdown table.
+#  #{
+#  #  printf '|'
+#  #  printf '%s |' "$HOSTNAME" "$PLATFORM" "$CPU_MODEL_NAME" "$CPU_CACHE_SIZE" "$CPU_CORE_COUNT" "$RAM_TOTAL" "$RAM_FREE" "$RAM_AVAILABLE" "$CALLER"
+#  #  printf '\n'
+#  #} >> "$RESULTS_DIR/system_info.md"
+#} #write_to_markdown()
+
+
+#--------------------------------------------------------------#
+#-------------------- Begin Main Script -----------------------#
+#--------------------------------------------------------------#
 
 # Decide if we are processing a single .conf file or all our benchmarks/*.conf files.
 if (( NON_FLAG_ARG_COUNT == 0 )); then
@@ -238,7 +351,7 @@ else
   exit 1
 fi
 
-if [[ "$DEBUG" = 'true' ]]; then
+if [[ "${DEBUG,,}" = 'true' ]]; then
   printf '%s\n' "NEUROFIELD: '$NEUROFIELD'"
   printf '%s\n' "CONFIG_FILE: '$CONFIG_FILE'"
   printf '%s\n' "OUTPUT_FILE: '$OUTPUT_FILE'"
@@ -260,9 +373,14 @@ if ! TMP_TIMING_FILE="$(mktemp "$TMP_DIR"/nf_timing-XXXX)"; then
   exit 1
 fi
 
+#Finally, do the actual benchmark run:
 /usr/bin/time -v "$NEUROFIELD" -i "$CONFIG_FILE" -o "$OUTPUT_FILE" 2>> "$TMP_TIMING_FILE"
 
+#Collect important resource usage info into variables
 file_size="$(wc --bytes < "$OUTPUT_FILE")"
+file_size_gb=$((file_size/(1048576*1024))) # in GB
+file_size_mb=$((file_size/(1048576)))      # in MB
+file_size_kb=$((file_size/(1024)))         # in KB
 
 USER_TIME="$(grep 'User time' "$TMP_TIMING_FILE")"
 USER_TIME_UNITS="$(grep --only-matching '(.*)' <<< "$USER_TIME" | tr -d '()')"
@@ -272,81 +390,10 @@ MAX_RES_SIZE="$(grep 'Maximum resident set size' "$TMP_TIMING_FILE")"
 MAX_RES_SIZE_UNITS="$(grep --only-matching '(.*)' <<< "$MAX_RES_SIZE" | tr -d '()')"
 MAX_RES_SIZE="$(grep --only-matching  '[[:digit:]]*' <<< "$MAX_RES_SIZE")"
 
-{
-  printf '%s\n' "Added $TODAY at $SCRIPT_START_TIME:"
-  cat "$TMP_TIMING_FILE"
-} >> "$TIMING_FILE"
+#Write benchmark information to files:
+write_timing_file
+write_db_entry
 
+#Clean-up
 rm -f "$TMP_TIMING_FILE"
 [[ "${NF_BENCH_TO_MEM,,}" = 'true' ]] && mv "$OUTPUT_FILE" "$RESULTS_DIR"
-
-
-file_size_gb=$((file_size/(1048576*1024))) # in GB
-file_size_mb=$((file_size/(1048576)))      # in MB
-file_size_kb=$((file_size/(1024)))         # in KB
-{
-  printf '%s\n' 'Storage size:'
-  printf '    %s\n' "$file_size_gb GB"
-  printf '    %s\n' "$file_size_mb MB"
-  printf '    %s\n' "$file_size_kb KB"
-  printf '%s\n' 'System Information:'
-  printf '    %s: "%s"\n' 'HOSTNAME' "$HOSTNAME"
-  printf '    %s: "%s"\n' 'PLATFORM' "$PLATFORM"
-  printf '    %s: "%s"\n' 'CPU_MODEL_NAME' "$CPU_MODEL_NAME"
-  printf '    %s: "%s"\n' 'CPU_CACHE_SIZE' "$CPU_CACHE_SIZE"
-  printf '    %s: "%s"\n' 'CPU_CORE_COUNT' "$CPU_CORE_COUNT"
-  printf '    %s: "%s"\n' 'RAM_TOTAL' "$RAM_TOTAL"
-  printf '    %s: "%s"\n' 'RAM_FREE' "$RAM_FREE"
-  printf '    %s: "%s"\n' 'RAM_AVAILABLE' "$RAM_AVAILABLE"
-  printf '    %s: "%s"\n' 'CALLER' "$CALLER"
-  printf '%s\n' 'Code Information:'
-  printf '    %s: "%s"\n' 'GIT_BRANCH' "$GIT_BRANCH"
-  printf '    %s: "%s"\n' 'GIT_COMMIT' "$GIT_COMMIT"
-  printf '    %s: "%s"\n' 'GIT_LATEST_RELEASE' "$GIT_LATEST_RELEASE"
-  printf '%s\n' 'Configuration Information:'
-  printf '    %s: "%s"\n' 'SIMULATION_LENGTH' "$SIMULATION_LENGTH"
-  printf '    %s: "%s"\n' 'TIME_STEP_SIZE' "$TIME_STEP_SIZE"
-  printf '    %s: "%s"\n' 'NUMBER_OF_NODES' "$NUMBER_OF_NODES"
-  printf '    %s: "%s"\n' 'NUMBER_OF_PROPAGATORS' "$NUMBER_OF_PROPAGATORS"
-  printf '    %s: "%s"\n' 'MAX_TAU' "$MAX_TAU"
-
-  printf '\n%s\n' '#---------------------------------------------------------------#'
-} >> "$TIMING_FILE"
-
-
-#Add an entry to the Simulation Resource Information file -- csv.
-{
-  printf '%s,' "$USER_TIME" "$USER_TIME_UNITS" "$MAX_RES_SIZE" "$MAX_RES_SIZE_UNITS" "$file_size_kb" 'kbytes'
-  printf '%s\n' "$TODAY $SCRIPT_START_TIME"
-} >> "$RESULTS_DIR/simulation_resources.csv"
-#Add an entry to the System Information file -- csv.
-{
-  printf '%s,' "$HOSTNAME" "$PLATFORM" "$CPU_MODEL_NAME" "$CPU_CACHE_SIZE" "$CPU_CORE_COUNT" "$RAM_TOTAL" "$RAM_FREE" "$RAM_AVAILABLE" "$CALLER" "$COMPILER" "$COMPILER_VERSION"
-  printf '%s\n' "$TODAY $SCRIPT_START_TIME"
-} >> "$RESULTS_DIR/system_info.csv"
-#Add an entry to the Code Information file -- csv.
-{
-  printf '%s,' "$GIT_BRANCH" "$GIT_COMMIT" "$GIT_LATEST_RELEASE"
-  printf '%s\n' "$TODAY $SCRIPT_START_TIME"
-} >> "$RESULTS_DIR/code_info.csv"
-#Add an entry to the Simulation Configuration file -- csv.
-{
-  printf '%s,' "$SIMULATION_LENGTH" "$TIME_STEP_SIZE" "$NUMBER_OF_NODES" "$NUMBER_OF_PROPAGATORS" "$MAX_TAU"
-  printf '%s\n' "$TODAY $SCRIPT_START_TIME"
-} >> "$RESULTS_DIR/simulation_conf.csv"
-
-# if [[ ! -f "$RESULTS_DIR/system_info.md" ]]; then
-#   #Initialise System Information file -- Markdown.
-#   {
-#     printf '|'
-#     printf '%s |'     'HOSTNAME' 'PLATFORM' 'CPU_MODEL_NAME' 'CPU_CACHE_SIZE' 'CPU_CORE_COUNT' 'RAM_TOTAL' 'RAM_FREE' 'RAM_AVAILABLE' 'CALLER'
-#     printf '\n%s\n' '|:--------:|:--------:|:--------------:|:--------------:|:--------------:|:---------:|:--------:|:-------------:|:------:|'
-#   } > "$RESULTS_DIR/system_info.md"
-# fi
-
-# #Add an entry to the System Information file -- Markdown table.
-# {
-#   printf '|'
-#   printf '%s |' "$HOSTNAME" "$PLATFORM" "$CPU_MODEL_NAME" "$CPU_CACHE_SIZE" "$CPU_CORE_COUNT" "$RAM_TOTAL" "$RAM_FREE" "$RAM_AVAILABLE" "$CALLER"
-#   printf '\n'
-# } >> "$RESULTS_DIR/system_info.md"
