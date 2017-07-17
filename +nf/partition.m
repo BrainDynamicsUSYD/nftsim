@@ -1,19 +1,34 @@
-function r = partition(n_items,pool,id,frac_overlap,evenlength,samesize)
-	% Suppose you have 1:n and want to partition into m groups 
-	% Use this function to calculate the boundaries of each group
-	% e.g 16 elements with pool=4 means that id=1,2,3,4 returns
-	% [1 4] [5 8] [9 12] and [13 16] respectively
-    % r = nf.partition(n_items,pool,id,frac_overlap,evenlength,samesize)
-    %   total- total number of items (single number) OR a list of the items
-    %   pool - total number of partitions
-    %   id - the ID of this partition - leave empty to return all the indices
-    %   frac_overlap - amount from 0 to 1 of fractional overlap in windows
-    %   evenlength = 1 for the windows to have an even number of elements
-    %               This is often necessary if doing an FFT on the window
-    %   samesize = 1 for all the windows to be the same size, even if this means skipping elements from the end
-    %   r - start and stop indices, if total is 
+%% Suppose you have 1:n and want to partition into m groups
+%
+% Use this function to calculate the boundaries of each group
+% e.g 16 elements with pool=4 means that id=1,2,3,4 returns
+% [1 4] [5 8] [9 12] and [13 16] respectively.
+%
+% ARGUMENTS:
+%        n_items -- .
+%        pool -- total number of partitions
+%        id -- the ID of this partition - leave empty to return all the indices
+%        frac_overlap -- amount from 0 to 1 of fractional overlap in windows
+%        evenlength -- 1 for the windows to have an even number of elements
+%                  This is often necessary if doing an FFT on the window
+%        samesize -- = 1 for all the windows to be the same size, even if this means skipping elements from the end
+%
+% OUTPUT:
+%        r -- start and stop indices, if total is
+%
+% AUTHOR:
+%     Romesh Abeysuriya (2012-03-22).
+%
+% USAGE:
+%{
+    %
+    r = nf.partition(n_items,pool,id,frac_overlap,evenlength,samesize)
+%}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    if nargin < 6 
+function r = partition(n_items,pool,id,frac_overlap,evenlength,samesize)
+    %
+    if nargin < 6
         samesize = 0;
     end
     
@@ -40,14 +55,14 @@ function r = partition(n_items,pool,id,frac_overlap,evenlength,samesize)
         pool = n_items;
     end
     
-    window_length = floor(n_items/((1+(pool-1)*(1-frac_overlap))));
+    window_length = floor(n_items / ((1 + (pool - 1) * (1 - frac_overlap))));
 
     if evenlength
-        window_length = floor(window_length/2)*2;
+        window_length = floor(window_length / 2) * 2;
     end 
 
     window_start = floor(1:window_length*(1-frac_overlap):window_length*(1-frac_overlap)*pool);
-    window_stop = window_start+window_length-1;
+    window_stop = window_start + window_length - 1;
     
     if samesize
         if window_stop(end) > n_items
@@ -57,10 +72,8 @@ function r = partition(n_items,pool,id,frac_overlap,evenlength,samesize)
         window_stop(end) = n_items;
     end
 
-    r = [window_start(:),window_stop(:)];
+    r = [window_start(:), window_stop(:)];
     if id > 0
-        r = r(id,:);
+        r = r(id, :);
     end
-
-
-
+end %function r = partition()
