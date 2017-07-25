@@ -1,24 +1,24 @@
-%% Function to run NeuroField and return a NF struct.
+%% Function to run neurofield and return a neurofield output struct.
 %
-% Provide the filename WITHOUT .conf
-% Program will
-% - read fname.conf
-% - output fname.dump and fname.output
-% - parse fname.output and return an NF struct
+% Provided a configuration file-name (fname.conf), run the neurofield
+% executable, generating an output file (fname.output). Optionally, if an
+% output argument is provided then, parse the output file and return a
+% neurofield output struct containing the simulation results.
 %
-% If the user specifies fname = 'fname.conf' the '.conf' will be removed
-% Requires 'neurofield' to be on the path
 %
 % ARGUMENTS:
-%        fname -- .
-%        neurofield_path -- .
+%        fname -- Name of the configuration file, it can be with or without
+%                 the .conf extension.
+%        neurofield_path -- neurofield executable (full or relative path).
 %
-% OUTPUT:
-%        obj -- .
+% OUTPUT: Writes a .output file in the same location as the .conf file.
+%        obj -- A neurofield output struct (a Matlab struct containing
+%               data from a simulation).
 %
 % REQUIRES:
-%        neurofield -- must be in your path.
-%        nf.read -- .
+%        neurofield -- The neurofield executable, must be in your path.
+%        nf.read -- Read a neurofield output file and return a neurofield
+%                   output struct.
 %
 % AUTHOR:
 %     Romesh Abeysuriya (2012-03-22).
@@ -33,18 +33,26 @@
 function obj = run(fname, neurofield_path)
     %
     tic;
-    fname = strrep(fname, '.conf', '');
+    fname = strrep(fname, '.conf', ''); %Strip any .conf suffix.
     fprintf(1, 'Executing NeuroField: %s.conf...\n', fname);
 
+    % If we were not provided a path to neurofield.
     if nargin < 2 || isempty(neurofield_path)
-        % The first path that exists in will be selected
-        locations = {'neurofield.exe', './neurofield/bin/neurofield', './bin/neurofield', 'neurofield'};
+        % Check typical locations, the first path that exists will be selected.
+        locations = {'neurofield', ...
+                     './bin/neurofield', ...
+                     './neurofield/bin/neurofield', ...
+                     'neurofield.exe'};
         selected_path = find(cellfun(@(name) exist(name, 'file')==2, locations), 1, 'first');
-        if isempty(selected_path)
-            error('neurofield not found. Please make a symlink to neurofield in the current directory');
-        else
+        if ~isempty(selected_path)
             neurofield_path = locations{selected_path};
         end
+    end
+
+    % Check we have a valid path to the neurofield executable.
+    if ~exist(neurofield_path, 'file')
+        error(['nf:' mfilename ':BadPath'], ...
+               'neurofield not found. Please make a symlink to neurofield in the current directory.');
     end
 
     neurofield_cmd = sprintf('%s -i %s.conf -o %s.output', neurofield_path, fname, fname);
@@ -52,11 +60,12 @@ function obj = run(fname, neurofield_path)
     [status] = system(neurofield_cmd);
 
     if status ~= 0
-        error('An error occurred when running NeuroField!');
+        error(['nf:' mfilename ':NeurofieldError'], ...
+              'An error occurred while running neurofield!');
     end
 
     fprintf(1, 'took %.3f seconds\n', toc);
-    
+
     if nargout > 0
         fprintf(1, 'Parsing output...');
         obj = nf.read(sprintf('%s.output', fname));

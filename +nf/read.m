@@ -1,17 +1,12 @@
 %% Read a neurofield output file and return a neurofield output struct.
 %
 % ARGUMENTS:
-%        fname -- .
-%        himem -- himem = 1 uses slower method that can avoid out of memory errors in some cases
+%        fname -- The name of the neurofield output file to read (absolute
+%                 or relative path).
 %
 % OUTPUT:
-%        obj -- .
-%
-% REQUIRES:
-%           -- <description>
-%           -- <description>
-%
-% REFERENCES:
+%        obj -- A neurofield output struct (a Matlab struct containing data
+%               from a simulation).
 %
 % AUTHOR:
 %     Romesh Abeysuriya (2012-03-22).
@@ -22,19 +17,26 @@
 %}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function obj = read(fname, himem)
-    %
-    if nargin < 2 || isempty(himem)
-        himem = 0;
+function [obj] = read(fname)
+    % The fname argument is required.
+    if nargin < 1
+        error(['nf:' mfilename ':WrongNumberOfArgs'], ...
+              'This function requires a file-name argument.')
     end
 
+    % Check that our input arg is actually a file.
     if ~exist(fname, 'file')
-        fname = [fname, '.output'];
+        % Try appending .output to the name we were provided.
+        if ~exist([fname, '.output'], 'file')
+            error(['nf:' mfilename ':FileDoesNotExist'], ...
+                  'The output file provided does not exist: "%s".', fname)
+        else % The argument we were provided was just missing a suffix.
+            % Append the .output suffix.
+            fname = [fname, '.output'];
+        end
     end
-    
-    % if himem
-    %     nrows = count_lines(fname) - 2;
-    % end
+
+    obj.conf_file = fname;
 
     fid = fopen(fname, 'r'); % Open file for read access
 
@@ -42,11 +44,12 @@ function obj = read(fname, himem)
     buffer = fgetl(fid);
     while isempty(strfind(buffer, '======================='))
         if ~isempty(strfind(buffer, 'Time  |'))
-            error('Did you try and open and old-style output file? Found a | that looked like a delimiter')
+            error(['nf:' mfilename ':OldStyleOutput'], ...
+                  'Did you try and open and old-style output file? Found a | that looked like a delimiter.')
         end
         buffer = fgetl(fid);
     end
-    fgetl(fid);
+    fgetl(fid); % Skip the empty line following the '===============' barrier.
 
     headers = fgetl(fid);
     nodes = fgetl(fid);
@@ -56,26 +59,13 @@ function obj = read(fname, himem)
 
     [obj.nodes, base_index] = get_nodes(nodes, obj.fields);
 
-    % if himem
-    %     data = zeros(nrows, sum(cellfun(@length, obj.nodes)));
-    %     for j = 1:nrows
-    %         tmp = textscan(fid, '%f', 1, 'CollectOutput', true);
-    %         data(j, :) = tmp{1};
-    %     end
-    % else
     data = textscan(fid, '%f', 'CollectOutput', true);
     data = reshape(data{1}, length(obj.fields), []).';
-    %end
 
     for j = 1:length(obj.nodes)
         obj.data{j} = data(:, base_index{j});
     end
-
-    % idx_start = 1;
-    % for j = 1:length(obj.nodes) % For each output trace
-    %     obj.data{j} = data(:, idx_start:idx_start+length(obj.nodes{j})-1);
-    %     idx_start = idx_start + length(obj.nodes{j});
-    % end    
+    clear data
     fclose(fid);
 
     % Finally, move the time to an array of its own
@@ -96,24 +86,10 @@ function [locs, base_index] = get_nodes(line, headers)
     nodes = cellfun(@(x) str2double(x), strsplit(line(1:end-2)));
     nodes(1) = 1; % Number of time columns (there is only ever one)
     traces = unique(headers, 'stable');
-    locs = cell(1,length(traces));
-    base_index = locs;
+    locs = cell(1, length(traces));
+    base_index = cell(1, length(traces));
     for j = 1:length(traces)
         base_index{j} = strcmp(traces{j}, headers);
         locs{j} = nodes(base_index{j});
     end
 end %function get_nodes()
-
-% function numlines = count_lines(fname)
-%     if (isunix) %# Linux, mac
-%         [status, result] = system( ['wc -l ',fname,' | cut -d'' '' -f1'] );
-%         numlines = str2num(result);
-
-%     elseif (ispc) %# Windows
-%         numlines = str2num( perl('countlines.pl',fname) );
-
-%     else
-%         error('...');
-
-%     end
-%end %function count_lines()

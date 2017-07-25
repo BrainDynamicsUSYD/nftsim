@@ -2,7 +2,8 @@
 %
 %
 % ARGUMENTS:
-%        obj -- nf object
+%        obj -- A neurofield output struct (a Matlab struct containing data
+%               from a simulation).
 %        traces -- comma separated string of traces e.g. 'Propagator.2.phi, Coupling.2.nu'
 %        t -- can be a time e.g. 0.001 or a range [0.001 0.1]. If empty, returns all times.
 %        nodes -- an array of node numbers that are requested e.g. [1 2 3]
