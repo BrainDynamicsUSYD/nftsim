@@ -7,7 +7,8 @@
 % output all nodes), or the number of nodes is not a perfect square..
 %
 % ARGUMENTS:
-%        obj -- nf object
+%        obj -- A neurofield output struct (a Matlab struct containing data
+%               from a simulation).
 %        trace -- .
 %
 % OUTPUT:
@@ -31,13 +32,16 @@ function [data, grid_edge] = grid(obj, trace)
     %
     nodes = obj.nodes{1};
     if nodes(1) ~= 1 % || any(diff(nodes))~=1
-        error('Output from NeuroField must be for all nodes')
+        error(['nf:' mfilename ':IncompatibleOutput'], ...
+              'Output from NeuroField must be for all nodes')
     end
     
     data = nf.extract(obj, trace);
-    
+    %TODO: handle non-square grid here.
     grid_edge = sqrt(length(nodes)); % length of square grid edge
     
+    %Reshape to a square grid by time, ie (n,n,tpts)
+
     %data = reshape(data, grid_edge, grid_edge, obj.npoints);
     
     data = shiftdim(reshape(data, [], grid_edge, grid_edge), 1);

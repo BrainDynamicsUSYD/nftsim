@@ -1,16 +1,18 @@
-%% Given an nf object, return data from certain traces at particular times.
+%% Extract a specific subset of data from a neurofield output struct.
 %
+% The subset can be specified in terms of: traces; times; and nodes.
 %
 % ARGUMENTS:
 %        obj -- A neurofield output struct (a Matlab struct containing data
 %               from a simulation).
-%        traces -- comma separated string of traces e.g. 'Propagator.2.phi, Coupling.2.nu'
-%        t -- can be a time e.g. 0.001 or a range [0.001 0.1]. If empty, returns all times.
-%        nodes -- an array of node numbers that are requested e.g. [1 2 3]
-%                 traces and nodes are optional
+%        traces -- A cell array or a comma separated string of the traces
+%                  you want to extract, e.g. 'Propagator.2.phi, Coupling.2.nu'.
+%        t -- Time of interest, can be a single time, e.g. 0.001, or a range
+%             of time, e.g. [0.001 0.1]. If empty, all times are returned.
+%        nodes -- An array of node numbers that are requested e.g. [1 2 3].
 %
 % OUTPUT:
-%        data -- .
+%        data -- (tpts, N).
 %        t2 -- .
 %
 % REQUIRES:
@@ -25,24 +27,26 @@
 % USAGE:
 %{
     %
-    output = nf.extract(obj,traces,t,nodes)
+    output = nf.extract(obj, traces, t, nodes)
 %}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function [data, t2] = extract(obj, traces, t, nodes)
     % If no nodes are provided, output all nodes
     if ~isstruct(obj) || ~isfield(obj, 'data')
-        error('The first argument to nf.extract must be a NeuroField object');
+        error(['nf:' mfilename ':BadArgument'], ...
+              'The first argument must be a neurofield output struct.');
     end
     
     if nargin < 4 || isempty(nodes)
         nodes = obj.nodes{1}; 
     elseif ~all(ismember(nodes, obj.nodes{1}))
-        error('You have requested a nonexistant node');
+        error(['nf:' mfilename ':NonexistentNode'], ...
+              'You have requested a non-existent node.');
     end
 
     % If no time is provided, output all times
-    if nargin < 3 || isempty(t) 
+    if nargin < 3 || isempty(t)
         start = 1;
         stop = length(obj.time);
     else
@@ -82,24 +86,31 @@ function [data, t2] = extract(obj, traces, t, nodes)
     if nargin < 2 || isempty(traces)
         outputs = 1:length(obj.fields);
     else
-        traces = regexp(traces, ' *, *', 'split'); % Split traces into cell array
-        outputs = [];
+        if ischar(traces)
+            traces = regexp(traces, ' *, *', 'split'); % Split traces into cell array
+        end
+        if ~iscell(traces)
+            error(['nf:' mfilename ':BadArgument'], ...
+                  'The traces arg must be a string or cell array of strings.');
+        end
+        outputs = zeros(1, length(traces));
         for j = 1:length(traces)
             idx = find(strcmpi(traces{j}, obj.fields));
             if isempty(idx)
-                error('Requested trace "%s" could not be found', traces{j});
+                error(['nf:' mfilename ':UnrecognisedTrace'], ...
+                      'Requested trace "%s" could not be found', traces{j});
             else
-                outputs(end+1) = idx;
+                outputs(j) = idx;
             end
         end
     end
 
-    % And assemble the output
-    data = zeros(stop-start+1, length(outputs));
-
+    % Gather requested traces, nodes, and time-points into a single array (tpts, N).
+    n = length(nodes);
+    data = zeros(stop-start+1, length(outputs) * n);
     for j = 1:length(outputs)
         [~, node_index] = ismember(nodes, obj.nodes{j});
-        data(:, j) = obj.data{outputs(j)}(start:stop, node_index);
+        data(:, (((j - 1) * n) + 1):(j * n)) = obj.data{outputs(j)}(start:stop, node_index);
     end
     t2 = obj.time(start:stop);
 

@@ -1,17 +1,19 @@
-%% Suppose you have 1:n and want to partition into m groups
+%% Partition a list of n items into m groups.
 %
-% Use this function to calculate the boundaries of each group
-% e.g 16 elements with pool=4 means that id=1,2,3,4 returns
-% [1 4] [5 8] [9 12] and [13 16] respectively.
+% This function calculates the boundaries of each group e.g 16 elements
+% with pool=4 means that id=1,2,3,4 returns [1 4] [5 8] [9 12] and [13 16]
+% respectively.
 %
 % ARGUMENTS:
 %        n_items -- .
 %        pool -- total number of partitions
 %        id -- the ID of this partition - leave empty to return all the indices
 %        frac_overlap -- amount from 0 to 1 of fractional overlap in windows
-%        evenlength -- 1 for the windows to have an even number of elements
-%                  This is often necessary if doing an FFT on the window
-%        samesize -- = 1 for all the windows to be the same size, even if this means skipping elements from the end
+%        evenlength -- Set as true for the windows to have an even number
+%                      of elements. This is often necessary if doing an FFT
+%                      on the window.
+%        samesize -- Set as true for all the windows to be the same size,
+%                    even if this means skipping elements from the end
 %
 % OUTPUT:
 %        r -- start and stop indices, if total is
@@ -26,14 +28,17 @@
 %}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function r = partition(n_items,pool,id,frac_overlap,evenlength,samesize)
+%TODO: if we're using this for time, it'd be useful to support partition length
+%      as an alternative to number of partitions (pool).
+
+function r = partition(n_items, pool, id, frac_overlap, evenlength, samesize)
     %
     if nargin < 6
-        samesize = 0;
+        samesize = false;
     end
     
     if nargin < 5
-        evenlength = 0;
+        evenlength = false;
     end
 
     if nargin < 4
