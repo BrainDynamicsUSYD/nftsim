@@ -65,6 +65,12 @@ RESULTS_DIR="${SCRIPT_PATH}/results"
 NEUROFIELD_DIR="$( cd "$SCRIPT_PATH" || exit 1; cd ../ || exit 1; pwd -P )"
 NEUROFIELD="$NEUROFIELD_DIR/bin/neurofield"
 
+#If the results directory does not exist, create it.
+if [ ! -d "$RESULTS_DIR"; then
+  printf 'WARNING: %s\n' "'$RESULTS_DIR' does not exist. Will create it"
+  mkdir "$RESULTS_DIR"
+fi
+
 TODAY="$(date +%F)"  #Date in IEEE standard format, ie YYYY-mm-dd
 SCRIPT_START_TIME="$(date +%H:%M:%S)" #Time in a readable IEEE standard format, ie HH:MM:SS
 FILE_NAME_NOW="$(date +%FT%H%M%S)"  #ISO 8601: YYYY-mm-ddThhMMSS
