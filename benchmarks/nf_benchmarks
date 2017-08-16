@@ -66,7 +66,7 @@ NEUROFIELD_DIR="$( cd "$SCRIPT_PATH" || exit 1; cd ../ || exit 1; pwd -P )"
 NEUROFIELD="$NEUROFIELD_DIR/bin/neurofield"
 
 #If the results directory does not exist, create it.
-if [ ! -d "$RESULTS_DIR"]; then
+if [ ! -d "$RESULTS_DIR" ]; then
   printf 'WARNING: %s\n' "'$RESULTS_DIR' does not exist. Will create it"
   mkdir "$RESULTS_DIR"
 fi
