@@ -67,7 +67,7 @@ NEUROFIELD="$NEUROFIELD_DIR/bin/neurofield"
 
 #If the results directory does not exist, create it.
 if [ ! -d "$RESULTS_DIR" ]; then
-  printf 'WARNING: %s\n' "'$RESULTS_DIR' does not exist. Will create it"
+  printf 'WARNING: %s\n' "'$RESULTS_DIR' does not exist. Will create it for you."
   mkdir "$RESULTS_DIR"
 fi
 
