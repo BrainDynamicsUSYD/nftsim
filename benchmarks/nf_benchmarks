@@ -231,7 +231,7 @@ gather_conf_info(){
 write_db_entry(){
   #Add an entry to the Simulation Resource Information file -- csv.
   {
-    printf '%s,' "$USER_TIME" "$USER_TIME_UNITS" "$MAX_RES_SIZE" "$MAX_RES_SIZE_UNITS" "$file_size_kb" 'kbytes'
+    printf '%s,' "$USER_TIME" "$USER_TIME_UNITS" "$SYSTEM_TIME" "$SYSTEM_TIME_UNITS" "$PERCENTAGE_OF_CPU" "$MAX_RES_SIZE" "$MAX_RES_SIZE_UNITS" "$file_size_kb" 'kbytes'
     printf '%s\n' "$TODAY $SCRIPT_START_TIME"
   } >> "$RESULTS_DIR/simulation_resources.csv"
   #Add an entry to the System Information file -- csv.
@@ -392,6 +392,12 @@ file_size_kb=$((file_size/(1024)))         # in KB
 USER_TIME="$(grep 'User time' "$TMP_TIMING_FILE")"
 USER_TIME_UNITS="$(grep --only-matching '(.*)' <<< "$USER_TIME" | tr -d '()')"
 USER_TIME="$(grep --only-matching '[[:digit:]]*\.\?[[:digit:]]*' <<< "$USER_TIME")"
+
+SYSTEM_TIME="$(grep 'System time' "$TMP_TIMING_FILE")"
+SYSTEM_TIME_UNITS="$(grep --only-matching '(.*)' <<< "$SYSTEM_TIME" | tr -d '()')"
+SYSTEM_TIME="$(grep --only-matching '[[:digit:]]*\.\?[[:digit:]]*' <<< "$SYSTEM_TIME")"
+
+PERCENTAGE_OF_CPU="$(grep 'Percent of CPU' "$TMP_TIMING_FILE" | grep -E --only-matching '[[:digit:]]{1,3}')"
 
 MAX_RES_SIZE="$(grep 'Maximum resident set size' "$TMP_TIMING_FILE")"
 MAX_RES_SIZE_UNITS="$(grep --only-matching '(.*)' <<< "$MAX_RES_SIZE" | tr -d '()')"
