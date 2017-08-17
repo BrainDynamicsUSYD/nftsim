@@ -36,3 +36,4 @@ function [f,Kx,Ky,x,y,df,dk,dx] = get_frequencies(data,fs,Lx,Ly)
     dy = Ly/size(data,1); 
     y = dy*(0:size(data,1)-1);
     [x,y] = meshgrid(x,y);
+end
