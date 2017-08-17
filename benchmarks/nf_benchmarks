@@ -65,12 +65,6 @@ RESULTS_DIR="${SCRIPT_PATH}/results"
 NEUROFIELD_DIR="$( cd "$SCRIPT_PATH" || exit 1; cd ../ || exit 1; pwd -P )"
 NEUROFIELD="$NEUROFIELD_DIR/bin/neurofield"
 
-#If the results directory does not exist, create it.
-if [ ! -d "$RESULTS_DIR" ]; then
-  printf 'WARNING: %s\n' "'$RESULTS_DIR' does not exist. Will create it for you."
-  mkdir "$RESULTS_DIR"
-fi
-
 TODAY="$(date +%F)"  #Date in IEEE standard format, ie YYYY-mm-dd
 SCRIPT_START_TIME="$(date +%H:%M:%S)" #Time in a readable IEEE standard format, ie HH:MM:SS
 FILE_NAME_NOW="$(date +%FT%H%M%S)"  #ISO 8601: YYYY-mm-ddThhMMSS
@@ -100,17 +94,17 @@ fi
 if [[ "$1" =~ ^('--delete')$ ]]; then
   number_to_delete="$2"
   #TODO: consider validating our benchmark-db, eg entry_count should be same for all 4 files.
-  entry_count="$(wc --lines < "$SCRIPT_PATH/results/simulation_resources.csv")"
+  entry_count="$(wc --lines < "$RESULTS_DIR/simulation_resources.csv")"
   keep=$((entry_count-number_to_delete))
   if ((keep >= 1)); then
-    head -n "$keep" "$SCRIPT_PATH/results/simulation_resources.csv" > "$TMP_DIR/nf_simulation_resources.csv"
-    head -n "$keep" "$SCRIPT_PATH/results/simulation_conf.csv"      > "$TMP_DIR/nf_simulation_conf.csv"
-    head -n "$keep" "$SCRIPT_PATH/results/code_info.csv"            > "$TMP_DIR/nf_code_info.csv"
-    head -n "$keep" "$SCRIPT_PATH/results/system_info.csv"          > "$TMP_DIR/nf_system_info.csv"
-    [[ -s "$TMP_DIR/nf_simulation_resources.csv" ]] && mv "$TMP_DIR/nf_simulation_resources.csv" "$SCRIPT_PATH/results/simulation_resources.csv"
-    [[ -s "$TMP_DIR/nf_simulation_conf.csv"      ]] && mv "$TMP_DIR/nf_simulation_conf.csv"      "$SCRIPT_PATH/results/simulation_conf.csv"
-    [[ -s "$TMP_DIR/nf_code_info.csv"            ]] && mv "$TMP_DIR/nf_code_info.csv"            "$SCRIPT_PATH/results/code_info.csv"
-    [[ -s "$TMP_DIR/nf_system_info.csv"          ]] && mv "$TMP_DIR/nf_system_info.csv"          "$SCRIPT_PATH/results/system_info.csv"
+    head -n "$keep" "$RESULTS_DIR/simulation_resources.csv" > "$TMP_DIR/nf_simulation_resources.csv"
+    head -n "$keep" "$RESULTS_DIR/simulation_conf.csv"      > "$TMP_DIR/nf_simulation_conf.csv"
+    head -n "$keep" "$RESULTS_DIR/code_info.csv"            > "$TMP_DIR/nf_code_info.csv"
+    head -n "$keep" "$RESULTS_DIR/system_info.csv"          > "$TMP_DIR/nf_system_info.csv"
+    [[ -s "$TMP_DIR/nf_simulation_resources.csv" ]] && mv "$TMP_DIR/nf_simulation_resources.csv" "$RESULTS_DIR/simulation_resources.csv"
+    [[ -s "$TMP_DIR/nf_simulation_conf.csv"      ]] && mv "$TMP_DIR/nf_simulation_conf.csv"      "$RESULTS_DIR/simulation_conf.csv"
+    [[ -s "$TMP_DIR/nf_code_info.csv"            ]] && mv "$TMP_DIR/nf_code_info.csv"            "$RESULTS_DIR/code_info.csv"
+    [[ -s "$TMP_DIR/nf_system_info.csv"          ]] && mv "$TMP_DIR/nf_system_info.csv"          "$RESULTS_DIR/system_info.csv"
     exit 0
   else
     printf '%s\n' "ERROR: --delete called with >= number-of-entries."
@@ -317,6 +311,13 @@ write_timing_file(){
 #--------------------------------------------------------------#
 #-------------------- Begin Main Script -----------------------#
 #--------------------------------------------------------------#
+
+
+#If the results directory does not exist, create it.
+if [[ ! -d "$RESULTS_DIR" ]]; then
+  printf 'WARNING: %s\n' "'$RESULTS_DIR' does not exist. Creating it for you."
+  mkdir "$RESULTS_DIR"
+fi
 
 # Decide if we are processing a single .conf file or all our benchmarks/*.conf files.
 if (( NON_FLAG_ARG_COUNT == 0 )); then
