@@ -34,7 +34,7 @@
 #
 #DESCRIPTION:
 #  The nf_benchmarks script can run either a specified .conf file or
-#  all .conf files stored in the benchmarks directory
+#  all .conf files stored in the benchmarks directory:
 #    ./benchmarks/
 #  The script stores timing and configuration information for simulation
 #  runs in the directory:
