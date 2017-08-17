@@ -86,14 +86,14 @@ declare -i NF_BENCH_NUMBER_OF_TRIALS=1
 
 NF_ARG_COUNT="$#"
 [[ "${DEBUG,,}" = 'true' ]] && printf '%s\n' "Arg count is '$NF_ARG_COUNT'."
-while (( $# > 1 )); do
+while (( $# > 1 )) || [[ "${1:0:1}" = '-' ]]; do
   key="$1"
   [[ "${DEBUG,,}" = 'true' ]] && printf '%s\n' "Parsing flag: '$key'."
   case $key in
     --delete)
       NF_BENCH_DELETE='true'
       [[ "${DEBUG,,}" = 'true' ]] && printf '%s\n' "With value: '$2'."
-      NUMBER_TO_DELETE="$2"
+      [[ -n "$2" ]] && NUMBER_TO_DELETE="$2"
       shift # past argument
     ;;
     --to-mem)
@@ -125,7 +125,7 @@ while (( $# > 1 )); do
     ;;
     --num-trials)
       [[ "${DEBUG,,}" = 'true' ]] && printf '%s\n' "With value: '$2'."
-      NF_BENCH_NUMBER_OF_TRIALS="$2"
+      [[ -n "$2" ]] && NF_BENCH_NUMBER_OF_TRIALS="$2"
       shift # past argument
     ;;
     *)
