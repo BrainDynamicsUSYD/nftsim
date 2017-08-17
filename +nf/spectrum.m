@@ -23,7 +23,7 @@ function [f,P] = spectrum(obj,p,n_windows)    % return the frequency and frequen
     window_idx = nf.partition(size(data,2),n_windows,[],frac_overlap,1,1);
     
     for j = 1:length(window_idx)
-        [f,~,P1(:,j)] = utils.rfft(data(window_idx(j,1):window_idx(j,2)),fs);
+        [f,~,P1(:,j)] = nf.rfft(data(window_idx(j,1):window_idx(j,2)),fs);
     end
 
     P = mean(P1,2);
