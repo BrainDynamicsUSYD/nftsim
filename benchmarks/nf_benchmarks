@@ -216,7 +216,9 @@ gather_conf_info(){
 
   local propagator_conf=''
   propagator_conf="$(grep '^[[:space:]]*Propagator[[:space:]]*[[:digit:]]' "$CONFIG_FILE")"
-  NUMBER_OF_PROPAGATORS="$(tail -1<<< "$propagator_conf" | cut -d' ' -f2 |tr -d ':')"
+  NUMBER_OF_PROPAGATORS="$(tail -1 <<< "$propagator_conf" | cut -d' ' -f2 | tr -d ':')"
+
+  NUMBER_OF_WAVE_PROPAGATORS="$(grep -c 'Propagator.*\:[[:space:]]*Wave' "$CONFIG_FILE")"
 
   TAU=($(grep --only-matching 'Tau:.*' <<< "$propagator_conf" | cut -d' ' -f2))
   local tau
@@ -246,7 +248,7 @@ write_db_entry(){
   } >> "$RESULTS_DIR/code_info.csv"
   #Add an entry to the Simulation Configuration file -- csv.
   {
-    printf '%s,' "$SIMULATION_LENGTH" "$TIME_STEP_SIZE" "$NUMBER_OF_NODES" "$NUMBER_OF_PROPAGATORS" "$MAX_TAU"
+    printf '%s,' "$SIMULATION_LENGTH" "$TIME_STEP_SIZE" "$NUMBER_OF_NODES" "$NUMBER_OF_PROPAGATORS" "$NUMBER_OF_WAVE_PROPAGATORS" "$MAX_TAU"
     printf '%s\n' "$TODAY $SCRIPT_START_TIME"
   } >> "$RESULTS_DIR/simulation_conf.csv"
 } #function write_db_entry()
@@ -278,6 +280,7 @@ write_timing_file(){
     printf '    %s: "%s"\n' 'TIME_STEP_SIZE' "$TIME_STEP_SIZE"
     printf '    %s: "%s"\n' 'NUMBER_OF_NODES' "$NUMBER_OF_NODES"
     printf '    %s: "%s"\n' 'NUMBER_OF_PROPAGATORS' "$NUMBER_OF_PROPAGATORS"
+    printf '    %s: "%s"\n' 'NUMBER_OF_WAVE_PROPAGATORS' "$NUMBER_OF_WAVE_PROPAGATORS"
     printf '    %s: "%s"\n' 'MAX_TAU' "$MAX_TAU"
 
     printf '\n%s\n' '#---------------------------------------------------------------#'
