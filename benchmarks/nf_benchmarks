@@ -10,6 +10,12 @@
 #  #Benchmark a specific configuration file.
 #  nf_benchmarks <config_filename>
 #
+#  #NOTE: When provided, a specific configuration file must be the final
+#         argument.
+#
+#  #Benchmark a specific configuration file multiple times.
+#  nf_benchmarks --num-trials 8 <config_filename>
+#
 #  #Benchmark a specific configuration file with output to memory.
 #  #This only works under Linux as it makes use of /dev/shm.
 #  nf_benchmarks --to-mem <config_filename>
@@ -66,7 +72,6 @@ NEUROFIELD_DIR="$( cd "$SCRIPT_PATH" || exit 1; cd ../ || exit 1; pwd -P )"
 NEUROFIELD="$NEUROFIELD_DIR/bin/neurofield"
 
 TODAY="$(date +%F)"  #Date in IEEE standard format, ie YYYY-mm-dd
-SCRIPT_START_TIME="$(date +%H:%M:%S)" #Time in a readable IEEE standard format, ie HH:MM:SS
 FILE_NAME_NOW="$(date +%FT%H%M%S)"  #ISO 8601: YYYY-mm-ddThhMMSS
 
 
@@ -74,71 +79,96 @@ FILE_NAME_NOW="$(date +%FT%H%M%S)"  #ISO 8601: YYYY-mm-ddThhMMSS
 #---------------------- Parse Arguments -----------------------#
 #--------------------------------------------------------------#
 
-#Capture command line arguments
-INPUT_ARG1="$1"
-INPUT_ARG2="$2"
-INPUT_ARG3="$3"
-INPUT_ARG4="$4"
-INPUT_ARG5="$5"
+#Defaults:
+declare COMPILER=''
+declare -i NUMBER_TO_DELETE=1
+declare -i NF_BENCH_NUMBER_OF_TRIALS=1
 
-if [[ "${DEBUG,,}" = 'true' ]]; then
-  printf '%s\n' "Number of args: '$#'"
-  printf '%s\n' "INPUT_ARG1: '$INPUT_ARG1'"
-  printf '%s\n' "INPUT_ARG2: '$INPUT_ARG2'"
-  printf '%s\n' "INPUT_ARG3: '$INPUT_ARG3'"
-  printf '%s\n' "INPUT_ARG4: '$INPUT_ARG4'"
-  printf '%s\n' "INPUT_ARG5: '$INPUT_ARG5'"
-fi
+NF_ARG_COUNT="$#"
+[[ "${DEBUG,,}" = 'true' ]] && printf '%s\n' "Arg count is '$NF_ARG_COUNT'."
+while (( $# > 1 )); do
+  key="$1"
+  [[ "${DEBUG,,}" = 'true' ]] && printf '%s\n' "Parsing flag: '$key'."
+  case $key in
+    --delete)
+      NF_BENCH_DELETE='true'
+      [[ "${DEBUG,,}" = 'true' ]] && printf '%s\n' "With value: '$2'."
+      NUMBER_TO_DELETE="$2"
+      shift # past argument
+    ;;
+    --to-mem)
+      if [[ "$(uname)" != 'Linux' ]]; then
+        printf 'ERROR: %s\n' 'Flag --to-mem is only configured for Linux.'
+        exit 1
+      fi
+      NF_BENCH_TO_MEM='true'
+    ;;
+    --no-make)
+      NF_BENCH_NO_MAKE='true'
+    ;;
+    --clang)
+      if [[ -n "$COMPILER" ]]; then
+        printf 'ERROR: %s\n' 'More than one compiler set.'
+        exit 1
+      fi
+      COMPILER='clang'
+    ;;
+    --gcc)
+      if [[ -n "$COMPILER" ]]; then
+        printf 'ERROR: %s\n' 'More than one compiler set.'
+        exit 1
+      fi
+      COMPILER='gcc'
+    ;;
+    --store-output)
+      NF_BENCH_STORE_OUTPUT='true'
+    ;;
+    --num-trials)
+      [[ "${DEBUG,,}" = 'true' ]] && printf '%s\n' "With value: '$2'."
+      NF_BENCH_NUMBER_OF_TRIALS="$2"
+      shift # past argument
+    ;;
+    *)
+      printf 'ERROR: %s\n' "Unrecognised option: '$key'."
+      exit 1
+    ;;
+  esac
+  shift # past argument or value
+done  #(( $# > 1 ))
 
-#Delete the last N benchmarks we added, useful when something goes wrong with benchmark run.
-if [[ "$1" =~ ^('--delete')$ ]]; then
-  number_to_delete="$2"
-  #TODO: consider validating our benchmark-db, eg entry_count should be same for all 4 files.
-  entry_count="$(wc --lines < "$RESULTS_DIR/simulation_resources.csv")"
-  keep=$((entry_count-number_to_delete))
-  if ((keep >= 1)); then
-    head -n "$keep" "$RESULTS_DIR/simulation_resources.csv" > "$TMP_DIR/nf_simulation_resources.csv"
-    head -n "$keep" "$RESULTS_DIR/simulation_conf.csv"      > "$TMP_DIR/nf_simulation_conf.csv"
-    head -n "$keep" "$RESULTS_DIR/code_info.csv"            > "$TMP_DIR/nf_code_info.csv"
-    head -n "$keep" "$RESULTS_DIR/system_info.csv"          > "$TMP_DIR/nf_system_info.csv"
-    [[ -s "$TMP_DIR/nf_simulation_resources.csv" ]] && mv "$TMP_DIR/nf_simulation_resources.csv" "$RESULTS_DIR/simulation_resources.csv"
-    [[ -s "$TMP_DIR/nf_simulation_conf.csv"      ]] && mv "$TMP_DIR/nf_simulation_conf.csv"      "$RESULTS_DIR/simulation_conf.csv"
-    [[ -s "$TMP_DIR/nf_code_info.csv"            ]] && mv "$TMP_DIR/nf_code_info.csv"            "$RESULTS_DIR/code_info.csv"
-    [[ -s "$TMP_DIR/nf_system_info.csv"          ]] && mv "$TMP_DIR/nf_system_info.csv"          "$RESULTS_DIR/system_info.csv"
-    exit 0
-  else
-    printf '%s\n' "ERROR: --delete called with >= number-of-entries."
-    exit 1
-  fi
+#Any remaining argument should specify a configuration file.
+if [[ -n "$1" ]]; then
+  printf '%s\n' "Processing conf file: '$1'"
+  CONFIG_FILE="$1"
 fi
-
-if [[ '--to-mem' =~ ^("$INPUT_ARG1"|"$INPUT_ARG2"|"$INPUT_ARG3"|"$INPUT_ARG4"|"$INPUT_ARG5")$ ]]; then
-  [[ "$(uname)" = 'Linux' ]] || { printf 'ERROR: %s\n' 'Flag --to-mem is only configured for Linux.'; exit 1; }
-  NF_BENCH_TO_MEM='true'
-fi
-if [[ '--no-make' =~ ^("$INPUT_ARG1"|"$INPUT_ARG2"|"$INPUT_ARG3"|"$INPUT_ARG4"|"$INPUT_ARG5")$ ]]; then
-  NF_BENCH_NO_MAKE='true'
-fi
-if [[ '--clang' =~ ^("$INPUT_ARG1"|"$INPUT_ARG2"|"$INPUT_ARG3"|"$INPUT_ARG4"|"$INPUT_ARG5")$ ]]; then
-  COMPILER='clang'
-elif [[ '--gcc' =~ ^("$INPUT_ARG1"|"$INPUT_ARG2"|"$INPUT_ARG3"|"$INPUT_ARG4"|"$INPUT_ARG5")$ ]]; then
-  COMPILER='gcc'
-fi
-if [[ '--store-output' =~ ^("$INPUT_ARG1"|"$INPUT_ARG2"|"$INPUT_ARG3"|"$INPUT_ARG4"|"$INPUT_ARG5")$ ]]; then
-  NF_BENCH_STORE_OUTPUT='true'
-fi
-
-NON_FLAG_ARG_COUNT=0
-[[ -n "${INPUT_ARG1}" && "${INPUT_ARG1:0:1}" != '-' ]] && { ((++NON_FLAG_ARG_COUNT)); CONFIG_FILE="$INPUT_ARG1"; }
-[[ -n "${INPUT_ARG2}" && "${INPUT_ARG2:0:1}" != '-' ]] && { ((++NON_FLAG_ARG_COUNT)); CONFIG_FILE="$INPUT_ARG2"; }
-[[ -n "${INPUT_ARG3}" && "${INPUT_ARG3:0:1}" != '-' ]] && { ((++NON_FLAG_ARG_COUNT)); CONFIG_FILE="$INPUT_ARG3"; }
-[[ -n "${INPUT_ARG4}" && "${INPUT_ARG4:0:1}" != '-' ]] && { ((++NON_FLAG_ARG_COUNT)); CONFIG_FILE="$INPUT_ARG4"; }
-[[ -n "${INPUT_ARG5}" && "${INPUT_ARG5:0:1}" != '-' ]] && { ((++NON_FLAG_ARG_COUNT)); CONFIG_FILE="$INPUT_ARG5"; }
-
 
 #--------------------------------------------------------------#
 #----------------- Begin Function Definitions -----------------#
 #--------------------------------------------------------------#
+
+#Delete the last N benchmarks we added, useful when something goes wrong with benchmark run.
+delete_entries(){
+  if [[ ${NF_BENCH_DELETE,,} = 'true' ]]; then
+    local entry_count keep
+    #TODO: consider validating our benchmark-db, eg entry_count should be same for all 4 files.
+    entry_count="$(wc --lines < "$RESULTS_DIR/simulation_resources.csv")"
+    keep=$((entry_count-NUMBER_TO_DELETE))
+    if ((keep >= 1)); then
+      head -n "$keep" "$RESULTS_DIR/simulation_resources.csv" > "$TMP_DIR/nf_simulation_resources.csv"
+      head -n "$keep" "$RESULTS_DIR/simulation_conf.csv"      > "$TMP_DIR/nf_simulation_conf.csv"
+      head -n "$keep" "$RESULTS_DIR/code_info.csv"            > "$TMP_DIR/nf_code_info.csv"
+      head -n "$keep" "$RESULTS_DIR/system_info.csv"          > "$TMP_DIR/nf_system_info.csv"
+      [[ -s "$TMP_DIR/nf_simulation_resources.csv" ]] && mv "$TMP_DIR/nf_simulation_resources.csv" "$RESULTS_DIR/simulation_resources.csv"
+      [[ -s "$TMP_DIR/nf_simulation_conf.csv"      ]] && mv "$TMP_DIR/nf_simulation_conf.csv"      "$RESULTS_DIR/simulation_conf.csv"
+      [[ -s "$TMP_DIR/nf_code_info.csv"            ]] && mv "$TMP_DIR/nf_code_info.csv"            "$RESULTS_DIR/code_info.csv"
+      [[ -s "$TMP_DIR/nf_system_info.csv"          ]] && mv "$TMP_DIR/nf_system_info.csv"          "$RESULTS_DIR/system_info.csv"
+      exit 0
+    else
+      printf '%s\n' "ERROR: --delete called with >= number-of-entries."
+      exit 1
+    fi
+  fi
+} #delete_entries
 
 #Rebuild neurofield from scratch to make sure the executable matches current code.
 fresh_build(){
@@ -228,6 +258,7 @@ gather_conf_info(){
   done
 
   OUTPUT_CONF="$(grep '^Output:' "$CONFIG_FILE" | sed 's/Output:[[:space:]]*//')"
+  local -a outconfvar outconfval
   outconfvar=($(grep --only-matching '[[:alpha:]]*:' <<< "$OUTPUT_CONF" | tr -d ': '))
   outconfval=($(grep --only-matching ':[[:space:]]*[[:alnum:]|\.]*' <<< "$OUTPUT_CONF" | tr -d ': '))
 
@@ -256,7 +287,6 @@ gather_conf_info(){
     esac
   done
 
-
   return 0
 } #function gather_conf_info()
 
@@ -265,28 +295,28 @@ write_db_entry(){
   #Add an entry to the Simulation Resource Information file -- csv.
   {
     printf '%s,' "$USER_TIME" "$USER_TIME_UNITS" "$SYSTEM_TIME" "$SYSTEM_TIME_UNITS" "$PERCENTAGE_OF_CPU" "$MAX_RES_SIZE" "$MAX_RES_SIZE_UNITS" "$file_size_kb" 'kbytes'
-    printf '%s\n' "$TODAY $SCRIPT_START_TIME"
+    printf '%s\n' "$TODAY $CURRENT_TIME"
   } >> "$RESULTS_DIR/simulation_resources.csv"
   #Add an entry to the System Information file -- csv.
   {
     printf '%s,' "$HOSTNAME" "$PLATFORM" "$CPU_MODEL_NAME" "$CPU_CACHE_SIZE" "$CPU_CORE_COUNT" "$RAM_TOTAL" "$RAM_FREE" "$RAM_AVAILABLE" "$CALLER" "$COMPILER" "$COMPILER_VERSION"
-    printf '%s\n' "$TODAY $SCRIPT_START_TIME"
+    printf '%s\n' "$TODAY $CURRENT_TIME"
   } >> "$RESULTS_DIR/system_info.csv"
   #Add an entry to the Code Information file -- csv.
   {
     printf '%s,' "$GIT_BRANCH" "$GIT_COMMIT" "$GIT_LATEST_RELEASE"
-    printf '%s\n' "$TODAY $SCRIPT_START_TIME"
+    printf '%s\n' "$TODAY $CURRENT_TIME"
   } >> "$RESULTS_DIR/code_info.csv"
   #Add an entry to the Simulation Configuration file -- csv.
   {
     printf '%s,' "$SIMULATION_LENGTH" "$TIME_STEP_SIZE" "$NUMBER_OF_NODES" "$NUMBER_OF_PROPAGATORS" "$NUMBER_OF_WAVE_PROPAGATORS" "$MAX_TAU" "$OUTPUT_NODES" "$OUTPUT_START" "$OUTPUT_INTERVAL"
-    printf '%s\n' "$TODAY $SCRIPT_START_TIME"
+    printf '%s\n' "$TODAY $CURRENT_TIME"
   } >> "$RESULTS_DIR/simulation_conf.csv"
 } #function write_db_entry()
 
 write_timing_file(){
   {
-    printf '%s\n' "Added $TODAY at $SCRIPT_START_TIME:"
+    printf '%s\n' "Added $TODAY at $CURRENT_TIME:"
     cat "$TMP_TIMING_FILE"
     printf '%s\n' 'Storage size:'
     printf '    %s\n' "$file_size_gb GB"
@@ -349,6 +379,8 @@ write_timing_file(){
 #-------------------- Begin Main Script -----------------------#
 #--------------------------------------------------------------#
 
+#If we recieved a --delete flag, then delete the last N entriess and exit.
+[[ ${NF_BENCH_DELETE,,} = 'true' ]] && delete_entries
 
 #If the results directory does not exist, create it.
 if [[ ! -d "$RESULTS_DIR" ]]; then
@@ -357,27 +389,28 @@ if [[ ! -d "$RESULTS_DIR" ]]; then
 fi
 
 # Decide if we are processing a single .conf file or all our benchmarks/*.conf files.
-if (( NON_FLAG_ARG_COUNT == 0 )); then
+if [[ -z "$CONFIG_FILE" ]]; then
   yesorno='n'
   printf '\n\n'
   printf '%s\n' 'WARNING: You are about to run benchmarking for all .conf'
   printf '    %s\n' 'files in the benchmarks directory. To run benchmarking'
   printf '    %s\n' 'of a specific configuration file, you must specify that'
-  printf '    %s\n\n' 'file as an argument.'
+  printf '    %s\n\n' 'file as the final argument.'
   read -r -n1 -p "Do you really want to run all the .conf files in benchmarks? y/(n)>" yesorno
   printf '\n'
   if [[ "$yesorno" != 'y' ]]; then exit 1; fi
   [[ "${NF_BENCH_NO_MAKE,,}" = 'true' ]] || if ! fresh_build; then exit 1; fi
-  for config_file in "${SCRIPT_PATH}"/*.conf; do
-    if [[ "${NF_BENCH_TO_MEM,,}" = 'true' ]]; then
-      "$SCRIPT_PATH/nf_benchmarks" --no-make --to-mem "$config_file"
-    else
-      "$SCRIPT_PATH/nf_benchmarks" --no-make "$config_file"
-    fi
-  done
+  for (( j = 0; j < NF_BENCH_NUMBER_OF_TRIALS; j++ )); do
+    for config_file in "${SCRIPT_PATH}"/*.conf; do
+      if [[ "${NF_BENCH_TO_MEM,,}" = 'true' ]]; then
+        "$SCRIPT_PATH/nf_benchmarks" --no-make --to-mem "$config_file"
+      else
+        "$SCRIPT_PATH/nf_benchmarks" --no-make "$config_file"
+      fi
+    done #config_file
+  done #NF_BENCH_NUMBER_OF_TRIALS
   exit 0
-elif (( NON_FLAG_ARG_COUNT == 1 )); then
-  [[ -f "$CONFIG_FILE" ]] || { printf 'ERROR: %s\n' "Argument is not a file: '$CONFIG_FILE'"; exit 1; }
+elif [[ -f "$CONFIG_FILE" ]]; then
   CONFIG_FILE_BASENAME="$(basename "$CONFIG_FILE")"
   if [[ "${NF_BENCH_STORE_OUTPUT,,}" = 'true' ]]; then
     OUTPUT_FILE_BASENAME="${CONFIG_FILE_BASENAME%.*}_${FILE_NAME_NOW}.output"
@@ -391,7 +424,7 @@ elif (( NON_FLAG_ARG_COUNT == 1 )); then
   fi
   TIMING_FILE="$RESULTS_DIR/timing_${CONFIG_FILE_BASENAME%.*}.txt"
 else
-  printf 'ERROR: %s\n' "${BASH_SOURCE[0]} takes, at most, one .conf file argument."
+  printf 'ERROR: %s\n' "Final argument is not a file: '$CONFIG_FILE'"
   exit 1
 fi
 
@@ -417,32 +450,35 @@ if ! TMP_TIMING_FILE="$(mktemp "$TMP_DIR"/nf_timing-XXXX)"; then
   exit 1
 fi
 
-#Finally, do the actual benchmark run:
-/usr/bin/time -v "$NEUROFIELD" -i "$CONFIG_FILE" -o "$OUTPUT_FILE" 2>> "$TMP_TIMING_FILE"
+for (( j = 0; j < NF_BENCH_NUMBER_OF_TRIALS; j++ )); do
+  #Finally, do the actual benchmark run:
+  /usr/bin/time -v "$NEUROFIELD" -i "$CONFIG_FILE" -o "$OUTPUT_FILE" 2> "$TMP_TIMING_FILE"
 
-#Collect important resource usage info into variables
-file_size="$(wc --bytes < "$OUTPUT_FILE")"
-file_size_gb=$((file_size/(1048576*1024))) # in GB
-file_size_mb=$((file_size/(1048576)))      # in MB
-file_size_kb=$((file_size/(1024)))         # in KB
+  #Collect important resource usage info into variables
+  file_size="$(wc --bytes < "$OUTPUT_FILE")"
+  file_size_gb=$((file_size/(1048576*1024))) # in GB
+  file_size_mb=$((file_size/(1048576)))      # in MB
+  file_size_kb=$((file_size/(1024)))         # in KB
 
-USER_TIME="$(grep 'User time' "$TMP_TIMING_FILE")"
-USER_TIME_UNITS="$(grep --only-matching '(.*)' <<< "$USER_TIME" | tr -d '()')"
-USER_TIME="$(grep --only-matching '[[:digit:]]*\.\?[[:digit:]]*' <<< "$USER_TIME")"
+  USER_TIME="$(grep 'User time' "$TMP_TIMING_FILE")"
+  USER_TIME_UNITS="$(grep --only-matching '(.*)' <<< "$USER_TIME" | tr -d '()')"
+  USER_TIME="$(grep --only-matching '[[:digit:]]*\.\?[[:digit:]]*' <<< "$USER_TIME")"
 
-SYSTEM_TIME="$(grep 'System time' "$TMP_TIMING_FILE")"
-SYSTEM_TIME_UNITS="$(grep --only-matching '(.*)' <<< "$SYSTEM_TIME" | tr -d '()')"
-SYSTEM_TIME="$(grep --only-matching '[[:digit:]]*\.\?[[:digit:]]*' <<< "$SYSTEM_TIME")"
+  SYSTEM_TIME="$(grep 'System time' "$TMP_TIMING_FILE")"
+  SYSTEM_TIME_UNITS="$(grep --only-matching '(.*)' <<< "$SYSTEM_TIME" | tr -d '()')"
+  SYSTEM_TIME="$(grep --only-matching '[[:digit:]]*\.\?[[:digit:]]*' <<< "$SYSTEM_TIME")"
 
-PERCENTAGE_OF_CPU="$(grep 'Percent of CPU' "$TMP_TIMING_FILE" | grep -E --only-matching '[[:digit:]]{1,3}')"
+  PERCENTAGE_OF_CPU="$(grep 'Percent of CPU' "$TMP_TIMING_FILE" | grep -E --only-matching '[[:digit:]]{1,3}')"
 
-MAX_RES_SIZE="$(grep 'Maximum resident set size' "$TMP_TIMING_FILE")"
-MAX_RES_SIZE_UNITS="$(grep --only-matching '(.*)' <<< "$MAX_RES_SIZE" | tr -d '()')"
-MAX_RES_SIZE="$(grep --only-matching  '[[:digit:]]*' <<< "$MAX_RES_SIZE")"
+  MAX_RES_SIZE="$(grep 'Maximum resident set size' "$TMP_TIMING_FILE")"
+  MAX_RES_SIZE_UNITS="$(grep --only-matching '(.*)' <<< "$MAX_RES_SIZE" | tr -d '()')"
+  MAX_RES_SIZE="$(grep --only-matching  '[[:digit:]]*' <<< "$MAX_RES_SIZE")"
 
-#Write benchmark information to files:
-write_timing_file
-write_db_entry
+  #Write benchmark information to files:
+  CURRENT_TIME="$(date +%H:%M:%S)" #Time in a readable IEEE standard format, ie HH:MM:SS
+  write_timing_file
+  write_db_entry
+done #NF_BENCH_NUMBER_OF_TRIALS
 
 #Clean-up
 rm -f "$TMP_TIMING_FILE"
