@@ -226,6 +226,37 @@ gather_conf_info(){
   for tau in "${TAU[@]}" ; do
     [[ "$tau" > "$MAX_TAU" ]] && MAX_TAU="$tau"
   done
+
+  OUTPUT_CONF="$(grep '^Output:' "$CONFIG_FILE" | sed 's/Output:[[:space:]]*//')"
+  outconfvar=($(grep --only-matching '[[:alpha:]]*:' <<< "$OUTPUT_CONF" | tr -d ': '))
+  outconfval=($(grep --only-matching ':[[:space:]]*[[:alnum:]|\.]*' <<< "$OUTPUT_CONF" | tr -d ': '))
+
+  if ((${#outconfvar[@]} != ${#outconfval[@]})); then
+    printf 'ERROR: %s\n' "Failed parsing output configuration for: '$OUTPUT_CONF'."
+    return 1
+  fi
+
+  OUTPUT_NODES='NULL'
+  OUTPUT_START='NULL'
+  OUTPUT_INTERVAL='NULL'
+  for (( i = 0; i < ${#outconfvar[@]}; i++ )) ; do
+    case "${outconfvar[i]}" in
+      'Node')
+        OUTPUT_NODES="${outconfval[i]}"
+    ;;
+      'Start')
+        OUTPUT_START="${outconfval[i]}"
+    ;;
+      'Interval')
+        OUTPUT_INTERVAL="${outconfval[i]}"
+    ;;
+      *)
+      printf 'WARNING: %s\n' "Unrecognised output setting: '${outconfvar[i]} = ${outconfval[i]}'."
+    ;;
+    esac
+  done
+
+
   return 0
 } #function gather_conf_info()
 
@@ -248,7 +279,7 @@ write_db_entry(){
   } >> "$RESULTS_DIR/code_info.csv"
   #Add an entry to the Simulation Configuration file -- csv.
   {
-    printf '%s,' "$SIMULATION_LENGTH" "$TIME_STEP_SIZE" "$NUMBER_OF_NODES" "$NUMBER_OF_PROPAGATORS" "$NUMBER_OF_WAVE_PROPAGATORS" "$MAX_TAU"
+    printf '%s,' "$SIMULATION_LENGTH" "$TIME_STEP_SIZE" "$NUMBER_OF_NODES" "$NUMBER_OF_PROPAGATORS" "$NUMBER_OF_WAVE_PROPAGATORS" "$MAX_TAU" "$OUTPUT_NODES" "$OUTPUT_START" "$OUTPUT_INTERVAL"
     printf '%s\n' "$TODAY $SCRIPT_START_TIME"
   } >> "$RESULTS_DIR/simulation_conf.csv"
 } #function write_db_entry()
@@ -282,6 +313,9 @@ write_timing_file(){
     printf '    %s: "%s"\n' 'NUMBER_OF_PROPAGATORS' "$NUMBER_OF_PROPAGATORS"
     printf '    %s: "%s"\n' 'NUMBER_OF_WAVE_PROPAGATORS' "$NUMBER_OF_WAVE_PROPAGATORS"
     printf '    %s: "%s"\n' 'MAX_TAU' "$MAX_TAU"
+    printf '    %s: "%s"\n' 'OUTPUT_NODES' "$OUTPUT_NODES"
+    printf '    %s: "%s"\n' 'OUTPUT_START' "$OUTPUT_START"
+    printf '    %s: "%s"\n' 'OUTPUT_INTERVAL' "$OUTPUT_INTERVAL"
 
     printf '\n%s\n' '#---------------------------------------------------------------#'
   } >> "$TIMING_FILE"
