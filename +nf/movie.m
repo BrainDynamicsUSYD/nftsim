@@ -7,13 +7,13 @@
 %        field -- is a string of a field name e.g. "Propagator.2.phi"
 %        normalize -- is an integer value that determines how the data is
 %        scaled.
-%                         0 = raw data;
-%                         1 = subtract mean of each frame (timepoint);
-%                         2 = subtract mean and rescale;
-%                         3 = subtract mean, rescale over entire duration.
+%                         0 = does nothing - uses the trace specified in `field`;
+%                         1 = subtracts mean of each frame (timepoint);
+%                         2 = subtracts mean and rescale;
+%                         3 = subtracts mean, rescale over entire duration.
 %        fname -- is optionally a string filename to save the movie
 %
-% OUTPUT: Generates a movie.
+% OUTPUT: Generates a movie and siplays it on screen.
 %            -- .
 %
 % REQUIRES:
@@ -50,15 +50,16 @@ function movie(obj, field, normalize, fname)
     % Figure
     fig_handle = figure; 
     fig_handle.PaperUnits = 'inches';
-    fig_handle.PaperPosition = [0 0 6 6];
+    fig_handle.PaperPosition = [0 0 8 10];
     
     % Main subplot
-    h = surf(X, Y, plotdata(:, :, 1)); title('', 'Interpreter', 'none');
-    surfplot_handle = gca;
+    surf_plot_handle = surf(X, Y, plotdata(:, :, 1)); title('', 'Interpreter', 'none');
+    surf_ax_handle = gca;
+    surf_ax_handle.FontSize = 20;
     shading interp; lighting gouraud; camlight;
     % Labels
-    xlabel('x', 'fontsize', 18)
-    ylabel('y', 'fontsize', 18)
+    xlabel('x', 'fontsize', 20)
+    ylabel('y', 'fontsize', 20)
     % Limits
     xlim([1 side])
     ylim([1 side])
@@ -68,8 +69,8 @@ function movie(obj, field, normalize, fname)
 
     
     % Inset
-    inset_handle = axes('Parent',fig_handle,'Position',[.58 .6 .3 .3], 'FontSize', 18);
-    h2 = surf(X, Y, plotdata(:, :, 1)); title('', 'Interpreter', 'none', 'Parent', inset_handle);
+    inset_ax_handle = axes('Parent',fig_handle,'Position',[.5 .6 .3 .3]);
+    inset_plot_handle = surf(X, Y, plotdata(:, :, 1)); title('', 'Interpreter', 'none', 'Parent', inset_ax_handle);
     view(2)
     shading interp;
     % Labels
@@ -82,14 +83,13 @@ function movie(obj, field, normalize, fname)
     ylim([1 side])
     % Aspect ratio
     axis square
+    box on
 
     
 
     switch normalize
         case 1
             plotdata = bsxfun(@minus, data, datamean);
-            set(surfplot_handle, 'CLim', [min(plotdata(:)) max(plotdata(:))])
-            set(inset_handle, 'CLim', [min(plotdata(:)) max(plotdata(:))])
         case 2
             for t = 1:obj.npoints
                 threshold = zeros(1, obj.npoints);
@@ -113,17 +113,23 @@ function movie(obj, field, normalize, fname)
         zlim([min(plotdata(:)) max(plotdata(:))]);
     end
     
-    colormap(nf.b2r(min(plotdata(:)), max(plotdata(:))))
+    % Get extrema 
+    data_min = min(plotdata(:));
+    data_max = max(plotdata(:));
+    set(surf_ax_handle, 'CLim', [data_min data_max])
+    set(inset_ax_handle, 'CLim', [data_min data_max])
+    
+    colormap(nf.b2r(data_min, data_max))
 
 
     F(obj.npoints) = getframe(gcf); % Trick to preallocate F
 
     for t = 1:obj.npoints
-        set(h, 'ZData', plotdata(:, :, t));
-        set(surfplot_handle, 'ZLim', [min(plotdata(:)) max(plotdata(:))])
-        set(inset_handle, 'ZLim', [min(plotdata(:)) max(plotdata(:))])
-        %title(sprintf('%s: Time = %.03f, Mean= %.03f', field, obj.deltat * t, datamean(t)), 'Interpreter', 'none');
-        set(h2, 'ZData', plotdata(:, :, t));
+        set(surf_plot_handle, 'ZData', plotdata(:, :, t));
+        set(surf_ax_handle, 'ZLim', [data_min data_max])
+        title(sprintf('%s: t= %.03f, Mean at t = %.03f', field, obj.deltat * t, datamean(t)), 'Interpreter', 'none');
+        set(inset_ax_handle, 'ZLim',  [data_min data_max])
+        set(inset_plot_handle, 'ZData', plotdata(:, :, t));
         pause(.05);
         if ~(nargin < 4 || isempty(fname))
             F(t) = getframe(gcf);
