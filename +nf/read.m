@@ -43,6 +43,7 @@ function [obj] = read(fname)
     % Skip through to the start of the output
     buffer = fgetl(fid);
     while isempty(strfind(buffer, '======================='))
+        % TODO: consider cleaning up this part.
         if ~isempty(strfind(buffer, 'Time  |'))
             error(['nf:' mfilename ':OldStyleOutput'], ...
                   'Did you try and open and old-style output file? Found a | that looked like a delimiter.')
