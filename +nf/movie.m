@@ -37,7 +37,13 @@ function movie(obj, field, normalize, fname)
     end
     
     [data, side] = nf.grid(obj, field);
-    [X, Y] = meshgrid(1:side, 1:side);
+    [X, Y] = meshgrid((1:side)*(0.5/side), (1:side)*(0.5/side));
+    
+    min_x = 0.5/side;
+    max_x = 0.5;
+        
+    min_y = 0.5/side;
+    max_y = 0.5;
 
     datamean = mean(mean(data, 1), 2); % mean of each time point
     
@@ -48,9 +54,7 @@ function movie(obj, field, normalize, fname)
     plotdata = data;
 
     % Figure
-    fig_handle = figure; 
-    fig_handle.PaperUnits = 'inches';
-    fig_handle.PaperPosition = [0 0 8 10];
+    fig_handle = figure('pos', [500 500 900 600]); 
     
     % Main subplot
     surf_plot_handle = surf(X, Y, plotdata(:, :, 1)); title('', 'Interpreter', 'none');
@@ -58,13 +62,13 @@ function movie(obj, field, normalize, fname)
     surf_ax_handle.FontSize = 20;
     shading interp; lighting gouraud; camlight;
     % Labels
-    xlabel('x', 'fontsize', 20)
-    ylabel('y', 'fontsize', 20)
+    xlabel('x [m]', 'fontsize', 20)
+    ylabel('y [m]', 'fontsize', 20)
     % Limits
-    xlim([1 side])
-    ylim([1 side])
-    xticks([])
-    yticks([])
+    xlim([min_x max_x])
+    ylim([min_y max_y])
+    %xticks([])
+    %yticks([])
     colorbar
 
     
@@ -79,8 +83,8 @@ function movie(obj, field, normalize, fname)
     xticks([])
     yticks([])
     % Limits
-    xlim([1 side])
-    ylim([1 side])
+    xlim([min_x max_x])
+    ylim([min_y max_y])
     % Aspect ratio
     axis square
     box on
@@ -126,8 +130,10 @@ function movie(obj, field, normalize, fname)
 
     for t = 1:obj.npoints
         set(surf_plot_handle, 'ZData', plotdata(:, :, t));
+        title(surf_ax_handle, sprintf('Cortical activity at t= %.03f', obj.deltat * t), 'Interpreter', 'none');
         set(surf_ax_handle, 'ZLim', [data_min data_max])
-        title(sprintf('%s: t= %.03f, Mean at t = %.03f', field, obj.deltat * t, datamean(t)), 'Interpreter', 'none');
+        %title(sprintf('%s: t= %.03f, Mean at t = %.03f', field, obj.deltat * t, datamean(t)), 'Interpreter', 'none');
+        % Only time
         set(inset_ax_handle, 'ZLim',  [data_min data_max])
         set(inset_plot_handle, 'ZData', plotdata(:, :, t));
         pause(.05);
@@ -138,7 +144,7 @@ function movie(obj, field, normalize, fname)
 
     % Output a movie if an avi filename was specified
     if ~(nargin < 4 || isempty(fname))
-        writerObj = VideoWriter(fname, 'MPEG-4');
+        writerObj = VideoWriter(fname);
         open(writerObj);
         writeVideo(writerObj, F);
         close(writerObj);
