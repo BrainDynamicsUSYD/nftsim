@@ -5,13 +5,13 @@
 % ARGUMENTS:
 %        obj   -- a structure returned by nf.read('config_name.conf') 
 %        field -- is a string of a field name e.g. "Propagator.2.phi"
-%        normalize -- is an integer value that determines how the data is
+%        scaling -- is an integer value that determines how the data is
 %        scaled.
 %                         0 = does nothing - uses the trace specified in `field`;
 %                         1 = subtracts mean of each frame (timepoint);
 %                         2 = subtracts mean and rescale;
 %                         3 = subtracts mean, rescale over entire duration.
-%        fname -- is optionally a string filename to save the movie
+%        output_fname -- is optionally a string filename to save the movie
 %
 % OUTPUT: Generates a movie and siplays it on screen.
 %            -- .
@@ -30,25 +30,33 @@
 %}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function movie(obj, field, normalize, fname)
+function movie(obj, field, scaling, output_fname)
     %
     if nargin < 2 || isempty(field)
         field = 'propagator.1.phi';
     end
     
     [data, side] = nf.grid(obj, field);
-    [X, Y] = meshgrid((1:side)*(0.5/side), (1:side)*(0.5/side));
     
-    min_x = 0.5/side;
-    max_x = 0.5;
-        
-    min_y = 0.5/side;
-    max_y = 0.5;
-
+    % Check if we have the physical lengths of the grid
+    if isfield(obj, 'Lx') || isfield(obj,'Ly')
+        [X, Y] = meshgrid((1:side)*(obj.Lx/side), (1:side)*(obj.Ly/side));
+        min_x = obj.Lx/side;
+        max_x = obj.Lx;
+        min_y = obj.Ly/side;
+        max_y = obj.Ly;
+    else
+        [X, Y] = meshgrid(1:side, 1:side);
+        min_x = 1;
+        max_x = side;
+        min_y = 1;
+        max_y = side;
+    end
+    
     datamean = mean(mean(data, 1), 2); % mean of each time point
     
-    if nargin < 3 || isempty(normalize)
-        normalize = 0;
+    if nargin < 3 || isempty(scaling)
+        scaling = 0;
     end
 
     plotdata = data;
@@ -62,13 +70,12 @@ function movie(obj, field, normalize, fname)
     surf_ax_handle.FontSize = 20;
     shading interp; lighting gouraud; camlight;
     % Labels
-    xlabel('x [m]', 'fontsize', 20)
-    ylabel('y [m]', 'fontsize', 20)
+    xlabel('x', 'fontsize', 20)
+    ylabel('y', 'fontsize', 20)
+    zlabel('\phi_{ee} [s^{-1}]')
     % Limits
     xlim([min_x max_x])
     ylim([min_y max_y])
-    %xticks([])
-    %yticks([])
     colorbar
 
     
@@ -91,7 +98,7 @@ function movie(obj, field, normalize, fname)
 
     
 
-    switch normalize
+    switch scaling
         case 1
             plotdata = bsxfun(@minus, data, datamean);
         case 2
@@ -120,31 +127,33 @@ function movie(obj, field, normalize, fname)
     % Get extrema 
     data_min = min(plotdata(:));
     data_max = max(plotdata(:));
-    set(surf_ax_handle, 'CLim', [data_min data_max])
-    set(inset_ax_handle, 'CLim', [data_min data_max])
+    set(surf_ax_handle,  'CLim',  [data_min data_max])
+    set(inset_ax_handle, 'CLim',  [data_min data_max])
     
-    colormap(nf.b2r(data_min, data_max))
-
+    try 
+        colormap(nf.b2r(data_min/4, data_max/4))
+    catch
+        
+    end
 
     F(obj.npoints) = getframe(gcf); % Trick to preallocate F
 
     for t = 1:obj.npoints
         set(surf_plot_handle, 'ZData', plotdata(:, :, t));
-        title(surf_ax_handle, sprintf('Cortical activity at t= %.03f', obj.deltat * t), 'Interpreter', 'none');
         set(surf_ax_handle, 'ZLim', [data_min data_max])
-        %title(sprintf('%s: t= %.03f, Mean at t = %.03f', field, obj.deltat * t, datamean(t)), 'Interpreter', 'none');
+        title(surf_ax_handle, sprintf('%s: t= %.03f, Mean at t = %.03f s', field, obj.deltat * t, datamean(t)), 'Interpreter', 'none');
         % Only time
         set(inset_ax_handle, 'ZLim',  [data_min data_max])
         set(inset_plot_handle, 'ZData', plotdata(:, :, t));
         pause(.05);
-        if ~(nargin < 4 || isempty(fname))
+        if ~(nargin < 4 || isempty(output_fname))
             F(t) = getframe(gcf);
         end
     end
 
     % Output a movie if an avi filename was specified
-    if ~(nargin < 4 || isempty(fname))
-        writerObj = VideoWriter(fname);
+    if ~(nargin < 4 || isempty(output_fname))
+        writerObj = VideoWriter(output_fname);
         open(writerObj);
         writeVideo(writerObj, F);
         close(writerObj);
