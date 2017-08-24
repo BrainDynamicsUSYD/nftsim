@@ -36,7 +36,7 @@ function [obj] = read(fname)
         end
     end
 
-    obj.conf_file = fname;
+    obj.output_file = fname;
 
     fid = fopen(fname, 'r'); % Open file for read access
 
