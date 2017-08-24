@@ -5,8 +5,8 @@
 %                 or relative path).
 %
 % OUTPUT:
-%        obj -- A neurofield output struct (a Matlab struct containing data
-%               from a simulation).
+%        obj -- A neurofield output struct. A Matlab struct containing data
+%               and parameters from a simulation.
 %
 % AUTHOR:
 %     Romesh Abeysuriya (2012-03-22).
@@ -18,11 +18,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function [obj] = read(fname)
-    % The fname argument is required.
-    if nargin < 1
-        error(['nf:' mfilename ':WrongNumberOfArgs'], ...
-              'This function requires a file-name argument.')
-    end
 
     % Check that our input arg is actually a file.
     if ~exist(fname, 'file')
@@ -42,13 +37,32 @@ function [obj] = read(fname)
 
     % Skip through to the start of the output
     buffer = fgetl(fid);
+    
+    
+    
+        
     while isempty(strfind(buffer, '======================='))
         % TODO: consider cleaning up this part.
         if ~isempty(strfind(buffer, 'Time  |'))
             error(['nf:' mfilename ':OldStyleOutput'], ...
                   'Did you try and open and old-style output file? Found a | that looked like a delimiter.')
         end
+        
+        
+        key   = 'Nodes'; 
+        if  ~isempty(strfind(buffer, key))
+            idx = strfind(buffer, key, 'ForceCellOutput', true);
+            obj.input_nodes = sscanf(buffer(idx{1}(1) + length(key)+2:end), '%d', 1);
+        end
+        
+        key   = 'nodes'; 
+        if  ~isempty(strfind(buffer, key))
+            idx = strfind(buffer, key, 'ForceCellOutput', true);
+            obj.longside_nodes = sscanf(buffer(idx{1}(1) + length(key)+2:end), '%d', 1);
+        end       
+
         buffer = fgetl(fid);
+        
     end
     fgetl(fid); % Skip the empty line following the '===============' barrier.
 
@@ -80,11 +94,11 @@ function [obj] = read(fname)
 end %function read()
 
 
-function [locs, base_index] = get_nodes(line, headers)
+function [locs, base_index] = get_nodes(this_line, headers)
     % Given a line with contents like '1 | 1 2 | 1 |
     % return a number of nodes {1,1:2,1}
     % nentries stores the number of entries per line
-    nodes = cellfun(@(x) str2double(x), strsplit(line(1:end-2)));
+    nodes = cellfun(@(x) str2double(x), strsplit(this_line(1:end-2)));
     nodes(1) = 1; % Number of time columns (there is only ever one)
     traces = unique(headers, 'stable');
     locs = cell(1, length(traces));
