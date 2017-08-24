@@ -111,7 +111,7 @@ void Solver::init( Configf& configf ) {
   // read in grid size and grid geometry
   configf.param("Nodes",nodes);
   size_type longside;
-  if( configf.optional("Longside Nodes", longside) ) {
+  if( configf.optional("Longside nodes", longside) ) {
     if( nodes%longside != 0 ) {
       cerr << "To define a rectangular grid nodes: " << nodes <<endl
            << "divided by Longside: " << longside << endl
