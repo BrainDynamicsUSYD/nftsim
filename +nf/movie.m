@@ -30,30 +30,33 @@
 %}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function movie(obj, field, scaling, output_fname)
+function movie(obj, trace, scaling, output_fname)
     %
-    if nargin < 2 || isempty(field)
+    if nargin < 2 || isempty(trace)
         field = 'propagator.1.phi';
     end
     
-    [data, side] = nf.grid(obj, field);
+    [data, longside, shortside] = nf.grid(obj, trace);
     
     % Check if we have the physical lengths of the grid
     if isfield(obj, 'Lx') || isfield(obj,'Ly')
-        [X, Y] = meshgrid((1:side)*(obj.Lx/side), (1:side)*(obj.Ly/side));
-        min_x = obj.Lx/side;
+        [X, Y] = meshgrid((1:longside)*(obj.Lx/longside), (1:shortside)*(obj.Ly/shortside));
+        min_x = obj.Lx/longside;
         max_x = obj.Lx;
-        min_y = obj.Ly/side;
+        min_y = obj.Ly/shortside;
         max_y = obj.Ly;
     else
-        [X, Y] = meshgrid(1:side, 1:side);
+        [X, Y] = meshgrid(1:longside, 1:shortside);
         min_x = 1;
-        max_x = side;
+        max_x = longside;
         min_y = 1;
-        max_y = side;
+        max_y = shortside;
     end
+    X = X';
+    Y = Y';
     
-    datamean = mean(mean(data, 1), 2); % mean of each time point
+    % mean over x and y for each time point
+    datamean = mean(mean(data, 1), 2);
     
     if nargin < 3 || isempty(scaling)
         scaling = 0;
@@ -72,7 +75,7 @@ function movie(obj, field, scaling, output_fname)
     % Labels
     xlabel('x', 'fontsize', 20)
     ylabel('y', 'fontsize', 20)
-    zlabel('\phi_{ee} [s^{-1}]')
+    zlabel(trace)
     % Limits
     xlim([min_x max_x])
     ylim([min_y max_y])
