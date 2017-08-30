@@ -1,33 +1,85 @@
-function [f,P] = spectrum(obj,p,n_windows)    % return the frequency and frequency spectrum of given data
-    %  nf - nf object
-    %  p - trace to use  
+%% Return the frequency and frequency spectrum of given neurofield output.
+%
+% ARGUMENTS:
+%        obj -- A neurofield output struct (a Matlab struct containing data
+%               from a simulation).
+%        traces -- traces to use
+%        n_windows -- number of windows (Default=8).
+%
+% OUTPUT:
+%        f -- Frequency vector.
+%        P -- Mean power vector.
+%
+% REQUIRES:
+%        nf.partition() -- Partition a list of n items into m groups.
+%        nf.extract() -- Extract a specific subset of data from a neurofield output struct.
+%        nf.rfft() -- Fourier transform.
+%
+% REFERENCES:
+%
+% AUTHOR:
+%     Romesh Abeysuriya (2012-03-22).
+%
+% USAGE:
+%{
+    %Load some neurofield output data.
+    obj = nf.read('./configs/example.output')
+    %Calculate the mean power spectrum.
+    [f, P] = nf.spectrum(obj, 'Propagator.1.phi', [], true, true);
+    %Plot it.
+    figure, plot(f, P)
+%}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-    %  nf -> a 3D matrix of values
-    %  p - sampling rate
-    if isstruct(obj)
-        if nargin < 2 || isempty(p)
-            p = 'propagator.1.phi'; % Try the phi propagator first
-        end
-        data = nf.grid(obj,p);
-        fs = 1/obj.deltat;
-    else
-        data = obj;
-        fs = p;
+%TODO: it would make more sense to return a spectrum for each trace, but that is difficult with the way nf.extract() currently works.
+
+function [f, P] = spectrum(obj, traces, n_windows, windowed, detrended)
+    if ~isstruct(obj)
+        error(['nf:' mfilename ':BadArgument'], ...
+              'The first argument must be a neurofield simulation struct.')
     end
+
+    if nargin < 2 || isempty(traces)
+        if ismember('Propagator.1.phi', obj.fields)
+            traces = {'Propagator.1.phi'}; % Use 'Propagator.1.phi' by default.
+        else
+            error(['nf:' mfilename ':BadArgument'], ...
+                  'The must specify the trace you want.')
+        end
+    end
+    % if nargin < 2 || isempty(traces)
+    %     traces = obj.fields; % Use all fields by default.
+    % end
 
     if nargin < 3 || isempty(n_windows)
-        n_windows = 8; % 8 windows by default
+        n_windows = 8; % 8 windows by default.
     end
 
+    if nargin < 4 || isempty(windowed)
+        windowed = false; % No window function by default.
+    end
+
+    if nargin < 5 || isempty(n_windows)
+        detrended = false; % Do not detrend by default.
+    end
+
+    data = nf.extract(obj, traces);
+    fs = 1.0 / obj.deltat;
+
+    % Partition the extracted data into epochs of time.
     frac_overlap = 0.5;
-    window_idx = nf.partition(size(data,2),n_windows,[],frac_overlap,1,1);
-    
-    for j = 1:length(window_idx)
-        [f,~,P1(:,j)] = nf.rfft(data(window_idx(j,1):window_idx(j,2)),fs);
+    evenlength = true;
+    same_size = true;
+    window_idx = nf.partition(size(data, 1), n_windows, [], frac_overlap, evenlength, same_size);
+    window_length = window_idx(1, 2) - window_idx(1, 1) + 1;
+
+    % Calculate mean power spectrum for each epoch of time.
+    P1 = zeros(size(window_idx, 1), (floor(window_length / 2) + 1));
+    for j = 1:size(window_idx, 1)
+        [f, ~, P1(j, :)] = nf.rfft(data(window_idx(j, 1):window_idx(j, 2), :), fs, [], windowed, detrended);
     end
 
-    P = mean(P1,2);
+    % Mean over time epochs.
+    P = mean(P1, 1);
 
-
-    
-end
+end %function spectrum()
