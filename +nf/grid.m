@@ -36,16 +36,16 @@ function [data, longside_nodes, shortside_nodes] = grid(obj, trace)
     if output_nodes ~= obj.input_nodes 
         error(['nf:' mfilename ':IncompatibleOutput'], ...
               'Output from NeuroField must be for all nodes')
-    end
-    
+    end    
+
     data = nf.extract(obj, trace);
     %TODO: handle non-square grid here.
     
     if ~isfield(obj, 'longside_nodes')
-        longside_nodes  = sqrt(length(output_nodes)); % length of square grid edge
+        longside_nodes  = sqrt(output_nodes); % length of square grid edge
         shortside_nodes = longside_nodes;
     else
-        longside_nodes = obj.longside_nodes;
+        longside_nodes  = obj.longside_nodes;
         shortside_nodes = obj.input_nodes / obj.longside_nodes;
     end
     %Reshape to an array of (n,m,tpts)
