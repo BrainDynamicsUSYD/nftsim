@@ -144,7 +144,7 @@ function movie(obj, trace, scaling, output_fname)
     for t = 1:obj.npoints
         set(surf_plot_handle, 'ZData', plotdata(:, :, t));
         set(surf_ax_handle, 'ZLim', [data_min data_max])
-        title(surf_ax_handle, sprintf('%s: t= %.03f, Mean at t = %.03f s', trace, obj.deltat * t, datamean(t)), 'Interpreter', 'none');
+        title(surf_ax_handle, sprintf('%s: t= %.03f, Mean f(t) = %.03f s', trace, obj.deltat * t, datamean(t)), 'Interpreter', 'none');
         % Only time
         set(inset_ax_handle, 'ZLim',  [data_min data_max])
         set(inset_plot_handle, 'ZData', plotdata(:, :, t));
