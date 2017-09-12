@@ -4,10 +4,10 @@
 %
 % ARGUMENTS:
 %        obj   -- a structure returned by nf.read('config_name.conf') 
-%        field -- is a string of a field name e.g. "Propagator.2.phi"
-%        scaling -- is an integer value that determines how the data is
+%        tracename -- is a string with the name of the variable to plot e.g. "Propagator.2.phi"
+%        scaling   -- is an integer value that determines how the data is
 %        scaled.
-%                         0 = does nothing - uses the trace specified in `field`;
+%                         0 = does nothing - uses the trace name specified in `tracename`;
 %                         1 = subtracts mean of each frame (timepoint);
 %                         2 = subtracts mean and rescale;
 %                         3 = subtracts mean, rescale over entire duration.
@@ -26,17 +26,17 @@
 % USAGE:
 %{
     %
-    nf.movie(nf, field, normalize, fname)
+    nf.movie(nf_struct, 'propagator.1.phi', 1, [])
 %}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function movie(obj, trace, scaling, output_fname)
+function movie(obj, tracename, scaling, output_fname)
     %
-    if nargin < 2 || isempty(trace)
+    if nargin < 2 || isempty(tracename)
         field = 'propagator.1.phi';
     end
     
-    [data, longside, shortside] = nf.grid(obj, trace);
+    [data, longside, shortside] = nf.grid(obj, tracename);
     
     % Check if we have the physical lengths of the grid
     if isfield(obj, 'Lx') || isfield(obj,'Ly')
@@ -75,7 +75,7 @@ function movie(obj, trace, scaling, output_fname)
     % Labels
     xlabel('x', 'fontsize', 20)
     ylabel('y', 'fontsize', 20)
-    zlabel(trace)
+    zlabel(tracename)
     % Limits
     xlim([min_x max_x])
     ylim([min_y max_y])
@@ -144,11 +144,11 @@ function movie(obj, trace, scaling, output_fname)
     for t = 1:obj.npoints
         set(surf_plot_handle, 'ZData', plotdata(:, :, t));
         set(surf_ax_handle, 'ZLim', [data_min data_max])
-        title(surf_ax_handle, sprintf('%s: t= %.03f, Mean at t = %.03f s', field, obj.deltat * t, datamean(t)), 'Interpreter', 'none');
+        title(surf_ax_handle, sprintf('t= %.03f, Mean %s(t) = %.03f s', obj.deltat * t, tracename, datamean(t)), 'Interpreter', 'none');
         % Only time
         set(inset_ax_handle, 'ZLim',  [data_min data_max])
         set(inset_plot_handle, 'ZData', plotdata(:, :, t));
-        pause(.05);
+        pause(.01);
         if ~(nargin < 4 || isempty(output_fname))
             F(t) = getframe(gcf);
         end
