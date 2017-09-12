@@ -33,7 +33,7 @@
 function movie(obj, tracename, scaling, output_fname)
     %
     if nargin < 2 || isempty(tracename)
-        field = 'propagator.1.phi';
+        tracename = 'propagator.1.phi';
     end
     
     [data, longside, shortside] = nf.grid(obj, tracename);
