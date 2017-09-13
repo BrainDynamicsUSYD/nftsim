@@ -28,10 +28,10 @@ using std::string;
 using std::vector;
 
 void Timeseries::init( Configf& configf ) {
-  series_size_type superimpose = 1;
+  series_size_type superimpose = 0;
   configf.optional("Superimpose",superimpose);
   for( series_size_type i=0; i<superimpose; i++ ) {
-    if( superimpose>1 ) {
+    if( superimpose > 0 ) {
       configf.next("Stimulus");
     }
     vector<string> mode = configf.arb("-");
