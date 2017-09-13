@@ -36,6 +36,9 @@ function movie(obj, tracename, scaling, output_fname)
         tracename = 'propagator.1.phi';
     end
     
+    % variable used to save the individual frames into individual .fig files
+    save_frames = 0;
+    
     [data, longside, shortside] = nf.grid(obj, tracename);
     
     % Check if we have the physical lengths of the grid
@@ -152,6 +155,11 @@ function movie(obj, tracename, scaling, output_fname)
         if ~(nargin < 4 || isempty(output_fname))
             F(t) = getframe(gcf);
         end
+        if save_frames
+            figname = sprintf('frame_%04d.fig', t);
+            savefig(gcf, figname)
+        end
+        
     end
 
     % Output a movie if an avi filename was specified
