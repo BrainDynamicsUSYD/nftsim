@@ -36,7 +36,7 @@ class Propagator : public NF {
   size_type longside;
 
   double Q;
-  std::vector<double> p; ///< phi_ab
+  std::vector<double> p;  ///< phi_ab
   double range = 0.0;     ///< Characteristic axonal range
   double velocity = 0.0;  ///< Mean axonal conduction Speed
   double gamma = 0.0;     ///< Damping coefficient

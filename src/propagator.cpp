@@ -19,18 +19,41 @@
 #include <vector>   // std::vector;
 using std::string;
 using std::vector;
+using std::cerr;
+using std::cout;
+using std::endl;
 
 void Propagator::init( Configf& configf ) {
   Q = prepop.Qinit(configf);
-  string buffer("Steady");
-  configf.optional("phi",buffer);
-  if( buffer != "Steady" ) {
+  // string buffer("Steady");
+  // configf.optional("phi",buffer);
+  // if( buffer != "Steady" ) {
+  //   p.clear();
+  //   p.resize(nodes,atof(buffer.c_str()));
+  // } else {
+  //   p.clear();
+  //   p.resize(nodes,Q);
+  // }
+  configf.next("phi");
+  vector<double> temp = configf.numbers();
+  if( temp.size() == 1 ) {
     p.clear();
-    p.resize(nodes,atof(buffer.c_str()));
+    p.resize(nodes,temp[0]);
+    
+  } else if( temp.size() == nodes ) {
+    p.clear();
+    p.resize(nodes);
+    for( size_type i=0; i<nodes; i++ ) {
+      p[i] = temp[i];
+      cout<<"i:" << i << " - p: " << p[i] <<endl;
+    }
+    
   } else {
-    p.clear();
-    p.resize(nodes,Q);
+    cerr<<"nu either has a homogeneous initial value or has one intial value per node."<<endl;
+    exit(EXIT_FAILURE);
   }
+
+
   configf.optional("Tau",tau);
   prepop.growHistory(tau);
 

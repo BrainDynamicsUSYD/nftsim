@@ -52,8 +52,9 @@ void Wave::init( Configf& configf ) {
 
   deltax = prepop.sheetlength()/longside;
 
-  *oldp[0] = vector<double>(nodes,p[0]);
-  *oldp[1] = vector<double>(nodes,p[0]);
+  // The following two line discard spatially nonuniform initial conditions for phi
+  *oldp[0] = vector<double>(nodes,p[1]);
+  *oldp[1] = vector<double>(nodes,p[1]);
   *oldQ[0] = vector<double>(nodes,Q);
   *oldQ[1] = vector<double>(nodes,Q);
 
