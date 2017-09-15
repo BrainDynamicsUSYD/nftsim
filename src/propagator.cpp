@@ -25,6 +25,7 @@ using std::endl;
 
 void Propagator::init( Configf& configf ) {
   Q = prepop.Qinit(configf);
+  // Make phi init optional ??
   // string buffer("Steady");
   // configf.optional("phi",buffer);
   // if( buffer != "Steady" ) {
@@ -49,7 +50,7 @@ void Propagator::init( Configf& configf ) {
     }
     
   } else {
-    cerr<<"nu either has a homogeneous initial value or has one intial value per node."<<endl;
+    cerr<<"phi needs either a single value (spatially uniform initial conditions)  or one value per node."<<endl;
     exit(EXIT_FAILURE);
   }
 
