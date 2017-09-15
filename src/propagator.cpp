@@ -46,7 +46,7 @@ void Propagator::init( Configf& configf ) {
     p.resize(nodes);
     for( size_type i=0; i<nodes; i++ ) {
       p[i] = temp[i];
-      cout<<"i:" << i << " - p: " << p[i] <<endl;
+      //cout<<"i:" << i << " - p: " << p[i] <<endl;
     }
     
   } else {
