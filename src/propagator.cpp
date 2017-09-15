@@ -25,9 +25,7 @@ using std::endl;
 
 void Propagator::init( Configf& configf ) {
   Q = prepop.Qinit(configf);
-  // Make phi init optional ??
-  // string buffer("Steady");
-  // configf.optional("phi",buffer);
+  //Make phi init optional ??
   // if( buffer != "Steady" ) {
   //   p.clear();
   //   p.resize(nodes,atof(buffer.c_str()));
@@ -35,7 +33,7 @@ void Propagator::init( Configf& configf ) {
   //   p.clear();
   //   p.resize(nodes,Q);
   // }
-  configf.next("phi");
+  configf.next("Initial phi");
   vector<double> temp = configf.numbers();
   if( temp.size() == 1 ) {
     p.clear();
@@ -46,14 +44,12 @@ void Propagator::init( Configf& configf ) {
     p.resize(nodes);
     for( size_type i=0; i<nodes; i++ ) {
       p[i] = temp[i];
-      //cout<<"i:" << i << " - p: " << p[i] <<endl;
     }
     
   } else {
-    cerr<<"phi needs either a single value (spatially uniform initial conditions)  or one value per node."<<endl;
+    cerr<<"Initial phi needs either a single value (spatially uniform initial conditions) or one value per node."<<endl;
     exit(EXIT_FAILURE);
   }
-
 
   configf.optional("Tau",tau);
   prepop.growHistory(tau);
