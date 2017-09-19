@@ -28,7 +28,7 @@ using std::string;
 using std::vector;
 
 void Timeseries::init( Configf& configf ) {
-  series_size_type superimpose = 0;
+  series_size_type superimpose = 1;
   configf.optional("Superimpose",superimpose);
   for( series_size_type i=0; i<superimpose; i++ ) {
     if( superimpose > 0 ) {
