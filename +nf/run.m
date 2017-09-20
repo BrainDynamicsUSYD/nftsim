@@ -30,14 +30,17 @@
 %}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function obj = run(fname, neurofield_path)
+function obj = run(fname, timestamp, neurofield_path)
     %
     tic;
     fname = strrep(fname, '.conf', ''); %Strip any .conf suffix.
-    fprintf(1, 'Executing NeuroField: %s.conf...\n', fname);
+    fprintf(1, 'INFO: Using configuration file: %s.conf...\n', fname);
 
+    if nargin < 2
+        timestamp = false;
+    end
     % If we were not provided a path to neurofield.
-    if nargin < 2 || isempty(neurofield_path)
+    if nargin < 3 || isempty(neurofield_path)
         % Check typical locations, the first path that exists will be selected.
         locations = {'neurofield', ...
                      './bin/neurofield', ...
@@ -47,6 +50,7 @@ function obj = run(fname, neurofield_path)
         if ~isempty(selected_path)
             neurofield_path = locations{selected_path};
         end
+        
     end
 
     % Check we have a valid path to the neurofield executable.
@@ -55,7 +59,13 @@ function obj = run(fname, neurofield_path)
                'neurofield not found. Please make a symlink to neurofield in the current directory.');
     end
 
-    neurofield_cmd = sprintf('%s -i %s.conf -o %s.output', neurofield_path, fname, fname);
+    if ~timestamp
+        neurofield_cmd = sprintf('%s -i %s.conf -o %s.output', neurofield_path, fname, fname);
+    
+    else
+        neurofield_cmd = sprintf('%s -i %s.conf -t', neurofield_path, fname);
+    end
+    fprintf('INFO: Executing command:\n')    
     fprintf('%s\n', neurofield_cmd);
     [status] = system(neurofield_cmd);
 
@@ -64,7 +74,7 @@ function obj = run(fname, neurofield_path)
               'An error occurred while running neurofield!');
     end
 
-    fprintf(1, 'took %.3f seconds\n', toc);
+    fprintf(1, 'INFO: tic-toc: Took about %.3f seconds\n', toc);
 
     if nargout > 0
         fprintf(1, 'Parsing output...');
