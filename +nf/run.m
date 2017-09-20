@@ -9,6 +9,8 @@
 % ARGUMENTS:
 %        fname -- Name of the configuration file, it can be with or without
 %                 the .conf extension.
+%        timestamp -- boolean flag to use a timestamp YYYY-MM-DDTHHMMSS in 
+%                     the output file name. 
 %        neurofield_path -- neurofield executable (full or relative path).
 %
 % OUTPUT: Writes a .output file in the same location as the .conf file.
