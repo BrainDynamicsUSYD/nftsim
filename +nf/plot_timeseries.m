@@ -20,7 +20,7 @@
 % OUTPUT: 
 %           figure_handles -- cell array of figure handles.
 % AUTHOR:
-%     Stuart A. Knock 
+%     Stuart A. Knock (https://github.com/stuart-knock/BrainNetworkModels/blob/master/PlottingTools/PlotTimeSeries.m)
 %     Paula Sanz-Leon
 %
 % USAGE:
