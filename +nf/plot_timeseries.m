@@ -58,7 +58,7 @@ function figure_handles =  plot_timeseries(obj, traces, node_idx, scaling)
         data = bsxfun(@minus, data, datamean);
     end
 
-    separate_by(1,nof) = 0.33*(max(data(:)) - min(data(:)))
+    separate_by(1,nof) = 0.33*(max(data(:)) - min(data(:)));
     nodes_by_timestepsize = repmat((1:num_nodes), [time_steps,1]);
     
     plot(time, data(:, node_idx{nof}) + separate_by(1,nof)*nodes_by_timestepsize, 'color', [0.42, 0.42, 0.42]); 
