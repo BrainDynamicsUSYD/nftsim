@@ -30,7 +30,7 @@
 
 
 
-function figure_handles =  plot_timeseries(obj, traces, node_idx)
+function figure_handles =  plot_timeseries(obj, traces, node_idx, scaling)
 
   num_figs   = length(traces);
   time       = obj.time;
@@ -47,9 +47,15 @@ function figure_handles =  plot_timeseries(obj, traces, node_idx)
     figure_handles{nof} = figure(nof),
     data     = nf.extract(obj, traces{nof});
     data     = detrend(data);
+
+    % scale data to the range [0, 1]
     data = data - min(data(:)); 
     data = data ./ max(data(:));
 
+    if scaling
+    	datamean = mean(data, 2);
+        data = bsxfun(@minus, data, datamean);
+    end
     separate_by(1,nof) = 0.33*(max(data(:)) - min(data(:)))
     nodes_by_timestepsize = repmat((1:num_nodes), [time_steps,1]);
     plot(time, data(:, node_idx{nof}) + separate_by(1,nof)*nodes_by_timestepsize, 'color', [0.42, 0.42, 0.42]);
