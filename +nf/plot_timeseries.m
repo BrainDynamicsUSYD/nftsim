@@ -19,14 +19,15 @@
 %
 % OUTPUT: 
 %           figure_handles -- cell array of figure handles.
+% AUTHOR:
+%     Stuart A. Knock 
+%     Paula Sanz-Leon
 %
 % USAGE:
 %{
     nf.plot_timeseries(nf_obj, {'Propagator.1.phi'}, {[8080:8120]})
 %}
-% AUTHOR:
-%     Stuart A. Knock 
-%     Paula Sanz-Leon
+
 
 
 
