@@ -69,8 +69,9 @@ function obj = run(fname, timestamp, neurofield_path)
     end
     fprintf('INFO: Executing command:\n')    
     fprintf('%s\n', neurofield_cmd);
-    [status] = system(neurofield_cmd);
+    [status, cmdout] = system(neurofield_cmd);
 
+    string(cmdout)
     if status ~= 0
         error(['nf:' mfilename ':NeurofieldError'], ...
               'An error occurred while running neurofield!');
@@ -80,7 +81,12 @@ function obj = run(fname, timestamp, neurofield_path)
 
     if nargout > 0
         fprintf(1, 'Parsing output...');
-        obj = nf.read(sprintf('%s.output', fname));
-        fprintf(1, 'done!\n');
+        if timestamp
+            cmdout = string(cmdout);
+            temp_struct = regexp(cmdout,'(?<stamp>\d+-\d+-\d+T\d+)', 'names');
+            fname = strcat(fname, '_', temp_struct.stamp);            
+        end
+            obj = nf.read(sprintf('%s.output', fname));
+            fprintf(1, 'done!\n');
     end
 end %function run()
