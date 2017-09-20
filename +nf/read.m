@@ -59,6 +59,9 @@ function [obj] = read(fname)
         if  ~isempty(strfind(buffer, key))
             idx = strfind(buffer, key, 'ForceCellOutput', true);
             obj.longside_nodes = sscanf(buffer(idx{1}(1) + length(key)+2:end), '%d', 1);
+            if isempty(obj.longside_nodes)
+                obj = rmfield(obj, 'longside_nodes');
+            end
         end       
 
         buffer = fgetl(fid);
