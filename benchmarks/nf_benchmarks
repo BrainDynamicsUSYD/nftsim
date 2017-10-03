@@ -29,6 +29,10 @@
 #  #Benchmark all .conf files in ./benchmarks with output to memory.
 #  nf_benchmarks --to-mem
 #
+#  #Quickly view benchmarks database table for simulation_resources.csv.
+#  column -s, -t < benchmarks/results/simulation_resources.csv | less -N
+#  #and equivalent for simulation_conf.csv, code_info.csv, system_info.csv.
+#
 #REQUIRES:
 #  /usr/bin/time
 #
