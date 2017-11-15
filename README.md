@@ -8,7 +8,7 @@ based on Robinson's Neural Field Theory.
 
 1. Fork and clone; or,
 
-2. download the latest [release](https://github.com/BrainDynamicsUSYD/neurofield/releases) as a `.zip` or `tar.gz` file and extarct the folder.
+2. download the latest [release](https://github.com/BrainDynamicsUSYD/neurofield/releases) as a `.zip` or `tar.gz` file and extract the folder.
 
 3. After doing 1) or 2) type `cd neurofield`.
 
@@ -18,19 +18,20 @@ Make sure you have a compiler that supports the `C++11` standard.
 On Linux: `gcc` 4.8 or higher; `clang 3.7` or higher.
 On MacOS: `clang` 3.3 or later version;
 
-Additionally, to build the reference manual you'll need `doxygen` and `graphviz`.
-The user manual is built using `pdflatex`.
+Additionally, to build the developer reference manual you'll need `doxygen` and `graphviz`. The latter provides the DOT language.
+
+The user manual is compiled using `pdflatex` an it is also provided as a pdf (`doc/NeurofieldManual.pdf`).
 
 
-### Build/compilation
+### Compiling and building from the source code
 
-To build the executable on Linux or Mac, open a terminal in the neurofield directory and type:
+To build the executable on Linux or MacOS, open a terminal in the `neurofield` directory and type:
 
     make
 
-this produces the executable (`bin/neurofield`). The user-manual is available as `doc/NeurofieldManual.pdf`.
+this produces the executable `bin/neurofield` and autogenerates the documentation. 
 
-To build the reference manual, generated from the code, type:
+To build only the reference manual type:
 
     make reference-manual
 
@@ -48,11 +49,11 @@ Example configurations including examples for published results are available in
 
 To run the basic example type
 
-    ./bin/neurofield -i ./configs/example.conf -o example.output
+    ./bin/neurofield -i ./configs/eirs-corticothalamic.conf -o eirs-corticothalamic.output
 
 ## Troubleshooting
 
-Problems compiling? Check [the following page](https://github.com/BrainDynamicsUSYD/neurofield/wiki/Troubleshooting) for the latest information.
+Problems compiling? First check [the following page](https://github.com/BrainDynamicsUSYD/neurofield/wiki/Troubleshooting) for the latest information. If that doesn't solve the problem please drop us a message using Github's issues. Don't forget to mention the following info: operating system, compiler, compiler version, NeuroField version. 
 
 ## How to contribute code
 
