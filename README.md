@@ -41,6 +41,7 @@ For a brief description of available Makefile targets, type:
 
     make help
 
+Are you on Windows and want to use `NeuroField`. Check [some options here](https://github.com/BrainDynamicsUSYD/neurofield/wiki/All:-Cross-platform-support). 
 
 
 ## Demos
@@ -53,7 +54,7 @@ To run the basic example type
 
 ## Troubleshooting
 
-Problems compiling? First check [the following page](https://github.com/BrainDynamicsUSYD/neurofield/wiki/Troubleshooting) for the latest information. If that doesn't solve the problem please drop us a message using Github's issues. Don't forget to mention the following info: operating system, compiler, compiler version, NeuroField version. 
+Problems compiling? First check [the following page](https://github.com/BrainDynamicsUSYD/neurofield/wiki/All:-Cross-platform-support) for the latest information. If that doesn't solve the problem please drop us a message using Github's issues. Don't forget to mention the following info: operating system, compiler, compiler version, `NeuroField` version. 
 
 ## How to contribute code
 
