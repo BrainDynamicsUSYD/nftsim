@@ -7,19 +7,14 @@
                           School of Physics
                         University of Sydney
 
-1) Cite Neurofield as follows:
+   Please cite Neurofield as follows:
    Sanz-Leon, P., Robinson, PA., Knock, SA., Drysdale, PM., Fung, PK., Abeysuriya, GM.,
    Rennie, CJ and Zhao, XL.
-   "NeuroField: Theory and Simulation of Multiscale Neurla Field Dynamics"
-   sunmitted to PLoS Computational Biology 
-
-2) The latest stable release can be found at: 
-   https://github.com/BrainDynamicsUSYD/neurofield/releases/latest
-
-3) The latest development version can be found at:
-   https://github.com/BrainDynamicsUSYD/neurofield
+   "NeuroField: Theory and Simulation of Multiscale Neural Field Dynamics"
+   presubmitted to PLoS Computational Biology 
 
  
-Feedback, bug reports, patches and contributions are welcome. 
+Feedback, bug reports, patches and contributions are welcome at
+https://github.com/BrainDynamicsUSYD/neurofield/issues
 ==============================================================================
 
