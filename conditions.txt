@@ -8,10 +8,10 @@
                         University of Sydney
 
 1) Cite Neurofield as follows:
-   Sanz-Leon, P., Robinson, PA., Drysdale, PM., Fung, PK., Abeysuriya, GM.,
+   Sanz-Leon, P., Robinson, PA., Knock, SA., Drysdale, PM., Fung, PK., Abeysuriya, GM.,
    Rennie, CJ and Zhao, XL.
-   "NeuroField: A Software Package for Neural Field Simulations and Analysis"
-   Plos Computational Biology 
+   "NeuroField: Theory and Simulation of Multiscale Neurla Field Dynamics"
+   sunmitted to PLoS Computational Biology 
 
 2) The latest stable release can be found at: 
    https://github.com/BrainDynamicsUSYD/neurofield/releases/latest
