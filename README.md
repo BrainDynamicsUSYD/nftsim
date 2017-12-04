@@ -74,7 +74,7 @@ Liked the code? Did you use it in your research and got awesome results?
 
 Please cite us as follows:
    
-   Sanz-Leon, P., Robinson, PA., Knock, SA., Drysdale, PM., Fung, PK., Abeysuriya, GM.,
+   Sanz-Leon, P., Robinson, PA., Knock, SA., Drysdale, PM., Fung, PK., Abeysuriya, RG.,
    Rennie, CJ and Zhao, XL.
    
    _NeuroField: Theory and Simulation of Multiscale Neural Field Dynamics_
