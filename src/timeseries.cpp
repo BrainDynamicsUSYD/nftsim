@@ -30,8 +30,8 @@ using std::vector;
 void Timeseries::init( Configf& configf ) {
   series_size_type superimpose = 1;
   configf.optional("Superimpose", superimpose);
-  double duration = 0.0; ///< Duration of the stimulus.
-  double onset = 0.0; ///< Onset time for the stimulus.
+  double duration = 0.0; // Duration of the stimulus.
+  double onset = 0.0; // Onset time for the stimulus.
   for( series_size_type i=0; i<superimpose; i++ ) {
     if( superimpose > 0 ) {
       configf.next("Stimulus");
