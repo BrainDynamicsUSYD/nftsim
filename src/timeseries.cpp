@@ -109,12 +109,13 @@ Timeseries::~Timeseries() {
 }
 
 void Timeseries::fire( vector<double>& Q ) const {
-  vector<double> temp(nodes,0);
+  vector<double> temp(nodes, 0.0);
   Q.clear();
-  Q.resize(nodes,0);
+  Q.resize(nodes, 0.0);
   for(auto serie : series) { // for each timeseries
     // if the timeseries is active
     if( (serie->t >= 0) && (serie->t < serie->duration) ) {
+      temp.assign(nodes, 0.0);
       serie->fire(temp);
       // then copy the temporary firing to the final firing
       for(double j : serie->node) {
