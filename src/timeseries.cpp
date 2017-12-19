@@ -139,7 +139,10 @@ void Timeseries::step() {
   }
 }
 
-/** @brief Contains time-series that can be combined to form a stimulus.*/
+/** @brief Contains time-series that can be combined to form a stimulus.
+
+  **NOTE:** Timeseries::fire handles Onset and Duration.
+*/
 namespace TIMESERIES {
 
   /** @brief Initialise the value returned by Const from the .conf file.*/
@@ -153,10 +156,17 @@ namespace TIMESERIES {
   }
 
 
+  /** @brief Parameter initialisation of a square Pulse train.
+
+    The .conf file is required to specify Amplitude and Width, eg:
+      amplitude: 1.0 Width: 0.5e-3
+    with Period, Frequency, and Pulses being optional. Period and Frequency are
+    mutually exclusive with Period taking precedence if both are specified.
+  */
   void Pulse::init( Configf& configf ) {
-    period = 1000.0;
+    // Set default values for optional parameters.
+    period = inf;
     pulses = 1;
-    // Amplitude: 1 Width: .5e-3 "Period/Frequency": 1 "Pulses": 1
     configf.param("Amplitude", amp);
     configf.param("Width", width);
     if( !configf.optional("Period", period) ) {
@@ -167,11 +177,12 @@ namespace TIMESERIES {
     configf.optional("Pulses", pulses);
   }
 
+  /** @brief Generate a train of square pulses.*/
   void Pulse::fire( vector<double>& Q ) const {
-    if( fmod(t,period)>=0 && fmod(t,period)<width && t/period<pulses ) {
-      for( size_type i=0; i<nodes; i++ ) {
-        Q[i] = amp;
-      }
+    //  Between start of each pulse and start plus width && as long as we have
+    //  not reached the maximum number of pulses.
+    if((fmod(t, period) < width) && (t/period < pulses) ) {
+      Q.assign(nodes, amp); // assign nodes instances of amp to Q.
     }
   }
 
