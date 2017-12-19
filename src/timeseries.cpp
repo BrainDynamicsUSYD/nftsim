@@ -1,9 +1,19 @@
 /** @file timeseries.cpp
-  @brief A brief, one sentence description.
+  @brief A collection of time-series definitions, primarily for use as stimuli.
 
-  A more detailed multiline description...
+  The currently implemented time-series include:
+    + `Const` A constant value.
+    + `Pulse` .
+    + `White` Gaussian amplitude distribution white noise.
+    + `WhiteCoherent` .
+    + `PAS` Paired Associative Stimulation.
+    + `Burst` .
+    + `Sine` A sine wave.
 
-  @author Peter Drysdale, Felix Fung,
+    Multiple `Timeseries` can be combined using the `Superimpose` keyword in
+    the configuration file.
+
+  @author Peter Drysdale, Felix Fung, Stuart A. Knock,
 */
 
 // Main module header
@@ -42,11 +52,11 @@ void Timeseries::init( Configf& configf ) {
     if(!configf.optional("Onset", onset)){
       onset = 0.0;
     }
-    t = -onset; //Initialise stimulus time relative to onset.
+    t = -onset; // Initialise stimulus time relative to onset.
 
     // Set stimulus duration.
     if(!configf.optional("Duration", duration) ) {
-      duration = inf; //Unspecified => whole simulation.
+      duration = inf; // Unspecified => whole simulation.
     }
 
     vector<double> temp_node;
@@ -65,24 +75,22 @@ void Timeseries::init( Configf& configf ) {
         exit(EXIT_FAILURE);
       }
     }
-    //else
-    //node.push_back( temp_node[j]-1 );
 
     // PUT YOUR TIMEFUNCTION HERE
     if( mode[0]=="Const" ) {
-      series.push_back( new TIMESERIES::Const(nodes,deltat,index) );
+      series.push_back( new TIMESERIES::Const(nodes, deltat, index) );
     } else if( mode[0]=="Pulse" ) {
-      series.push_back( new TIMESERIES::Pulse(nodes,deltat,index) );
+      series.push_back( new TIMESERIES::Pulse(nodes, deltat, index) );
     } else if( mode[0]=="White" ) {
-      series.push_back( new TIMESERIES::White(nodes,deltat,index) );
+      series.push_back( new TIMESERIES::White(nodes, deltat, index) );
     } else if( mode[0]=="WhiteCoherent" ) {
-      series.push_back( new TIMESERIES::WhiteCoherent(nodes,deltat,index) );
+      series.push_back( new TIMESERIES::WhiteCoherent(nodes, deltat, index) );
     } else if( mode[0]=="PAS" ) {
-      series.push_back( new TIMESERIES::PAS(nodes,deltat,index) );
+      series.push_back( new TIMESERIES::PAS(nodes, deltat, index) );
     } else if( mode[0]=="Burst" ) {
-      series.push_back( new TIMESERIES::Burst(nodes,deltat,index) );
+      series.push_back( new TIMESERIES::Burst(nodes, deltat, index) );
     } else if( mode[0]=="Sine" ) {
-      series.push_back( new TIMESERIES::Sine(nodes,deltat,index) );
+      series.push_back( new TIMESERIES::Sine(nodes, deltat, index) );
     } else {
       cerr<<"Stimulus mode "<<mode[0].c_str()<<" not found"<<endl;
       exit(EXIT_FAILURE);
@@ -115,7 +123,7 @@ void Timeseries::fire( vector<double>& Q ) const {
   for(auto serie : series) { // for each timeseries
     // if the timeseries is active
     if( (serie->t >= 0) && (serie->t < serie->duration) ) {
-      temp.assign(nodes, 0.0);
+      temp.assign(nodes, 0.0); // re-zero temp vector.
       serie->fire(temp);
       // then copy the temporary firing to the final firing
       for(double j : serie->node) {
@@ -133,174 +141,204 @@ void Timeseries::step() {
 
 namespace TIMESERIES {
 
-void Const::init( Configf& configf ) {
-  // Mean: 0
-  configf.param("Mean",mean);
-}
-
-void Const::fire( vector<double>& Q ) const {
-  for( size_type i=0; i<nodes; i++ ) {
-    Q[i] = mean;
+  // Initialise the time-series parameters from the .conf file.
+  void Const::init( Configf& configf ) {
+    // Mean: 0
+    configf.param("Mean", mean);
   }
-}
 
-void Pulse::init( Configf& configf ) {
-  period = 1000.0;
-  pulses = 1;
-  // Amplitude: 1 Width: .5e-3 "Period/Frequency": 1 "Pulses": 1
-  configf.param("Amplitude",amp);
-  configf.param("Width",width);
-  if( !configf.optional("Period",period) ) {
-    if( configf.optional("Frequency",period) ) {
-      period = 1.0/period;
-    }
-  }
-  configf.optional("Pulses",pulses);
-}
+  /** @brief Brief description of the member function.
 
-void Pulse::fire( vector<double>& Q ) const {
-  if( fmod(t,period)>=0 && fmod(t,period)<width && t/period<pulses ) {
+    A longer description if necessary... latex equations...
+  */
+  void Const::fire( vector<double>& Q ) const {
     for( size_type i=0; i<nodes; i++ ) {
-      Q[i] = amp;
+      Q[i] = mean;
     }
   }
-}
 
-void White::init( Configf& configf ) {
-  // Mean: 1 Std: 1 Ranseed: 1
-  // Mean: 1 Psd: 1 Ranseed: 1
-  configf.param("Mean",mean);
-  if( !configf.optional("Std",amp) ) {
-    configf.param("Psd",amp);
-    // index of timeseries the same as that of population
 
-    if(nodes>1) {
-      deltax = atof(configf.find(
-                      label("Population ",index+1)+"*Length").c_str()) /sqrt(nodes);
-      amp = sqrt(4.0*pow(M_PI,3)*pow(amp,2)/deltat/pow(deltax,2));
+  void Pulse::init( Configf& configf ) {
+    period = 1000.0;
+    pulses = 1;
+    // Amplitude: 1 Width: .5e-3 "Period/Frequency": 1 "Pulses": 1
+    configf.param("Amplitude", amp);
+    configf.param("Width", width);
+    if( !configf.optional("Period", period) ) {
+      if( configf.optional("Frequency", period) ) {
+        period = 1.0/period;
+      }
+    }
+    configf.optional("Pulses", pulses);
+  }
+
+  void Pulse::fire( vector<double>& Q ) const {
+    if( fmod(t,period)>=0 && fmod(t,period)<width && t/period<pulses ) {
+      for( size_type i=0; i<nodes; i++ ) {
+        Q[i] = amp;
+      }
+    }
+  }
+
+
+  void White::init( Configf& configf ) {
+    // Mean: 1 Std: 1 Ranseed: 1
+    // Mean: 1 Psd: 1 Ranseed: 1
+    configf.param("Mean", mean);
+    if( !configf.optional("Std", amp) ) {
+      configf.param("Psd", amp);
+      // index of timeseries the same as that of population
+
+      if(nodes>1) {
+        deltax = atof(configf.find(
+                        label("Population ",index+1)+"*Length").c_str()) /sqrt(nodes);
+        amp = sqrt(4.0*pow(M_PI,3)*pow(amp,2)/deltat/pow(deltax,2));
+      } else {
+        amp = sqrt(M_PI*pow(amp,2)/deltat);
+      }
+
+    }
+    if(configf.optional("Ranseed", seed)) {
+      random = new Random(seed, mean, amp);
     } else {
-      amp = sqrt(M_PI*pow(amp,2)/deltat);
-    }
-
-  }
-  if(configf.optional("Ranseed",seed)) {
-    random = new Random(seed,mean,amp);
-  } else {
-    random = new Random(mean,amp);
-  }
-}
-
-void White::fire( vector<double>& Q ) const {
-  for(double& x : Q) {
-    random->get(x);
-  }
-}
-
-void WhiteCoherent::init( Configf& configf ) {
-  // Mean: 1 Std: 1 Ranseed: 1
-  // Mean: 1 Psd: 1 Ranseed: 1
-  configf.param("Mean",mean);
-  if( !configf.optional("Std",amp) ) {
-    configf.param("Psd",amp);
-    // index of timeseries the same as that of population
-    double deltax = atof(configf.find(
-                           label("Population ",index+1)+"*Length").c_str()) /sqrt(nodes);
-    amp = sqrt(4.0*pow(M_PI,3.0)*pow(amp,2)/deltat/pow(deltax,2));
-  }
-  if(configf.optional("Ranseed",seed)) {
-    random = new Random(seed,mean,amp);
-  } else {
-    random = new Random(mean,amp);
-  }
-}
-
-void WhiteCoherent::fire( vector<double>& Q ) const {
-  double v;
-  random->get(v);
-  for( double& x : Q) {
-    x = v;
-  }
-}
-
-void PAS::init( Configf& configf ) {
-  // ISI: 10e-3
-  // N20 width: 2.5e-3 N20 height: 5
-  // P25 width: 3.5e-3 P25 height: 5
-  // TMS width: 0.5e-3 TMS height: 3
-  configf.param("ISI",isi);
-  configf.param("N20 width", n20w);
-  configf.param("N20 height",n20h);
-  configf.param("P25 width", p25w);
-  configf.param("P25 height",p25h);
-  configf.param("TMS width", tmsw);
-  configf.param("TMS height",tmsh);
-  if( isi<0 ) {
-    t -= isi;
-    t_mns = -isi;
-  } else {
-    t_mns = 0.0;
-  }
-}
-
-void PAS::fire( vector<double>& Q ) const {
-  // MNS
-  if( t_mns<=t && t<t_mns+n20w ) {
-    for( size_type i=0; i<nodes; i++ ) {
-      Q[i] = -n20h*sin(M_PI*(t-t_mns)/n20w);
-    }
-  } else if( t_mns+n20w<=t && t<t_mns+n20w+p25w ) {
-    for( size_type i=0; i<nodes; i++ ) {
-      Q[i] =  p25h*sin(M_PI*(t-t_mns-n20w)/p25w);
+      random = new Random(mean, amp);
     }
   }
 
-  // TMS
-  if( t_mns+n20w/2+isi<=t && t<t_mns+n20w/2+isi+tmsw ) {
-    for( size_type i=0; i<nodes; i++ ) {
-      Q[i] += tmsh;
+  void White::fire( vector<double>& Q ) const {
+    for(double& x : Q) {
+      random->get(x);
     }
   }
-}
 
-void Burst::init( Configf& configf ) {
-  // Amplitude: 10 Width: .5e-3 Bursts: 3 Burst Frequency: 50 On: 2 Off: 8 Total Pulses: 1000
-  configf.param("Amplitude",amp);
-  configf.param("Width",width);
-  configf.param("Bursts",bursts);
-  configf.param("Burst Frequency",freq);
-  configf.param("Oscillation Frequency",oscillation_freq);
-  configf.param("On",on);
-  configf.param("Off",off);
-}
 
-void Burst::fire( vector<double>& Q ) const {
-  if( fmod(t,on+off)>=0 && fmod(t,on+off)<on &&
-      fmod(t,1/oscillation_freq)>=0 && fmod(t,1/oscillation_freq)<bursts/freq &&
-      fmod(t,1/freq)>=0 && fmod(t,1/freq)<width ) {
-    for( size_type i=0; i<nodes; i++ ) {
-      Q[i] = amp;
+  void WhiteCoherent::init( Configf& configf ) {
+    // Mean: 1 Std: 1 Ranseed: 1
+    // Mean: 1 Psd: 1 Ranseed: 1
+    configf.param("Mean", mean);
+    if( !configf.optional("Std", amp) ) {
+      configf.param("Psd", amp);
+      // index of timeseries the same as that of population
+      double deltax = atof(configf.find(
+                             label("Population ",index+1)+"*Length").c_str()) /sqrt(nodes);
+      amp = sqrt(4.0*pow(M_PI,3.0)*pow(amp,2)/deltat/pow(deltax,2));
+    }
+    if(configf.optional("Ranseed", seed)) {
+      random = new Random(seed, mean, amp);
+    } else {
+      random = new Random(mean, amp);
     }
   }
-}
 
-void Sine::init( Configf& configf ) {
-  // Amp: 1 Width: .5 Period: 1 Phase: 0
-  configf.param("Amp",amp);
-  configf.param("Width",width);
-  period = 1.0;
-  configf.optional("Period",period);
-  phase  = 0.0;
-  configf.optional("Phase",phase);
-  pulses = 1;
-  configf.optional("Pulses",pulses);
-}
-
-void Sine::fire( vector<double>& Q ) const {
-  if( fmod(t,period)>=0 && fmod(t,period)<width && t/period<pulses ) {
-    for( size_type i=0; i<nodes; i++ ) {
-      Q[i] = amp*sin( 2.0*M_PI*( fmod(t,period)/width -phase/360.0 ) );
+  void WhiteCoherent::fire( vector<double>& Q ) const {
+    double v;
+    random->get(v);
+    for( double& x : Q) {
+      x = v;
     }
   }
-}
+
+
+  /** @brief Parameter initialisation of Paired Associative Stimulation (PAS).
+
+    The .conf file is required to specify all parameters, example values are:
+      ISI: 10.0e-3
+      N20 width: 2.5e-3;  N20 height: 5.
+      P25 width: 3.5e-3;  P25 height: 5.
+      TMS width: 0.5e-3;  TMS height: 3.
+  */
+  void PAS::init( Configf& configf ) {
+    // Load parameter values from the conf file.
+    configf.param("ISI", isi);
+    configf.param("N20 width",  n20w);
+    configf.param("N20 height", n20h);
+    configf.param("P25 width",  p25w);
+    configf.param("P25 height", p25h);
+    configf.param("TMS width",  tmsw);
+    configf.param("TMS height", tmsh);
+    // Adjust time... negative ISI...???
+    if( isi<0 ) {
+      t -= isi;
+      t_mns = -isi;
+    } else {
+      t_mns = 0.0;
+    }
+  }
+
+  /** @brief Paired Associative Stimulation (PAS).
+
+    PAS is a Transcranial Magnetic Stimulation (TMS) protocol that consists
+    of electrical stimulation of the median nerve at the wrist (MNS) followed
+    by TMS of the contralateral primary motor region (M1).
+
+    Wolters, Alexander, et al. "Timing‐dependent plasticity in human primary
+    somatosensory cortex." The Journal of physiology 565.3 (2005): 1039-1052.
+
+    Müller-Dahlhaus, Florian, Ulf Ziemann, and Joseph Classen. "Plasticity
+    resembling spike-timing dependent synaptic plasticity: the evidence in
+    human cortex." Frontiers in synaptic neuroscience 2 (2010).
+  */
+  void PAS::fire( vector<double>& Q ) const {
+    // Median Nerve-evoked SomatoSensory-Evoked Potential (MN-SSEP).
+    if( t_mns<=t && t<t_mns+n20w ) {
+      for( size_type i=0; i<nodes; i++ ) {
+        Q[i] = -n20h*sin(M_PI*(t-t_mns)/n20w);
+      }
+    } else if( t_mns+n20w<=t && t<t_mns+n20w+p25w ) {
+      for( size_type i=0; i<nodes; i++ ) {
+        Q[i] =  p25h*sin(M_PI*(t-t_mns-n20w)/p25w);
+      }
+    }
+
+    // Transcranial Magnetic Stimulation (TMS)
+    if( t_mns+n20w/2+isi<=t && t<t_mns+n20w/2+isi+tmsw ) {
+      for( size_type i=0; i<nodes; i++ ) {
+        Q[i] += tmsh;
+      }
+    }
+  }
+
+
+  void Burst::init( Configf& configf ) {
+    // Amplitude: 10 Width: .5e-3 Bursts: 3 Burst Frequency: 50 On: 2 Off: 8 Total Pulses: 1000
+    configf.param("Amplitude", amp);
+    configf.param("Width", width);
+    configf.param("Bursts", bursts);
+    configf.param("Burst Frequency", freq);
+    configf.param("Oscillation Frequency", oscillation_freq);
+    configf.param("On", on);
+    configf.param("Off", off);
+  }
+
+  void Burst::fire( vector<double>& Q ) const {
+    if( fmod(t,on+off)>=0 && fmod(t,on+off)<on &&
+        fmod(t,1/oscillation_freq)>=0 && fmod(t,1/oscillation_freq)<bursts/freq &&
+        fmod(t,1/freq)>=0 && fmod(t,1/freq)<width ) {
+      for( size_type i=0; i<nodes; i++ ) {
+        Q[i] = amp;
+      }
+    }
+  }
+
+
+  void Sine::init( Configf& configf ) {
+    // Amp: 1 Width: .5 Period: 1 Phase: 0
+    configf.param("Amp", amp);
+    configf.param("Width", width);
+    period = 1.0;
+    configf.optional("Period", period);
+    phase  = 0.0;
+    configf.optional("Phase", phase);
+    pulses = 1;
+    configf.optional("Pulses", pulses);
+  }
+
+  void Sine::fire( vector<double>& Q ) const {
+    if( fmod(t,period)>=0 && fmod(t,period)<width && t/period<pulses ) {
+      for( size_type i=0; i<nodes; i++ ) {
+        Q[i] = amp*sin( 2.0*M_PI*( fmod(t,period)/width -phase/360.0 ) );
+      }
+    }
+  }
 
 } // namespace TIMESERIES
