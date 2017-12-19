@@ -139,6 +139,19 @@ void Timeseries::step() {
   }
 }
 
+//TODO: The replication of timeseries to a vector length nodes for Q is
+//      redundant when there is no explicit space to them. A single number
+//      would be all that needs to be returned with mapping to nodes done
+//      in Timeseries::fire(). The exception is for noise, where we want a
+//      different random sequence at each point in space and typically it
+//      is applied to all nodes anyway. To maintain a consistent interface,
+//      it is probably best to have the vector returned by the individual
+//      TIMESERIES fire() methods be of length the number of nodes that the
+//      stimulus will be applied to... This becomes more important for higher
+//      resolution surfaces, where currently applying a stimulus to a single
+//      node of a 1000x1000 surface will produce a million element vector,
+//      rather than the single number that is required...
+
 /** @brief Contains time-series that can be combined to form a stimulus.
 
   **NOTE:** Timeseries::fire handles Onset and Duration.
@@ -249,10 +262,10 @@ namespace TIMESERIES {
   /** @brief Parameter initialisation of Paired Associative Stimulation (PAS).
 
     The .conf file is required to specify all parameters, example values are:
-      ISI: 10.0e-3;
-      N20 width: 2.5e-3;  N20 height: 5.0;
-      P25 width: 3.5e-3;  P25 height: 5.0;
-      TMS width: 0.5e-3;  TMS height: 3.0;
+      ISI: 10.0e-3
+      N20 width: 2.5e-3  N20 height: 5.0
+      P25 width: 3.5e-3  P25 height: 5.0
+      TMS width: 0.5e-3  TMS height: 3.0
   */
   void PAS::init( Configf& configf ) {
     // Load parameter values from the conf file.
@@ -287,14 +300,13 @@ namespace TIMESERIES {
   */
   void PAS::fire( vector<double>& Q ) const {
     // Median Nerve-evoked SomatoSensory-Evoked Potential (MN-SSEP).
+    double amp;
     if( t_mns<=t && t<t_mns+n20w ) {
-      for( size_type i=0; i<nodes; i++ ) {
-        Q[i] = -n20h*sin(M_PI*(t-t_mns)/n20w);
-      }
+      amp = -n20h*sin(M_PI*(t-t_mns)/n20w);
+      Q.assign(nodes, amp); // assign nodes instances of amp to Q.
     } else if( t_mns+n20w<=t && t<t_mns+n20w+p25w ) {
-      for( size_type i=0; i<nodes; i++ ) {
-        Q[i] =  p25h*sin(M_PI*(t-t_mns-n20w)/p25w);
-      }
+      amp = p25h*sin(M_PI*(t-t_mns-n20w)/p25w);
+      Q.assign(nodes, amp); // assign nodes instances of amp to Q.
     }
 
     // Transcranial Magnetic Stimulation (TMS)
