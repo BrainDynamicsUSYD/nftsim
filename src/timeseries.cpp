@@ -2,13 +2,13 @@
   @brief A collection of time-series definitions, primarily for use as stimuli.
 
   The currently implemented time-series include:
-    + `Const` A constant value.
-    + `Pulse` .
-    + `White` Gaussian amplitude distribution white noise.
-    + `WhiteCoherent` .
-    + `PAS` Paired Associative Stimulation.
-    + `Burst` .
-    + `Sine` A sine wave.
+    + TIMESERIES::Const: A constant value.
+    + TIMESERIES::Pulse: .
+    + TIMESERIES::White: Gaussian amplitude distribution white noise.
+    + TIMESERIES::WhiteCoherent: .
+    + TIMESERIES::PAS: Paired Associative Stimulation.
+    + TIMESERIES::Burst: .
+    + TIMESERIES::Sine: A sine wave.
 
     Multiple `Timeseries` can be combined using the `Superimpose` keyword in
     the configuration file.
@@ -139,22 +139,17 @@ void Timeseries::step() {
   }
 }
 
+/** @brief Contains time-series that can be combined to form a stimulus.*/
 namespace TIMESERIES {
 
-  // Initialise the time-series parameters from the .conf file.
+  /** @brief Initialise the value returned by Const from the .conf file.*/
   void Const::init( Configf& configf ) {
-    // Mean: 0
     configf.param("Mean", mean);
   }
 
-  /** @brief Brief description of the member function.
-
-    A longer description if necessary... latex equations...
-  */
+  /** @brief Provide a constant value.*/
   void Const::fire( vector<double>& Q ) const {
-    for( size_type i=0; i<nodes; i++ ) {
-      Q[i] = mean;
-    }
+    Q.assign(nodes, mean); // assign nodes instances of mean to Q.
   }
 
 
@@ -242,10 +237,10 @@ namespace TIMESERIES {
   /** @brief Parameter initialisation of Paired Associative Stimulation (PAS).
 
     The .conf file is required to specify all parameters, example values are:
-      ISI: 10.0e-3
-      N20 width: 2.5e-3;  N20 height: 5.
-      P25 width: 3.5e-3;  P25 height: 5.
-      TMS width: 0.5e-3;  TMS height: 3.
+      ISI: 10.0e-3;
+      N20 width: 2.5e-3;  N20 height: 5.0;
+      P25 width: 3.5e-3;  P25 height: 5.0;
+      TMS width: 0.5e-3;  TMS height: 3.0;
   */
   void PAS::init( Configf& configf ) {
     // Load parameter values from the conf file.
