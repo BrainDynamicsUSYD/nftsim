@@ -170,8 +170,9 @@ namespace TIMESERIES {
     configf.param("Amplitude", amp);
     configf.param("Width", width);
     if( !configf.optional("Period", period) ) {
-      if( configf.optional("Frequency", period) ) {
-        period = 1.0/period;
+      double freq;
+      if( configf.optional("Frequency", freq) ) {
+        period = 1.0/freq;
       }
     }
     configf.optional("Pulses", pulses);
