@@ -64,6 +64,7 @@ void Timeseries::init( Configf& configf ) {
       temp_node = configf.numbers();
     }
     if( temp_node.empty() ) {
+      temp_node.reserve(nodes); // Reserve memory to avoid growing inside loop.
       for( size_type j=1; j<=nodes; j++ ) {
         temp_node.push_back(j);
       }
@@ -118,8 +119,7 @@ Timeseries::~Timeseries() {
 
 void Timeseries::fire( vector<double>& Q ) const {
   vector<double> temp(nodes, 0.0);
-  Q.clear();
-  Q.resize(nodes, 0.0);
+  Q.assign(nodes, 0.0); // Zero the Q vector we were provided.
   for(auto serie : series) { // for each timeseries
     // if the timeseries is active
     if( (serie->t >= 0) && (serie->t < serie->duration) ) {
@@ -151,6 +151,15 @@ void Timeseries::step() {
 //      resolution surfaces, where currently applying a stimulus to a single
 //      node of a 1000x1000 surface will produce a million element vector,
 //      rather than the single number that is required...
+
+//TODO: Naming should be more specific. Eg., current "Pulse" should probably be
+//      something like "PulseSquare" while current "Sine" should be something
+//      like "PulseSine". A basic "Sine" should also be added which just has
+//      amplitude, frequency|period, and phase with the more "usual" meanings.
+//      Then we should add a more physically realistic, and less numerically
+//      problematic, smooth pulse with eg sigmoidal onset and cessation, which
+//      would then be "PulseSigmoid". Example parameters with associated plots
+//      should be added to the user manual.
 
 /** @brief Contains time-series that can be combined to form a stimulus.
 
@@ -200,7 +209,11 @@ namespace TIMESERIES {
     }
   }
 
+// TODO: get reference and review noise normalisation for White*, seems like
+//       it will at best only work for square grid... need, at least, access
+//       to longside here.
 
+  /** @brief Initialises white noise.*/
   void White::init( Configf& configf ) {
     // Mean: 1 Std: 1 Ranseed: 1
     // Mean: 1 Psd: 1 Ranseed: 1
@@ -225,6 +238,7 @@ namespace TIMESERIES {
     }
   }
 
+  /** @brief Retrieves a different random variate for each nodes(space).*/
   void White::fire( vector<double>& Q ) const {
     for(double& x : Q) {
       random->get(x);
@@ -232,6 +246,7 @@ namespace TIMESERIES {
   }
 
 
+  /** @brief Initialises spatially uniform/coherent white noise.*/
   void WhiteCoherent::init( Configf& configf ) {
     // Mean: 1 Std: 1 Ranseed: 1
     // Mean: 1 Psd: 1 Ranseed: 1
@@ -250,12 +265,11 @@ namespace TIMESERIES {
     }
   }
 
+  /** @brief Retrieves a single random variate and assigns it to all nodes(space).*/
   void WhiteCoherent::fire( vector<double>& Q ) const {
     double v;
-    random->get(v);
-    for( double& x : Q) {
-      x = v;
-    }
+    random->get(v); // get a single random value for this time-step.
+    Q.assign(nodes, v); // assign nodes instances of v to Q.
   }
 
 
