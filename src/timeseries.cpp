@@ -29,19 +29,24 @@ using std::vector;
 
 void Timeseries::init( Configf& configf ) {
   series_size_type superimpose = 1;
-  configf.optional("Superimpose",superimpose);
+  configf.optional("Superimpose", superimpose);
+  double duration = 0.0; // Duration of the stimulus.
+  double onset = 0.0; // Onset time for the stimulus.
   for( series_size_type i=0; i<superimpose; i++ ) {
     if( superimpose > 0 ) {
       configf.next("Stimulus");
     }
     vector<string> mode = configf.arb("-");
 
-    configf.optional("Onset",t);
-    t = -t;
-    if( !configf.optional("Duration",cease) ) {
-      if( configf.optional("Cease",cease) ) {
-        cease += t;
-      }
+    // Set stimulus onset time.
+    if(!configf.optional("Onset", onset)){
+      onset = 0.0;
+    }
+    t = -onset; //Initialise stimulus time relative to onset.
+
+    // Set stimulus duration.
+    if(!configf.optional("Duration", duration) ) {
+      duration = inf; //Unspecified => whole simulation.
     }
 
     vector<double> temp_node;
@@ -84,7 +89,7 @@ void Timeseries::init( Configf& configf ) {
     }
     // END PUT YOUR TIMEFUNCTION HERE
     series[i]->t = t;
-    series[i]->cease = cease;
+    series[i]->duration = duration;
     for(double j : temp_node) {
       series[i]->node.push_back( j-1 );
     }
@@ -94,7 +99,7 @@ void Timeseries::init( Configf& configf ) {
 }
 
 Timeseries::Timeseries( size_type nodes, double deltat, size_type index )
-  : NF(nodes,deltat,index), series(), t(0.0), cease(1000.0) {
+  : NF(nodes,deltat,index), series() {
 }
 
 Timeseries::~Timeseries() {
@@ -104,12 +109,13 @@ Timeseries::~Timeseries() {
 }
 
 void Timeseries::fire( vector<double>& Q ) const {
-  vector<double> temp(nodes,0);
+  vector<double> temp(nodes, 0.0);
   Q.clear();
-  Q.resize(nodes,0);
+  Q.resize(nodes, 0.0);
   for(auto serie : series) { // for each timeseries
     // if the timeseries is active
-    if( serie->t>=0 && serie->t<serie->cease ) {
+    if( (serie->t >= 0) && (serie->t < serie->duration) ) {
+      temp.assign(nodes, 0.0);
       serie->fire(temp);
       // then copy the temporary firing to the final firing
       for(double j : serie->node) {

@@ -15,6 +15,7 @@
 #include "random.h"     // Random;
 
 // C++ standard library headers
+#include <limits>   // std::numeric_limits<double>::infinity()
 #include <vector>   // std::vector;
 
 class Timeseries : public NF {
@@ -24,8 +25,9 @@ class Timeseries : public NF {
 
   std::vector<Timeseries*> series;
   std::vector<double> node;
-  double t = 0.0;
-  double cease = 0.0;
+  double inf = std::numeric_limits<double>::infinity(); ///< Infinity
+  double t = 0.0;     ///< Current time relative to stimulus onset.
+  double duration = inf; ///< Duration of the stimulus.
  public:
   Timeseries(const Timeseries&) = delete;  // No copy constructor allowed.
   Timeseries() = delete;                   // No default constructor allowed.
