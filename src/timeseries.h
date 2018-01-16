@@ -112,14 +112,14 @@ namespace TIMESERIES {
     void fire( std::vector<double>& Q ) const override;
   };
 
-  struct Sine : public Timeseries {
+  struct PulseSine : public Timeseries {
     double amp = 0.0;    ///<
     double width = 0.0;  ///<
     double period = 0.0; ///<
     double phase = 0.0;  ///<
     double pulses = 0.0; ///<
-    Sine(size_type nodes, double deltat, size_type index) : Timeseries(nodes, deltat, index) {}
-    ~Sine() override = default;
+    PulseSine(size_type nodes, double deltat, size_type index) : Timeseries(nodes, deltat, index) {}
+    ~PulseSine() override = default;
     void init( Configf& configf ) override;
     void fire( std::vector<double>& Q ) const override;
   };

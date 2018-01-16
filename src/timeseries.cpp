@@ -8,7 +8,7 @@
     + TIMESERIES::WhiteCoherent: .
     + TIMESERIES::PAS: Paired Associative Stimulation.
     + TIMESERIES::Burst: .
-    + TIMESERIES::Sine: A sine wave.
+    + TIMESERIES::PulseSine: A pulsed sine wave.
 
     Multiple `Timeseries` can be combined using the `Superimpose` keyword in
     the configuration file.
@@ -104,8 +104,8 @@ void Timeseries::init( Configf& configf ) {
       series.push_back( new TIMESERIES::PAS(nodes, deltat, index) );
     } else if( mode[0]=="Burst" ) {
       series.push_back( new TIMESERIES::Burst(nodes, deltat, index) );
-    } else if( mode[0]=="Sine" ) {
-      series.push_back( new TIMESERIES::Sine(nodes, deltat, index) );
+    } else if( mode[0]=="PulseSine" ) {
+      series.push_back( new TIMESERIES::PulseSine(nodes, deltat, index) );
     } else {
       cerr<<"Stimulus mode "<<mode[0].c_str()<<" not found"<<endl;
       exit(EXIT_FAILURE);
@@ -167,8 +167,8 @@ void Timeseries::step() {
 //      rather than the single number that is required...
 
 //TODO: Naming should be more specific. Eg., current "Pulse" should probably be
-//      something like "PulseRect" while current "Sine" should be something
-//      like "PulseSine". A basic "Sine" should also be added which just has
+//      something like "PulseRect" while current "PulseSine" should be something
+//      like "PulseSine". A basic "PulseSine" should also be added which just has
 //      amplitude, frequency|period, and phase with the more "usual" meanings.
 //      Then we should add a more physically realistic, and less numerically
 //      problematic, smooth pulse with eg sigmoidal onset and cessation, which
@@ -368,7 +368,8 @@ namespace TIMESERIES {
   }
 
 
-  void Sine::init( Configf& configf ) {
+  /** @brief Initialises a pulsed sine wave.*/
+  void PulseSine::init( Configf& configf ) {
     // Amp: 1 Width: .5 Period: 1 Phase: 0
     configf.param("Amp", amp);
     configf.param("Width", width);
@@ -380,7 +381,8 @@ namespace TIMESERIES {
     configf.optional("Pulses", pulses);
   }
 
-  void Sine::fire( vector<double>& Q ) const {
+  /** @brief Generate a train of sine wave pulses.*/
+  void PulseSine::fire( vector<double>& Q ) const {
     if( fmod(t,period)>=0 && fmod(t,period)<width && t/period<pulses ) {
       for( size_type i=0; i<nodes; i++ ) {
         Q[i] = amp*sin( 2.0*M_PI*( fmod(t,period)/width -phase/360.0 ) );
