@@ -61,6 +61,15 @@ void Timeseries::init( Configf& configf ) {
 
     // Get any user specified Node indices to apply stimulus.
     vector<double> temp_node;
+    //TODO: should be vector<size_type>.
+    //      The existing use of double is due to a limitation of the
+    //      Configf which has only one member function, numbers(), for
+    //      reading multiple numbers. This member returns a vector of
+    //      doubles. This should be corrected by renaming numbers() to
+    //      something like read_doubles() and adding a new member
+    //      function for reading and returning unsigned int like size_type.
+    //      Only two should be required as indices(size_type) and doubles
+    //      are the only type of content we specify in vectors...
     if( configf.next("Node") ) {
       temp_node = configf.numbers();
     }
@@ -104,7 +113,7 @@ void Timeseries::init( Configf& configf ) {
     // END PUT YOUR TIMEFUNCTION HERE
     series[i]->t = t;
     series[i]->duration = duration;
-    for(double j : temp_node) {
+    for(size_type j : temp_node) {
       series[i]->node.push_back( j-1 );
     }
     series[i]->init(configf);
@@ -131,7 +140,7 @@ void Timeseries::fire( vector<double>& Q ) const {
       temp.assign(nodes, 0.0); // re-zero temp vector.
       serie->fire(temp);
       // then copy the temporary firing to the final firing
-      for(double j : serie->node) {
+      for(size_type j : serie->node) {
         Q[j] += temp[j];
       }
     }

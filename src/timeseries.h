@@ -24,7 +24,7 @@ class Timeseries : public NF {
   void init( Configf& configf ) override;
 
   std::vector<Timeseries*> series;
-  std::vector<double> node;
+  std::vector<size_type> node;
   double inf = std::numeric_limits<double>::infinity(); ///< Infinity
   double t = 0.0;     ///< Current time relative to stimulus onset.
   double duration = inf; ///< Duration of the stimulus.
