@@ -223,6 +223,34 @@ namespace TIMESERIES {
     }
   }
 
+
+  /** @brief Initialises a pulsed sine wave.
+
+    The .conf file is required to specify Amplitude and Width, eg:
+      amplitude: 1.0 Width: 0.5e-3
+    with Period, phase, and Pulses being optional.
+  */
+  void PulseSine::init( Configf& configf ) {
+    // Amp: 1 Width: .5 Period: 1 Phase: 0
+    configf.param("Amp", amp);
+    configf.param("Width", width);
+    period = 1.0;
+    configf.optional("Period", period);
+    phase  = 0.0;
+    configf.optional("Phase", phase);
+    pulses = 1;
+    configf.optional("Pulses", pulses);
+  }
+
+  /** @brief Generate a train of sine wave pulses.*/
+  void PulseSine::fire( vector<double>& Q ) const {
+    if( fmod(t,period)>=0 && fmod(t,period)<width && t/period<pulses ) {
+      for( size_type i=0; i<nodes; i++ ) {
+        Q[i] = amp*sin( 2.0*M_PI*( fmod(t,period)/width -phase/360.0 ) );
+      }
+    }
+  }
+
 // TODO: get reference and review noise normalisation for White*, seems like
 //       it will at best only work for square grid... need, at least, access
 //       to longside here.
@@ -363,29 +391,6 @@ namespace TIMESERIES {
         fmod(t,1/freq)>=0 && fmod(t,1/freq)<width ) {
       for( size_type i=0; i<nodes; i++ ) {
         Q[i] = amp;
-      }
-    }
-  }
-
-
-  /** @brief Initialises a pulsed sine wave.*/
-  void PulseSine::init( Configf& configf ) {
-    // Amp: 1 Width: .5 Period: 1 Phase: 0
-    configf.param("Amp", amp);
-    configf.param("Width", width);
-    period = 1.0;
-    configf.optional("Period", period);
-    phase  = 0.0;
-    configf.optional("Phase", phase);
-    pulses = 1;
-    configf.optional("Pulses", pulses);
-  }
-
-  /** @brief Generate a train of sine wave pulses.*/
-  void PulseSine::fire( vector<double>& Q ) const {
-    if( fmod(t,period)>=0 && fmod(t,period)<width && t/period<pulses ) {
-      for( size_type i=0; i<nodes; i++ ) {
-        Q[i] = amp*sin( 2.0*M_PI*( fmod(t,period)/width -phase/360.0 ) );
       }
     }
   }

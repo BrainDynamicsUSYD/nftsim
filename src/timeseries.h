@@ -57,6 +57,18 @@ namespace TIMESERIES {
     void fire( std::vector<double>& Q ) const override;
   };
 
+  struct PulseSine : public Timeseries {
+    double amp = 0.0;    ///< Amplitude of the pulse.
+    double width = 0.0;  ///< Width of the pulse [s], wavelength of sine.
+    double period = 0.0; ///< Time between the start of each pulse [s].
+    double phase = 0.0;  ///< Phase of the sine wave in [degrees].
+    double pulses = 0.0; ///< Maximum number of pulses.
+    PulseSine(size_type nodes, double deltat, size_type index) : Timeseries(nodes, deltat, index) {}
+    ~PulseSine() override = default;
+    void init( Configf& configf ) override;
+    void fire( std::vector<double>& Q ) const override;
+  };
+
   struct White : public Timeseries {
     uint_fast64_t seed = 0; ///<
     double amp = 0.0;       ///<
@@ -108,18 +120,6 @@ namespace TIMESERIES {
     double off = 0.0;   ///<
     double total = 0.0; ///<
     Burst(size_type nodes, double deltat, size_type index) : Timeseries(nodes, deltat, index) {}
-    void init( Configf& configf ) override;
-    void fire( std::vector<double>& Q ) const override;
-  };
-
-  struct PulseSine : public Timeseries {
-    double amp = 0.0;    ///<
-    double width = 0.0;  ///<
-    double period = 0.0; ///<
-    double phase = 0.0;  ///<
-    double pulses = 0.0; ///<
-    PulseSine(size_type nodes, double deltat, size_type index) : Timeseries(nodes, deltat, index) {}
-    ~PulseSine() override = default;
     void init( Configf& configf ) override;
     void fire( std::vector<double>& Q ) const override;
   };
