@@ -59,21 +59,26 @@ void Timeseries::init( Configf& configf ) {
       duration = inf; // Unspecified => whole simulation.
     }
 
+    // Get any user specified Node indices to apply stimulus.
     vector<double> temp_node;
     if( configf.next("Node") ) {
       temp_node = configf.numbers();
     }
-    if( temp_node.empty() ) {
-      temp_node.reserve(nodes); // Reserve memory to avoid growing inside loop.
-      for( size_type j=1; j<=nodes; j++ ) {
-        temp_node.push_back(j);
-      }
-    }
-    for(double j : temp_node) {
+
+    // Check user supplied Node indices are valid.
+    for(size_type j : temp_node) {
       if( j > nodes ) {
         cerr<<"Trying to plot node number "<<j
             <<", which is bigger than the highest node index."<<endl;
         exit(EXIT_FAILURE);
+      }
+    }
+
+    // No Node indices specified in configuration defaults to all nodes.
+    if( temp_node.empty() ) {
+      temp_node.reserve(nodes); // Reserve memory to avoid growing inside loop.
+      for( size_type j=1; j<=nodes; j++ ) {
+        temp_node.push_back(j);
       }
     }
 
@@ -238,7 +243,7 @@ namespace TIMESERIES {
     }
   }
 
-  /** @brief Retrieves a different random variate for each nodes(space).*/
+  /** @brief Retrieves a different random variate for each node(space).*/
   void White::fire( vector<double>& Q ) const {
     for(double& x : Q) {
       random->get(x);
