@@ -3,7 +3,7 @@
 
   The currently implemented time-series include:
     + TIMESERIES::Const: A constant value.
-    + TIMESERIES::Pulse: .
+    + TIMESERIES::PulseRect: A rectangular pulse train.
     + TIMESERIES::White: Gaussian amplitude distribution white noise.
     + TIMESERIES::WhiteCoherent: .
     + TIMESERIES::PAS: Paired Associative Stimulation.
@@ -94,8 +94,8 @@ void Timeseries::init( Configf& configf ) {
     // PUT YOUR TIMEFUNCTION HERE
     if( mode[0]=="Const" ) {
       series.push_back( new TIMESERIES::Const(nodes, deltat, index) );
-    } else if( mode[0]=="Pulse" ) {
-      series.push_back( new TIMESERIES::Pulse(nodes, deltat, index) );
+    } else if( mode[0]=="PulseRect" ) {
+      series.push_back( new TIMESERIES::PulseRect(nodes, deltat, index) );
     } else if( mode[0]=="White" ) {
       series.push_back( new TIMESERIES::White(nodes, deltat, index) );
     } else if( mode[0]=="WhiteCoherent" ) {
@@ -167,7 +167,7 @@ void Timeseries::step() {
 //      rather than the single number that is required...
 
 //TODO: Naming should be more specific. Eg., current "Pulse" should probably be
-//      something like "PulseSquare" while current "Sine" should be something
+//      something like "PulseRect" while current "Sine" should be something
 //      like "PulseSine". A basic "Sine" should also be added which just has
 //      amplitude, frequency|period, and phase with the more "usual" meanings.
 //      Then we should add a more physically realistic, and less numerically
@@ -192,14 +192,14 @@ namespace TIMESERIES {
   }
 
 
-  /** @brief Parameter initialisation of a square Pulse train.
+  /** @brief Parameter initialisation of a rectangular Pulse train.
 
     The .conf file is required to specify Amplitude and Width, eg:
       amplitude: 1.0 Width: 0.5e-3
     with Period, Frequency, and Pulses being optional. Period and Frequency are
     mutually exclusive with Period taking precedence if both are specified.
   */
-  void Pulse::init( Configf& configf ) {
+  void PulseRect::init( Configf& configf ) {
     // Set default values for optional parameters.
     period = inf;
     pulses = 1;
@@ -214,8 +214,8 @@ namespace TIMESERIES {
     configf.optional("Pulses", pulses);
   }
 
-  /** @brief Generate a train of square pulses.*/
-  void Pulse::fire( vector<double>& Q ) const {
+  /** @brief Generate a train of rectangular pulses.*/
+  void PulseRect::fire( vector<double>& Q ) const {
     //  Between start of each pulse and start plus width && as long as we have
     //  not reached the maximum number of pulses.
     if((fmod(t, period) < width) && (t/period < pulses) ) {

@@ -47,12 +47,12 @@ namespace TIMESERIES {
     void fire( std::vector<double>& Q ) const override;
   };
 
-  struct Pulse : public Timeseries {
+  struct PulseRect : public Timeseries {
     double amp = 0.0;    ///< Amplitude of the pulse.
     double width = 0.0;  ///< Width of the pulse [s].
     double period = 0.0; ///< Time between the start of each pulse [s].
     double pulses = 0.0; ///< Maximum number of pulses.
-    Pulse(size_type nodes, double deltat, size_type index) : Timeseries(nodes, deltat, index) {}
+    PulseRect(size_type nodes, double deltat, size_type index) : Timeseries(nodes, deltat, index) {}
     void init( Configf& configf ) override;
     void fire( std::vector<double>& Q ) const override;
   };
