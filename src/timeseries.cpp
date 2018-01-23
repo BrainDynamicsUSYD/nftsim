@@ -96,6 +96,10 @@ void Timeseries::init( Configf& configf ) {
       series.push_back( new TIMESERIES::Const(nodes, deltat, index) );
     } else if( mode[0]=="PulseRect" ) {
       series.push_back( new TIMESERIES::PulseRect(nodes, deltat, index) );
+    } else if( mode[0]=="PulseSine" ) {
+      series.push_back( new TIMESERIES::PulseSine(nodes, deltat, index) );
+    } else if( mode[0]=="Sine" ) {
+      series.push_back( new TIMESERIES::Sine(nodes, deltat, index) );
     } else if( mode[0]=="White" ) {
       series.push_back( new TIMESERIES::White(nodes, deltat, index) );
     } else if( mode[0]=="WhiteCoherent" ) {
@@ -104,8 +108,6 @@ void Timeseries::init( Configf& configf ) {
       series.push_back( new TIMESERIES::PAS(nodes, deltat, index) );
     } else if( mode[0]=="Burst" ) {
       series.push_back( new TIMESERIES::Burst(nodes, deltat, index) );
-    } else if( mode[0]=="PulseSine" ) {
-      series.push_back( new TIMESERIES::PulseSine(nodes, deltat, index) );
     } else {
       cerr<<"Stimulus mode "<<mode[0].c_str()<<" not found"<<endl;
       exit(EXIT_FAILURE);
@@ -249,6 +251,22 @@ namespace TIMESERIES {
         Q[i] = amp*sin( 2.0*M_PI*( fmod(t,period)/width -phase/360.0 ) );
       }
     }
+  }
+
+  /** @brief Parameter initialisation of a simple sine function.
+
+    The .conf file is required to specify Amplitude and frequency eg:
+      Amplitude: 512.0 Frequency: 4.0
+  */
+  void Sine::init( Configf& configf ) {
+    configf.param("Amplitude", amp);
+    configf.param("Frequency", freq);
+  }
+
+  /** @brief Generate a sine wave.*/
+  void Sine::fire( vector<double>& Q ) const {
+    // Assign nodes instances of the sine wave to Q.
+    Q.assign(nodes, amp*sin( 2.0 * M_PI * t * freq));
   }
 
 // TODO: get reference and review noise normalisation for White*, seems like

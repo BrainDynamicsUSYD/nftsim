@@ -69,6 +69,15 @@ namespace TIMESERIES {
     void fire( std::vector<double>& Q ) const override;
   };
 
+  struct Sine : public Timeseries {
+    double amp = 0.0;   ///< Amplitude of the sine wave.
+    double freq = 0.0;  ///< Frequency of the sine wave [s^-1].
+    Sine(size_type nodes, double deltat, size_type index) : Timeseries(nodes, deltat, index) {}
+    ~Sine() override = default;
+    void init( Configf& configf ) override;
+    void fire( std::vector<double>& Q ) const override;
+  };
+
   struct White : public Timeseries {
     uint_fast64_t seed = 0; ///<
     double amp = 0.0;       ///<
