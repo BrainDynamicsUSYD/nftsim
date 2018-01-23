@@ -195,7 +195,7 @@ namespace TIMESERIES {
   /** @brief Parameter initialisation of a rectangular Pulse train.
 
     The .conf file is required to specify Amplitude and Width, eg:
-      amplitude: 1.0 Width: 0.5e-3
+      Amplitude: 1.0 Width: 0.5e-3
     with Period, Frequency, and Pulses being optional. Period and Frequency are
     mutually exclusive with Period taking precedence if both are specified.
   */
@@ -227,12 +227,12 @@ namespace TIMESERIES {
   /** @brief Initialises a pulsed sine wave.
 
     The .conf file is required to specify Amplitude and Width, eg:
-      amplitude: 1.0 Width: 0.5e-3
+      Amplitude: 1.0 Width: 0.5e-3
     with Period, phase, and Pulses being optional.
   */
   void PulseSine::init( Configf& configf ) {
-    // Amp: 1 Width: .5 Period: 1 Phase: 0
-    configf.param("Amp", amp);
+    // Amplitude: 1 Width: .5 Period: 1 Phase: 0
+    configf.param("Amplitude", amp);
     configf.param("Width", width);
     period = 1.0;
     configf.optional("Period", period);
@@ -313,7 +313,6 @@ namespace TIMESERIES {
     random->get(v); // get a single random value for this time-step.
     Q.assign(nodes, v); // assign nodes instances of v to Q.
   }
-
 
   /** @brief Parameter initialisation of Paired Associative Stimulation (PAS).
 
