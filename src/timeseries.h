@@ -69,6 +69,21 @@ namespace TIMESERIES {
     void fire( std::vector<double>& Q ) const override;
   };
 
+  struct PulseSigmoid : public Timeseries {
+    double amp = 0.0;    ///< Amplitude of the pulse.
+    double width = 0.0;  ///< Width of the pulse [s].
+    double period = 0.0; ///< Time between the start of each pulse [s].
+    double pulses = 0.0; ///< Maximum number of pulses.
+    double sigma = 0.03125; ///< width of transition.
+    PulseSigmoid(size_type nodes, double deltat, size_type index) : Timeseries(nodes, deltat, index) {}
+    void init( Configf& configf ) override;
+    void fire( std::vector<double>& Q ) const override;
+    std::vector<double> onset_midpoints;
+    double first_onset_mid;
+    double PiOnSqrt3;
+    int pulse_count;
+  };
+
   struct Sine : public Timeseries {
     double amp = 0.0;   ///< Amplitude of the sine wave.
     double freq = 0.0;  ///< Frequency of the sine wave [s^-1].

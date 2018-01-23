@@ -24,13 +24,18 @@
 #include "random.h"     // Random;
 
 // C++ standard library headers
-#include <cmath>    // std::pow; std::sqrt; std::sin; std::fmod; M_PI;
+#include <algorithm>  // std::min; std::max
+#include <cmath>    // std::pow; std::sqrt; std::sin; std::fmod; M_PI; std::ceil; std::exp
 #include <iostream> // std::cerr; std::endl;
 #include <string>   // std::string;
 #include <vector>   // std::vector;
 using std::cerr;
+using std::ceil;
+using std::exp;
 using std::endl;
 using std::fmod;
+using std::max;
+using std::min;
 using std::pow;
 using std::sin;
 using std::sqrt;
@@ -98,6 +103,8 @@ void Timeseries::init( Configf& configf ) {
       series.push_back( new TIMESERIES::PulseRect(nodes, deltat, index) );
     } else if( mode[0]=="PulseSine" ) {
       series.push_back( new TIMESERIES::PulseSine(nodes, deltat, index) );
+    } else if( mode[0]=="PulseSigmoid" ) {
+      series.push_back( new TIMESERIES::PulseSigmoid(nodes, deltat, index) );
     } else if( mode[0]=="Sine" ) {
       series.push_back( new TIMESERIES::Sine(nodes, deltat, index) );
     } else if( mode[0]=="White" ) {
@@ -251,6 +258,68 @@ namespace TIMESERIES {
         Q[i] = amp*sin( 2.0*M_PI*( fmod(t,period)/width -phase/360.0 ) );
       }
     }
+  }
+
+
+  /** @brief Parameter initialisation of a sigmoidal Pulse train.
+
+    The .conf file is required to specify Amplitude and Width, eg:
+      Amplitude: 1.0 Width: 0.5e-3
+    with Period, Frequency, and Pulses being optional. Period and Frequency are
+    mutually exclusive with Period taking precedence if both are specified.
+  */
+  void PulseSigmoid::init( Configf& configf ) {
+    // Set default values for optional parameters.
+    period = inf;
+    pulses = 1.0;
+    sigma = 0.03125;
+    configf.param("Amplitude", amp);
+    configf.param("Width", width);
+    if( !configf.optional("Period", period) ) {
+      double freq;
+      if( configf.optional("Frequency", freq) ) {
+        period = 1.0/freq;
+      }
+    }
+    configf.optional("Pulses", pulses);
+    configf.optional("Sigma", sigma);
+    PiOnSqrt3 = M_PI / sqrt(3.0); //1.813799364234217836866491779801435768604278564;
+    pulse_count = min(pulses, duration/period);
+
+    // re initialise different internal time...
+    first_onset_mid = -t;
+    t = 0.0;
+
+    onset_midpoints.assign(pulse_count, 0.0);
+    for( size_type i=0; i<pulse_count; i++ ) {
+      onset_midpoints[i] = first_onset_mid + (i * period);
+    }
+  }
+
+  /** @brief Generate a train of rectangular pulses.*/
+  void PulseSigmoid::fire( vector<double>& Q ) const {
+    //  
+    double tsy;
+    int p1;
+    int p2;
+    double m1;
+    double m2;
+
+    //
+    p2 = max(ceil((t - (first_onset_mid + width / 2.0)) / period), 0.0);
+    p1 = p2 - 1;
+    
+    if (p1>=0 && p1 < pulse_count){
+      m1 = onset_midpoints[p1];
+      tsy = amp / ((1.0 + exp(-PiOnSqrt3 * (t-m1)/sigma)) * ((1.0 + exp(-PiOnSqrt3 * ((m1+width)-t)/sigma))));
+    }
+
+    if (p2 < pulse_count){
+        m2 = onset_midpoints[p2];
+        tsy += amp / ((1.0 + exp(-PiOnSqrt3 * (t-m2)/sigma)) * ((1.0 + exp(-PiOnSqrt3 * ((m2+width)-t)/sigma))));
+    }
+
+    Q.assign(nodes, tsy); // assign nodes instances of ??? to Q.
   }
 
   /** @brief Parameter initialisation of a simple sine function.
