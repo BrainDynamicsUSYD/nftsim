@@ -45,7 +45,6 @@ using std::vector;
 void Timeseries::init( Configf& configf ) {
   series_size_type superimpose = 1;
   configf.optional("Superimpose", superimpose);
-  double duration = 0.0; // Duration of the stimulus.
   double onset = 0.0; // Onset time for the stimulus.
   for( series_size_type i=0; i<superimpose; i++ ) {
     if( superimpose > 0 ) {
@@ -57,7 +56,6 @@ void Timeseries::init( Configf& configf ) {
     if(!configf.optional("Onset", onset)){
       onset = 0.0;
     }
-    t = -onset; // Initialise stimulus time relative to onset.
 
     // Set stimulus duration.
     if(!configf.optional("Duration", duration) ) {
@@ -120,7 +118,7 @@ void Timeseries::init( Configf& configf ) {
       exit(EXIT_FAILURE);
     }
     // END PUT YOUR TIMEFUNCTION HERE
-    series[i]->t = t;
+    series[i]->t = -onset; // Initialise stimulus time relative to onset.
     series[i]->duration = duration;
     for(size_type j : temp_node) {
       series[i]->node.push_back( j-1 );
