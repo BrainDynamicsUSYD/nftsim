@@ -2,7 +2,7 @@
 
 
 <p align="center">
-  <img width="256" height="256" src="https://github.com/BrainDynamicsUSYD/nftsim/blob/master/doc/img/neurofield_logo_dark_background_256x256.png">
+  <img width="256" height="256" src="https://github.com/BrainDynamicsUSYD/nftsim/blob/master/doc/img/nftsim_logo_dark_background_256x256.png">
 </p>
 
 
