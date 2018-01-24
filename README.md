@@ -17,7 +17,7 @@ NFTsim comes with a collection of custom made Matlab functions that allow for an
 
 2. download the latest [release](https://github.com/BrainDynamicsUSYD/nftsim/releases) as a `.zip` or `tar.gz` file and extract the folder.
 
-3. After doing 1) or 2) type `cd neurofield`.
+3. After doing 1) or 2) type `cd nftsim`.
 
 ## Requirements
 
@@ -48,7 +48,7 @@ For a brief description of available Makefile targets, type:
 
     make help
 
-Are you on Windows and want to use `NeuroField`. Check [some options here](https://github.com/BrainDynamicsUSYD/neurofield/wiki/All:-Cross-platform-support). 
+Are you on Windows and want to use `NFTsim`. Check [some options here](https://github.com/BrainDynamicsUSYD/nftsim/wiki/All:-Cross-platform-support). 
 
 
 ## Demos
