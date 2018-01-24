@@ -27,7 +27,7 @@ On MacOS: `clang` 3.3 or later version;
 
 Additionally, to build the developer reference manual you'll need `doxygen` and `graphviz`. The latter provides the DOT language.
 
-The user manual is compiled using `pdflatex` an it is also provided as a pdf (`doc/NeurofieldManual.pdf`).
+The user manual is compiled using `pdflatex` an it is also provided as a pdf (`doc/NFTsimManual.pdf`).
 
 
 ### Compiling and building from the source code
