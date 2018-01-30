@@ -298,7 +298,7 @@ namespace TIMESERIES {
 
   /** @brief Generate a train of sigmoidal pulses.*/
   void PulseSigmoid::fire( vector<double>& Q ) const {
-    double tsy; // Value of the Timeseries at the current time-point.
+    double tsy = 0.0; // Value of the Timeseries at the current time-point.
     size_type p1; // index of the first active pulse.
     size_type p2; // index of the second active pulse.
 

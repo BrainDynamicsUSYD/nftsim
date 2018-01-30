@@ -82,7 +82,7 @@ namespace TIMESERIES {
     std::vector<double> onset_midpoints;
     double first_pulse_mid = 0.0; ///< Mid-point of the first pulse.
     static constexpr double PiOnSqrt3 = 1.813799364234217836866491779801435768604278564; //M_PI / std::sqrt(3.0);
-    size_type pulse_count; ///< Number of pulses, min of pulses and number of pulses that fit in duration.
+    size_type pulse_count = 0; ///< Number of pulses, min of pulses and number of pulses that fit in duration.
   };
 
   struct Sine : public Timeseries {
