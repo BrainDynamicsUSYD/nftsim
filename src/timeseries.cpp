@@ -45,7 +45,6 @@ using std::vector;
 void Timeseries::init( Configf& configf ) {
   series_size_type superimpose = 1;
   configf.optional("Superimpose", superimpose);
-  double onset = 0.0; // Onset time for the stimulus.
   for( series_size_type i=0; i<superimpose; i++ ) {
     if( superimpose > 0 ) {
       configf.next("Stimulus");
@@ -118,6 +117,7 @@ void Timeseries::init( Configf& configf ) {
       exit(EXIT_FAILURE);
     }
     // END PUT YOUR TIMEFUNCTION HERE
+    series[i]->onset = onset;
     series[i]->t = -onset; // Initialise stimulus time relative to onset.
     series[i]->duration = duration;
     for(size_type j : temp_node) {
@@ -143,7 +143,7 @@ void Timeseries::fire( vector<double>& Q ) const {
   Q.assign(nodes, 0.0); // Zero the Q vector we were provided.
   for(auto serie : series) { // for each timeseries
     // if the timeseries is active
-    if( (serie->t >= 0) && (serie->t < serie->duration) ) {
+    if( (serie->t >= 0.0) && (serie->t < serie->duration) ) {
       temp.assign(nodes, 0.0); // re-zero temp vector.
       serie->fire(temp);
       // then copy the temporary firing to the final firing
@@ -172,15 +172,6 @@ void Timeseries::step() {
 //      resolution surfaces, where currently applying a stimulus to a single
 //      node of a 1000x1000 surface will produce a million element vector,
 //      rather than the single number that is required...
-
-//TODO: Naming should be more specific. Eg., current "Pulse" should probably be
-//      something like "PulseRect" while current "PulseSine" should be something
-//      like "PulseSine". A basic "PulseSine" should also be added which just has
-//      amplitude, frequency|period, and phase with the more "usual" meanings.
-//      Then we should add a more physically realistic, and less numerically
-//      problematic, smooth pulse with eg sigmoidal onset and cessation, which
-//      would then be "PulseSigmoid". Example parameters with associated plots
-//      should be added to the user manual.
 
 /** @brief Contains time-series that can be combined to form a stimulus.
 
@@ -265,59 +256,68 @@ namespace TIMESERIES {
       Amplitude: 1.0 Width: 0.5e-3
     with Period, Frequency, and Pulses being optional. Period and Frequency are
     mutually exclusive with Period taking precedence if both are specified.
+    Finally, Sigma can be specified to adjust the width of the transition from
+    zero to Amplitude.
+
+    NOTE: Unlike other Timeseries, onset here is taken to be the mid-point of
+          the onset of the first pulse. That is, the initial rise begins before
+          onset. This is to make PulseSigmoid and PulseRect equivalent in the
+          limit as sigma approaches zero.
   */
-  void PulseSigmoid::init( Configf& configf ) {
+  void PulseSigmoid ::init( Configf& configf ) {
     // Set default values for optional parameters.
-    period = inf;
-    pulses = 1.0;
-    sigma = 0.03125;
+    period = inf; // Time between the start of each pulse [s].
+    pulses = 1.0; // Maximum number of pulses.
+    sigma = 0.03125; // Width of transition.
     configf.param("Amplitude", amp);
     configf.param("Width", width);
     if( !configf.optional("Period", period) ) {
       double freq;
       if( configf.optional("Frequency", freq) ) {
-        period = 1.0/freq;
+        period = 1.0 / freq;
       }
     }
     configf.optional("Pulses", pulses);
     configf.optional("Sigma", sigma);
-    PiOnSqrt3 = M_PI / sqrt(3.0); //1.813799364234217836866491779801435768604278564;
     pulse_count = min(pulses, duration/period);
 
-    // re initialise different internal time...
-    first_onset_mid = -t;
-    t = 0.0;
+    first_pulse_mid = onset + (width / 2.0);
 
     onset_midpoints.assign(pulse_count, 0.0);
     for( size_type i=0; i<pulse_count; i++ ) {
-      onset_midpoints[i] = first_onset_mid + (i * period);
+      onset_midpoints[i] = onset + (i * period);
     }
+
+    // As we need to begin evaluation before onset for this Timeseries, as
+    // onset is taken here to be the mid-point of the rise of the first pulse,
+    // we reset the time-series' internal time to zero and adjust the duration
+    // accordingly.
+    t = 0.0;
+    duration = duration + onset;
   }
 
   /** @brief Generate a train of sigmoidal pulses.*/
   void PulseSigmoid::fire( vector<double>& Q ) const {
-    //  
-    double tsy;
-    int p1;
-    int p2;
-    double m1;
-    double m2;
+    double tsy; // Value of the Timeseries at the current time-point.
+    size_type p1; // index of the first active pulse.
+    size_type p2; // index of the second active pulse.
 
-    //
-    p2 = max(ceil((t - (first_onset_mid + width / 2.0)) / period), 0.0);
-    p1 = p2 - 1;
+    // At each point in time after the mid-point of the first pulse, the two
+    // nearest pulses contribute to the returned value.
+    p2 = static_cast<size_type>(max(ceil((t - first_pulse_mid) / period), 1.0));
+    p1 = p2 - static_cast<size_type>(1);
     
-    if (p1>=0 && p1 < pulse_count){
-      m1 = onset_midpoints[p1];
-      tsy = amp / ((1.0 + exp(-PiOnSqrt3 * (t-m1)/sigma)) * ((1.0 + exp(-PiOnSqrt3 * ((m1+width)-t)/sigma))));
+    if (p1 < pulse_count){
+      tsy = amp / ((1.0 + exp(-PiOnSqrt3 * (t-onset_midpoints[p1])/sigma)) *
+                   ((1.0 + exp(-PiOnSqrt3 * ((onset_midpoints[p1]+width)-t)/sigma))));
     }
 
     if (p2 < pulse_count){
-        m2 = onset_midpoints[p2];
-        tsy += amp / ((1.0 + exp(-PiOnSqrt3 * (t-m2)/sigma)) * ((1.0 + exp(-PiOnSqrt3 * ((m2+width)-t)/sigma))));
+        tsy += amp / ((1.0 + exp(-PiOnSqrt3 * (t-onset_midpoints[p2])/sigma)) *
+                      ((1.0 + exp(-PiOnSqrt3 * ((onset_midpoints[p2]+width)-t)/sigma))));
     }
 
-    Q.assign(nodes, tsy); // assign nodes instances of ??? to Q.
+    Q.assign(nodes, tsy); // assign nodes instances to Q.
   }
 
   /** @brief Parameter initialisation of a simple sine function.

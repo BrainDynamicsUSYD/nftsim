@@ -15,6 +15,7 @@
 #include "random.h"     // Random;
 
 // C++ standard library headers
+#include <cmath>    // std::sqrt; M_PI;
 #include <limits>   // std::numeric_limits<double>::infinity()
 #include <vector>   // std::vector;
 
@@ -27,6 +28,7 @@ class Timeseries : public NF {
   std::vector<size_type> node;
   double inf = std::numeric_limits<double>::infinity(); ///< Infinity
   double t = 0.0;     ///< Current time relative to stimulus onset.
+  double onset = 0.0; ///< Onset time for the stimulus.
   double duration = inf; ///< Duration of the stimulus.
  public:
   Timeseries(const Timeseries&) = delete; // No copy constructor allowed.
@@ -74,14 +76,14 @@ namespace TIMESERIES {
     double width = 0.0;  ///< Width of the pulse [s].
     double period = 0.0; ///< Time between the start of each pulse [s].
     double pulses = 0.0; ///< Maximum number of pulses.
-    double sigma = 0.03125; ///< width of transition.
+    double sigma = 0.03125; ///< Width of transition.
     PulseSigmoid(size_type nodes, double deltat, size_type index) : Timeseries(nodes, deltat, index) {}
     void init( Configf& configf ) override;
     void fire( std::vector<double>& Q ) const override;
     std::vector<double> onset_midpoints;
-    double first_onset_mid;
-    double PiOnSqrt3;
-    int pulse_count;
+    double first_pulse_mid = 0.0; ///< Mid-point of the first pulse.
+    static constexpr double PiOnSqrt3 = M_PI / std::sqrt(3.0); //1.813799364234217836866491779801435768604278564;;
+    size_type pulse_count; ///< Number of pulses, min of pulses and number of pulses that fit in duration.
   };
 
   struct Sine : public Timeseries {
