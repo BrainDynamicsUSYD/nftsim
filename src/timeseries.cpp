@@ -294,7 +294,7 @@ namespace TIMESERIES {
     }
   }
 
-  /** @brief Generate a train of rectangular pulses.*/
+  /** @brief Generate a train of sigmoidal pulses.*/
   void PulseSigmoid::fire( vector<double>& Q ) const {
     //  
     double tsy;
