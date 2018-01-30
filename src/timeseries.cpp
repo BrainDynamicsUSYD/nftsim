@@ -244,7 +244,7 @@ namespace TIMESERIES {
           onset. This is to make PulseSigmoid and PulseRect equivalent in the
           limit as sigma approaches zero.
   */
-  void PulseSigmoid ::init( Configf& configf ) {
+  void PulseSigmoid::init( Configf& configf ) {
     // Set default values for optional parameters.
     period = inf; // Time between the start of each pulse [s].
     pulses = 1.0; // Maximum number of pulses.
@@ -288,13 +288,13 @@ namespace TIMESERIES {
     p1 = p2 - static_cast<size_type>(1);
     
     if (p1 < pulse_count){
-      tsy = amp / ((1.0 + exp(-PiOnSqrt3 * (t-onset_midpoints[p1])/sigma)) *
-                   ((1.0 + exp(-PiOnSqrt3 * ((onset_midpoints[p1]+width)-t)/sigma))));
+      tsy = amp / ((1.0 + exp(-pi_on_sqrt3 * (t-onset_midpoints[p1])/sigma)) *
+                   ((1.0 + exp(-pi_on_sqrt3 * ((onset_midpoints[p1]+width)-t)/sigma))));
     }
 
     if (p2 < pulse_count){
-        tsy += amp / ((1.0 + exp(-PiOnSqrt3 * (t-onset_midpoints[p2])/sigma)) *
-                      ((1.0 + exp(-PiOnSqrt3 * ((onset_midpoints[p2]+width)-t)/sigma))));
+        tsy += amp / ((1.0 + exp(-pi_on_sqrt3 * (t-onset_midpoints[p2])/sigma)) *
+                      ((1.0 + exp(-pi_on_sqrt3 * ((onset_midpoints[p2]+width)-t)/sigma))));
     }
 
     Q.assign(nodes, tsy); // assign nodes instances to Q.
