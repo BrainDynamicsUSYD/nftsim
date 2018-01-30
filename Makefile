@@ -17,8 +17,8 @@ DEPDIR := dep/
 BIN := neurofield
 
 #User-manual files
-USER_MANUAL := NeurofieldManual.pdf
-USER_MANUAL_SRC := NeurofieldManual.tex
+USER_MANUAL := NFTsimManual.pdf
+USER_MANUAL_SRC := NFTsimManual.tex
 
 #Default to *nix commands.
 MV := mv -f
