@@ -15,7 +15,6 @@
 #include "random.h"     // Random;
 
 // C++ standard library headers
-#include <cmath>    // std::sqrt; M_PI;
 #include <limits>   // std::numeric_limits<double>::infinity()
 #include <vector>   // std::vector;
 
@@ -82,7 +81,7 @@ namespace TIMESERIES {
     void fire( std::vector<double>& Q ) const override;
     std::vector<double> onset_midpoints;
     double first_pulse_mid = 0.0; ///< Mid-point of the first pulse.
-    static constexpr double PiOnSqrt3 = M_PI / std::sqrt(3.0); //1.813799364234217836866491779801435768604278564;;
+    static constexpr double PiOnSqrt3 = 1.813799364234217836866491779801435768604278564; //M_PI / std::sqrt(3.0);
     size_type pulse_count; ///< Number of pulses, min of pulses and number of pulses that fit in duration.
   };
 
