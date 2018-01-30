@@ -4,11 +4,12 @@
   The currently implemented time-series include:
     + TIMESERIES::Const: A constant value.
     + TIMESERIES::PulseRect: A rectangular pulse train.
+    + TIMESERIES::PulseSine: A pulsed sine wave.
+    + TIMESERIES::PulseSigmoid: A sigmoidal pulse train.
     + TIMESERIES::White: Gaussian amplitude distribution white noise.
     + TIMESERIES::WhiteCoherent: .
     + TIMESERIES::PAS: Paired Associative Stimulation.
     + TIMESERIES::Burst: .
-    + TIMESERIES::PulseSine: A pulsed sine wave.
 
     Multiple `Timeseries` can be combined using the `Superimpose` keyword in
     the configuration file.
@@ -62,16 +63,7 @@ void Timeseries::init( Configf& configf ) {
     }
 
     // Get any user specified Node indices to apply stimulus.
-    vector<double> temp_node;
-    //TODO: should be vector<size_type>.
-    //      The existing use of double is due to a limitation of the
-    //      Configf which has only one member function, numbers(), for
-    //      reading multiple numbers. This member returns a vector of
-    //      doubles. This should be corrected by renaming numbers() to
-    //      something like read_doubles() and adding a new member
-    //      function for reading and returning unsigned int like size_type.
-    //      Only two should be required as indices(size_type) and doubles
-    //      are the only type of content we specify in vectors...
+    vector<double> temp_node; //TODO(stuart-knock): Should be vector<size_type>, see issue #142 on GitHub.
     if( configf.next("Node") ) {
       temp_node = configf.numbers();
     }
@@ -160,18 +152,6 @@ void Timeseries::step() {
   }
 }
 
-//TODO: The replication of timeseries to a vector length nodes for Q is
-//      redundant when there is no explicit space to them. A single number
-//      would be all that needs to be returned with mapping to nodes done
-//      in Timeseries::fire(). The exception is for noise, where we want a
-//      different random sequence at each point in space and typically it
-//      is applied to all nodes anyway. To maintain a consistent interface,
-//      it is probably best to have the vector returned by the individual
-//      TIMESERIES fire() methods be of length the number of nodes that the
-//      stimulus will be applied to... This becomes more important for higher
-//      resolution surfaces, where currently applying a stimulus to a single
-//      node of a 1000x1000 surface will produce a million element vector,
-//      rather than the single number that is required...
 
 /** @brief Contains time-series that can be combined to form a stimulus.
 
@@ -335,10 +315,6 @@ namespace TIMESERIES {
     // Assign nodes instances of the sine wave to Q.
     Q.assign(nodes, amp*sin( 2.0 * M_PI * t * freq));
   }
-
-// TODO: get reference and review noise normalisation for White*, seems like
-//       it will at best only work for square grid... need, at least, access
-//       to longside here.
 
   /** @brief Initialises white noise.*/
   void White::init( Configf& configf ) {
