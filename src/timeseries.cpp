@@ -129,7 +129,7 @@ void Timeseries::init( Configf& configf ) {
 }
 
 Timeseries::Timeseries( size_type nodes, double deltat, size_type index )
-  : NF(nodes,deltat,index), series() {
+  : NF(nodes,deltat,index) {
 }
 
 Timeseries::~Timeseries() {
