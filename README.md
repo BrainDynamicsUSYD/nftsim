@@ -36,7 +36,7 @@ To build the executable on Linux or MacOS, open a terminal in the `nftsim` direc
 
     make
 
-this produces the executable `bin/neurofield` and autogenerates the documentation. 
+this produces the executable `bin/nftsim` and autogenerates the documentation. 
 
 To build only the reference manual type:
 
@@ -57,7 +57,7 @@ Example configurations including examples for published results are available in
 
 To run the basic example type
 
-    ./bin/neurofield -i ./configs/eirs-corticothalamic.conf -o eirs-corticothalamic.output
+    ./bin/nftsim -i ./configs/eirs-corticothalamic.conf -o eirs-corticothalamic.output
 
 ## Troubleshooting
 

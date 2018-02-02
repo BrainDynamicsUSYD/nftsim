@@ -1,7 +1,7 @@
-#Configs data (neurofield/test/data/configs/)
+# Configs data (nftsim/test/data/configs/)
 
 This directory contains output files for each of the configuration files
-found in the neurofield/configs directory. They are intended to be used
+found in the nftsim/configs directory. They are intended to be used
 as a check of consistent behaviour following code modifications.
 
 To check that any modifications that you have made to the code haven't
@@ -9,7 +9,7 @@ inadvertently altered its functionality, run:
     
     nf_configs --check <config_file_name>
 
-where ``nf_configs`` is a bash script found in the neurofield/ directory.
+where ``nf_configs`` is a bash script found in the nftsim/ directory.
 
 When a --check reveals a difference from the expected output the temporary
 file used for the check is not removed, this makes it easy to look at the
