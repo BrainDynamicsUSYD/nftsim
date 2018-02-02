@@ -17,7 +17,7 @@
 %    figure_handles -- cell array of figure handles.
 %
 % REQUIRES:
-%    nf.extract() -- Extract a specific subset of data from a neurofield
+%    nf.extract() -- Extract a specific subset of data from a nftsim
 %                    output struct.
 %
 % AUTHOR:
@@ -28,7 +28,7 @@
 %{
     %Either run a simulation:
     nf_obj = nf.run('./configs/eirs-corticothalamic.conf')
-    %Or load some neurofield output data
+    %Or load some nftsim output data
     nf_obj = nf.read('./configs/eirs-corticothalamic.output')
 
     %Plot every fourth node for the trace 'Propagator.1.phi'.

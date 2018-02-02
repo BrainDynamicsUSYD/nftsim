@@ -8,7 +8,7 @@
 % output all nodes), or the number of nodes is not a perfect square..
 %
 % ARGUMENTS:
-%        obj   -- A neurofield output struct (a Matlab struct containing data
+%        obj   -- A nftsim output struct (a Matlab struct containing data
 %                 from a simulation).
 %        trace -- A string with the name of the array to reshape. 
 %

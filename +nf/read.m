@@ -1,11 +1,11 @@
-%% Read a neurofield output file and return a neurofield output struct.
+%% Read a nftsim output file and return a nftsim output struct.
 %
 % ARGUMENTS:
-%        fname -- The name of the neurofield output file to read (absolute
+%        fname -- The name of the nftsim output file to read (absolute
 %                 or relative path).
 %
 % OUTPUT:
-%        obj -- A neurofield output struct. A Matlab struct containing data
+%        obj -- A nftsim output struct. A Matlab struct containing data
 %               and parameters from a simulation.
 %
 % AUTHOR:

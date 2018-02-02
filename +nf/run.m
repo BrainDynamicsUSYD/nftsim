@@ -1,9 +1,9 @@
-%% Function to run neurofield and return a neurofield output struct.
+%% Function to run nftsim and return a nftsim output struct.
 %
-% Provided a configuration file-name (fname.conf), run the neurofield
+% Provided a configuration file-name (fname.conf), run the nftsim
 % executable, generating an output file (fname.output). Optionally, if an
 % output argument is provided then, parse the output file and return a
-% neurofield output struct containing the simulation results.
+% nftsim output struct containing the simulation results.
 %
 %
 % ARGUMENTS:
@@ -11,15 +11,15 @@
 %                 the .conf extension.
 %        time_stamp -- boolean flag to use a time_stamp YYYY-MM-DDTHHMMSS
 %                      in the output file name.
-%        neurofield_path -- neurofield executable (full or relative path).
+%        neurofield_path -- nftsim executable (full or relative path).
 %
 % OUTPUT: Writes a .output file in the same location as the .conf file.
-%        obj -- A neurofield output struct (a Matlab struct containing
+%        obj -- A nftsim output struct (a Matlab struct containing
 %               data from a simulation).
 %
 % REQUIRES:
-%        neurofield -- The neurofield executable, must be in your path.
-%        nf.read -- Read a neurofield output file and return a neurofield
+%        nftsim -- The nftsim executable, must be in your path.
+%        nf.read -- Read a nftsim output file and return a nftsim
 %                   output struct.
 %
 % AUTHOR:
@@ -27,7 +27,7 @@
 %
 % USAGE:
 %{
-    %At a matlab command promt, from neurofield's main directory:
+    %At a matlab command promt, from nftsim's main directory:
     nf_obj = nf.run('./configs/eirs-corticothalamic.conf')
 %}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -41,19 +41,19 @@ function obj = run(fname, time_stamp, neurofield_path)
     if nargin < 2
         time_stamp = false;
     end
-    % If we were not provided a path to neurofield, try to determine one.
+    % If we were not provided a path to nftsim, try to determine one.
     if nargin < 3 || isempty(neurofield_path)
         % Check typical locations, the first path that exists will be selected.
-        locations = {'neurofield', ...
-                     './bin/neurofield', ...
-                     './neurofield/bin/neurofield', ...
-                     'neurofield.exe'};
+        locations = {'nftsim', ...
+                     './bin/nftsim', ...
+                     './nftsim/bin/nftsim', ...
+                     'nftsim.exe'};
         selected_path = find(cellfun(@(name) exist(name, 'file')==2, locations), 1, 'first');
         if ~isempty(selected_path)
             neurofield_path = locations{selected_path};
         else
             error(['nf:' mfilename ':BadPath'], ...
-                  'neurofield not found. Either change into the neurofield base directory or make a symlink to neurofield in the current directory.');
+                  'nftsim not found. Either change into the nftsim base directory or make a symlink to nftsim in the current directory.');
         end
     % If we were provided a path, check that it is valid.
     elseif ~exist(neurofield_path, 'file')
@@ -73,7 +73,7 @@ function obj = run(fname, time_stamp, neurofield_path)
     string(cmdout)
     if status ~= 0
         error(['nf:' mfilename ':NeurofieldError'], ...
-              'An error occurred while running neurofield!');
+              'An error occurred while running nftsim!');
     end
 
     fprintf(1, 'INFO: tic-toc: Took about %.3f seconds\n', toc);
