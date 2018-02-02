@@ -6,8 +6,8 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#ifndef NEUROFIELD_SRC_TAU_H
-#define NEUROFIELD_SRC_TAU_H
+#ifndef NFTSIM_SRC_TAU_H
+#define NFTSIM_SRC_TAU_H
 
 // Other nftsim headers
 #include "configf.h"    // Configf;
@@ -34,4 +34,4 @@ class Tau : public NF {
   friend class Population;
 };
 
-#endif //NEUROFIELD_SRC_TAU_H
+#endif //NFTSIM_SRC_TAU_H

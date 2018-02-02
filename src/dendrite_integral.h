@@ -8,8 +8,8 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#ifndef NEUROFIELD_SRC_DENDRITE_INTEGRAL_H
-#define NEUROFIELD_SRC_DENDRITE_INTEGRAL_H
+#ifndef NFTSIM_SRC_DENDRITE_INTEGRAL_H
+#define NFTSIM_SRC_DENDRITE_INTEGRAL_H
 
 // Other nftsim headers
 #include "configf.h"    // Configf;
@@ -51,4 +51,4 @@ class DendriteIntegral : public Dendrite {
   void step() override;
 };
 
-#endif //NEUROFIELD_SRC_DENDRITE_INTEGRAL_H
+#endif //NFTSIM_SRC_DENDRITE_INTEGRAL_H

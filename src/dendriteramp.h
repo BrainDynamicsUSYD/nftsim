@@ -6,8 +6,8 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#ifndef NEUROFIELD_SRC_DENDRITERAMP_H
-#define NEUROFIELD_SRC_DENDRITERAMP_H
+#ifndef NFTSIM_SRC_DENDRITERAMP_H
+#define NFTSIM_SRC_DENDRITERAMP_H
 
 // Other nftsim headers
 #include "configf.h"    // Configf;
@@ -53,4 +53,4 @@ class DendriteRamp : public Dendrite {
   void output( Output& output ) const override;
 };
 
-#endif //NEUROFIELD_SRC_DENDRITERAMP_H
+#endif //NFTSIM_SRC_DENDRITERAMP_H

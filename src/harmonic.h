@@ -6,8 +6,8 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#ifndef NEUROFIELD_SRC_HARMONIC_H
-#define NEUROFIELD_SRC_HARMONIC_H
+#ifndef NFTSIM_SRC_HARMONIC_H
+#define NFTSIM_SRC_HARMONIC_H
 
 // Other nftsim headers
 #include "configf.h"    // Configf;
@@ -49,4 +49,4 @@ class Harmonic : public virtual Propagator {
   void step() override;
 };
 
-#endif //NEUROFIELD_SRC_HARMONIC_H
+#endif //NFTSIM_SRC_HARMONIC_H

@@ -6,8 +6,8 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#ifndef NEUROFIELD_SRC_LONGCOUPLING_H
-#define NEUROFIELD_SRC_LONGCOUPLING_H
+#ifndef NFTSIM_SRC_LONGCOUPLING_H
+#define NFTSIM_SRC_LONGCOUPLING_H
 
 // Other nftsim headers
 #include "configf.h"    // Configf;
@@ -36,4 +36,4 @@ class LongCoupling : public Coupling {
   void output( Output& output ) const override;
 };
 
-#endif //NEUROFIELD_SRC_LONGCOUPLING_H
+#endif //NFTSIM_SRC_LONGCOUPLING_H

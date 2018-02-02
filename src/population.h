@@ -6,8 +6,8 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#ifndef NEUROFIELD_SRC_POPULATION_H
-#define NEUROFIELD_SRC_POPULATION_H
+#ifndef NFTSIM_SRC_POPULATION_H
+#define NFTSIM_SRC_POPULATION_H
 
 // Forward declaration to break circular collaboration
 class Population;
@@ -60,4 +60,4 @@ class Population : public NF {
   virtual void outputDendrite( size_type index, Output& output ) const;
 };
 
-#endif //NEUROFIELD_SRC_POPULATION_H
+#endif //NFTSIM_SRC_POPULATION_H

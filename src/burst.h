@@ -6,8 +6,8 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#ifndef NEUROFIELD_SRC_BURST_H
-#define NEUROFIELD_SRC_BURST_H
+#ifndef NFTSIM_SRC_BURST_H
+#define NFTSIM_SRC_BURST_H
 
 // Other nftsim headers
 #include "configf.h"    // Configf;
@@ -64,5 +64,5 @@ class BurstResponse : public FiringResponse { //derived class; constructor initi
   void output( Output& output ) const override; //vector of Output ptrs filled by
 };
 
-#endif //NEUROFIELD_SRC_BURST_H
+#endif //NFTSIM_SRC_BURST_H
 

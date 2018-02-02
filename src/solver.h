@@ -6,8 +6,8 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#ifndef NEUROFIELD_SRC_SOLVER_H
-#define NEUROFIELD_SRC_SOLVER_H
+#ifndef NFTSIM_SRC_SOLVER_H
+#define NFTSIM_SRC_SOLVER_H
 
 // Other nftsim headers
 #include "array.h"      // Array;
@@ -100,4 +100,4 @@ class Solver : public NF {
   void step() override;
 };
 
-#endif //NEUROFIELD_SRC_SOLVER_H
+#endif //NFTSIM_SRC_SOLVER_H

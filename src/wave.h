@@ -10,8 +10,8 @@
  *
  */
 
-#ifndef NEUROFIELD_SRC_WAVE_H
-#define NEUROFIELD_SRC_WAVE_H
+#ifndef NFTSIM_SRC_WAVE_H
+#define NFTSIM_SRC_WAVE_H
 
 // Other nftsim headers
 #include "configf.h"    // Configf;
@@ -58,4 +58,4 @@ class Wave : public Propagator {
   void step() override;
 };
 
-#endif //NEUROFIELD_SRC_WAVE_H
+#endif //NFTSIM_SRC_WAVE_H

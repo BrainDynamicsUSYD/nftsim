@@ -6,8 +6,8 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#ifndef NEUROFIELD_SRC_DUMPF_H
-#define NEUROFIELD_SRC_DUMPF_H
+#ifndef NFTSIM_SRC_DUMPF_H
+#define NFTSIM_SRC_DUMPF_H
 
 // Other nftsim headers
 #include "configf.h" // Configf;

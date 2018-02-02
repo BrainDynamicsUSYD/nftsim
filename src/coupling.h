@@ -6,8 +6,8 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#ifndef NEUROFIELD_SRC_COUPLING_H
-#define NEUROFIELD_SRC_COUPLING_H
+#ifndef NFTSIM_SRC_COUPLING_H
+#define NFTSIM_SRC_COUPLING_H
 
 // Forward declaration to break circular collaboration
 class Coupling;
@@ -52,4 +52,4 @@ double Coupling::operator[]( size_type node ) const {
   return P[node];
 }
 
-#endif //NEUROFIELD_SRC_COUPLING_H
+#endif //NFTSIM_SRC_COUPLING_H

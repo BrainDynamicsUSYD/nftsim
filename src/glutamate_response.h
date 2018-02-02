@@ -4,8 +4,8 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#ifndef NEUROFIELD_SRC_GLUTAMATE_RESPONSE_H
-#define NEUROFIELD_SRC_GLUTAMATE_RESPONSE_H
+#ifndef NFTSIM_SRC_GLUTAMATE_RESPONSE_H
+#define NFTSIM_SRC_GLUTAMATE_RESPONSE_H
 
 // Forward declaration to break circular collaboration
 class GlutamateResponse;
@@ -45,4 +45,4 @@ class GlutamateResponse : public FiringResponse {
   const std::vector<double>& glu() const;
 };
 
-#endif //NEUROFIELD_SRC_GLUTAMATE_RESPONSE_H
+#endif //NFTSIM_SRC_GLUTAMATE_RESPONSE_H

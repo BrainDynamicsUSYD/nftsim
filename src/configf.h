@@ -6,8 +6,8 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#ifndef NEUROFIELD_SRC_CONFIGF_H
-#define NEUROFIELD_SRC_CONFIGF_H
+#ifndef NFTSIM_SRC_CONFIGF_H
+#define NFTSIM_SRC_CONFIGF_H
 
 // C++ standard library headers
 #include <fstream>  // std::ifstream; tellg; seekg;
@@ -109,4 +109,4 @@ template<class T> bool Configf::optional( const std::string& param, T& ret, int 
   return false;
 }
 
-#endif //NEUROFIELD_SRC_CONFIGF_H
+#endif //NFTSIM_SRC_CONFIGF_H
