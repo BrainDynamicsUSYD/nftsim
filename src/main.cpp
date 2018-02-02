@@ -1,7 +1,7 @@
 /** @file main.cpp
-  @brief Implements the main entry point for Neurofield, a multiscale neural field software.
+  @brief Implements the main entry point for NFTsim, a multiscale neural field software.
 
-  NeuroField is capable of simulating scales from a few tenths of a millimetre
+  NFTsim is capable of simulating scales from a few tenths of a millimetre
   and a few milliseconds upward. It allows for the specification of models with:
     + an arbitrary number of neural populations, of different types and with
       different parameters;
@@ -12,7 +12,7 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-// Neurofield headers
+// NFTsim headers
 #include "configf.h"    // Configf;
 #include "dumpf.h"      // Dumpf;
 #include "solver.h"     // Solver;
@@ -36,9 +36,9 @@ int main(int argc, char* argv[]) {
     for( int i=1; i<argc; i++ ) {
       if( strcmp(argv[i],"-?")==0 || strcmp(argv[i],"-h")==0
           || strcmp(argv[i],"--help")==0 ) {
-        cout << endl << "Usage: NeuroField [optional switches]" << endl
+        cout << endl << "Usage: nftsim [optional switches]" << endl
              << endl
-             << "  By default NeuroField will read nftsim.conf and write output" << endl
+             << "  By default NFTsim will read nftsim.conf and write output" << endl
              << "  to nftsim.output" << endl
              << endl
              << "Options:" << endl
@@ -48,11 +48,11 @@ int main(int argc, char* argv[]) {
              << "  -h, -?, --help             Print this message;" << endl
              << "  -v, --verbose              Send output to stdout." << endl << endl
              << "Examples:" << endl
-             << "  NeuroField " << endl
-             << "  NeuroField -i alternate.conf -o alternate.output" << endl
+             << "  nftsim " << endl
+             << "  nftsim -i alternate.conf -o alternate.output" << endl
              << endl
              << "(c) Copyright Complex Systems Group, School of Physics, University of Sydney 2015" << endl
-             << "Use of NeuroField indicates your acceptance of the licensing conditions distributed with this end" << endl;
+             << "Use of NFTsim indicates your acceptance of the licensing conditions distributed with this end" << endl;
         return 0;
       }
     }
