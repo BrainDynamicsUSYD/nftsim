@@ -35,7 +35,7 @@ function [data, longside_nodes, shortside_nodes] = grid(obj, trace)
     
     if output_nodes ~= obj.input_nodes 
         error(['nf:' mfilename ':IncompatibleOutput'], ...
-              'Output from NeuroField must be for all nodes')
+              'Output from NFTsim must be for all nodes')
     end    
 
     data = nf.extract(obj, trace);

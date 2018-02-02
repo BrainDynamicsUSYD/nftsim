@@ -72,7 +72,7 @@ function obj = run(fname, time_stamp, nftsim_path)
 
     string(cmdout)
     if status ~= 0
-        error(['nf:' mfilename ':NeurofieldError'], ...
+        error(['nf:' mfilename ':NFTsimError'], ...
               'An error occurred while running nftsim!');
     end
 
