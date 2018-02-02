@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # nf_benchmarks:
-#    A script for benchmarking neurofield and storing the results.
+#    A script for benchmarking nftsim and storing the results.
 #
 #USAGE:
 #  #Show this header message:
@@ -51,9 +51,9 @@
 #      + ./benchmarks/results/code_info.csv
 #      + ./benchmarks/results/system_info.csv
 #  The script expects/requires:
-#      + to be run from a clean clone of neurofield's repository
+#      + to be run from a clean clone of nftsim's repository
 #        (clean here means no uncommitted changes in the working directory);
-#      + neurofield to be building and running properly; and
+#      + nftsim to be building and running properly; and
 #      + valid configuration files as input.
 #
 # Authors: Paula Sanz-Leon; Stuart A. Knock;
@@ -72,8 +72,8 @@ TMP_DIR='/tmp'
 MEM_DIR='/dev/shm'
 SCRIPT_PATH="$( cd "$(dirname "${BASH_SOURCE[0]}")" || exit 1 ; pwd -P )"
 RESULTS_DIR="${SCRIPT_PATH}/results"
-NEUROFIELD_DIR="$( cd "$SCRIPT_PATH" || exit 1; cd ../ || exit 1; pwd -P )"
-NEUROFIELD="$NEUROFIELD_DIR/bin/neurofield"
+NFTSIM_DIR="$( cd "$SCRIPT_PATH" || exit 1; cd ../ || exit 1; pwd -P )"
+NFTSIM="$NFTSIM_DIR/bin/nftsim"
 
 TODAY="$(date +%F)"  #Date in IEEE standard format, ie YYYY-mm-dd
 FILE_NAME_NOW="$(date +%FT%H%M%S)"  #ISO 8601: YYYY-mm-ddThhMMSS
@@ -174,13 +174,13 @@ delete_entries(){
   fi
 } #delete_entries
 
-#Rebuild neurofield from scratch to make sure the executable matches current code.
+#Rebuild nftsim from scratch to make sure the executable matches current code.
 fresh_build(){
   #Use a subshell to:
   (
-    #Change into neurofield's base directory.
-    if ! cd "$NEUROFIELD_DIR"; then
-      printf 'ERROR: %s\n' "Failed to change to neurofield directory: '$NEUROFIELD_DIR'"
+    #Change into nftsim's base directory.
+    if ! cd "$NFTSIM_DIR"; then
+      printf 'ERROR: %s\n' "Failed to change to nftsim directory: '$NFTSIM_DIR'"
       return 1
     fi
     #Ensure we are actually running the current version of the code.
@@ -464,7 +464,7 @@ else
 fi
 
 if [[ "${DEBUG,,}" = 'true' ]]; then
-  printf '%s\n' "NEUROFIELD: '$NEUROFIELD'"
+  printf '%s\n' "NFTSIM: '$NFTSIM'"
   printf '%s\n' "CONFIG_FILE: '$CONFIG_FILE'"
   printf '%s\n' "OUTPUT_FILE: '$OUTPUT_FILE'"
   printf '%s\n' "TIMING_FILE: '$TIMING_FILE'"
@@ -477,7 +477,7 @@ if ! gather_system_info; then exit 1; fi
 if ! gather_code_info; then exit 1; fi
 if ! gather_conf_info; then exit 1; fi
 
-#Unless we have explicitly been told not to, rebuild neurofield.
+#Unless we have explicitly been told not to, rebuild nftsim.
 [[ "${NF_BENCH_NO_MAKE,,}" = 'true' ]] || if ! fresh_build; then exit 1; fi
 
 if ! TMP_TIMING_FILE="$(mktemp "$TMP_DIR"/nf_timing-XXXX)"; then
@@ -487,7 +487,7 @@ fi
 
 for (( j = 0; j < NF_BENCH_NUMBER_OF_TRIALS; j++ )); do
   #Finally, do the actual benchmark run:
-  /usr/bin/time -v "$NEUROFIELD" -i "$CONFIG_FILE" -o "$OUTPUT_FILE" 2> "$TMP_TIMING_FILE"
+  /usr/bin/time -v "$NFTSIM" -i "$CONFIG_FILE" -o "$OUTPUT_FILE" 2> "$TMP_TIMING_FILE"
 
   #Collect important resource usage info into variables
   file_size="$(wc --bytes < "$OUTPUT_FILE")"
