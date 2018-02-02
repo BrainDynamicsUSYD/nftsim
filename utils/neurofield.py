@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 
 """
-  Defines a NeuroField Python class that supports
+  Defines a NFTsim Python class that supports
   + running a configuration file
   + loading the output file for visualization and analysis
 
 USAGE:
-    import neurofield
-    nfobj = neurofield.run('filename.conf','path_to_neurofield_executable')
+    import nftsim
+    nfobj = nftsim.run('filename.conf','path_to_nftsim_executable')
     print(nfobj)
     this_trace = 'propagator.1.phi' # traces have the form class.obj_index.variable
     nfobj.plot(this_trace) 
@@ -15,9 +15,9 @@ USAGE:
 OPTIONS:
 
 EXAMPLES:
-    # From the root neurofield directory
-    import utils.neurofield as neurofield
-    nfobj = neurofield.run('configs/example.conf', './bin/neurofield')
+    # From the root nftsim directory
+    import utils.nftsim as nftsim
+    nfobj = nftsim.run('configs/example.conf', './bin/nftsim')
     print(nfobj)
     nfobj.plot('propagator.1.phi')
 
@@ -34,7 +34,7 @@ REQUIRES:
 
 __version__ = '0.1.4'
 import logging
-logging.basicConfig(filename='neurofield.log', level=logging.INFO,
+logging.basicConfig(filename='nftsim.log', level=logging.INFO,
                     format='%(asctime)s:%(levelname)s:%(message)s')
 LOG = logging.getLogger(__name__)
 import os
@@ -90,7 +90,7 @@ class NF:
 
     def __repr__(self):
         out = ''
-        out += 'NeuroField output\n'
+        out += 'NFTsim output\n'
         out += 'Traces: %s\n' % (', '.join(self.fields))
         out += 'Start time: %f\n' % (self.time[0])
         out += 'Stop time: %f\n' % (self.time[-1])
@@ -139,17 +139,17 @@ class NF:
         conf = {}
         return (conf, skiprows)
 
-def run(filename, neurofield_path='./bin/neurofield'):
+def run(filename, nftsim_path='./bin/nftsim'):
     """
-    Run neurofield and store output in NF object...
+    Run nftsim and store output in NF object...
     """
     filename = filename.replace('.conf', '')
-    cmd = '%s -i %s.conf -o %s.output' % (neurofield_path, filename, filename)
-    LOG.info('Running neurofield with command: \n %s \n' % cmd)
+    cmd = '%s -i %s.conf -o %s.output' % (nftsim_path, filename, filename)
+    LOG.info('Running nftsim with command: \n %s \n' % cmd)
     result = os.system(cmd)
 
     if result:
-        LOG.error('The execution of NeuroField did not finish cleanly.')
+        LOG.error('The execution of NFTsim did not finish cleanly.')
         sys.exit()
     else:
         LOG.info('\nFinished. Output file was written to %s.output\n' % filename)
