@@ -1,4 +1,4 @@
-#Makefile for neurofield
+#Makefile for nftsim
 #
 #  Type 'make help' for a list of possible targets with brief descriptions.
 #  If you're having problems, the Makefile itself can be debugged using the
@@ -14,7 +14,7 @@ DOCDIR := doc/
 DEPDIR := dep/
 
 #Default to *nix, suffix-less, binary.
-BIN := neurofield
+BIN := nftsim
 
 #User-manual files
 USER_MANUAL := NFTsimManual.pdf
@@ -58,18 +58,18 @@ NO_DEPS += clean-user-manual clean-reference-manual clean-docs clean-deps clean-
 # Define our suffix list
 .SUFFIXES: .o .d .cpp .h .tex
 
-.PHONY: neurofield debug all clang make_bin_dir make_obj_dir make_dep_dir help help-dev info docs user-manual reference-manual \
+.PHONY: nftsim debug all clang make_bin_dir make_obj_dir make_dep_dir help help-dev info docs user-manual reference-manual \
 	clean-user-manual clean-reference-manual clean-docs clean-deps clean-objs clean-bin clean clean-all
 
-# target: neurofield - Compile neurofield placing the executable in the bin directory.
-neurofield: $(BINDIR)$(BIN)
+# target: nftsim - Compile nftsim placing the executable in the bin directory.
+nftsim: $(BINDIR)$(BIN)
 
-# target: debug - Compile neurofield with debugging enabled.
+# target: debug - Compile nftsim with debugging enabled.
 debug: CXXFLAGS := $(DEBUG)
-debug: neurofield
+debug: nftsim
 
-# target: all - Compile neurofield and build all documentation.
-all: neurofield docs
+# target: all - Compile nftsim and build all documentation.
+all: nftsim docs
 
 #   target: gcc - Build using gcc, unnecessary on Linux as gcc is default.
 ifeq ($(MAKECMDGOALS), gcc)
@@ -80,7 +80,7 @@ ifeq ($(MAKECMDGOALS), gcc)
   CXXFLAGS := -std=c++11 -lm -Wall -Wextra -pedantic -msse -msse2 -msse3 -mfpmath=sse -march=native -mtune=native -funroll-loops -flto -O3
   DEPFLAGS = -std=c++11 -MM -MP -MT $(OBJDIR)$*.o
 endif
-gcc: neurofield
+gcc: nftsim
 
 #   target: clang - Build using clang++, unnecessary on MacOS unless you want extra warnings as clang++ is default.
 ifeq ($(MAKECMDGOALS), clang)
@@ -91,7 +91,7 @@ ifeq ($(MAKECMDGOALS), clang)
   CXXFLAGS := -std=c++11 -Weverything -Wno-padded -Wno-c++98-compat -Wno-c++98-compat-pedantic -fdiagnostics-fixit-info -Wdocumentation -march=native -funroll-loops -flto -O3
   DEPFLAGS = -std=c++11 -MM -MP -MT $(OBJDIR)$*.o
 endif
-clang: neurofield
+clang: nftsim
 
 #   target: intel - Build using intel C++ compiler.
 ifeq ($(MAKECMDGOALS), intel)
@@ -104,7 +104,7 @@ ifeq ($(MAKECMDGOALS), intel)
   CXXFLAGS := -std=c++11 -Wall -Wremarks -Wchecks -Weffec++ -xHost -funroll-loops -ipo -O3
   DEPFLAGS = -std=c++11 -MM -MP -MT $(OBJDIR)$*.o
 endif
-intel: neurofield
+intel: nftsim
 
 #   target: $(BINDIR)$(BIN) - Main target for the final build, linking objects into an executable.
 $(BINDIR)$(BIN): $(OBJ) | make_bin_dir
