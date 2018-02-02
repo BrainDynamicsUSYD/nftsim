@@ -9,7 +9,7 @@
 #ifndef NEUROFIELD_SRC_TAU_H
 #define NEUROFIELD_SRC_TAU_H
 
-// Other neurofield headers
+// Other nftsim headers
 #include "configf.h"    // Configf;
 #include "nf.h"         // NF;
 

@@ -11,7 +11,7 @@
 #ifndef NEUROFIELD_SRC_DENDRITE_INTEGRAL_H
 #define NEUROFIELD_SRC_DENDRITE_INTEGRAL_H
 
-// Other neurofield headers
+// Other nftsim headers
 #include "configf.h"    // Configf;
 #include "coupling.h"   // Coupling;
 #include "dendrite.h"   // Dendrite;

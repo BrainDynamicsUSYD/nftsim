@@ -9,7 +9,7 @@
 #ifndef NEUROFIELD_SRC_LONGCOUPLING_H
 #define NEUROFIELD_SRC_LONGCOUPLING_H
 
-// Other neurofield headers
+// Other nftsim headers
 #include "configf.h"    // Configf;
 #include "coupling.h"   // Coupling;
 #include "output.h"     // Output;

@@ -13,7 +13,7 @@
 // Forward declaration to break circular collaboration
 class Propagator;
 
-// Other neurofield headers
+// Other nftsim headers
 #include "configf.h"    // Configf;
 #include "nf.h"         // NF;
 #include "output.h"     // Output; Outlet;

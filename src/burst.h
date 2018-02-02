@@ -9,7 +9,7 @@
 #ifndef NEUROFIELD_SRC_BURST_H
 #define NEUROFIELD_SRC_BURST_H
 
-// Other neurofield headers
+// Other nftsim headers
 #include "configf.h"    // Configf;
 #include "de.h"         // DE; RK4;
 #include "output.h"     // Output;

@@ -9,7 +9,7 @@
 #ifndef NEUROFIELD_SRC_NF_H
 #define NEUROFIELD_SRC_NF_H
 
-// Other neurofield headers
+// Other nftsim headers
 #include "configf.h"   // Configf;
 //#include "dumpf.h"     // Dumpf;
 #include "output.h"    // Output;

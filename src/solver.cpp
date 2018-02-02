@@ -5,7 +5,7 @@
 
   If you define your own Propagators or Couplings, then, it is in the init
   member-function of this class that you must create appropriate entries in
-  order to make those Propagators and Couplings specifiable via neurofield's
+  order to make those Propagators and Couplings specifiable via nftsim's
   configuration (.conf) files.
 
   @author Peter Drysdale, Felix Fung,
@@ -14,7 +14,7 @@
 // Main module header
 #include "solver.h"   // Solver;
 
-// Other neurofield headers
+// Other nftsim headers
 #include "bcm.h"           // BCM;
 #include "bcmlong.h"       // BCMLong;
 #include "cadp.h"          // CaDP;

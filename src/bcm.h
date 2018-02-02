@@ -9,7 +9,7 @@
 #ifndef NEUROFIELD_SRC_BCM_H
 #define NEUROFIELD_SRC_BCM_H
 
-// Other neurofield headers
+// Other nftsim headers
 #include "cadp.h"       // CaDP;
 #include "configf.h"    // Configf;
 #include "output.h"     // Output;

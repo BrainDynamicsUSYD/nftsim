@@ -13,7 +13,7 @@
 #ifndef NEUROFIELD_SRC_WAVE_H
 #define NEUROFIELD_SRC_WAVE_H
 
-// Other neurofield headers
+// Other nftsim headers
 #include "configf.h"    // Configf;
 #include "population.h" // Population;
 #include "propagator.h" // Propagator;

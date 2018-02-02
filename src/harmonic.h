@@ -9,7 +9,7 @@
 #ifndef NEUROFIELD_SRC_HARMONIC_H
 #define NEUROFIELD_SRC_HARMONIC_H
 
-// Other neurofield headers
+// Other nftsim headers
 #include "configf.h"    // Configf;
 #include "de.h"         // DE; RK4;
 #include "population.h" // Population;

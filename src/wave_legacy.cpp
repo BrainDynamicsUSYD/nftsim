@@ -16,7 +16,7 @@
 // Main module header
 #include "wave_legacy.h"     // WaveLegacy;
 
-// Other neurofield headers
+// Other nftsim headers
 #include "configf.h"         // Configf;
 #include "population.h"      // Population;
 #include "stencil_legacy.h"  // StencilLegacy;

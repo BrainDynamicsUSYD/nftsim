@@ -9,7 +9,7 @@
 #ifndef NEUROFIELD_SRC_BCMLONG_H
 #define NEUROFIELD_SRC_BCMLONG_H
 
-// Other neurofield headers
+// Other nftsim headers
 #include "bcm.h"        // BCM;
 #include "configf.h"    // Configf;
 #include "de.h"         // RK4;

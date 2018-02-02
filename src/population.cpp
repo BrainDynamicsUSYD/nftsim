@@ -9,7 +9,7 @@
 // Main module header
 #include "population.h" // Population;
 
-// Other neurofield headers
+// Other nftsim headers
 #include "burst.h"      // BurstResponse;
 #include "configf.h"    // Configf;
 #include "coupling.h"   // Coupling;

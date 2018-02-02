@@ -38,8 +38,8 @@ int main(int argc, char* argv[]) {
           || strcmp(argv[i],"--help")==0 ) {
         cout << endl << "Usage: NeuroField [optional switches]" << endl
              << endl
-             << "  By default NeuroField will read neurofield.conf and write output" << endl
-             << "  to neurofield.output" << endl
+             << "  By default NeuroField will read nftsim.conf and write output" << endl
+             << "  to nftsim.output" << endl
              << endl
              << "Options:" << endl
              << "  -i, --input [FILE]         Read from a particular configuration;" << endl
@@ -58,7 +58,7 @@ int main(int argc, char* argv[]) {
     }
   }
 
-  // open conf file - default is neurofield.conf
+  // open conf file - default is nftsim.conf
   //conditional operator syntax: condition? if_true:if_false
   int iconfarg = 0;
   if( argc>2 ) {
@@ -68,9 +68,9 @@ int main(int argc, char* argv[]) {
       }
     }
   }
-  const string confname = string(iconfarg != 0?argv[iconfarg]:"neurofield.conf");
+  const string confname = string(iconfarg != 0?argv[iconfarg]:"nftsim.conf");
   if(iconfarg == 0) {
-    cerr << "Warning: Using neurofield.conf for input by default" << endl;
+    cerr << "Warning: Using nftsim.conf for input by default" << endl;
   }
   auto inputf = new Configf(confname);
 
@@ -95,7 +95,7 @@ int main(int argc, char* argv[]) {
   }
 
   // open file for outputting data - default is confname with .conf suffix
-  // replaced by .output, so neurofield.conf => neurofield.output.
+  // replaced by .output, so nftsim.conf => nftsim.output.
   Dumpf dumpf;
   int ioutarg = 0;
   if( argc>2 ) {
@@ -120,9 +120,9 @@ int main(int argc, char* argv[]) {
   }
 
   // construct, initialize and solve the neural field theory
-  Solver neurofield(dumpf);
-  *inputf>>neurofield;
-  neurofield.solve();
+  Solver nftsim(dumpf);
+  *inputf>>nftsim;
+  nftsim.solve();
 
   delete inputf;
   return EXIT_SUCCESS;

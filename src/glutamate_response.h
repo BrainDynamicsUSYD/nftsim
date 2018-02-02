@@ -10,7 +10,7 @@
 // Forward declaration to break circular collaboration
 class GlutamateResponse;
 
-// Other neurofield headers
+// Other nftsim headers
 #include "configf.h"    // Configf;
 #include "de.h"         // DE; RK4;
 #include "firing_response.h"  // FiringResponse;

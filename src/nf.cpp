@@ -9,7 +9,7 @@
 // Main module header
 #include "nf.h"         // NF;
 
-// Other neurofield headers
+// Other nftsim headers
 #include "configf.h"    // Configf;
 #include "output.h"     // Output;
 

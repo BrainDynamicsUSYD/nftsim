@@ -17,7 +17,7 @@
 // Main module header
 #include "wave.h"       // Wave;
 
-// Other neurofield headers
+// Other nftsim headers
 #include "configf.h"    // Configf;
 #include "population.h" // Population;
 #include "stencil.h"    // Stencil;

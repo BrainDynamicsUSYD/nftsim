@@ -13,7 +13,7 @@
 // Forward declaration to break circular collaboration
 class FiringResponse;
 
-// Other neurofield headers
+// Other nftsim headers
 #include "array.h"      // Array;
 #include "configf.h"    // Configf;
 #include "coupling.h"   // Coupling;

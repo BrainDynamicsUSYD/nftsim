@@ -9,7 +9,7 @@
 #ifndef NEUROFIELD_SRC_SOLVER_H
 #define NEUROFIELD_SRC_SOLVER_H
 
-// Other neurofield headers
+// Other nftsim headers
 #include "array.h"      // Array;
 #include "configf.h"    // Configf;
 #include "coupling.h"   // Coupling;

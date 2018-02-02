@@ -9,7 +9,7 @@
 // Main module header
 #include "timeseries.h" // Timeseries; TIMESERIES::;
 
-// Other neurofield headers
+// Other nftsim headers
 #include "configf.h"    // Configf;
 #include "random.h"     // Random;
 

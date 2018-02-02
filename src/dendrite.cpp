@@ -9,7 +9,7 @@
 // Main module header
 #include "dendrite.h"   // Dendrite;
 
-// Other neurofield headers
+// Other nftsim headers
 #include "configf.h"    // Configf;
 #include "coupling.h"   // Coupling;
 #include "de.h"         // RK4;
