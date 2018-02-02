@@ -11,7 +11,7 @@
 %                 the .conf extension.
 %        time_stamp -- boolean flag to use a time_stamp YYYY-MM-DDTHHMMSS
 %                      in the output file name.
-%        neurofield_path -- nftsim executable (full or relative path).
+%        nftsim_path -- nftsim executable (full or relative path).
 %
 % OUTPUT: Writes a .output file in the same location as the .conf file.
 %        obj -- A nftsim output struct (a Matlab struct containing
@@ -32,7 +32,7 @@
 %}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function obj = run(fname, time_stamp, neurofield_path)
+function obj = run(fname, time_stamp, nftsim_path)
     %
     tic;
     fname = strrep(fname, '.conf', ''); %Strip any .conf suffix.
@@ -42,7 +42,7 @@ function obj = run(fname, time_stamp, neurofield_path)
         time_stamp = false;
     end
     % If we were not provided a path to nftsim, try to determine one.
-    if nargin < 3 || isempty(neurofield_path)
+    if nargin < 3 || isempty(nftsim_path)
         % Check typical locations, the first path that exists will be selected.
         locations = {'nftsim', ...
                      './bin/nftsim', ...
@@ -50,25 +50,25 @@ function obj = run(fname, time_stamp, neurofield_path)
                      'nftsim.exe'};
         selected_path = find(cellfun(@(name) exist(name, 'file')==2, locations), 1, 'first');
         if ~isempty(selected_path)
-            neurofield_path = locations{selected_path};
+            nftsim_path = locations{selected_path};
         else
             error(['nf:' mfilename ':BadPath'], ...
                   'nftsim not found. Either change into the nftsim base directory or make a symlink to nftsim in the current directory.');
         end
     % If we were provided a path, check that it is valid.
-    elseif ~exist(neurofield_path, 'file')
+    elseif ~exist(nftsim_path, 'file')
         error(['nf:' mfilename ':BadPath'], ...
-              'The neurofield_path you provided is incorrect:"%s".',neurofield_path);
+              'The nftsim_path you provided is incorrect:"%s".',nftsim_path);
     end
 
     if ~time_stamp
-        neurofield_cmd = sprintf('%s -i %s.conf -o %s.output', neurofield_path, fname, fname);
+        nftsim_cmd = sprintf('%s -i %s.conf -o %s.output', nftsim_path, fname, fname);
     else
-        neurofield_cmd = sprintf('%s -i %s.conf -t', neurofield_path, fname);
+        nftsim_cmd = sprintf('%s -i %s.conf -t', nftsim_path, fname);
     end
     fprintf('INFO: Executing command:\n')    
-    fprintf('%s\n', neurofield_cmd);
-    [status, cmdout] = system(neurofield_cmd);
+    fprintf('%s\n', nftsim_cmd);
+    [status, cmdout] = system(nftsim_cmd);
 
     string(cmdout)
     if status ~= 0
