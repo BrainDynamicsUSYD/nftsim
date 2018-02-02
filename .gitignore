@@ -7,7 +7,7 @@ dep/
 doc/html/
 doc/latex/
 
-# Ignore NeuroField output files
+# Ignore NFTsim output files
 *.output
 *.mat
 

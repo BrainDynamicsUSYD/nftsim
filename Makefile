@@ -110,7 +110,7 @@ intel: nftsim
 $(BINDIR)$(BIN): $(OBJ) | make_bin_dir
 	$(CXX) $(CXXFLAGS) $(OBJ) -o $@
 	@$(CAT) conditions.txt
-	@echo "USE OF NEUROFIELD CONSTITUTES ACCEPTANCE OF THE APACHE 2.0 LICENSE"
+	@echo "USE OF NFTSIM CONSTITUTES ACCEPTANCE OF THE APACHE 2.0 LICENSE"
 
 #   target: make_bin_dir - Create the directory $BINDIR if it doesn't already exist.
 make_bin_dir:
