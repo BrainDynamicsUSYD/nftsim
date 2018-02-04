@@ -79,6 +79,8 @@ Please cite us as follows:
    
    _NFTsim: Theory and Simulation of Multiscale Neural Field Dynamics_
    
-   submitted to PLoS Computational Biology (2017)
+   Submitted to PLoS Computational Biology (2017).
+   Download the [preprint from bioaRiv](https://www.biorxiv.org/content/early/2018/02/01/237032).
+   
 
 
