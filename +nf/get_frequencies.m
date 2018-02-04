@@ -2,20 +2,20 @@
 % Return corresponding grids of frequencies and positions
 %
 % ARGUMENTS:
-%        data -- .
-%        fs -- .
-%        Lx -- .
-%        Ly -- .
+%        data -- an 1D or 3D array of size space points along x, space points along y, tim points, 
+%        fs -- sampling temporal frequency in [Hz]
+%        Lx -- physical size of the spatial domain along x in [m] 
+%        Ly -- physical size of the spatial domain along y in [m]
 %
 % OUTPUT:
-%        f -- .
-%        Kx -- .
-%        Ky -- .
-%        x -- .
-%        y -- .
-%        df -- .
-%        dk -- .
-%        dx -- .
+%        f -- vector of (positives) frequencies in [Hz]
+%        Kx -- vector of angular wavenumbers in [rad/m]
+%        Ky -- vector of angular wavenumbers in [rad/m]
+%        x -- vector with spatial coordinates in [m]
+%        y -- vector with spatial coordinates in [m]
+%        df -- temporal frequency resolution in [Hz]
+%        dk -- radial spatial frequency resolution in [rad/m]
+%        dx -- spatial resolution in [m]
 %
 % REQUIRES:
 %           -- <description>
@@ -38,16 +38,19 @@ function [f, Kx, Ky, x, y, df, dk, dx] = get_frequencies(data, fs, Lx, Ly)
     x = [];
     y = [];
 
+    % This is the single positive sided frequency vector
     if isvector(data)
-        f = (0:(fs / length(data)):(fs / 2)).'; % This is the single sided frequency
+        f = (0:(fs / length(data)):(fs / 2)).'; 
         return
     end
 
-    f = (0:(fs / size(data, 3)):(fs / 2)).'; % This is the single sided frequency
+    % This is the single positive sided frequency
+    f = (0:(fs / size(data, 3)):(fs / 2)).'; 
     df = fs / size(data, 3);
-    
-    Kx = 2*pi*(0:1/Lx:size(data, 1)/Lx/2); % This is the single sided frequency
-    Ky = 2*pi*(0:1/Ly:size(data, 2)/Ly/2); % This is the single sided frequency
+
+    % Wavenumbers / single sided and positive
+    Kx = 2*pi*(0:1/Lx:size(data, 1)/Lx/2);
+    Ky = 2*pi*(0:1/Ly:size(data, 2)/Ly/2);
     
     if mod(size(data, 1), 2) % If there is NO nyquist frequency component
         Kx = [-Kx(end:-1:2) Kx];
@@ -60,13 +63,14 @@ function [f, Kx, Ky, x, y, df, dk, dx] = get_frequencies(data, fs, Lx, Ly)
     else
         Ky = [-Ky(end:-1:2) Ky(1:end-1)];
     end
+    
     [Kx, Ky] = meshgrid(Kx, Ky);
     dk = 2 * pi / Lx;
 
-    dx = Lx / size(data, 1); % Metres per pixel
-    x = dx * (0:size(data, 1)-1);
+    dx = Lx / size(data, 1); % [m]
+    x  = dx * (0:size(data, 1)-1);
     dy = Ly / size(data, 1);
-    y = dy * (0:size(data, 1)-1);
+    y  = dy * (0:size(data, 1)-1);
     [x, y] = meshgrid(x, y);
 
 end %function get_frequencies()
