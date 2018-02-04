@@ -65,12 +65,19 @@ function [f, Kx, Ky, x, y, df, dk, dx] = get_frequencies(data, fs, Lx, Ly)
     end
     
     [Kx, Ky] = meshgrid(Kx, Ky);
+    
+    % Smallest wavenumber - resolution in k-space (angular spatial frequency)
+    % This is assuming the spatial domain is square (Lx=Ly)
+    
     dk = 2 * pi / Lx;
-
+    
+    % dx and dy should be the same
     dx = Lx / size(data, 1); % [m]
+    dy = Ly / size(data, 1); % [m]
+    
     x  = dx * (0:size(data, 1)-1);
-    dy = Ly / size(data, 1);
     y  = dy * (0:size(data, 1)-1);
+    
     [x, y] = meshgrid(x, y);
 
 end %function get_frequencies()
