@@ -65,7 +65,7 @@ Problems compiling? First check [the following page](https://github.com/BrainDyn
 
 ## How to contribute code
 
-If you intend to contribute to NFTsim development, please make a private fork of this repository and follow the [instructions for contributors.](https://github.com/BrainDynamicsUSYD/nftsim/wiki/How-to-contribute-code-to-NeuroField)
+If you intend to contribute to NFTsim development, please make a private fork of this repository and follow the [instructions for contributors.](https://github.com/BrainDynamicsUSYD/nftsim/wiki/Dev:-How-to-contribute-code-to-NFTsim)
 
 
 ## How to cite `NFTsim`
