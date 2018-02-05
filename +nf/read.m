@@ -42,7 +42,7 @@ function [obj] = read(fname)
     
         
     while isempty(strfind(buffer, '======================='))
-        % TODO: consider cleaning up this part.
+        % TODO: CLEAN UP - this part refers to EEGCODE.
         if ~isempty(strfind(buffer, 'Time  |'))
             error(['nf:' mfilename ':OldStyleOutput'], ...
                   'Did you try and open and old-style output file? Found a | that looked like a delimiter.')
