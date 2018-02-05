@@ -319,7 +319,7 @@ namespace TIMESERIES {
   /** @brief Initialises white noise.*/
   void White::init( Configf& configf ) {
     // Mean: 1 Std: 1 Ranseed: 1
-    // Mean: 1 Psd: 1 Ranseed: 1
+    // Mean: 1 PSD: 1 Ranseed: 1
     configf.param("Mean", mean);
     if( !configf.optional("Standard deviation", stddev) ) {
       configf.param("PSD", psd);
@@ -352,7 +352,7 @@ namespace TIMESERIES {
   /** @brief Initialises spatially uniform/coherent white noise.*/
   void WhiteCoherent::init( Configf& configf ) {
     // Mean: 1 Std: 1 Ranseed: 1
-    // Mean: 1 Psd: 1 Ranseed: 1
+    // Mean: 1 PSD: 1 Ranseed: 1
     configf.param("Mean", mean);
     if( !configf.optional("Standard deviation", stddev) ) {
       configf.param("PSD", psd);
