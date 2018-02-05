@@ -68,9 +68,9 @@ function [f, P] = spectrum(obj, traces, n_windows, windowed, detrended)
 
     % Partition the extracted data into epochs of time.
     frac_overlap = 0.5;
-    evenlength = true;
-    same_size = true;
-    window_idx = nf.partition(size(data, 1), n_windows, [], frac_overlap, evenlength, same_size);
+    evenlength   = true;
+    same_size    = true;
+    window_idx   = nf.partition(size(data, 1), n_windows, [], frac_overlap, evenlength, same_size);
     window_length = window_idx(1, 2) - window_idx(1, 1) + 1;
 
     % Calculate mean power spectrum for each epoch of time.

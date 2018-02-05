@@ -119,9 +119,9 @@ end %function spatial_spectrum()
 
 
 function [Pkf, Prf] = get_spectrum(data, k_mask, k_filter, Lx, fs)
-    df = fs / (size(data, 3));
-    dk = 2 * pi / Lx;
-    dx = Lx / size(data, 1); % Metres per pixel
+    df = fs / (size(data, 3)); % [Hz]
+    dk = 2 * pi / Lx;          % spatial frequency resolution in [rad/m] -- smallest nonzero wavenumber
+    dx = Lx / size(data, 1);   % [m]
 
     % First, get the 3D FFT and apply volume conduction
     P = fftshift(fftn(data));
@@ -155,7 +155,7 @@ function [Pkf, Prf] = get_spectrum(data, k_mask, k_filter, Lx, fs)
             Prf(:, :, 2:(end - 1)) = Prf(:, :, 2:(end - 1)) * 2;
         end
         
-        % Divide by N, dx and dx so that integration gives the correct power
+        % Divide by N, dx and dx so that integration gives the correct power or PSD?????
         % Division by N on the grounds that energy in real space is given by summing abs(x)^2/N
         % So we could call the power P=abs(x)^2/N so that sum(P) gives the correct power
         % And then division by dx*dx means that integral(P) over position gives the right answer
