@@ -11,10 +11,16 @@
    Sanz-Leon, P., Robinson, PA., Knock, SA., Drysdale, PM., Fung, PK., Abeysuriya, GM.,
    Rennie, CJ and Zhao, XL.
    "NFTsim: Theory and Simulation of Multiscale Neural Field Dynamics"
-   presubmitted to PLoS Computational Biology 
+   Submitted to PLoS Computational Biology (2017)
+   Download the preprint from here:
+   https://www.biorxiv.org/content/early/2018/02/01/237032
+
 
  
-Feedback, bug reports, patches and contributions are welcome at
+Feedback, bug reports, patches and contributions are welcome at:
 https://github.com/BrainDynamicsUSYD/nftsim/issues
+
+Read online documentation at:
+https://github.com/BrainDynamicsUSYD/nftsim/wiki
 ==============================================================================
 
