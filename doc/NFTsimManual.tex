@@ -337,9 +337,9 @@ Stimulus: Const - Onset: 0
 
     This is followed by the type of stimulus, to be further elaborated below.
 
-    Optional parameter \type{Onset} specifies the time onset for the stimulus to begin. If unspecified, stimulus starts at time 0.
+    Optional parameter \type{Onset} specifies the time [s] from the start of the simulation for the stimulus to begin. If unspecified, stimulus starts at time 0.
 
-    Either \type{Cease} or \type{Duration} can be an optional parameter to specify the end time of the stimulus. If unspecified, stimulus ends at 1000 seconds.
+    Optional parameter \type{Duration} can be used to specify the length of time [s] that the stimulus is active. If unspecified the stimulus continues for the entire simulation.
 
     If optional parameter \type{Node} is specified, only the specified node indices will receive stimulation.
 
@@ -352,9 +352,9 @@ Const - Mean: 5
     \end{lstlisting}
 
     \vspace{5mm}
-    \textbf{Pulse}
+    \textbf{PulseRect}
     \begin{lstlisting}
-Pulse - Amplitude: 1 Width: 2e-2 Frequency: 1 Pulses: 1
+PulseRect - Amplitude: 1 Width: 2e-2 Frequency: 1 Pulses: 1
     \end{lstlisting}
 
     \vspace{5mm}
@@ -381,7 +381,7 @@ White - Mean: 1 Psd: 20 Ranseed: 10
     \begin{lstlisting}
 Stimulus: Superimpose: 2
  Stimulus: White - Mean: 1 Psd: 1
- Stimulus: Pulse - Onset: 0.5 Width: 2e-2 Frequency 1 Pulses: 1
+ Stimulus: PulseRect - Onset: 0.5 Width: 2e-2 Frequency 1 Pulses: 1
     \end{lstlisting}
 
     \end{itemize}
