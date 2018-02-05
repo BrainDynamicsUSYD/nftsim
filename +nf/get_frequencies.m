@@ -75,9 +75,12 @@ function [f, Kx, Ky, x, y, df, dk, dx] = get_frequencies(data, fs, Lx, Ly)
     dx = Lx / size(data, 1); % [m]
     dy = Ly / size(data, 1); % [m]
     
-    x  = dx * (0:size(data, 1)-1);
-    y  = dy * (0:size(data, 1)-1);
-    
+    % the stencil in NFTsim assumes the coordinates of a parcel of the discretized domain
+    % is at the centre of the parcel, thus the first coordinate is at (dx/2; dy/2) 
+
+    x  = dx * (0:size(data, 1)) + dx/2;
+    y  = dy * (0:size(data, 1)) + dx/2;
+
     [x, y] = meshgrid(x, y);
 
 end %function get_frequencies()
