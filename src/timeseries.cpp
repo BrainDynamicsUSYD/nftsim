@@ -354,17 +354,17 @@ namespace TIMESERIES {
     // Mean: 1 Std: 1 Ranseed: 1
     // Mean: 1 Psd: 1 Ranseed: 1
     configf.param("Mean", mean);
-    if( !configf.optional("Std", amp) ) {
-      configf.param("Psd", amp);
+    if( !configf.optional("Standard deviation", stddev) ) {
+      configf.param("PSD", psd);
       // index of timeseries the same as that of population
       double deltax = atof(configf.find(
                              label("Population ",index+1)+"*Length").c_str()) /sqrt(nodes);
-      amp = sqrt(4.0*pow(M_PI,3.0)*pow(amp,2)/deltat/pow(deltax,2));
+      stddev = sqrt(4.0*pow(M_PI,3.0)*pow(psd,2)/deltat/pow(deltax,2));
     }
     if(configf.optional("Ranseed", seed)) {
-      random = new Random(seed, mean, amp);
+      random = new Random(seed, mean, stddev);
     } else {
-      random = new Random(mean, amp);
+      random = new Random(mean, stddev);
     }
   }
 
