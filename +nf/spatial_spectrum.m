@@ -10,19 +10,19 @@
 %        spatial_filter -- set to 1 to enable the usual exponential k filter
 %
 % OUTPUT:
-%        f -- .
-%        P -- .
-%        Kx -- .
-%        Ky -- .
-%        Pkf -- .
-%        x -- .
-%        y -- .
-%        Prf -- .
+%        f -- vector of temporal frequencies in [Hz]
+%        P -- power spectral density in [au / Hz ???]????
+%        Kx -- vector with angular wavenumbers in [rad/m]
+%        Ky -- vector with angular wavenumbers in [rad/m]
+%        Pkf -- power spectral density? array in [units?????]
+%        x -- array of spatial coordinates along x [m]
+%        y -- array of spatial coordinates along y [m]
+%        Prf --power spectral density ? in space frequency [units?????]
 %
 % REQUIRES:
-%        nf.get_frequencies() -- <description>
-%        nf.grid()  -- <description>
-%        nf.partition() -- <description>
+%        nf.get_frequencies() 
+%        nf.grid()  
+%        nf.partition() 
 %
 % REFERENCES:
 %
