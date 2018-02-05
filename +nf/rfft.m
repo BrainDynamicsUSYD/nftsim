@@ -21,6 +21,7 @@
 %        http://www.brain-dynamics.net/~chris_rennie/fourier.pdf
 %
 % AUTHOR:
+%     Original: Chris Rennie circa 2000
 %     Romesh Abeysuriya (2012-03-22).
 %
 % USAGE:
@@ -75,9 +76,10 @@ function [f, s, P] = rfft(y, fs, NFFT, windowed, detrended)
         P(2:(end - 1), :) = P(2:(end - 1), :) .* 2.0;
     end
 
+    % TODO: check normalizations
     % P now contains properly normalized spectral power
     %f = fs / 2 * linspace(0, 1, NFFT / 2 + 1)';
-    f = 0:(fs / NFFT):(fs / 2); % I think this is more correct
+    f = 0:(fs / NFFT):(fs / 2); % I think this is more correct 
     P = mean(P, 2);
     P = P ./ f(2); % Divide by frequency bin size to get power density
 

@@ -10,7 +10,7 @@
 // Main module header
 #include "dendrite_integral.h" // DendriteIntegral;
 
-// Other neurofield headers
+// Other nftsim headers
 #include "configf.h"    // Configf;
 #include "coupling.h"   // Coupling;
 #include "propagator.h" // Propagator;

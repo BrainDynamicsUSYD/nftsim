@@ -6,10 +6,10 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#ifndef NEUROFIELD_SRC_CADP_H
-#define NEUROFIELD_SRC_CADP_H
+#ifndef NFTSIM_SRC_CADP_H
+#define NFTSIM_SRC_CADP_H
 
-// Other neurofield headers
+// Other nftsim headers
 #include "configf.h"    // Configf;
 #include "coupling.h"   // Coupling;
 #include "de.h"         // DE; RK4;
@@ -72,4 +72,4 @@ class CaDP : public Coupling {
   void output( Output& output ) const override;
 };
 
-#endif //NEUROFIELD_SRC_CADP_H
+#endif //NFTSIM_SRC_CADP_H

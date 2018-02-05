@@ -27,4 +27,4 @@ hi def link CntKey preproc
 hi def link CntI preproc
 hi def link Choice statement
 
-let b:current_syntax = "neurofield"
+let b:current_syntax = "nftsim"

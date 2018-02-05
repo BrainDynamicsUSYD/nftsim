@@ -9,7 +9,7 @@
 // Main module header
 #include "output.h"     // Output; Outlet;
 
-// Other neurofield headers
+// Other nftsim headers
 #include "configf.h"    // Configf;
 #include "dumpf.h"      // Dumpf;
 

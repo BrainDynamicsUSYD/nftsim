@@ -11,7 +11,7 @@
 #ifndef COUPLING_DIFF_ARCTAN_H
 #define COUPLING_DIFF_ARCTAN_H
 
-// Other neurofield headers
+// Other nftsim headers
 #include "configf.h"    // Configf;
 #include "coupling.h"   // Coupling
 #include "propagator.h" // Propagator;

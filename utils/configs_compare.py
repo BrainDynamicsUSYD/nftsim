@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Compare the current output of neurofield against the stored data for the
+Compare the current output of nftsim against the stored data for the
 configuration files in configs/.
 
 USAGE:
@@ -23,7 +23,7 @@ EXAMPLES:
   #is 'propagator.1.phi', the default node index is 0, so to show an overlay
   #and difference (current Vs stored) plot for the first output node of the
   #first propagator's phi for the onepop.conf configuration file, from the main
-  #neurofield directory just run:
+  #nftsim directory just run:
   ./utils/configs_compare.py --diff --overlay
 
   #To compare 'example.conf', plotting an overlay and diff, of the 73rd output
@@ -64,9 +64,9 @@ from matplotlib import pyplot
 
 # Then, try importing less reliable packages
 try:
-    import neurofield
+    import nftsim
 except ImportError:
-    LOG.error("Failed to import neurofield.py...")
+    LOG.error("Failed to import nftsim.py...")
     raise
 ###########################################################################
 
@@ -111,7 +111,7 @@ if __name__ == "__main__":
     #Parse arguments
     import argparse
     PARSER = argparse.ArgumentParser(
-        description="Compare the current output of neurofield to stored output.")
+        description="Compare the current output of nftsim to stored output.")
 
     #Configuration file
     PARSER.add_argument('-c', '--conf',
@@ -182,15 +182,15 @@ if __name__ == "__main__":
     stored_filepath = find_file(stored_filename, test_data_dir)
 
     #Copy the stored data to a temporary file
-    tmp_stored_filepath = '/tmp/neurofield_stored_%s.output' % config_name
+    tmp_stored_filepath = '/tmp/nftsim_stored_%s.output' % config_name
     with gzip.open(stored_filepath, 'rb') as f_in, open(tmp_stored_filepath, 'wb') as f_out:
         shutil.copyfileobj(f_in, f_out)
 
-    #Load the stored data into a neurofield object.
-    stored = neurofield.NF(tmp_stored_filepath)
+    #Load the stored data into a nftsim object.
+    stored = nftsim.NF(tmp_stored_filepath)
 
-    #Run the config file with the current version, and load data to a neurofield object.
-    current = neurofield.run(config_filepath)
+    #Run the config file with the current version, and load data to a nftsim object.
+    current = nftsim.run(config_filepath)
 
     #If requested, plot overlay of stored and current traces.
     if ARGS.overlay is True:

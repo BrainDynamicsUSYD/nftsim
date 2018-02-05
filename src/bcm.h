@@ -6,10 +6,10 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#ifndef NEUROFIELD_SRC_BCM_H
-#define NEUROFIELD_SRC_BCM_H
+#ifndef NFTSIM_SRC_BCM_H
+#define NFTSIM_SRC_BCM_H
 
-// Other neurofield headers
+// Other nftsim headers
 #include "cadp.h"       // CaDP;
 #include "configf.h"    // Configf;
 #include "output.h"     // Output;
@@ -70,4 +70,4 @@ class BCM : public CaDP {
   void output( Output& output ) const override;
 };
 
-#endif //NEUROFIELD_SRC_BCM_H
+#endif //NFTSIM_SRC_BCM_H

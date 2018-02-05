@@ -16,7 +16,7 @@
 // Main module header
 #include "coupling_ramp.h" // CouplingRamp;
 
-// Other neurofield headers
+// Other nftsim headers
 #include "configf.h"    // Configf;
 #include "population.h" // Population;
 #include "propagator.h" // Propagator;

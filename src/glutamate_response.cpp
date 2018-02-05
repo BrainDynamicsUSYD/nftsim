@@ -7,7 +7,7 @@
 // Main module header
 #include "glutamate_response.h"  // GlutamateResponse;
 
-// Other neurofield headers
+// Other nftsim headers
 #include "array.h"      // Array;
 #include "configf.h"    // Configf;
 #include "dendrite.h"   // Dendrite;

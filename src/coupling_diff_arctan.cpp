@@ -11,7 +11,7 @@
 // Main module header
 #include "coupling_diff_arctan.h" // CouplingDiffArctan;
 
-// Other neurofield  headers
+// Other nftsim  headers
 #include "configf.h"    // Configf;
 #include "coupling.h"   // Coupling;
 #include "population.h" // Population;

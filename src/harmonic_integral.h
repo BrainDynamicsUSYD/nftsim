@@ -6,10 +6,10 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#ifndef NEUROFIELD_SRC_HARMONIC_INTEGRAL_H
-#define NEUROFIELD_SRC_HARMONIC_INTEGRAL_H
+#ifndef NFTSIM_SRC_HARMONIC_INTEGRAL_H
+#define NFTSIM_SRC_HARMONIC_INTEGRAL_H
 
-// Other neurofield headers
+// Other nftsim headers
 #include "configf.h"    // Configf;
 #include "population.h" // Population;
 #include "propagator.h" // Propagator;
@@ -47,4 +47,4 @@ class HarmonicIntegral : public virtual Propagator {
   void step() override;
 };
 
-#endif //NEUROFIELD_SRC_HARMONIC_INTEGRAL_H
+#endif //NFTSIM_SRC_HARMONIC_INTEGRAL_H

@@ -6,10 +6,10 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#ifndef NEUROFIELD_SRC_TIMESERIES_H
-#define NEUROFIELD_SRC_TIMESERIES_H
+#ifndef NFTSIM_SRC_TIMESERIES_H
+#define NFTSIM_SRC_TIMESERIES_H
 
-// Other neurofield headers
+// Other nftsim headers
 #include "configf.h"    // Configf;
 #include "nf.h"         // NF;
 #include "random.h"     // Random;
@@ -103,4 +103,4 @@ struct Sine : public Timeseries {
 };
 
 } // namespace TIMESERIES
-#endif //NEUROFIELD_SRC_TIMESERIES_H
+#endif //NFTSIM_SRC_TIMESERIES_H

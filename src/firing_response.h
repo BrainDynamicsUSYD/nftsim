@@ -7,13 +7,13 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#ifndef NEUROFIELD_SRC_FIRING_RESPONSE_H
-#define NEUROFIELD_SRC_FIRING_RESPONSE_H
+#ifndef NFTSIM_SRC_FIRING_RESPONSE_H
+#define NFTSIM_SRC_FIRING_RESPONSE_H
 
 // Forward declaration to break circular collaboration
 class FiringResponse;
 
-// Other neurofield headers
+// Other nftsim headers
 #include "array.h"      // Array;
 #include "configf.h"    // Configf;
 #include "coupling.h"   // Coupling;
@@ -62,4 +62,4 @@ const std::vector<double>& FiringResponse::V() const {
   return v;
 }
 
-#endif //NEUROFIELD_SRC_FIRING_RESPONSE_H
+#endif //NFTSIM_SRC_FIRING_RESPONSE_H

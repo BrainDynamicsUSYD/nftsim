@@ -7,13 +7,13 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#ifndef NEUROFIELD_SRC_PROPAGATOR_H
-#define NEUROFIELD_SRC_PROPAGATOR_H
+#ifndef NFTSIM_SRC_PROPAGATOR_H
+#define NFTSIM_SRC_PROPAGATOR_H
 
 // Forward declaration to break circular collaboration
 class Propagator;
 
-// Other neurofield headers
+// Other nftsim headers
 #include "configf.h"    // Configf;
 #include "nf.h"         // NF;
 #include "output.h"     // Output; Outlet;
@@ -59,4 +59,4 @@ double Propagator::operator[]( size_type node ) const {
   return p[node];
 }
 
-#endif //NEUROFIELD_SRC_PROPAGATOR_H
+#endif //NFTSIM_SRC_PROPAGATOR_H

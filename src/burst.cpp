@@ -9,7 +9,7 @@
 // Main module header
 #include "burst.h"      // BurstResponse;
 
-// Other neurofield headers
+// Other nftsim headers
 #include "array.h"      // Array;
 #include "configf.h"    // Configf;
 #include "dendrite.h"   // Dendrite;

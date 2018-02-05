@@ -18,8 +18,8 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#ifndef NEUROFIELD_SRC_STENCIL_H
-#define NEUROFIELD_SRC_STENCIL_H
+#ifndef NFTSIM_SRC_STENCIL_H
+#define NFTSIM_SRC_STENCIL_H
 
 // C++ standard library headers
 #include <string> // std::string;
@@ -77,4 +77,4 @@ void Stencil::operator++ (int) const {
   }
 }
 
-#endif //NEUROFIELD_SRC_STENCIL_H
+#endif //NFTSIM_SRC_STENCIL_H

@@ -12,8 +12,8 @@
   @author Peter Drysdale, Felix Fung.
 */
 
-#ifndef NEUROFIELD_SRC_STENCIL_LEGACY_H
-#define NEUROFIELD_SRC_STENCIL_LEGACY_H
+#ifndef NFTSIM_SRC_STENCIL_LEGACY_H
+#define NFTSIM_SRC_STENCIL_LEGACY_H
 
 // C++ standard library headers
 #include <string> // std::string;
@@ -71,4 +71,4 @@ void StencilLegacy::operator++ (int) const {
   }
 }
 
-#endif //NEUROFIELD_SRC_STENCIL_LEGACY_H
+#endif //NFTSIM_SRC_STENCIL_LEGACY_H

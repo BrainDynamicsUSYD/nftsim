@@ -4,7 +4,7 @@
   Each neural population is associated with a FiringResponse object which produces
   the soma response governed by a specified equation, for example Sigmoid:
   \f[
-    Insert equation 9 from draft neurofield paper here.
+    Insert equation 9 from draft nftsim paper here.
   \f]
 
   @author Peter Drysdale, Felix Fung,
@@ -13,7 +13,7 @@
 // Main module header
 #include "firing_response.h"  // FiringResponse;
 
-// Other neurofield headers
+// Other nftsim headers
 #include "array.h"      // Array;
 #include "configf.h"    // Configf;
 #include "coupling.h"   // Coupling;

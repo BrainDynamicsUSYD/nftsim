@@ -9,7 +9,7 @@
 // Main module header
 #include "bcm.h"        // BCM;
 
-// Other neurofield headers
+// Other nftsim headers
 #include "configf.h"    // Configf;
 #include "de.h"         // RK4;
 

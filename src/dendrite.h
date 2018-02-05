@@ -6,13 +6,13 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#ifndef NEUROFIELD_SRC_DENDRITE_H
-#define NEUROFIELD_SRC_DENDRITE_H
+#ifndef NFTSIM_SRC_DENDRITE_H
+#define NFTSIM_SRC_DENDRITE_H
 
 // Forward declaration to break circular collaboration
 class Dendrite;
 
-// Other neurofield headers
+// Other nftsim headers
 #include "configf.h"    // Configf;
 #include "coupling.h"   // Coupling;
 #include "de.h"         // DE; RK4;

@@ -1,5 +1,5 @@
 function test_output(save_new)
-	% This function tests the latest neurofield against known results
+	% This function tests the latest nftsim against known results
 	% nf_run, nf_read and nf_spatial_spectrum need to be on the path
 	if nargin < 1 || isempty(save_new)
 		save_new = 0;

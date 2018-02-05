@@ -8,7 +8,7 @@
 % output all nodes), or the number of nodes is not a perfect square..
 %
 % ARGUMENTS:
-%        obj   -- A neurofield output struct (a Matlab struct containing data
+%        obj   -- A nftsim output struct (a Matlab struct containing data
 %                 from a simulation).
 %        trace -- A string with the name of the array to reshape. 
 %
@@ -35,7 +35,7 @@ function [data, longside_nodes, shortside_nodes] = grid(obj, trace)
     
     if output_nodes ~= obj.input_nodes 
         error(['nf:' mfilename ':IncompatibleOutput'], ...
-              'Output from NeuroField must be for all nodes')
+              'Output from NFTsim must be for all nodes')
     end    
 
     data = nf.extract(obj, trace);
@@ -48,7 +48,7 @@ function [data, longside_nodes, shortside_nodes] = grid(obj, trace)
         longside_nodes  = obj.longside_nodes;
         shortside_nodes = obj.input_nodes / obj.longside_nodes;
     end
-    %Reshape to an array of (n,m,tpts)
+    %Reshape to an array of (nx,ny,tpts)
 
     %data = reshape(data, grid_edge, grid_edge, obj.npoints);
     

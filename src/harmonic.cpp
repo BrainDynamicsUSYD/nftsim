@@ -9,7 +9,7 @@
 // Main module header
 #include "harmonic.h"   // Harmonic;
 
-// Other neurofield headers
+// Other nftsim headers
 #include "configf.h"    // Configf;
 #include "population.h" // Population;
 

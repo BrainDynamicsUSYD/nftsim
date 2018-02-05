@@ -1,9 +1,9 @@
-%% Extract a specific subset of data from a neurofield output struct.
+%% Extract a specific subset of data from a nftsim output struct.
 %
 % The subset can be specified in terms of: traces; times; and nodes.
 %
 % ARGUMENTS:
-%        obj -- A neurofield output struct (a Matlab struct containing data
+%        obj -- A nftsim output struct (a Matlab struct containing data
 %               from a simulation).
 %        traces -- A cell array or a comma separated string of the traces
 %                  you want to extract, e.g. 'Propagator.2.phi, Coupling.2.nu'.
@@ -35,7 +35,7 @@ function [data, t2] = extract(obj, traces, t, nodes)
     % If no nodes are provided, output all nodes
     if ~isstruct(obj) || ~isfield(obj, 'data')
         error(['nf:' mfilename ':BadArgument'], ...
-              'The first argument must be a neurofield output struct.');
+              'The first argument must be a nftsim output struct.');
     end
     
     if nargin < 4 || isempty(nodes)

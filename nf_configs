@@ -6,7 +6,7 @@
 #  ./nf_configs --help
 #
 #DESCRIPTION:
-#  A script for checking the output from the neurofield repo's .conf files
+#  A script for checking the output from the nftsim repo's .conf files
 #  against their expected test output. The expected/test output is stored in 
 #  the directory
 #    ./test/data/configs/
@@ -32,11 +32,11 @@ declare -r  INPUTARG1 INPUTARG2
 
 SCRIPTDIR="$(dirname "${BASH_SOURCE[0]}")"
 
-neurofield_exists(){
-  if [[ -e "$SCRIPTDIR"/bin/neurofield ]]; then
+nftsim_exists(){
+  if [[ -e "$SCRIPTDIR"/bin/nftsim ]]; then
     return 0
   else
-    printf '%s\n' "The neurofield executable doesn't exist, run make."
+    printf '%s\n' "The nftsim executable doesn't exist, run make."
     return 1
   fi
 }
@@ -46,12 +46,12 @@ parse_command_flags(){
   #check for command line switches
   case "$INPUTARG1" in
     --regenerate|-r)
-      neurofield_exists || return 1
+      nftsim_exists || return 1
       regenerate_output_file "$INPUTARG2"
       return "$?"
     ;;
     --check|-c)
-      neurofield_exists || return 1
+      nftsim_exists || return 1
       if [[ "$INPUTARG2" = 'all' ]]; then
         check_all
         return "$?"
@@ -63,7 +63,7 @@ parse_command_flags(){
     ;;
     --clean)
       #Remove files left around by calls to --check that found differences.
-      rm -f /tmp/neurofield_*
+      rm -f /tmp/nftsim_*
       return "$?"
     ;;
     --help|-h|-?)
@@ -80,7 +80,7 @@ msg_help(){
   printf '   %s\n\n' "nf_configs --<mode> '<config_file>'"
   printf ' %s\n' "Modes:"
   printf '\n%s\n' "  --check"
-  printf '%s\n'   "    Check if the output from neurofield has changed for a specified config file."
+  printf '%s\n'   "    Check if the output from nftsim has changed for a specified config file."
   printf '%s\n'   "    For example, to check the output of the 'example.conf' file, run:"
   printf '%s\n'   "        ./nf_configs --check 'example'"
   printf '%s\n'   "    or:"
@@ -116,11 +116,11 @@ set_output_file(){
 }
 
 # Run the config file provided as an argument, the first arg is expected
-# to be a relative(to neurofield) path to the config file.
+# to be a relative(to nftsim) path to the config file.
 run_config(){
   local config_file="$1"
   local output_file
-  local neurofield_status
+  local nftsim_status
 
   #If run_config() was called with a second arg use it as the output_file 
   if (( $# > 1 )); then
@@ -133,18 +133,18 @@ run_config(){
     [[ -d "$output_dir" ]] || mkdir --parents "$output_dir"
   fi
   
-  #Run neurofield for the requested config file
-  "$SCRIPTDIR/bin/neurofield" -i "$config_file" -o "$output_file"
-  neurofield_status="$?"
+  #Run nftsim for the requested config file
+  "$SCRIPTDIR/bin/nftsim" -i "$config_file" -o "$output_file"
+  nftsim_status="$?"
 
   #If the run was successful then gzip the resulting file.
-  if ((neurofield_status == 0)); then
+  if ((nftsim_status == 0)); then
     gzip --force "$output_file"
   else
-    printf "$ERROR_CLR %s\n" "Failed running: $SCRIPTDIR/bin/neurofield -i $config_file -o $output_file"
+    printf "$ERROR_CLR %s\n" "Failed running: $SCRIPTDIR/bin/nftsim -i $config_file -o $output_file"
   fi
   
-  return "$neurofield_status"
+  return "$nftsim_status"
 }
 
 get_all_config_files(){
@@ -166,7 +166,7 @@ regenerate_output_file(){
     done
     return 0
   elif [[ "$config_file" == "changed" ]]; then
-    [[ -f "/tmp/neurofield_changed_output_list_$(whoami).txt" ]] || { printf '%s\n' 'No changed list.'; return 1; }
+    [[ -f "/tmp/nftsim_changed_output_list_$(whoami).txt" ]] || { printf '%s\n' 'No changed list.'; return 1; }
     local regen_file
     local -i regen_errors=0
     while read -r output_to_regenerate ; do
@@ -176,7 +176,7 @@ regenerate_output_file(){
       printf '%s\n' "Regenerating '$regen_file'..."
       set_output_file "$regen_file"
       if ! run_config "$regen_file"; then ((++regen_errors)); fi
-    done < "/tmp/neurofield_changed_output_list_$(whoami).txt"
+    done < "/tmp/nftsim_changed_output_list_$(whoami).txt"
     if ((regen_errors!=0)); then
       printf '%s\n' "There were '$regen_errors' errors while regenerating changed output."
       return "$regen_errors"
@@ -199,7 +199,7 @@ regenerate_output_file(){
 }
 
 check_all(){
-  local -r changed_ouput_list="/tmp/neurofield_changed_output_list_$(whoami).txt"
+  local -r changed_ouput_list="/tmp/nftsim_changed_output_list_$(whoami).txt"
   [[ -f "$changed_ouput_list" ]] && rm -f "$changed_ouput_list"
   local error_count=0
   local conf_count=0
@@ -223,7 +223,7 @@ check_all(){
 }
 
 #Generates a temporary output file in /tmp/ for a specified config file and
-#compares it to the corresponding output file in neurofield/test/data/configs/
+#compares it to the corresponding output file in nftsim/test/data/configs/
 check_output_file(){
   local config_file="$1"
   local config_file_name
@@ -234,14 +234,14 @@ check_output_file(){
     config_file="$(find "$SCRIPTDIR/configs" -maxdepth 3 -type f -name "${config_file}.conf")"
   fi
 
-  #Compare the current output of neurofield against stored output.
+  #Compare the current output of nftsim against stored output.
   if [[ -f "$config_file" ]]; then
     set_output_file "$config_file"
     [[ -f "${OUTPUT_FILE}.gz" ]] || { printf "$ERROR_CLR %s\n" "No existing file to check against."; return 1; }
     config_file_name="$(basename "$config_file")"
-    #Path to file containing output of current neurofield.
-    OUTPUT_FILE_TMP="$(mktemp --tmpdir="/tmp" --suffix=.output neurofield_"$config_file_name"-XXXX 2>/dev/null \
-                     || mktemp /tmp/neurofield_"$config_file_name".XXXX)" #Alternative for OSX
+    #Path to file containing output of current nftsim.
+    OUTPUT_FILE_TMP="$(mktemp --tmpdir="/tmp" --suffix=.output nftsim_"$config_file_name"-XXXX 2>/dev/null \
+                     || mktemp /tmp/nftsim_"$config_file_name".XXXX)" #Alternative for OSX
     run_config "$config_file" "$OUTPUT_FILE_TMP" || return 1
     diff -q <(zcat "${OUTPUT_FILE_TMP}.gz") <(zcat "${OUTPUT_FILE}.gz") &> /dev/null
     DIFF_STATUS="$?" #NOTE: No-diff = 0; diff = 1; error = 2

@@ -6,8 +6,8 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#ifndef NEUROFIELD_SRC_OUTPUT_H
-#define NEUROFIELD_SRC_OUTPUT_H
+#ifndef NFTSIM_SRC_OUTPUT_H
+#define NFTSIM_SRC_OUTPUT_H
 
 // C++ standard library headers
 #include <string> // std::string;
@@ -38,4 +38,4 @@ class Output {
   operator std::vector<Outlet*>() const;
 };
 
-#endif //NEUROFIELD_SRC_OUTPUT_H
+#endif //NFTSIM_SRC_OUTPUT_H

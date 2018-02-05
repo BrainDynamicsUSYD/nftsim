@@ -16,10 +16,10 @@
    + param[in]     pairs   : total number of pairs of (nu, time) to define the segments
 */
 
-#ifndef NEUROFIELD_SRC_COUPLINGRAMP_H
-#define NEUROFIELD_SRC_COUPLINGRAMP_H
+#ifndef NFTSIM_SRC_COUPLINGRAMP_H
+#define NFTSIM_SRC_COUPLINGRAMP_H
 
-// Other neurofield headers
+// Other nftsim headers
 #include "configf.h"    // Configf;
 #include "coupling.h"   // Coupling;
 #include "population.h" // Population;
@@ -46,4 +46,4 @@ class CouplingRamp : public Coupling {
   ~CouplingRamp() override;
 };
 
-#endif // NEUROFIELD_SRC_COUPLINGRAMP_H
+#endif // NFTSIM_SRC_COUPLINGRAMP_H
