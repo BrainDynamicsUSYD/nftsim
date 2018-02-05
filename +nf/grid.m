@@ -48,7 +48,7 @@ function [data, longside_nodes, shortside_nodes] = grid(obj, trace)
         longside_nodes  = obj.longside_nodes;
         shortside_nodes = obj.input_nodes / obj.longside_nodes;
     end
-    %Reshape to an array of (n,m,tpts)
+    %Reshape to an array of (nx,ny,tpts)
 
     %data = reshape(data, grid_edge, grid_edge, obj.npoints);
     
