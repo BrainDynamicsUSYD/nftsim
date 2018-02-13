@@ -196,7 +196,7 @@ namespace TIMESERIES {
   void PulseRect::fire( vector<double>& Q ) const {
     //  Between start of each pulse and start plus width && as long as we have
     //  not reached the maximum number of pulses.
-    if((fmod(t, period) < width) && (t/period < pulses) ) {
+    if((fmod(t, period) <= width) && (t/period < pulses) ) {
       Q.assign(nodes, amp); // assign nodes instances of amp to Q.
     }
   }
