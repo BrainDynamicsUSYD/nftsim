@@ -358,6 +358,18 @@ PulseRect - Amplitude: 1 Width: 2e-2 Frequency: 1 Pulses: 1
     \end{lstlisting}
 
     \vspace{5mm}
+    \textbf{PulseSigmoid}
+    \begin{lstlisting}
+PulseSigmoid - Amplitude: 1 Width: 2e-2 Frequency: 1 Pulses: 1
+    \end{lstlisting}
+
+    \vspace{5mm}
+    \textbf{Sine}
+    \begin{lstlisting}
+Sine - Amplitude: 1.0 Frequency: 2.0
+    \end{lstlisting}
+
+    \vspace{5mm}
     \textbf{White}
 
     Gaussian noise, characterized by the mean and standard deviation:
@@ -383,6 +395,65 @@ Stimulus: Superimpose: 2
  Stimulus: White - Mean: 1 PSD: 1
  Stimulus: PulseRect - Onset: 0.5 Width: 2e-2 Frequency 1 Pulses: 1
     \end{lstlisting}
+
+    \vspace{5mm}
+    \textbf{Example stimuli-only .conf}
+
+    \begin{lstlisting}
+Time: 12 Deltat: 9.765625e-04
+Nodes: 144
+
+    Connection matrix:
+From:  1 
+To 1:  0
+
+
+Population 1: Stimulation
+Length: 0.5
+ Stimulus: Superimpose: 2
+ Stimulus: PulseRect - Onset: 2 Node: 62 Amplitude: 1.0 Width: 1.0 Period: 3 Pulses: 3
+ Stimulus: PulseSigmoid - Onset: 2 Node: 42 Amplitude: 1.0 Width: 1.0 Period: 3 Pulses: 3 Sigma: 0.03125
+
+Output: Node: 33 42 62 77 Start: 0
+Population: 1
+Dendrite:  
+Propagator:
+Coupling: 
+    \end{lstlisting}
+\begin{figure}[h]
+\begin{center}
+ \includegraphics[width=\textwidth]{img/compare_pulsesigmoid_pulserect.eps}
+\end{center}
+\end{figure}
+
+    \begin{lstlisting}
+Time: 5 Deltat: 9.765625e-04
+Nodes: 144
+
+    Connection matrix:
+From:  1 
+To 1:  0
+
+
+Population 1: Stimulation
+Length: 0.5
+ Stimulus: Superimpose: 4
+ Stimulus: Sine - Onset: 1 Duration: 4 Node: 62 Amplitude: 1.0 Frequency: 0.5
+ Stimulus: Sine - Onset: 2 Duration: 2 Node: 42 Amplitude: 1.0 Frequency: 2.0
+ Stimulus: Sine - Onset: 1 Duration: 4 Node: 33 Amplitude: 1.0 Frequency: 0.5
+ Stimulus: Sine - Onset: 2 Duration: 2 Node: 33 Amplitude: 1.0 Frequency: 2.0
+
+Output: Node: 33 42 62 Start: 0
+Population: 1
+Dendrite:  
+Propagator:
+Coupling: 
+    \end{lstlisting}
+\begin{figure}[h]
+\begin{center}
+ \includegraphics[width=\textwidth]{img/stimulus_sine.eps}
+\end{center}
+\end{figure}
 
     \end{itemize}
 \item[Ordinary populations]\ \\
