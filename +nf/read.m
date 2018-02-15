@@ -26,7 +26,7 @@ function [obj] = read(fname)
     end
     if ~exist(fname, 'file') 
         % Try appending .output to the name we were provided.
-        if ~exist([fname, '.output'], 'file') || 
+        if ~exist([fname, '.output'], 'file')
             error(['nf:' mfilename ':FileDoesNotExist'], ...
                   'The output file provided does not exist: "%s".', fname)
         else % The argument we were provided was just missing a suffix.
