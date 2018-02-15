@@ -12,6 +12,8 @@
 %    node_idx -- cell array with vectors of node indices, one per trace.
 %    reref -- boolean, true: removes spatial average at each time-step,
 %             this is equivalent to the "grand-average" often used in EEG.
+%    rm_linear_trend -- boolean, true: remove any linear trend from data before
+%                       plotting. Disable to view non-stationary time-series.
 %
 % OUTPUT: (Generates a time-series figure for each trace.)
 %    figure_handles -- cell array of figure handles.
@@ -38,7 +40,7 @@
     close([figure_handles{:}])
 %}
 
-function figure_handles =  plot_timeseries(obj, traces, node_idx, reref)
+function figure_handles =  plot_timeseries(obj, traces, node_idx, reref, rm_linear_trend)
   % Default to plotting all fields.
   if nargin < 2 || isempty(traces)
     traces = obj.fields;
@@ -54,6 +56,10 @@ function figure_handles =  plot_timeseries(obj, traces, node_idx, reref)
   if nargin < 4
     reref = true;
   end
+  % Default to linear detrend of data before plot.
+  if nargin < 5
+    rm_linear_trend = true;
+  end
   % Get some size info about data
   num_figs   = length(traces);
   time       = obj.time;
@@ -63,15 +69,21 @@ function figure_handles =  plot_timeseries(obj, traces, node_idx, reref)
   for nof=1:num_figs
     num_nodes = length(node_idx{nof});
     labels = cell(1, num_nodes);
+    node_data_index = nan(1, num_nodes);
     for k = 1:num_nodes
-        labels{k} = num2str(node_idx{nof}(k)); 
+        labels{k} = num2str(node_idx{nof}(k));
+        node_data_index(k) = find(obj.nodes{nof} == node_idx{nof}(k));
     end %index labels
 
     figure_handles{nof} = figure;
     fig_title = [traces{nof}];
-    % Get fata to plot
+    % Get data to plot
     data = nf.extract(obj, traces{nof});
-    data = detrend(data);
+
+    % Remove any linear trend from individual time-series.
+    if rm_linear_trend
+        data = detrend(data);
+    end
 
     % Rescale data to the range [0, 1]
     data = data - min(data(:)); 
@@ -88,7 +100,7 @@ function figure_handles =  plot_timeseries(obj, traces, node_idx, reref)
     separate_by = 0.33*(max(data(:)) - min(data(:)));
     nodes_by_timestepsize = repmat((1:num_nodes), [time_steps,1]);
     
-    plot(time, data(:, node_idx{nof}) + separate_by*nodes_by_timestepsize, ...
+    plot(time, data(:, node_data_index) + separate_by*nodes_by_timestepsize, ...
          'color', [0.42, 0.42, 0.42]);
     
     title(fig_title, 'interpreter', 'none');

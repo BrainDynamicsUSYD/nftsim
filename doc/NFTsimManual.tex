@@ -328,7 +328,7 @@ Population 1: Stimulation
     \begin{lstlisting}
 Length: .5
     \end{lstlisting}
-    The physical edge length of the population (which is a 2D sheet), in metres. This is used in \type{Wave} propagators and the \type{Psd} of \type{White} stimulus.
+    The physical edge length of the population (which is a 2D sheet), in metres. This is used in \type{Wave} propagators and the \type{PSD} of \type{White} stimulus.
     \item
     \begin{lstlisting}
 Stimulus: Const - Onset: 0
@@ -337,9 +337,9 @@ Stimulus: Const - Onset: 0
 
     This is followed by the type of stimulus, to be further elaborated below.
 
-    Optional parameter \type{Onset} specifies the time onset for the stimulus to begin. If unspecified, stimulus starts at time 0.
+    Optional parameter \type{Onset} specifies the time [s] from the start of the simulation for the stimulus to begin. If unspecified, stimulus starts at time 0.
 
-    Either \type{Cease} or \type{Duration} can be an optional parameter to specify the end time of the stimulus. If unspecified, stimulus ends at 1000 seconds.
+    Optional parameter \type{Duration} can be used to specify the length of time [s] that the stimulus is active. If unspecified the stimulus continues for the entire simulation.
 
     If optional parameter \type{Node} is specified, only the specified node indices will receive stimulation.
 
@@ -352,9 +352,21 @@ Const - Mean: 5
     \end{lstlisting}
 
     \vspace{5mm}
-    \textbf{Pulse}
+    \textbf{PulseRect}
     \begin{lstlisting}
-Pulse - Amplitude: 1 Width: 2e-2 Frequency: 1 Pulses: 1
+PulseRect - Amplitude: 1 Width: 2e-2 Frequency: 1 Pulses: 1
+    \end{lstlisting}
+
+    \vspace{5mm}
+    \textbf{PulseSigmoid}
+    \begin{lstlisting}
+PulseSigmoid - Amplitude: 1 Width: 2e-2 Frequency: 1 Pulses: 1
+    \end{lstlisting}
+
+    \vspace{5mm}
+    \textbf{Sine}
+    \begin{lstlisting}
+Sine - Amplitude: 1.0 Frequency: 2.0
     \end{lstlisting}
 
     \vspace{5mm}
@@ -362,15 +374,15 @@ Pulse - Amplitude: 1 Width: 2e-2 Frequency: 1 Pulses: 1
 
     Gaussian noise, characterized by the mean and standard deviation:
     \begin{lstlisting}
-White - Mean: 1 Std: 20 Ranseed: 10
+White - Mean: 1 StdDev: 20 Ranseed: 10
     \end{lstlisting}
 
-    Alternatively, the power spectral density (PSD) may be specified instead of the standard deviation. The advantage is that the PSD is invariant to change in \type{Deltat}, population \type{Length} and spatial \type{Nodes}. Given the PSD, \NF correctly calculates the standard deviation:
+    Alternatively, the power spectral density (PSD) may be specified instead of the standard deviation (StdDev). The advantage is that the PSD is invariant to change in \type{Deltat}, population \type{Length} and spatial \type{Nodes}. Given the PSD, \NF correctly calculates the standard deviation:
     \begin{lstlisting}
-White - Mean: 1 Psd: 20 Ranseed: 10
+White - Mean: 1 PSD: 20 Ranseed: 10
     \end{lstlisting}
 
-    In general, it is preferable to specify the noise using PSD rather than Std. The magnitude of nonlinear effects and the total power in the spectrum both depend on the PSD rather than the Std.
+    In general, it is preferable to specify the noise using \texttt{PSD} rather than \texttt{StdDev}. 
 
     The random number generator may be specified in \type{Ranseed}. If a seed is not specified, an automatically-incremented seed will be used instead, so that multiple stimulus populations will have independent sequences. In general it is not necessary to set the seed manually unless different random numbers are required for otherwise identical runs.
 
@@ -380,9 +392,69 @@ White - Mean: 1 Psd: 20 Ranseed: 10
     To superimpose 2 or more stimuli, begin with the keyword \type{Superimpose}, followed by the number of stimuli. Then list all the stimulus patterns and their parameters, with each stimulus pattern preceded by the keyword \type{Stimulus}.
     \begin{lstlisting}
 Stimulus: Superimpose: 2
- Stimulus: White - Mean: 1 Psd: 1
- Stimulus: Pulse - Onset: 0.5 Width: 2e-2 Frequency 1 Pulses: 1
+ Stimulus: White - Mean: 1 PSD: 1
+ Stimulus: PulseRect - Onset: 0.5 Width: 2e-2 Frequency 1 Pulses: 1
     \end{lstlisting}
+
+    \vspace{5mm}
+    \textbf{Example stimuli-only.conf}
+
+    \begin{lstlisting}
+Time: 12 Deltat: 9.765625e-04
+Nodes: 144
+
+    Connection matrix:
+From:  1 
+To 1:  0
+
+
+Population 1: Stimulation
+Length: 0.5
+ Stimulus: Superimpose: 2
+ Stimulus: PulseRect - Onset: 2 Node: 62 Amplitude: 1.0 Width: 1.0 Period: 3 Pulses: 3
+ Stimulus: PulseSigmoid - Onset: 2 Node: 42 Amplitude: 1.0 Width: 1.0 Period: 3 Pulses: 3 Sigma: 0.03125
+
+Output: Node: 33 42 62 77 Start: 0
+Population: 1
+Dendrite:  
+Propagator:
+Coupling: 
+    \end{lstlisting}
+\begin{figure}[h]
+\begin{center}
+ \includegraphics[width=\textwidth]{img/compare_pulsesigmoid_pulserect.eps}
+ \caption{Note than in this example, the parameter \texttt{Onset} of \texttt{PulseSigmoid} is the time at which the sigmoid pulse reaches half of its range.}
+\end{center}
+\end{figure}
+
+    \begin{lstlisting}
+Time: 5 Deltat: 9.765625e-04
+Nodes: 144
+
+    Connection matrix:
+From:  1 
+To 1:  0
+
+
+Population 1: Stimulation
+Length: 0.5
+ Stimulus: Superimpose: 4
+ Stimulus: Sine - Onset: 1 Duration: 4 Node: 62 Amplitude: 1.0 Frequency: 0.5
+ Stimulus: Sine - Onset: 2 Duration: 2 Node: 42 Amplitude: 1.0 Frequency: 2.0
+ Stimulus: Sine - Onset: 1 Duration: 4 Node: 33 Amplitude: 1.0 Frequency: 0.5
+ Stimulus: Sine - Onset: 2 Duration: 2 Node: 33 Amplitude: 1.0 Frequency: 2.0
+
+Output: Node: 33 42 62 Start: 0
+Population: 1
+Dendrite:  
+Propagator:
+Coupling: 
+    \end{lstlisting}
+\begin{figure}[h]
+\begin{center}
+ \includegraphics[width=\textwidth]{img/stimulus_sine.eps}
+\end{center}
+\end{figure}
 
     \end{itemize}
 \item[Ordinary populations]\ \\
