@@ -20,9 +20,13 @@
 function [obj] = read(fname)
 
     % Check that our input arg is actually a file.
-    if ~exist(fname, 'file')
+    if endsWith(fname,'.conf')
+        error(['nf:' mfilename ':BadArgument'], ...
+                  'The file provided is a configuration file: "%s".', fname)
+    end
+    if ~exist(fname, 'file') 
         % Try appending .output to the name we were provided.
-        if ~exist([fname, '.output'], 'file')
+        if ~exist([fname, '.output'], 'file') || 
             error(['nf:' mfilename ':FileDoesNotExist'], ...
                   'The output file provided does not exist: "%s".', fname)
         else % The argument we were provided was just missing a suffix.
