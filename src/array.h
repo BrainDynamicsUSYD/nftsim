@@ -6,8 +6,8 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#ifndef NEUROFIELD_SRC_ARRAY_H
-#define NEUROFIELD_SRC_ARRAY_H
+#ifndef NFTSIM_SRC_ARRAY_H
+#define NFTSIM_SRC_ARRAY_H
 
 // C++ standard library headers
 #include <vector> // std::vector;
@@ -88,4 +88,4 @@ typename Array<T>::size_type Array<T>::size() const {
   return m.size();
 }
 
-#endif //NEUROFIELD_SRC_ARRAY_H
+#endif //NFTSIM_SRC_ARRAY_H

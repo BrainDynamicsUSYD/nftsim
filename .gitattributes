@@ -15,7 +15,7 @@
 Makefile text
 
 # The executable.
-neurofield binary
+nftsim binary
 
 #Configuration files
 *.conf text

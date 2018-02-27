@@ -9,7 +9,7 @@
 // Main module header
 #include "tau.h"        // Tau;
 
-// Other neurofield headers
+// Other nftsim headers
 #include "configf.h"    // Configf;
 
 // C++ standard library headers

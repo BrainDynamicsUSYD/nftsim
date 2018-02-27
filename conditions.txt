@@ -1,5 +1,5 @@
 ==============================================================================
-=           NEUROFIELD is licensed under the Apache 2.0 License              =
+=               NFTSIM is licensed under the Apache 2.0 License              =
 ==============================================================================
 
                             (c) Copyright 
@@ -7,14 +7,20 @@
                           School of Physics
                         University of Sydney
 
-   Please cite Neurofield as follows:
+   Please cite NFTsim as follows:
    Sanz-Leon, P., Robinson, PA., Knock, SA., Drysdale, PM., Fung, PK., Abeysuriya, GM.,
    Rennie, CJ and Zhao, XL.
-   "NeuroField: Theory and Simulation of Multiscale Neural Field Dynamics"
-   presubmitted to PLoS Computational Biology 
+   "NFTsim: Theory and Simulation of Multiscale Neural Field Dynamics"
+   Submitted to PLoS Computational Biology (2017)
+   Download the preprint from here:
+   https://www.biorxiv.org/content/early/2018/02/01/237032
+
 
  
-Feedback, bug reports, patches and contributions are welcome at
-https://github.com/BrainDynamicsUSYD/neurofield/issues
+Feedback, bug reports, patches and contributions are welcome at:
+https://github.com/BrainDynamicsUSYD/nftsim/issues
+
+Read online documentation at:
+https://github.com/BrainDynamicsUSYD/nftsim/wiki
 ==============================================================================
 

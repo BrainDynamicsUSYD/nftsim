@@ -6,10 +6,10 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#ifndef NEUROFIELD_SRC_BCMLONG_H
-#define NEUROFIELD_SRC_BCMLONG_H
+#ifndef NFTSIM_SRC_BCMLONG_H
+#define NFTSIM_SRC_BCMLONG_H
 
-// Other neurofield headers
+// Other nftsim headers
 #include "bcm.h"        // BCM;
 #include "configf.h"    // Configf;
 #include "de.h"         // RK4;
@@ -38,4 +38,4 @@ class BCMLong : public BCM {
   void output( Output& output ) const override;
 };
 
-#endif //NEUROFIELD_SRC_BCMLONG_H
+#endif //NFTSIM_SRC_BCMLONG_H

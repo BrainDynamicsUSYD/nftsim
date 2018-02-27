@@ -6,10 +6,10 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#ifndef NEUROFIELD_SRC_NF_H
-#define NEUROFIELD_SRC_NF_H
+#ifndef NFTSIM_SRC_NF_H
+#define NFTSIM_SRC_NF_H
 
-// Other neurofield headers
+// Other nftsim headers
 #include "configf.h"   // Configf;
 //#include "dumpf.h"     // Dumpf;
 #include "output.h"    // Output;
@@ -39,4 +39,4 @@ class NF {
   virtual ~NF();
 };
 
-#endif //NEUROFIELD_SRC_NF_H
+#endif //NFTSIM_SRC_NF_H

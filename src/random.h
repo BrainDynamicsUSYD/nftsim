@@ -6,8 +6,8 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#ifndef NEUROFIELD_SRC_RANDOM_H
-#define NEUROFIELD_SRC_RANDOM_H
+#ifndef NFTSIM_SRC_RANDOM_H
+#define NFTSIM_SRC_RANDOM_H
 
 // C++ standard library headers
 #include <random> // std::mt19937_64; std::normal_distribution;
@@ -29,4 +29,4 @@ class Random {
   ~Random();
 };
 
-#endif // NEUROFIELD_SRC_RANDOM_H
+#endif // NFTSIM_SRC_RANDOM_H

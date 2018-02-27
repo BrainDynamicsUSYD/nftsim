@@ -6,8 +6,8 @@
   @author Peter Drysdale, Felix Fung,
 */
 
-#ifndef NEUROFIELD_SRC_DE_H
-#define NEUROFIELD_SRC_DE_H
+#ifndef NFTSIM_SRC_DE_H
+#define NFTSIM_SRC_DE_H
 
 // C++ standard library headers
 #include <vector> // std::vector;
@@ -129,4 +129,4 @@ class RK4 : public Integrator {
   }
 };
 
-#endif //NEUROFIELD_SRC_DE_H
+#endif //NFTSIM_SRC_DE_H

@@ -9,7 +9,7 @@
 // Main module header
 #include "bcmlong.h"    // BCMLong;
 
-// Other neurofield headers
+// Other nftsim headers
 #include "configf.h"    // Configf;
 #include "de.h"         // RK4;
 #include "output.h"     // Output;

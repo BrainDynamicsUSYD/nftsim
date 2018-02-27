@@ -9,7 +9,7 @@
 // Main module header
 #include "cadp.h"       // CaDP;
 
-// Other neurofield headers
+// Other nftsim headers
 #include "configf.h"    // Configf;
 #include "output.h"     // Output;
 #include "population.h" // Population;

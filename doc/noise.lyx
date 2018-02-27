@@ -65,7 +65,7 @@
 \begin_body
 
 \begin_layout Title
-Noise Amplitude in NeuroField
+Noise Amplitude in NFTsim
 \end_layout
 
 \begin_layout Author
@@ -81,8 +81,8 @@ Introduction
 \end_layout
 
 \begin_layout Standard
-Correctly calculating the noise amplitude for NeuroField is critical when
- comparing the power spectrum in NeuroField to analytic predictions.
+Correctly calculating the noise amplitude for NFTsim is critical when
+ comparing the power spectrum in NFTsim to analytic predictions.
  In the analytic work, we work almost exclusively in Fourier space, and
  use white noise with
 \end_layout
@@ -135,10 +135,10 @@ s
 \end_layout
 
 \begin_layout Standard
-In NeuroField, white noise is drawn from a Gaussian distribution at each
+In NFTsim, white noise is drawn from a Gaussian distribution at each
  node, at each point in time.
  There is a relationship between the mean and standard deviation of the
- Gaussian distribution used in NeuroField, and between 
+ Gaussian distribution used in NFTsim, and between 
 \begin_inset Formula $\phi_{n}^{(0)}$
 \end_inset
 
@@ -156,7 +156,7 @@ In NeuroField, white noise is drawn from a Gaussian distribution at each
 \begin_inset Formula $\phi_{n}(k,\omega)$
 \end_inset
 
- which are related to the standard deviation of the NeuroField Gaussian
+ which are related to the standard deviation of the NFTsim Gaussian
  distribution.
  
 \end_layout
@@ -721,7 +721,7 @@ When a plot of the power spectrum is made in Matlab, dividing by the transfer
 
 ).
  Also, this value corresponds to the single sided power spectral density.
- In NeuroField, we require the full power spectrum including negative frequency
+ In NFTsim, we require the full power spectrum including negative frequency
  components.
  Therefore, the value of 
 \begin_inset Formula $\phi_{n}^{2}(f)$
@@ -754,7 +754,7 @@ Therefore, once we have chosen
 \begin_inset Formula $\phi_{n}^{2}(\omega)$
 \end_inset
 
- we are able to calculate the appropriate noise amplitude in NeuroField
+ we are able to calculate the appropriate noise amplitude in NFTsim
  using the relation
 \end_layout
 
@@ -949,7 +949,7 @@ s
 \end_inset
 
  we can calculate the corresponding standard deviation for the noise in
- NeuroField using the previously derived correspondance.
+ NFTsim using the previously derived correspondance.
  At a sampling rate of 10000 Hz, we find
 \end_layout
 
@@ -982,7 +982,7 @@ s
 \begin_inset Formula $^{-1}$
 \end_inset
 
- compared with NeuroField using the above noise amplitud and sampling rates.
+ compared with NFTsim using the above noise amplitud and sampling rates.
  In this cortical network, the parameter values used were 
 \begin_inset Formula $\nu_{ee}=1$
 \end_inset
@@ -1205,12 +1205,12 @@ The end result is that Parseval's theorem is satisfied in Matlab as a direct
 \begin_layout Standard
 The same problem exists when considering spatial sampling.
  The size of the cortex is assumed to be 50 x 50cm, which is discretized
- in NeuroField when solving the wave equation for propagation of 
+ in NFTsim when solving the wave equation for propagation of 
 \begin_inset Formula $\phi_{e}$
 \end_inset
 
  in the cortex.
- NeuroField allows the user to pick the number of nodes in each direction
+ NFTsim allows the user to pick the number of nodes in each direction
  along the grid, subject to the constraints
 \end_layout
 
@@ -1248,7 +1248,7 @@ However, an additional effect is that the noise amplitude depends on the
 \end_inset
 
  decreased as the sampling rate increased for the same standard deviation
- of noise in NeuroField.
+ of noise in NFTsim.
  This is in fact exactly the same scenario, because when the physical size
  of the cortex is fixed, changing the number of nodes alters the spatial
  sampling frequency (samples per meter).
@@ -1384,7 +1384,7 @@ Cortex only network (3D)
 \begin_layout Standard
 We now consider the same cortical-only network, only now allowing for spatial
  variation.
- This was achieved by running NeuroField with 400 nodes, such that 
+ This was achieved by running NFTsim with 400 nodes, such that 
 \begin_inset Formula $\Delta x=0.025$
 \end_inset
 
@@ -1402,7 +1402,7 @@ s
 \end_inset
 
 .
- Numerical integration was performed using NeuroField in exactly the same
+ Numerical integration was performed using NFTsim in exactly the same
  way as the 1D case, and the power spectral density was evaluted consistent
  with the scalings required by Parseval's theorem (dividing by total number
  of elements, dividing by the frequency bin size, summing over angular wavenumbe
@@ -1516,7 +1516,7 @@ Finally, we can test this noise amplitude for the full corticothalamic model.
 \end_inset
 
 .
- Also, in NeuroField we replace the sigmoid response with a linearized response,
+ Also, in NFTsim we replace the sigmoid response with a linearized response,
  to eliminate nonlinear effects that are not included in the analytic power
  spectrum.
  Comparing the resulting power spectra shows an excellent match between
@@ -1578,11 +1578,11 @@ When solving over a 2D grid, users can specify
 \begin_inset Formula $\Delta x$
 \end_inset
 
- in the NeuroField configuration file.
- In this case, NeuroField will perform the rescaling appropriately.
+ in the NFTsim configuration file.
+ In this case, NFTsim will perform the rescaling appropriately.
  For a 1D system with only a single node (which is incapable of using the
  wave propagator), users should use the conversion formula in this document.
- The calculation of the power spectrum based on NeuroField output is included
+ The calculation of the power spectrum based on NFTsim output is included
  in the helper script 
 \family typewriter
 nf_spatial_spectrum.m
@@ -1594,7 +1594,7 @@ nf_spatial_spectrum.m
 \end_inset
 
 -values included, and how to implement volume conduction filtering.
- It accepts a NeuroField output object, and parameters for segmenting, limiting
+ It accepts a NFTsim output object, and parameters for segmenting, limiting
  
 \begin_inset Formula $k$
 \end_inset

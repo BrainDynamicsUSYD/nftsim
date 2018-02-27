@@ -1,11 +1,11 @@
-%% Read a neurofield output file and return a neurofield output struct.
+%% Read a nftsim output file and return a nftsim output struct.
 %
 % ARGUMENTS:
-%        fname -- The name of the neurofield output file to read (absolute
+%        fname -- The name of the nftsim output file to read (absolute
 %                 or relative path).
 %
 % OUTPUT:
-%        obj -- A neurofield output struct. A Matlab struct containing data
+%        obj -- A nftsim output struct. A Matlab struct containing data
 %               and parameters from a simulation.
 %
 % AUTHOR:
@@ -20,7 +20,11 @@
 function [obj] = read(fname)
 
     % Check that our input arg is actually a file.
-    if ~exist(fname, 'file')
+    if endsWith(fname,'.conf')
+        error(['nf:' mfilename ':BadArgument'], ...
+                  'The file provided is a configuration file: "%s".', fname)
+    end
+    if ~exist(fname, 'file') 
         % Try appending .output to the name we were provided.
         if ~exist([fname, '.output'], 'file')
             error(['nf:' mfilename ':FileDoesNotExist'], ...
@@ -42,7 +46,7 @@ function [obj] = read(fname)
     
         
     while isempty(strfind(buffer, '======================='))
-        % TODO: consider cleaning up this part.
+        % TODO: CLEAN UP - this part refers to EEGCODE.
         if ~isempty(strfind(buffer, 'Time  |'))
             error(['nf:' mfilename ':OldStyleOutput'], ...
                   'Did you try and open and old-style output file? Found a | that looked like a delimiter.')

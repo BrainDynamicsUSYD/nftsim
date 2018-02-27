@@ -36,7 +36,7 @@ To build the executable on Linux or MacOS, open a terminal in the `nftsim` direc
 
     make
 
-this produces the executable `bin/neurofield` and autogenerates the documentation. 
+this produces the executable `bin/nftsim` and autogenerates the documentation. 
 
 To build only the reference manual type:
 
@@ -57,7 +57,7 @@ Example configurations including examples for published results are available in
 
 To run the basic example type
 
-    ./bin/neurofield -i ./configs/eirs-corticothalamic.conf -o eirs-corticothalamic.output
+    ./bin/nftsim -i ./configs/eirs-corticothalamic.conf -o eirs-corticothalamic.output
 
 ## Troubleshooting
 
@@ -65,7 +65,7 @@ Problems compiling? First check [the following page](https://github.com/BrainDyn
 
 ## How to contribute code
 
-If you intend to contribute to NFTsim development, please make a private fork of this repository and follow the [instructions for contributors.](https://github.com/BrainDynamicsUSYD/nftsim/wiki/How-to-contribute-code-to-NeuroField)
+If you intend to contribute to NFTsim development, please make a private fork of this repository and follow the [instructions for contributors.](https://github.com/BrainDynamicsUSYD/nftsim/wiki/Dev:-How-to-contribute-code-to-NFTsim)
 
 
 ## How to cite `NFTsim`
@@ -79,6 +79,8 @@ Please cite us as follows:
    
    _NFTsim: Theory and Simulation of Multiscale Neural Field Dynamics_
    
-   submitted to PLoS Computational Biology (2017)
+   Submitted to PLoS Computational Biology (2017).
+   Download the [preprint from bioaRiv](https://www.biorxiv.org/content/early/2018/02/01/237032).
+   
 
 
