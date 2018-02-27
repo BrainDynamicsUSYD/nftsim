@@ -9,8 +9,8 @@
 
 /**
    Reads from the configuration file
-   + @param[in]     nus, timepoints: vector with the values of nus at specific time points specified in vector timepoints.
-   + @param[in]     pairs   : total number of pairs of (nu, time) to define the segments
+   + @param[in]  nus: vector with the values of nus at specific time points.
+   + @param[in]  timepoints: vector of specific time points corresponding to the nus.
 */
 
 // Main module header
@@ -30,9 +30,6 @@ using std::endl;
 using std::vector;
 
 void CouplingRamp::init( Configf& configf ) {
-
-  // Number of different nus and timepoints
-  configf.param("pairs", pairs);
   // Read values of nus
   vector<double> tempn;
   configf.next("nus");
@@ -42,22 +39,18 @@ void CouplingRamp::init( Configf& configf ) {
   configf.next("timepoints");
   tempt = configf.numbers();
 
-  double temp;
-
-  // Check that both vectors are of length pairs
+  // Check that both vectors are of the same length.
   if( tempt.size() != tempn.size()) {
-    cerr<<" The lengths of nus and timepoints are not equal." <<endl;
+    cerr<<" The provided nus and timepoints vectors are not the same length." <<endl;
     exit(EXIT_FAILURE);
   }
 
-  if( (tempt.size() != pairs) || (tempn.size() != pairs)) {
-    cerr<<"The length of either *nus* or *timepoints* does not match the number specified in *pairs*" <<endl;
-    exit(EXIT_FAILURE);
-  }
+  nbp = tempt.size(); // number of breakpoints (equivalently tempn.size();)
+  ndnu = nbp - static_cast<size_type>(1); // number of delta nus.
 
-  for ( vector<double>::size_type i=0; i<=pairs; i++ ) {
-    temp = deltat*((tempn[i+1]-tempn[i])/(tempt[i+1]-tempt[i]));
-    deltanu.push_back(temp);
+  deltanu.reserve(ndnu); // Reserve memory to avoid growing inside loop.
+  for ( vector<double>::size_type i=0; i<ndnu; i++ ) {
+    deltanu[i] = deltat*((tempn[i+1]-tempn[i])/(tempt[i+1]-tempt[i]));
   }
   // Assume that at t=0, nu=nus[0], ie, the segment between t=0 and timepoints[0] is constant.
   nu.clear();
@@ -69,15 +62,16 @@ void CouplingRamp::init( Configf& configf ) {
   }
 
   time = 0;
-  for(vector<double>::size_type i=0; i<pairs; i++) {
+  for(vector<double>::size_type i=0; i<nbp; i++) {
     tpts.push_back(tempt[i]);
   }
 }
 
 void CouplingRamp::step() {
   time += deltat;
-  for ( vector<double>::size_type j=1; j<pairs; j++ ) {
+  for ( vector<double>::size_type j=1; j<nbp; j++ ) {
     if( time >= tpts[j-1] && time < tpts[j] ) {
+      //nu.assign(nu, nu + deltanu[j-1]);
       for( size_type i=0; i<nodes; i++ ) {
         nu[i] += deltanu[j-1];
       }
