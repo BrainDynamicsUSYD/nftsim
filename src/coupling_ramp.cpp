@@ -22,10 +22,9 @@
 #include "propagator.h" // Propagator;
 
 // C++ standard library headers
-#include <iostream> // std::cerr; std::endl; std::cout;
+#include <iostream> // std::cerr; std::endl;
 #include <vector>   // std::vector;
 using std::cerr;
-using std::cout;
 using std::endl;
 using std::vector;
 
@@ -49,12 +48,11 @@ void CouplingRamp::init( Configf& configf ) {
   ndnu = nbp - static_cast<size_type>(1); // number of delta nus.
 
   deltanu.reserve(ndnu); // Reserve memory to avoid growing inside loop.
-  for ( vector<double>::size_type i=0; i<ndnu; i++ ) {
+  for ( size_type i=0; i<ndnu; i++ ) {
     deltanu[i] = deltat*((tempn[i+1]-tempn[i])/(tempt[i+1]-tempt[i]));
   }
   // Assume that at t=0, nu=nus[0], ie, the segment between t=0 and timepoints[0] is constant.
-  nu.clear();
-  nu.resize(nodes,tempn[0]);
+  nu.assign(nodes, tempn[0]);
   pos = (tempn[0]>0)?1:-1;
 
   for( size_type i=0; i<nodes; i++ ) {
@@ -62,16 +60,15 @@ void CouplingRamp::init( Configf& configf ) {
   }
 
   time = 0;
-  for(vector<double>::size_type i=0; i<nbp; i++) {
+  for( size_type i=0; i<nbp; i++ ) {
     tpts.push_back(tempt[i]);
   }
 }
 
 void CouplingRamp::step() {
   time += deltat;
-  for ( vector<double>::size_type j=1; j<nbp; j++ ) {
+  for ( size_type j=1; j<nbp; j++ ) {
     if( time >= tpts[j-1] && time < tpts[j] ) {
-      //nu.assign(nu, nu + deltanu[j-1]);
       for( size_type i=0; i<nodes; i++ ) {
         nu[i] += deltanu[j-1];
       }
