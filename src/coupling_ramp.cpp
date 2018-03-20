@@ -59,7 +59,7 @@ void CouplingRamp::init( Configf& configf ) {
     P[i] = nu[i]*prepropag.phiinit(configf);
   }
 
-  time = 0;
+  time = 0.0;
   for( size_type i=0; i<nbp; i++ ) {
     tpts.push_back(tempt[i]);
   }
