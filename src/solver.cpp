@@ -101,7 +101,7 @@ void Solver::init( Configf& configf ) {
   double tempf;
   configf.param("Time",tempf);
   configf.param("Deltat",deltat);
-  if( remainder(tempf,deltat) >deltat ) {
+  if( remainder(tempf, deltat) != 0.0 ) {
     cerr<<"Value of total simulation time not divisible by Deltat."<<endl;
     exit(EXIT_FAILURE);
   } else {
@@ -307,7 +307,7 @@ void Solver::Outputs::init( Configf& configf ) {
   if( !configf.optional("Start",tempf) ) {
     outputstart = 0;
   } else {
-    if( remainder(tempf,deltat) >deltat ) {
+    if( remainder(tempf, deltat) != 0.0 ) {
       cerr<<"Value of output start time not divisible by Deltat."<<endl;
       exit(EXIT_FAILURE);
     } else {
@@ -320,7 +320,7 @@ void Solver::Outputs::init( Configf& configf ) {
   if( !configf.optional("Interval",tempf) ) {
     outputinterval = 1;
   } else {
-    if( remainder(tempf,deltat) >deltat ) {
+    if( remainder(tempf, deltat) != 0.0 ) {
       cerr<<"Value of output interval not divisible by Deltat."<<endl;
       exit(EXIT_FAILURE);
     } else {

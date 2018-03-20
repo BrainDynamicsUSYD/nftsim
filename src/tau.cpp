@@ -24,14 +24,14 @@ using std::vector;
 void Tau::init( Configf& configf ) {
   vector<double> temp = configf.numbers();
   if( temp.size() == 1 ) {
-    if( remainder(temp[0],deltat) >deltat ) {
+    if( remainder(temp[0], deltat) != 0.0 ) {
       cerr<<"Value of tau not divisible by Deltat!"<<endl;
       exit(EXIT_FAILURE);
     }
     m[0] = static_cast<size_type>(temp[0]/deltat);
     max = m[0];
   } else if( temp.size() == nodes ) {
-    if( remainder(temp[0],deltat) >deltat ) {
+    if( remainder(temp[0], deltat) != 0.0 ) {
       cerr<<"Value of tau not divisible by Deltat!"<<endl;
       exit(EXIT_FAILURE);
     }
