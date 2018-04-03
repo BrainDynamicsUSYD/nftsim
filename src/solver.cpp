@@ -114,8 +114,8 @@ void Solver::init( Configf& configf ) {
   size_type longside;
   if( configf.optional("Longside nodes", longside) ) {
     if( nodes%longside != 0 ) {
-      cerr << "To define a rectangular grid nodes: " << nodes <<endl
-           << "divided by Longside: " << longside << endl
+      cerr << "To define a rectangular grid with a total of: " << nodes << " nodes, the parameter " 
+           << "Nodes divided by Longside: " << longside << endl
            << "must have no remainder" << endl;
       exit(EXIT_FAILURE);
     }
