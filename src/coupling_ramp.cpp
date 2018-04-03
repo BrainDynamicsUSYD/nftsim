@@ -1,7 +1,7 @@
 /**
  * @file coupling_ramp.cpp
  * Produce piecewise linear segments to vary synaptic couplings nu **over time**.
- * Assumes that at t=0, nu=nus[0], ie, the segment between t=0 and timepoints[0] is constant.
+ * Assumes that at t=0, nu=nu[0], ie, the segment between t=0 and timepoints[0] is constant.
  *
  * @author Paula Sanz-Leon , Romesh Abeysuriya
  *
@@ -9,8 +9,8 @@
 
 /**
    Reads from the configuration file
-   + @param[in]  nus: vector with the values of nus at specific time points.
-   + @param[in]  timepoints: vector of specific time points corresponding to the nus.
+   + @param[in]  nu: vector with the values of nu at specific time points.
+   + @param[in]  timepoints: vector of specific time points corresponding to the nu.
 */
 
 // Main module header
@@ -29,9 +29,9 @@ using std::endl;
 using std::vector;
 
 void CouplingRamp::init( Configf& configf ) {
-  // Read values of nus
+  // Read values of nu
   vector<double> tempn;
-  configf.next("nus");
+  configf.next("nu");
   tempn = configf.numbers();
   // Read timepoints at which nu should change
   vector<double> tempt;
@@ -40,18 +40,18 @@ void CouplingRamp::init( Configf& configf ) {
 
   // Check that both vectors are of the same length.
   if( tempt.size() != tempn.size()) {
-    cerr<<" The provided nus and timepoints vectors are not the same length." <<endl;
+    cerr<<" The provided nu and timepoints vectors are not the same length." <<endl;
     exit(EXIT_FAILURE);
   }
 
   nbp = tempt.size(); // number of breakpoints (equivalently tempn.size();)
-  ndnu = nbp - static_cast<size_type>(1); // number of delta nus.
+  ndnu = nbp - static_cast<size_type>(1); // number of delta nu.
 
   deltanu.reserve(ndnu); // Reserve memory to avoid growing inside loop.
   for ( size_type i=0; i<ndnu; i++ ) {
     deltanu[i] = deltat*((tempn[i+1]-tempn[i])/(tempt[i+1]-tempt[i]));
   }
-  // Assume that at t=0, nu=nus[0], ie, the segment between t=0 and timepoints[0] is constant.
+  // Assume that at t=0, nu=nu[0], ie, the segment between t=0 and timepoints[0] is constant.
   nu.assign(nodes, tempn[0]);
   pos = (tempn[0]>0)?1:-1;
 
