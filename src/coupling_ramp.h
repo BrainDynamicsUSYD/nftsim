@@ -9,12 +9,6 @@
  *
  */
 
-/**
-   Define properties of CouplingRamp
-
-   + param[in]     ns, tpts: vector with the values of nus at specific time points specified in vector tpts.
-   + param[in]     pairs   : total number of pairs of (nu, time) to define the segments
-*/
 
 #ifndef NFTSIM_SRC_COUPLINGRAMP_H
 #define NFTSIM_SRC_COUPLINGRAMP_H
@@ -30,11 +24,11 @@
 
 class CouplingRamp : public Coupling {
  protected:
-  std::vector<double> ns;
-  std::vector<double> tpts;
-  std::vector<double> deltanu;
-  double time = 0.0;
-  std::vector<double>::size_type pairs;
+  std::vector<double> tpts; ///< A vector of times [s] when breakpoints occur.
+  std::vector<double> deltanu; ///< A vector with slopes of segments between breakpoints.
+  double time = 0.0; ///< Time [s] used internally by CouplingRamp::step().
+  size_type nbp = 0; ///< Number of breakpoints.
+  size_type ndnu = 0; ///< Number of segments, with an explicit deltanu.
  public:
   CouplingRamp() = delete;                    // No default constructor allowed.
   CouplingRamp(const CouplingRamp&) = delete; // No copy constructor allowed.
