@@ -78,6 +78,10 @@ parse_command_flags(){
 msg_help(){
   printf '\n %s\n' "Usage:"
   printf '   %s\n\n' "nf_configs --<mode> '<config_file>'"
+  printf '%s\n'   " NOTE: For exact reproducibility on older gcc (School of Physics RHEL), you must first"
+  printf '%s\n'   "       rebuild nftsim using:"
+  printf '%s\n'   "           make clean"
+  printf '%s\n\n' "           make debug"
   printf ' %s\n' "Modes:"
   printf '\n%s\n' "  --check"
   printf '%s\n'   "    Check if the output from nftsim has changed for a specified config file."
