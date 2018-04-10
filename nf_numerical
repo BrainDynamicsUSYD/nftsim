@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-# nf_configs
+# nf_numerical
 #
 #USAGE:
-#  ./nf_configs --help
+#  ./nf_numerical --help
 #
 #DESCRIPTION:
 #  A script for checking the output from the nftsim repo's .conf files
@@ -77,7 +77,7 @@ parse_command_flags(){
 
 msg_help(){
   printf '\n %s\n' "Usage:"
-  printf '   %s\n\n' "nf_configs --<mode> '<config_file>'"
+  printf '   %s\n\n' "nf_numerical --<mode> '<config_file>'"
   printf '%s\n'   " NOTE: For exact reproducibility on older gcc (School of Physics RHEL), you must first"
   printf '%s\n'   "       rebuild nftsim using:"
   printf '%s\n'   "           make clean"
@@ -86,26 +86,26 @@ msg_help(){
   printf '\n%s\n' "  --check"
   printf '%s\n'   "    Check if the output from nftsim has changed for a specified config file."
   printf '%s\n'   "    For example, to check the output of the 'example.conf' file, run:"
-  printf '%s\n'   "        ./nf_configs --check 'example'"
+  printf '%s\n'   "        ./nf_numerical --check 'example'"
   printf '%s\n'   "    or:"
-  printf '%s\n'   "        ./nf_configs --check './test/numerical/example.conf'"
+  printf '%s\n'   "        ./nf_numerical --check './test/numerical/example.conf'"
   printf '%s\n'   "    or to check all configurations specified in the test/numerical directory, run:"
-  printf '%s\n'   "        ./nf_configs --check 'all'"
+  printf '%s\n'   "        ./nf_numerical --check 'all'"
   printf '\n%s\n' "  --regenerate"
   printf '%s\n'   "    Regenerates the test output for the specified config file. This should ONLY be"
   printf '%s\n'   "    used when you've intentionally made a change to the code or config file"
   printf '%s\n'   "    that should change the test output. The updated test output file should then be"
   printf '%s\n'   "    committed as part of the pull request for the code changes that caused the"
   printf '%s\n'   "    output to change."
-  printf '%s\n'   "    eg: ./nf_configs --regenerate 'example'"
-  printf '%s\n'   "    eg: ./nf_configs --regenerate './test/numerical/example.conf'"
+  printf '%s\n'   "    eg: ./nf_numerical --regenerate 'example'"
+  printf '%s\n'   "    eg: ./nf_numerical --regenerate './test/numerical/example.conf'"
   printf '\n%s\n' "  --clean"
   printf '%s\n'   "    Removes files that are left in the /tmp/ directory when a call to --check"
   printf '%s\n'   "    finds differences."
-  printf '%s\n'   "    eg: ./nf_configs --clean"
+  printf '%s\n'   "    eg: ./nf_numerical --clean"
   printf '\n%s\n' "  --help"
   printf '%s\n'   "    Displays this message"
-  printf '%s\n\n'   "    eg: ./nf_configs --help"
+  printf '%s\n\n'   "    eg: ./nf_numerical --help"
 }
 
 #Sets the global variable OUTPUT_FILE to the default location for the
@@ -194,8 +194,8 @@ regenerate_output_file(){
     return "$?"
   else
     printf '%s\n' "You need to specify which config file to regenerate output for."
-    printf '%s\n' "eg. nf_configs --regenerate 'example'"
-    printf '%s\n' "or nf_configs --regenerate './test/numerical/example.conf'"
+    printf '%s\n' "eg. nf_numerical --regenerate 'example'"
+    printf '%s\n' "or nf_numerical --regenerate './test/numerical/example.conf'"
   fi
   return 1
 }
@@ -250,7 +250,7 @@ check_output_file(){
     return 0
   else
     printf '%s\n' "You need to specify which config file to regenerate output for."
-    printf '%s\n' "eg. nf_configs --regenerate 'example'"
+    printf '%s\n' "eg. nf_numerical --regenerate 'example'"
   fi
   return 1
 }
