@@ -3,7 +3,7 @@
 This directory(`nftsim/test/numerical/`) contains configuration (`.conf`) files
 that are intended to be used as a check of consistent behaviour following code
 modifications. As such, if you intend to add a `.conf` file to this set, they
-are expected to each run in under a few seconds and produce less than 1 MB of
+are expected to each run in under a few seconds and produce less than 500 kB of
 output.
 
 **NOTE: For exact reproducibility on older gcc (School of Physics, RHEL 6 and 7),
