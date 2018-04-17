@@ -103,8 +103,14 @@ void Solver::init( Configf& configf ) {
   configf.param("Time",tempf);
   configf.param("Deltat",deltat);
   if( remainder(tempf, deltat) != 0.0 ) {
-    cerr<<"Value of total simulation time not divisible by Deltat."<<endl;
-    exit(EXIT_FAILURE);
+    cerr<<"WARNING: Value of total simulation time not divisible by Deltat.\n";
+    cerr<<"    It is STRONGLY RECOMMENDED that any times that you specify\n";
+    cerr<<"    in your configuration files be exact integral multiples of\n";
+    cerr<<"    Deltat. Due to the finite precision of floating-point numbers,\n";
+    cerr<<"    exact multiples are only possible for machine representable\n";
+    cerr<<"    values of Deltat. A simple means of achieving this is to use\n";
+    cerr<<"    powers of two for Deltat (eg. 2^-13 == 1.220703125e-04)."<<endl;
+    //exit(EXIT_FAILURE);
   } else {
     steps = static_cast<int>(lround(tempf/deltat));
   }
@@ -315,8 +321,14 @@ void Solver::Outputs::init( Configf& configf ) {
     outputstart = 0;
   } else {
     if( remainder(tempf, deltat) != 0.0 ) {
-      cerr<<"Value of output start time not divisible by Deltat."<<endl;
-      exit(EXIT_FAILURE);
+      cerr<<"WARNING: Value of output start time not divisible by Deltat.\n";
+      cerr<<"    It is STRONGLY RECOMMENDED that any times that you specify\n";
+      cerr<<"    in your configuration files be exact integral multiples of\n";
+      cerr<<"    Deltat. Due to the finite precision of floating-point numbers,\n";
+      cerr<<"    exact multiples are only possible for machine representable\n";
+      cerr<<"    values of Deltat. A simple means of achieving this is to use\n";
+      cerr<<"    powers of two for Deltat (eg. 2^-13 == 1.220703125e-04)."<<endl;
+      //exit(EXIT_FAILURE);
     } else {
       outputstart = static_cast<int>(tempf/deltat);
     }
@@ -328,8 +340,14 @@ void Solver::Outputs::init( Configf& configf ) {
     outputinterval = 1;
   } else {
     if( remainder(tempf, deltat) != 0.0 ) {
-      cerr<<"Value of output interval not divisible by Deltat."<<endl;
-      exit(EXIT_FAILURE);
+      cerr<<"WARNING: Value of output interval not divisible by Deltat.\n";
+      cerr<<"    It is STRONGLY RECOMMENDED that any times that you specify\n";
+      cerr<<"    in your configuration files be exact integral multiples of\n";
+      cerr<<"    Deltat. Due to the finite precision of floating-point numbers,\n";
+      cerr<<"    exact multiples are only possible for machine representable\n";
+      cerr<<"    values of Deltat. A simple means of achieving this is to use\n";
+      cerr<<"    powers of two for Deltat (eg. 2^-13 == 1.220703125e-04)."<<endl;
+      //exit(EXIT_FAILURE);
     } else {
       outputinterval = static_cast<int>(lround(tempf/deltat));
     }

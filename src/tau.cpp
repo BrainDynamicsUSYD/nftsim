@@ -25,15 +25,27 @@ void Tau::init( Configf& configf ) {
   vector<double> temp = configf.numbers();
   if( temp.size() == 1 ) {
     if( remainder(temp[0], deltat) != 0.0 ) {
-      cerr<<"Value of tau not divisible by Deltat!"<<endl;
-      exit(EXIT_FAILURE);
+      cerr<<"WARNING: Value of tau not divisible by Deltat!\n";
+      cerr<<"    It is STRONGLY RECOMMENDED that any times that you specify\n";
+      cerr<<"    in your configuration files be exact integral multiples of\n";
+      cerr<<"    Deltat. Due to the finite precision of floating-point numbers,\n";
+      cerr<<"    exact multiples are only possible for machine representable\n";
+      cerr<<"    values of Deltat. A simple means of achieving this is to use\n";
+      cerr<<"    powers of two for Deltat (eg. 2^-13 == 1.220703125e-04)."<<endl;
+      //exit(EXIT_FAILURE);
     }
     m[0] = static_cast<size_type>(temp[0]/deltat);
     max = m[0];
   } else if( temp.size() == nodes ) {
     if( remainder(temp[0], deltat) != 0.0 ) {
-      cerr<<"Value of tau not divisible by Deltat!"<<endl;
-      exit(EXIT_FAILURE);
+      cerr<<"WARNING: Value of tau not divisible by Deltat!\n";
+      cerr<<"    It is STRONGLY RECOMMENDED that any times that you specify\n";
+      cerr<<"    in your configuration files be exact integral multiples of\n";
+      cerr<<"    Deltat. Due to the finite precision of floating-point numbers,\n";
+      cerr<<"    exact multiples are only possible for machine representable\n";
+      cerr<<"    values of Deltat. A simple means of achieving this is to use\n";
+      cerr<<"    powers of two for Deltat (eg. 2^-13 == 1.220703125e-04)."<<endl;
+      //exit(EXIT_FAILURE);
     }
     m.resize(nodes);
     for( size_type i=0; i<nodes; i++ ) {
