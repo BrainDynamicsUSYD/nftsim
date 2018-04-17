@@ -208,13 +208,13 @@ check_all(){
   get_all_config_files
   for (( i = 0; i < ${#CONFIG_FILES[@]}; i++ )) ; do
     ((++conf_count))
-    printf '%s' "Checking '${CONFIG_FILES[i]}'... "
+    printf '%-64s' "Checking '${CONFIG_FILES[i]}'... "
     if ! check_output_file "${CONFIG_FILES[i]}"; then ((++error_count)); fi
     if [[ "$DIFF_STATUS" = '0' ]]; then
-      printf "output the ${SAME_CLR}.\n"
+      printf "${SAME_CLR}.\n"
       rm -f "${OUTPUT_FILE_TMP}"
     elif [[ "$DIFF_STATUS" = '1' ]]; then
-      printf "output ${DIFFERS_CLR}\n"
+      printf "${DIFFERS_CLR}\n"
       printf '%s\n' "$(readlink -f "${OUTPUT_FILE}")" >> "$changed_ouput_list"
     fi
   done
