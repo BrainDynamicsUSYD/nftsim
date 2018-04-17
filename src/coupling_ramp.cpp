@@ -1,7 +1,7 @@
 /**
  * @file coupling_ramp.cpp
  * Produce piecewise linear segments to vary synaptic couplings nu **over time**.
- * Assumes that at t=0, nu=nus[0], ie, the segment between t=0 and timepoints[0] is constant.
+ * Assumes that at t=0, nu=nu[0], ie, the segment between t=0 and timepoints[0] is constant.
  *
  * @author Paula Sanz-Leon , Romesh Abeysuriya
  *
@@ -9,8 +9,8 @@
 
 /**
    Reads from the configuration file
-   + @param[in]     nus, timepoints: vector with the values of nus at specific time points specified in vector timepoints.
-   + @param[in]     pairs   : total number of pairs of (nu, time) to define the segments
+   + @param[in]  nu: vector with the values of nu at specific time points.
+   + @param[in]  timepoints: vector of specific time points corresponding to the nu.
 */
 
 // Main module header
@@ -22,61 +22,52 @@
 #include "propagator.h" // Propagator;
 
 // C++ standard library headers
-#include <iostream> // std::cerr; std::endl; std::cout;
+#include <iostream> // std::cerr; std::endl;
 #include <vector>   // std::vector;
 using std::cerr;
-using std::cout;
 using std::endl;
 using std::vector;
 
 void CouplingRamp::init( Configf& configf ) {
-
-  // Number of different nus and timepoints
-  configf.param("pairs", pairs);
-  // Read values of nus
+  // Read values of nu
   vector<double> tempn;
-  configf.next("nus");
+  configf.next("nu");
   tempn = configf.numbers();
   // Read timepoints at which nu should change
   vector<double> tempt;
   configf.next("timepoints");
   tempt = configf.numbers();
 
-  double temp;
-
-  // Check that both vectors are of length pairs
+  // Check that both vectors are of the same length.
   if( tempt.size() != tempn.size()) {
-    cerr<<" The lengths of nus and timepoints are not equal." <<endl;
+    cerr<<" The provided nu and timepoints vectors are not the same length." <<endl;
     exit(EXIT_FAILURE);
   }
 
-  if( (tempt.size() != pairs) || (tempn.size() != pairs)) {
-    cerr<<"The length of either *nus* or *timepoints* does not match the number specified in *pairs*" <<endl;
-    exit(EXIT_FAILURE);
-  }
+  nbp = tempt.size(); // number of breakpoints (equivalently tempn.size();)
+  ndnu = nbp - static_cast<size_type>(1); // number of delta nu.
 
-  for ( vector<double>::size_type i=0; i<=pairs; i++ ) {
-    temp = deltat*((tempn[i+1]-tempn[i])/(tempt[i+1]-tempt[i]));
-    deltanu.push_back(temp);
+  deltanu.reserve(ndnu); // Reserve memory to avoid growing inside loop.
+  for ( size_type i=0; i<ndnu; i++ ) {
+    deltanu[i] = deltat*((tempn[i+1]-tempn[i])/(tempt[i+1]-tempt[i]));
   }
-  // Assume that at t=0, nu=nus[0], ie, the segment between t=0 and timepoints[0] is constant.
-  nu.clear();
-  nu.resize(nodes,tempn[0]);
+  // Assume that at t=0, nu=nu[0], ie, the segment between t=0 and timepoints[0] is constant.
+  nu.assign(nodes, tempn[0]);
   pos = (tempn[0]>0)?1:-1;
 
   for( size_type i=0; i<nodes; i++ ) {
     P[i] = nu[i]*prepropag.phiinit(configf);
   }
 
-  time = 0;
-  for(vector<double>::size_type i=0; i<pairs; i++) {
+  time = 0.0;
+  for( size_type i=0; i<nbp; i++ ) {
     tpts.push_back(tempt[i]);
   }
 }
 
 void CouplingRamp::step() {
   time += deltat;
-  for ( vector<double>::size_type j=1; j<pairs; j++ ) {
+  for ( size_type j=1; j<nbp; j++ ) {
     if( time >= tpts[j-1] && time < tpts[j] ) {
       for( size_type i=0; i<nodes; i++ ) {
         nu[i] += deltanu[j-1];

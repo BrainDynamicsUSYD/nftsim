@@ -39,6 +39,7 @@
 using std::cerr;
 using std::endl;
 using std::lround;
+using std::modf;
 using std::remainder;
 using std::sqrt;
 using std::string;
@@ -113,12 +114,18 @@ void Solver::init( Configf& configf ) {
   size_type longside;
   if( configf.optional("Longside nodes", longside) ) {
     if( nodes%longside != 0 ) {
-      cerr << "To define a rectangular grid nodes: " << nodes <<endl
-           << "divided by Longside: " << longside << endl
+      cerr << "To define a rectangular grid with a total of: " << nodes << " nodes, the parameter " 
+           << "Nodes divided by Longside: " << longside << endl
            << "must have no remainder" << endl;
       exit(EXIT_FAILURE);
     }
   } else {
+    double intpart = 0.0; //Unfortunately required dummy variable that we will not use.
+    if(modf(sqrt(nodes), &intpart) != 0.0) {
+      cerr << "To define a square grid, Nodes(" << nodes << ")"
+           << " must be a perfect square." << endl;
+      exit(EXIT_FAILURE);
+    }
     longside = static_cast<size_type>(sqrt(nodes));
   }
   string topology("Torus");
