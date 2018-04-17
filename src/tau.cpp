@@ -49,7 +49,7 @@ void Tau::init( Configf& configf ) {
     }
     m.resize(nodes);
     for( size_type i=0; i<nodes; i++ ) {
-      m[i] = size_type(temp[i]/deltat);
+      m[i] = static_cast<size_type>(temp[i]/deltat);
       if( m[i]>max ) {
         max = m[i];
       }
