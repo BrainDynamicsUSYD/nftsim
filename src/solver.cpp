@@ -105,7 +105,7 @@ void Solver::init( Configf& configf ) {
   if( remainder(tempf, deltat) != 0.0 ) {
     cerr<<"WARNING: Value of total simulation time not divisible by Deltat.\n";
     cerr<<"    It is STRONGLY RECOMMENDED that any times that you specify\n";
-    cerr<<"    in your configuration files be exact integral multiples of\n";
+    cerr<<"    in your configuration files be exact integer multiples of\n";
     cerr<<"    Deltat. Due to the finite precision of floating-point numbers,\n";
     cerr<<"    exact multiples are only possible for machine representable\n";
     cerr<<"    values of Deltat. A simple means of achieving this is to use\n";
@@ -323,7 +323,7 @@ void Solver::Outputs::init( Configf& configf ) {
     if( remainder(tempf, deltat) != 0.0 ) {
       cerr<<"WARNING: Value of output start time not divisible by Deltat.\n";
       cerr<<"    It is STRONGLY RECOMMENDED that any times that you specify\n";
-      cerr<<"    in your configuration files be exact integral multiples of\n";
+      cerr<<"    in your configuration files be exact integer multiples of\n";
       cerr<<"    Deltat. Due to the finite precision of floating-point numbers,\n";
       cerr<<"    exact multiples are only possible for machine representable\n";
       cerr<<"    values of Deltat. A simple means of achieving this is to use\n";
@@ -342,7 +342,7 @@ void Solver::Outputs::init( Configf& configf ) {
     if( remainder(tempf, deltat) != 0.0 ) {
       cerr<<"WARNING: Value of output interval not divisible by Deltat.\n";
       cerr<<"    It is STRONGLY RECOMMENDED that any times that you specify\n";
-      cerr<<"    in your configuration files be exact integral multiples of\n";
+      cerr<<"    in your configuration files be exact integer multiples of\n";
       cerr<<"    Deltat. Due to the finite precision of floating-point numbers,\n";
       cerr<<"    exact multiples are only possible for machine representable\n";
       cerr<<"    values of Deltat. A simple means of achieving this is to use\n";
