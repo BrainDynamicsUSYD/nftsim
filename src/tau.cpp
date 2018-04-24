@@ -15,11 +15,14 @@
 // C++ standard library headers
 #include <cmath>    // std::remainder;
 #include <iomanip>  // std::setprecision;
-#include <iostream> // std::cerr; std::endl;
+#include <iostream> // std::cerr; std::endl; std::scientific;
+#include <limits>   // std::numeric_limits::max_digits10
 #include <vector>   // std::vector;
 using std::cerr;
 using std::endl;
 using std::remainder;
+using std::scientific;
+using std::setprecision;
 using std::vector;
 
 void Tau::init( Configf& configf ) {
@@ -28,12 +31,13 @@ void Tau::init( Configf& configf ) {
     m[0] = static_cast<size_type>(temp[0]/deltat);
     max = m[0];
     if( remainder(temp[0], deltat) != 0.0 ) {
-      cerr<<"WARNING: Value of tau not divisible by Deltat!\n";
-      cerr<<"    It is recommended that Tau be specified as an exact integer\n";
-      cerr<<"    multiple of Deltat. Your configuration file requested:\n";
-      cerr<<"        Tau: "<<std::setprecision(16)<<temp[0]<<"\n";
-      cerr<<"    but the simulation will run using:\n";
-      cerr<<"        Tau: "<<std::setprecision(16)<<m[0]*deltat<<endl;
+      int full_precision = std::numeric_limits<double>::max_digits10;
+      cerr << "WARNING: Value of tau not divisible by Deltat!\n"
+           << "  It is recommended that Tau be specified as an exact integer\n"
+           << "  multiple of Deltat. Your simulation will be run using:\n"
+           << "    Tau: " << scientific << setprecision(full_precision)
+                          << m[0]*deltat
+           << endl;
       //exit(EXIT_FAILURE);
     }
   } else if( temp.size() == nodes ) {
@@ -45,12 +49,13 @@ void Tau::init( Configf& configf ) {
       }
     }
     if( remainder(temp[0], deltat) != 0.0 ) {
-      cerr<<"WARNING: Value of tau not divisible by Deltat!\n";
-      cerr<<"    It is recommended that Tau be specified as an exact integer\n";
-      cerr<<"    multiple of Deltat. For example, your configuration file requested:\n";
-      cerr<<"        Tau[0]: "<<std::setprecision(16)<<temp[0]<<"\n";
-      cerr<<"    but the simulation will run using:\n";
-      cerr<<"        Tau[0]: "<<std::setprecision(16)<<m[0]*deltat<<endl;
+      int full_precision = std::numeric_limits<double>::max_digits10;
+      cerr << "WARNING: Value of tau not divisible by Deltat!\n"
+           << "  It is recommended that Tau be specified as an exact integer\n"
+           << "  multiple of Deltat. For example, your simulation will be run using:\n"
+           << "    Tau[0]: " << scientific << setprecision(full_precision)
+                             << m[0]*deltat
+           << endl;
       //exit(EXIT_FAILURE);
     }
   } else {
