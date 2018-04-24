@@ -111,9 +111,9 @@ void Solver::init( Configf& configf ) {
     cerr<<"    values of Deltat. A simple means of achieving this is to use\n";
     cerr<<"    powers of two for Deltat (eg. 2^-13 == 1.220703125e-04)."<<endl;
     //exit(EXIT_FAILURE);
-  } else {
-    steps = static_cast<int>(lround(tempf/deltat));
   }
+
+  steps = static_cast<int>(lround(tempf/deltat));
 
   // read in grid size and grid geometry
   configf.param("Nodes",nodes);
@@ -329,9 +329,8 @@ void Solver::Outputs::init( Configf& configf ) {
       cerr<<"    values of Deltat. A simple means of achieving this is to use\n";
       cerr<<"    powers of two for Deltat (eg. 2^-13 == 1.220703125e-04)."<<endl;
       //exit(EXIT_FAILURE);
-    } else {
-      outputstart = static_cast<int>(tempf/deltat);
     }
+    outputstart = static_cast<int>(tempf/deltat);
   }
   t = 0;
 
@@ -348,9 +347,8 @@ void Solver::Outputs::init( Configf& configf ) {
       cerr<<"    values of Deltat. A simple means of achieving this is to use\n";
       cerr<<"    powers of two for Deltat (eg. 2^-13 == 1.220703125e-04)."<<endl;
       //exit(EXIT_FAILURE);
-    } else {
-      outputinterval = static_cast<int>(lround(tempf/deltat));
     }
+    outputinterval = static_cast<int>(lround(tempf/deltat));
   }
 
   // read in populations to output
