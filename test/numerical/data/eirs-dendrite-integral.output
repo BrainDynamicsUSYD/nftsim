@@ -60,13 +60,13 @@ Length: 0.5
 
 Propagator 1: Wave - Tau: 0.0 Range: 0.086 gamma: 116.0
 Propagator 2:  Map - Tau: 0.0
-Propagator 3:  Map - Tau: 0.0425 
+Propagator 3:  Map - Tau: 4.24804687500000000e-02
 Propagator 4: Wave - Tau: 0.0 Range: 0.086 gamma: 116.0
 Propagator 5:  Map - Tau: 0.0
-Propagator 6:  Map - Tau: 0.0425 
-Propagator 7: Wave - Tau: 0.0425  Range: 0.086 gamma: 116.0
+Propagator 6:  Map - Tau: 4.24804687500000000e-02
+Propagator 7: Wave - Tau: 4.24804687500000000e-02  Range: 0.086 gamma: 116.0
 Propagator 8:  Map - Tau: 0.0
-Propagator 9: Wave - Tau: 0.0425  Range: 0.086 gamma: 116.0
+Propagator 9: Wave - Tau: 4.24804687500000000e-02  Range: 0.086 gamma: 116.0
 Propagator 10: Map - Tau: 0.0
 Propagator 11: Map - Tau: 0.0
 
