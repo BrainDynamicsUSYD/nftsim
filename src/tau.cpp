@@ -14,36 +14,52 @@
 
 // C++ standard library headers
 #include <cmath>    // std::remainder;
-#include <iostream> // std::cerr; std::endl;
+#include <iomanip>  // std::setprecision;
+#include <iostream> // std::cerr; std::endl; std::scientific;
+#include <limits>   // std::numeric_limits::max_digits10
 #include <vector>   // std::vector;
 using std::cerr;
 using std::endl;
 using std::remainder;
+using std::scientific;
+using std::setprecision;
 using std::vector;
 
 void Tau::init( Configf& configf ) {
   vector<double> temp = configf.numbers();
   if( temp.size() == 1 ) {
-    if( remainder(temp[0],deltat) >deltat ) {
-      cerr<<"Value of tau not divisible by Deltat!"<<endl;
-      exit(EXIT_FAILURE);
-    }
     m[0] = static_cast<size_type>(temp[0]/deltat);
     max = m[0];
-  } else if( temp.size() == nodes ) {
-    if( remainder(temp[0],deltat) >deltat ) {
-      cerr<<"Value of tau not divisible by Deltat!"<<endl;
-      exit(EXIT_FAILURE);
+    if( remainder(temp[0], deltat) != 0.0 ) {
+      int full_precision = std::numeric_limits<double>::max_digits10;
+      cerr << "WARNING: Value of Tau not divisible by Deltat!\n"
+           << "  It is recommended that Tau be specified as an exact integer\n"
+           << "  multiple of Deltat. Your simulation will be run using:\n"
+           << "    Tau: " << scientific << setprecision(full_precision)
+                          << m[0]*deltat
+           << endl;
+      //exit(EXIT_FAILURE);
     }
+  } else if( temp.size() == nodes ) {
     m.resize(nodes);
     for( size_type i=0; i<nodes; i++ ) {
-      m[i] = size_type(temp[i]/deltat);
+      m[i] = static_cast<size_type>(temp[i]/deltat);
       if( m[i]>max ) {
         max = m[i];
       }
     }
+    if( remainder(temp[0], deltat) != 0.0 ) {
+      int full_precision = std::numeric_limits<double>::max_digits10;
+      cerr << "WARNING: Value of Tau not divisible by Deltat!\n"
+           << "  It is recommended that Tau be specified as an exact integer\n"
+           << "  multiple of Deltat. For example, your simulation will be run using:\n"
+           << "    Tau[0]: " << scientific << setprecision(full_precision)
+                             << m[0]*deltat
+           << endl;
+      //exit(EXIT_FAILURE);
+    }
   } else {
-    cerr << "The number of Tau has to be one or the same as the number of nodes." << endl;
+    cerr << "The number of Tau values has to be one or the same as the number of nodes." << endl;
     exit(EXIT_FAILURE);
   }
 }
