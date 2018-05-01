@@ -1,7 +1,7 @@
 /** @file long_coupling.cpp
   @brief A brief, one sentence description.
 
-  A more detailed multiline description...
+  This class provides support for spatially nonuniform connectivity. 
 
   @author Peter Drysdale, Felix Fung,
 */
@@ -42,7 +42,7 @@ void LongCoupling::init( Configf& configf ) {
     }
     pos = (temp[0]>0)?1:-1;
   } else {
-    cerr<<"Matrix of nu either has a homogeneous initial value or takes in node^2 values."<<endl;
+    cerr<<"ERROR:: BAD INPUT ARGUMENT SIZE: Coupling: Matrix - must be either a single value of nu or must be specifically a matrix of Nodes x Nodes."<<endl;
     exit(EXIT_FAILURE);
   }
 }
