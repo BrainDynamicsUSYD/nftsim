@@ -103,7 +103,7 @@ void Solver::init( Configf& configf ) {
   configf.param("Time",tempf);
   configf.param("Deltat",deltat);
   if( remainder(tempf, deltat) != 0.0 ) {
-    cerr << "WARNING: Value of total simulation time not divisible by Deltat.\n"
+    cerr << "WARNING: Value of total simulation Time not divisible by Deltat.\n"
          << "    It is STRONGLY RECOMMENDED that any times that you specify\n"
          << "    in your configuration files be exact integer multiples of\n"
          << "    Deltat. Due to the finite precision of floating-point numbers,\n"
@@ -322,7 +322,7 @@ void Solver::Outputs::init( Configf& configf ) {
     outputstart = 0;
   } else {
     if( remainder(tempf, deltat) != 0.0 ) {
-      cerr << "WARNING: Value of output start time not divisible by Deltat.\n"
+      cerr << "WARNING: Value of output Start time not divisible by Deltat.\n"
            << "    It is STRONGLY RECOMMENDED that any times that you specify\n"
            << "    in your configuration files be exact integer multiples of\n"
            << "    Deltat. Due to the finite precision of floating-point numbers,\n"
@@ -341,7 +341,7 @@ void Solver::Outputs::init( Configf& configf ) {
     outputinterval = 1;
   } else {
     if( remainder(tempf, deltat) != 0.0 ) {
-      cerr << "WARNING: Value of output interval not divisible by Deltat.\n"
+      cerr << "WARNING: Value of output Interval not divisible by Deltat.\n"
            << "    It is STRONGLY RECOMMENDED that any times that you specify\n"
            << "    in your configuration files be exact integer multiples of\n"
            << "    Deltat. Due to the finite precision of floating-point numbers,\n"
@@ -360,8 +360,8 @@ void Solver::Outputs::init( Configf& configf ) {
   for(auto & i : temp) {
     auto obj_index = static_cast<vector<double>::size_type>(atoi(i.c_str())); // atoi() takes only 1 of "1.V"
     if( obj_index > cnt.npop || obj_index<1 ) {
-      cerr<<"Trying to output population "<<obj_index
-          <<", which is an invalid population."<<endl;
+      cerr<<"ERROR:: INVALID OBJECT INDEX:: Trying to output Population "<<obj_index
+          <<", which is an invalid Population."<<endl;
       exit(EXIT_FAILURE);
     }
     string key;
@@ -371,7 +371,7 @@ void Solver::Outputs::init( Configf& configf ) {
     Output output(key);
     pops[obj_index-1]->output(output);
     if( output.empty() ) {
-      cerr<<"Population "<<i.c_str()<<" cannot be outputted."<<endl;
+      cerr<<"Population "<<i.c_str()<<" cannot be written to file."<<endl;
       exit(EXIT_FAILURE);
     }
     add(output);
@@ -383,8 +383,8 @@ void Solver::Outputs::init( Configf& configf ) {
   for(auto & i : temp) {
     auto obj_index = static_cast<vector<double>::size_type>(atoi(i.c_str()));
     if( obj_index > cnt.ncnt || obj_index<1 ) {
-      cerr<<"Trying to output dendrite "<<obj_index
-          <<", which is an invalid dendrite."<<endl;
+      cerr<<"ERROR:: INVALID OBJECT INDEX:: Trying to output Dendrite "<<obj_index
+          <<", which is an invalid Dendrite."<<endl;
       exit(EXIT_FAILURE);
     }
     string key;
@@ -396,7 +396,7 @@ void Solver::Outputs::init( Configf& configf ) {
       pops[j]->outputDendrite(obj_index-1,output);
     }
     if( output.empty() ) {
-      cerr<<"Dendrite "<<i.c_str()<<" cannot be outputted."<<endl;
+      cerr<<"Dendrite "<<i.c_str()<<" cannot be written to file."<<endl;
       exit(EXIT_FAILURE);
     }
     add(output);
@@ -408,8 +408,8 @@ void Solver::Outputs::init( Configf& configf ) {
   for(auto & i : temp) {
     auto obj_index = static_cast<vector<double>::size_type>(atoi(i.c_str()));
     if( obj_index > cnt.ncnt || obj_index<1 ) {
-      cerr<<"Trying to output propagator "<<obj_index
-          <<", which is an invalid propagator."<<endl;
+      cerr<<"ERROR:: INVALID OBJECT INDEX:: Trying to output Propagator "<<obj_index
+          <<", which is an invalid Propagator."<<endl;
       exit(EXIT_FAILURE);
     }
     string key;
@@ -419,7 +419,7 @@ void Solver::Outputs::init( Configf& configf ) {
     Output output(key);
     propagators[obj_index-1]->output(output);
     if( output.empty() ) {
-      cerr<<"Propagator "<<i.c_str()<<" cannot be outputted."<<endl;
+      cerr<<"Propagator "<<i.c_str()<<" cannot be written to output."<<endl;
       exit(EXIT_FAILURE);
     }
     add(output);
@@ -434,7 +434,7 @@ void Solver::Outputs::init( Configf& configf ) {
   for(auto & i : temp) {
     auto obj_index = static_cast<vector<double>::size_type>(atoi(i.c_str()));
     if( obj_index > cnt.ncnt || obj_index<1 ) {
-      cerr<<"Trying to output coupling "<<obj_index
+      cerr<<"ERROR:: INVALID OBJECT INDEX:: Trying to output coupling "<<obj_index
           <<", which is an invalid coupling."<<endl;
       exit(EXIT_FAILURE);
     }
@@ -445,7 +445,7 @@ void Solver::Outputs::init( Configf& configf ) {
     Output output(key);
     couplings[obj_index-1]->output(output);
     if( output.empty() ) {
-      cerr<<"Coupling "<<i.c_str()<<" cannot be outputted."<<endl;
+      cerr<<"Coupling "<<i.c_str()<<" cannot be written to file."<<endl;
       exit(EXIT_FAILURE);
     }
     add(output);
