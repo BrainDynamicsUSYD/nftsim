@@ -341,11 +341,11 @@ void Solver::Outputs::init( Configf& configf ) {
     outputinterval = 1;
   } else {
     if( remainder(tempf, deltat) != 0.0 ) {
-      cerr << "WARNING: Value of output Interval not divisible by Deltat.\n"
+      cerr << "WARNING: Value of output Interval NOT divisible by Deltat.\n"
            << "    It is STRONGLY RECOMMENDED that any times that you specify\n"
-           << "    in your configuration files be exact integer multiples of\n"
-           << "    Deltat. Due to the finite precision of floating-point numbers,\n"
-           << "    exact multiples are only possible for machine representable\n"
+           << "    Interval (ie, output sampling period) in your configuration files\n"
+           << "    be exact integer multiples of Deltat. Due to the finite precision\n"
+           << "    of floating-point numbers, exact multiples are only possible for machine representable\n"
            << "    values of Deltat. A simple means of achieving this is to use\n"
            << "    powers of two for Deltat (eg. 2^-13 == 1.220703125e-04)."
            << endl;
