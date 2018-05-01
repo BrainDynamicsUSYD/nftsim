@@ -434,8 +434,8 @@ void Solver::Outputs::init( Configf& configf ) {
   for(auto & i : temp) {
     auto obj_index = static_cast<vector<double>::size_type>(atoi(i.c_str()));
     if( obj_index > cnt.ncnt || obj_index<1 ) {
-      cerr<<"ERROR:: INVALID OBJECT INDEX:: Trying to output coupling "<<obj_index
-          <<", which is an invalid coupling."<<endl;
+      cerr<<"ERROR:: INVALID OBJECT INDEX:: Trying to output Coupling "<<obj_index
+          <<", which is an invalid Coupling."<<endl;
       exit(EXIT_FAILURE);
     }
     string key;
