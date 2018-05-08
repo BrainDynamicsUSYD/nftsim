@@ -1,5 +1,6 @@
-%% Return the frequency and frequency spectrum of given nftsim output.
-%
+%% Returns the frequency vector and frequency power spectrum of a given nftsim structure.
+%  By default this function returns the one-sided power spectrum from 0 to fs/2, where fs is the
+%  sampling frequency.
 % ARGUMENTS:
 %        obj -- A nftsim output struct (a Matlab struct containing data
 %               from a simulation).

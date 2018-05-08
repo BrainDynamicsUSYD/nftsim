@@ -1,12 +1,12 @@
 %% Fourier transform
 %
-% Heavily based on Chris Rennie's notes, see REFERERENCES below.
+% Heavily based on Chris Rennie's notes, see REFERENCES below.
 %
 % The normalization is such that sum(abs(y).^2)/length(y) = trapz(f,P)
 %
 % ARGUMENTS:
-%        y -- (tpts, N) time series.
-%        fs -- sampling frequency (Hz) for the time series.
+%        y  -- a 2D array of size (timepoints x N), where N is the number of signals/timeseries or traces.
+%        fs -- sampling frequency (Hz) of the time series.
 %        NFFT -- override the amount of zero padding in the FFT.
 %        windowed -- set as true to apply a Hamming window.
 %        detrended -- set as true to remove any constant offset and linear trend.
