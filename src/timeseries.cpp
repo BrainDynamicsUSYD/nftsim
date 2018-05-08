@@ -360,7 +360,7 @@ namespace TIMESERIES {
       // index of timeseries the same as that of population
       double deltax = atof(configf.find(
                              label("Population ",index+1)+"*Length").c_str()) /sqrt(nodes);
-      stddev = sqrt(4.0*pow(M_PI,3.0)*pow(asd,2)/deltat/pow(deltax,2));
+      stddev = sqrt(2.0*4.0*pow(M_PI,3.0)*pow(asd,2)/deltat/pow(deltax,2));
     }
     if(configf.optional("Ranseed", seed)) {
       random = new Random(seed, mean, stddev);
