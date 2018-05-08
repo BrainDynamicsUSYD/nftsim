@@ -377,12 +377,12 @@ Sine - Amplitude: 1.0 Frequency: 2.0
 White - Mean: 1 StdDev: 20 Ranseed: 10
     \end{lstlisting}
 
-    Alternatively, the power spectral density (ASD) may be specified instead of the standard deviation (StdDev). The advantage is that the ASD is invariant to change in \type{Deltat}, population \type{Length} and spatial \type{Nodes}. Given the ASD, \NF correctly calculates the standard deviation:
+    Alternatively, the amplitude spectral density (ASD), which is the square root of the power spectral density (PSD) may be specified instead of the standard deviation (StdDev). The advantage of using ASD is that NFTsim will preserve the ASD under changes in \type{Deltat}, population \type{Length} and spatial \type{Nodes}. Given the ASD, \NF  calculates the standard deviation:
     \begin{lstlisting}
 White - Mean: 1 ASD: 20 Ranseed: 10
     \end{lstlisting}
 
-    In general, it is preferable to specify the noise using \texttt{ASD} rather than \texttt{StdDev}. 
+    In general, it is preferable to specify the noise amplitude using \texttt{ASD} rather than \texttt{StdDev}. Note that the ASD reported in paper is given assuming the power spectrum is calculated with respect to angular frequency $\omega$, instead of linear frequency $f$. ASD(f) is larger than ASD($\omega$) by a factor of $\pi$ or $2\pi$ whther one calculates the two-sided or one-sided spectrum, respectively.
 
     The random number generator may be specified in \type{Ranseed}. If a seed is not specified, an automatically-incremented seed will be used instead, so that multiple stimulus populations will have independent sequences. In general it is not necessary to set the seed manually unless different random numbers are required for otherwise identical runs.
 
