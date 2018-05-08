@@ -248,7 +248,6 @@ namespace TIMESERIES {
     // Set default values for optional parameters.
     period = inf; // Time between the start of each pulse [s].
     pulses = 1.0; // Maximum number of pulses.
-    sigma = 0.03125; // Width of transition.
     configf.param("Amplitude", amp);
     configf.param("Width", width);
     if( !configf.optional("Period", period) ) {
@@ -257,8 +256,16 @@ namespace TIMESERIES {
         period = 1.0 / freq;
       }
     }
+
     configf.optional("Pulses", pulses);
-    configf.optional("Sigma", sigma);
+
+    if (!configf.optional("Sigma", sigma)){
+      // Set an adaptive default width of transition. A sigmoidal-pulse
+      // waveform is achieved when sigma is a small fraction of width.
+      // However, to be represented properly it must be at least deltat.
+      sigma = max(width / 16.0, deltat);
+    }
+
     if( (duration != inf) && (period != inf) ) {
       pulse_count = min(pulses, duration/period);
     } else {
