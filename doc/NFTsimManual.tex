@@ -382,7 +382,7 @@ White - Mean: 1 StdDev: 20 Ranseed: 10
 White - Mean: 1 ASD: 20 Ranseed: 10
     \end{lstlisting}
 
-    In general, it is preferable to specify the noise amplitude using \texttt{ASD} rather than \texttt{StdDev}. Note that the ASD reported in paper is given assuming the power spectrum is calculated with respect to angular frequency $\omega$, instead of linear frequency $f$. ASD(f) is larger than ASD($\omega$) by a factor of $\pi$ or $2\pi$ whther one calculates the two-sided or one-sided spectrum, respectively.
+    In general, it is preferable to specify the noise amplitude using \texttt{ASD} rather than \texttt{StdDev}. Note that the ASD reported in paper is given assuming the power spectrum is calculated with respect to angular frequency $\omega$, instead of linear frequency $f$. ASD(f) is larger than ASD($\omega$) by a factor of $2\pi$ (e.f. ASD($f$)=$2\pi$*ASD(\omega)). 
 
     The random number generator may be specified in \type{Ranseed}. If a seed is not specified, an automatically-incremented seed will be used instead, so that multiple stimulus populations will have independent sequences. In general it is not necessary to set the seed manually unless different random numbers are required for otherwise identical runs.
 
