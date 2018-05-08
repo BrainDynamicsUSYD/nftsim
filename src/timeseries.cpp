@@ -259,13 +259,25 @@ namespace TIMESERIES {
     }
     configf.optional("Pulses", pulses);
     configf.optional("Sigma", sigma);
-    pulse_count = min(pulses, duration/period);
+    if( (duration != inf) && (period != inf) ) {
+      pulse_count = min(pulses, duration/period);
+    } else {
+      pulse_count = pulses;
+    }
+
+    if( (pulse_count > 1) && (period == inf) ) {
+      cerr << "ERROR: Multiple PulseSigmoid pulses requested but no Period or Frequency specified."
+           << endl;
+      exit(EXIT_FAILURE);
+    }
 
     first_pulse_mid = onset + (width / 2.0);
 
-    onset_midpoints.assign(pulse_count, 0.0);
-    for( size_type i=0; i<pulse_count; i++ ) {
-      onset_midpoints[i] = onset + (i * period);
+    onset_midpoints.assign(pulse_count, onset);
+    if( pulse_count > 1 ) {
+      for( size_type i=1; i<pulse_count; ++i ) {
+        onset_midpoints[i] = onset + (i * period);
+      }
     }
 
     // As we need to begin evaluation before onset for this Timeseries, as
@@ -273,7 +285,9 @@ namespace TIMESERIES {
     // we reset the time-series' internal time to zero and adjust the duration
     // accordingly.
     t = 0.0;
-    duration = duration + onset;
+    if( duration != inf ) {
+      duration = duration + onset;
+    }
   }
 
   /** @brief Generate a train of sigmoidal pulses.*/
