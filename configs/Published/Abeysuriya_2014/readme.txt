@@ -18,8 +18,8 @@ directory (in dispersion_calc.m). However, this code has not been prepared for
 general use yet and is essentially undocumented.
 
 The remaining figures in the paper use the same model parameters, with
-different noise powers. These can be set by changing the PSD quantity of the
+different noise amplitudes. These can be set by changing the ASD quantity of the
 stimulus in the configuration file to match the quantity in the paper. For
-example, Figure 2 is generated using mu = 1e-4, and figure_2.conf has "PSD:
-0.0001". To generate Figure 5, simply change PSD to each of the specified mu
+example, Figure 2 is generated using mu = 1e-4, and figure_2.conf has "ASD:
+0.0001". To generate Figure 5, simply change ASD to each of the specified mu
 values in the figure caption.
