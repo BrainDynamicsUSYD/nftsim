@@ -329,9 +329,9 @@ namespace TIMESERIES {
       if(nodes>1) {
         deltax = atof(configf.find(
                         label("Population ",index+1)+"*Length").c_str()) /sqrt(nodes);
-        stddev = sqrt(4.0*pow(M_PI,3)*pow(asd,2)/deltat/pow(deltax,2));
+        stddev = sqrt(2.0*4.0*pow(M_PI,3)*pow(asd,2)/deltat/pow(deltax,2));
       } else {
-        stddev = sqrt(M_PI*pow(asd,2)/deltat);
+        stddev = sqrt(2.0*M_PI*pow(asd,2)/deltat);
       }
 
     }
