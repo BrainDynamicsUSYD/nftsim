@@ -34,7 +34,7 @@
 
 %TODO: it would make more sense to return a spectrum for each trace, but that is difficult with the way nf.extract() currently works.
 
-function [f, P] = spectrum(obj, traces, n_windows, windowed, detrended)
+function [f, P] = spectrum(obj, traces, n_windows, windowed, detrended, one_sided)
     if ~isstruct(obj)
         error(['nf:' mfilename ':BadArgument'], ...
               'The first argument must be a nftsim simulation struct.')
@@ -64,6 +64,10 @@ function [f, P] = spectrum(obj, traces, n_windows, windowed, detrended)
         detrended = false; % Do not detrend by default.
     end
 
+    if nargin < 6 || isempty(n_windows)
+        one_sided = true; % Calculate one-sided spectrum by default.
+    end
+
     data = nf.extract(obj, traces);
     fs = 1.0 / obj.deltat;
 
@@ -75,9 +79,14 @@ function [f, P] = spectrum(obj, traces, n_windows, windowed, detrended)
     window_length = window_idx(1, 2) - window_idx(1, 1) + 1;
 
     % Calculate mean power spectrum for each epoch of time.
-    P1 = zeros(size(window_idx, 1), (floor(window_length / 2) + 1));
+    if one_sided
+        P1 = zeros(size(window_idx, 1), floor(window_length/2) + 1);
+    else
+       P1 = zeros(size(window_idx, 1), window_length);
+    end
+
     for j = 1:size(window_idx, 1)
-        [f, ~, P1(j, :)] = nf.rfft(data(window_idx(j, 1):window_idx(j, 2), :), fs, [], windowed, detrended);
+        [f, ~, P1(j, :)] = nf.rfft(data(window_idx(j, 1):window_idx(j, 2), :), fs, [], windowed, detrended, one_sided);
     end
 
     % Mean over time epochs.
