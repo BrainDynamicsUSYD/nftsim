@@ -90,7 +90,7 @@ function [f, Y, P] = rfft(y, fs, NFFT, windowed, detrended, one_sided)
             
     else
         Y = fftshift(Y);
-        f = -(fs/2)+freq_bin_width:freq_bin_width:(fs/2);
+        f = -(fs/2):freq_bin_width:(fs/2)-freq_bin_width;
         P = abs(Y).^2; % two sided spectrum 
 
     end
