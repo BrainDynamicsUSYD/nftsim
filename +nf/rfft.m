@@ -65,7 +65,7 @@ function [f, Y, P] = rfft(y, fs, NFFT, windowed, detrended, one_sided)
         y = y .* window_func;
     end
     
-    Y = fft(y, NFFT) / size(y, 1); % Correctly normalized Fourier components c_k
+    Y = fft(y, NFFT) / NFFT;%size(y, 1); % Correctly normalized Fourier components c_k
     %s = ifft(y, NFFT); % Correctly normalized Fourier components c_k with positive exponent in the FFT
 
 
