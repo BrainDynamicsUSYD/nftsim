@@ -328,7 +328,7 @@ Population 1: Stimulation
     \begin{lstlisting}
 Length: .5
     \end{lstlisting}
-    The physical edge length of the population (which is a 2D sheet), in metres. This is used in \type{Wave} propagators and the \type{PSD} of \type{White} stimulus.
+    The physical edge length of the population (which is a 2D sheet), in metres. This is used in \type{Wave} propagators and the \type{ASD} of \type{White} stimulus.
     \item
     \begin{lstlisting}
 Stimulus: Const - Onset: 0
@@ -377,12 +377,12 @@ Sine - Amplitude: 1.0 Frequency: 2.0
 White - Mean: 1 StdDev: 20 Ranseed: 10
     \end{lstlisting}
 
-    Alternatively, the power spectral density (PSD) may be specified instead of the standard deviation (StdDev). The advantage is that the PSD is invariant to change in \type{Deltat}, population \type{Length} and spatial \type{Nodes}. Given the PSD, \NF correctly calculates the standard deviation:
+    Alternatively, the amplitude spectral density (ASD), which is the square root of the power spectral density (PSD) may be specified instead of the standard deviation (StdDev). The advantage of using ASD is that NFTsim will preserve the ASD under changes in \type{Deltat}, population \type{Length} and spatial \type{Nodes}. Given the ASD, \NF  calculates the standard deviation:
     \begin{lstlisting}
-White - Mean: 1 PSD: 20 Ranseed: 10
+White - Mean: 1 ASD: 20 Ranseed: 10
     \end{lstlisting}
 
-    In general, it is preferable to specify the noise using \texttt{PSD} rather than \texttt{StdDev}. 
+    In general, it is preferable to specify the noise amplitude using \texttt{ASD} rather than \texttt{StdDev}. Note that the ASD reported in paper is given assuming the power spectrum is calculated with respect to angular frequency $\omega$, instead of linear frequency $f$. ASD(f) is larger than ASD($\omega$) by a factor of $2\pi$ (e.f. ASD($f$)=$2\pi$*ASD(\omega)). 
 
     The random number generator may be specified in \type{Ranseed}. If a seed is not specified, an automatically-incremented seed will be used instead, so that multiple stimulus populations will have independent sequences. In general it is not necessary to set the seed manually unless different random numbers are required for otherwise identical runs.
 
@@ -392,7 +392,7 @@ White - Mean: 1 PSD: 20 Ranseed: 10
     To superimpose 2 or more stimuli, begin with the keyword \type{Superimpose}, followed by the number of stimuli. Then list all the stimulus patterns and their parameters, with each stimulus pattern preceded by the keyword \type{Stimulus}.
     \begin{lstlisting}
 Stimulus: Superimpose: 2
- Stimulus: White - Mean: 1 PSD: 1
+ Stimulus: White - Mean: 1 ASD: 1
  Stimulus: PulseRect - Onset: 0.5 Width: 2e-2 Frequency 1 Pulses: 1
     \end{lstlisting}
 
