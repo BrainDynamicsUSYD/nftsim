@@ -13,7 +13,7 @@ To 1:  0
 
 Population 1: Stimulation
 Length: 0.5
-    Stimulus: White - Onset: 0 Mean: 0 PSD: 1e-05
+    Stimulus: White - Onset: 0 Mean: 0 ASD: 7.071067811865476e-06
 
 Output: Node: All Start: 0
 Population: 1
