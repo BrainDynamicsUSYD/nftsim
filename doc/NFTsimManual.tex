@@ -74,7 +74,8 @@ The role of \NF is to integrate neural field equations to predict neural activit
     \item For each object, specify the parameter values.
 \end{enumerate}
 
-This users guide covers the obtaining and setting up (Sec.~\ref{sec:obtain}), configuring (Sec.~\ref{sec:config}) and launching of \NF (Sec.~\ref{sec:running}), as well as postprocessing (Sec.~\ref{sec:analysis}) and tips and tricks (Sec.~\ref{sec:tips}).
+This user guide covers how to obtain and set-up \NF (Sec.~\ref{sec:obtain}), how to configure (Sec.~\ref{sec:config}) and launch a simulation (Sec.~\ref{sec:running}), as well as some possible postprocessing of the output (Sec.~\ref{sec:analysis}).
+It concludes with a section on development, that is, things you need to know if you intend to extend the core functionality of \NF (Sec.~\ref{sec:dev}).
 
 Within this documentation, specific terminology as appeared in the computer is in \type{typewriter font}. Commands are denoted as
 \begin{lstlisting}
@@ -382,7 +383,7 @@ White - Mean: 1 StdDev: 20 Ranseed: 10
 White - Mean: 1 ASD: 20 Ranseed: 10
     \end{lstlisting}
 
-    In general, it is preferable to specify the noise amplitude using \texttt{ASD} rather than \texttt{StdDev}. Note that the ASD reported in paper is given assuming the power spectrum is calculated with respect to angular frequency $\omega$, instead of linear frequency $f$. ASD(f) is larger than ASD($\omega$) by a factor of $2\pi$ (e.f. ASD($f$)=$2\pi$*ASD(\omega)). 
+    In general, it is preferable to specify the noise amplitude using \texttt{ASD} rather than \texttt{StdDev}. Note that the ASD reported in paper is given assuming the power spectrum is calculated with respect to angular frequency $\omega$, instead of linear frequency $f$. ASD($f$) is larger than ASD($\omega$) by a factor of $2\pi$ (i.e.\ ASD($f$)=$2\pi$*ASD($\omega$)).
 
     The random number generator may be specified in \type{Ranseed}. If a seed is not specified, an automatically-incremented seed will be used instead, so that multiple stimulus populations will have independent sequences. In general it is not necessary to set the seed manually unless different random numbers are required for otherwise identical runs.
 
@@ -796,6 +797,7 @@ Finally, if you run \NF with multiple nodes, it typically solves the system of e
 One important task is computing the power spectrum as predicted by the linearized analytic equations. This can be achieved using \type{nf.spatial\_spectrum} which takes in an \type{nf} object and computes the power spectrum integrated over $k$ taking into account volume conduction.
 
 \section{Development}
+\label{sec:dev}
 
 This section provides programming information about \NF for development extension and core logic. This section assumes a basic knowledge of \type{ANSI C++}, including object oriented programming, usage of template, and standard template library (STL). As our development takes place within a Git repository, a working knowledge of Git will significantly help.
 
