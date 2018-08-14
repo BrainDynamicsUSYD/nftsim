@@ -1,7 +1,8 @@
 /** @file configf.h
-  @brief A brief, one sentence description.
+  @brief Declaration of the class used to read information from `.conf` files.
 
-  A more detailed multiline description...
+  The Configf class is derived from std::ifstream, it provides additional member
+  functions to help parse NFTsim's `.conf` files.
 
   @author Peter Drysdale, Felix Fung,
 */
@@ -20,30 +21,35 @@ class Configf : public std::ifstream { // derived class
   char* buffer;
   std::streamsize filesize;
  public:
-  Configf(const Configf&) = delete;  // No copy constructor allowed.
-  Configf() = delete;                // No default constructor allowed.
-  Configf& operator=(const Configf&) = delete; // No copy assignment operator allowed.
+  Configf(const Configf&) = delete;  ///< No copy constructor allowed.
+  Configf() = delete;                ///< No default constructor allowed.
+  Configf& operator=(const Configf&) = delete; ///< No copy assignment operator allowed.
 
 
   explicit Configf( const std::string filename ); // const string of filename for ifstream
   ~Configf() override;
 
-  // Looks for the next parameter called "param" and stores it in T
-  // If "param" is not found, terminate program
+  /// Looks for the next parameter called "param" and stores it in T.
+  /** If "param" is not found, terminate program. */
   template<class T> void param(const std::string& param, T& ret, int delim=':' );
-  // Looks for the next parameter called "param" and stores it in T
-  // If "param" is not found, return false
+
+  /// Looks for the next parameter called "param" and stores it in T
+  /** If "param" is not found, return false. */
   template<class T> bool optional( const std::string& param, T& ret, int delim=':' );
-  // Read & return an arbitrary array of doubles
+
+  /// Read & return an arbitrary array of doubles
   std::vector<double> numbers();
-  // Return all whitespace separated strings before delimiting string
+
+  /// Return all whitespace separated strings before delimiting string
   std::vector<std::string> arb( const std::string& delim );
-  // Find the next "Check", then returns the next input entry as string
+
+  /// Find the next "Check", then returns the next input entry as string
   std::string find( const std::string& Check );
 
-  // points to next delim, and verify it is "check"+"delim"
+  /// points to next delim, and verify it is "check"+"delim"
   bool next( const std::string& Check, int delim=':' );
-  // searches and points to next keyword
+
+  /// searches and points to next keyword
   void go2( const std::string& keyword );
 
   std::streamsize tell() {
@@ -56,8 +62,8 @@ class Configf : public std::ifstream { // derived class
   friend class Dumpf;
 };
 
-// global function that returns string=="Object#" for config file parsing
-// also useful in naming outputf "solution.phi.#"
+/// global function that returns string=="Object#" for config file parsing
+/** also useful in naming outputf "solution.phi.#". */
 std::string label( const std::string& prefix, size_t index );
 
 template<class T> void Configf::param(const std::string& param, T& ret, int delim ) {

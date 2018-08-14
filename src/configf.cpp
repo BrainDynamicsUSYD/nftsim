@@ -1,7 +1,8 @@
 /** @file configf.cpp
-  @brief A brief, one sentence description.
+  @brief Definition  of the class used to read information from `.conf` files.
 
-  A more detailed multiline description...
+  The Configf class is derived from std::ifstream, it provides additional member
+  functions to help parse NFTsim's `.conf` files.
 
   @author Peter Drysdale, Felix Fung,
 */
@@ -26,7 +27,7 @@ Configf::Configf( const string filename )
     cerr << "Unable to open configuration file." << endl;
     exit(EXIT_FAILURE);
   }
-  std::streamoff sp = tellg(); // store current file position
+  std::streamoff sp = tellg(); ///< stores current file position
   seekg(0,std::ios::end);
   filesize = tellg();
   buffer = new char[filesize+1];
@@ -38,7 +39,7 @@ Configf::~Configf() {
   delete[] buffer;
 }
 
-// Reads an arbitrary number of doubles and return it in an array
+/// Reads an arbitrary number of doubles and return it in an array
 vector<double> Configf::numbers() {
   vector<double> ret;
   while( good() ) { // read until non-numeral
@@ -70,18 +71,20 @@ vector<string> Configf::arb( const string& delim ) {
   return ret_value;
 }
 
-string Configf::find( const string& Check ) {
-  /*
+/**
   This function implements a wildcard search that searches the config file
-  assuming a structure like
-    <unique>: extra_data - key1:value key2:value
+  assuming a structure like:
+
+      <unique>: extra_data - key1:value key2:value
+
   The search term Check takes the form "<unique>*keyn" or "<unique>"
   and this function returns a string representation of the value associated
   with the key that was being searched for. If the search term is "<unique>"
   then a string representation of extra_data is returned. The file pointer is
   returned to the same position as it was originally.
   Search is CASE SENSITIVE
-  */
+*/
+string Configf::find( const string& Check ) {
 
   if( Check.empty() ) {
     cerr << "Attempted to use Configf::Find searching for an empty string"
