@@ -1,7 +1,13 @@
 /** @file nf.cpp
-  @brief A brief, one sentence description.
+  @brief Definition of the base class for components of a neural field model.
 
-  A more detailed multiline description...
+  The constructor NF::NF handles the initialisation of `nodes`, `deltat`, and
+  `index` for NF derived classes. Most other methods are virtual, being
+  implemented by the derived classes.
+
+  Also implemented here, as a friend function, is Configf's extraction
+  `operator>>` for reading configuration information from a `.conf` file into
+  NF derived objects.
 
   @author Peter Drysdale, Felix Fung,
 */
