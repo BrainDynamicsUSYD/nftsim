@@ -1,7 +1,9 @@
 /** @file array.h
-  @brief A brief, one sentence description.
+  @brief Defines a container class template for components of a NF model.
 
-  A more detailed multiline description...
+  The Array class is used as a container for Population, Propagator, Coupling,
+  and Dendrite classes. It provides a `step()` member function that iteratively
+  calls the step method for each element.
 
   @author Peter Drysdale, Felix Fung,
 */
@@ -14,19 +16,19 @@
 
 template<class T>
 class Array {
-  Array(const Array&);   // No copy constructor allowed.
+  Array(const Array&); ///< No copy constructor allowed.
 
-  std::vector<T*> m;
+  std::vector<T*> m; ///< The class' main data, contains pointers to NF objects.
  public:
   using size_type = typename std::vector<T>::size_type;
-  virtual void step();
-  virtual void pstep(); // parallel for loop over elements::loop
+  virtual void step(); ///< iteratively calls `step()` member of Array's elements.
+  virtual void pstep(); ///< OpenMP parallel version of `Array::step()` //NOTE: OpenMP pragma currently disabled.
 
-  void add(T* t);
-  void add(std::vector<T*> t);
-  bool empty() const;
-  inline T* operator[]( size_type index ) const;
-  size_type size() const;
+  void add(T* t); ///< adds a pointer to a NF object to the Array.
+  void add(std::vector<T*> t); ///< adds a vector of pointers to NF objects to the Array.
+  bool empty() const; ///< accesses underlying vector's `empty()` member.
+  inline T* operator[]( size_type index ) const; ///< accesses underlying vector's `operator[]`.
+  size_type size() const; ///< accesses underlying vector's `size()` member.
 
   Array<T>();
   virtual ~Array();
