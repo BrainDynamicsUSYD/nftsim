@@ -74,13 +74,13 @@ Liked the code? Did you use it in your research and got awesome results?
 
 Please cite us as follows:
    
-   Sanz-Leon, P., Robinson, PA., Knock, SA., Drysdale, PM., Fung, PK., Abeysuriya, RG.,
+   Sanz-Leon, P., Robinson, PA., Knock, SA., Drysdale, PM., Abeysuriya, RG., Fung, PK.,
    Rennie, CJ and Zhao, XL.
    
    _NFTsim: Theory and Simulation of Multiscale Neural Field Dynamics_
    
-   Submitted to PLoS Computational Biology (2017).
-   Download the [preprint from bioaRiv](https://www.biorxiv.org/content/early/2018/02/01/237032).
+   PLoS Computational Biology (2018).
+   Read the paper [here](http://journals.plos.org/ploscompbiol/article/related?id=10.1371/journal.pcbi.1006387).
    
 
 
