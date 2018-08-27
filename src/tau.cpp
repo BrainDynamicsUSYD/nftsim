@@ -1,7 +1,8 @@
 /** @file tau.cpp
-  @brief A brief, one sentence description.
+  @brief Definition of Tau, which handles the activity history.
 
-  A more detailed multiline description...
+  Tau objects are used to retrieve the appropriate delayed activity when the
+  discrete time delay \f$\tau_{ab}\f$ is nonzero.
 
   @author Peter Drysdale, Felix Fung,
 */
@@ -25,6 +26,7 @@ using std::scientific;
 using std::setprecision;
 using std::vector;
 
+/// Initialises Tau::m by reading from a `.conf` file, setting Tau::max accordingly.
 void Tau::init( Configf& configf ) {
   vector<double> temp = configf.numbers();
   if( temp.size() == 1 ) {

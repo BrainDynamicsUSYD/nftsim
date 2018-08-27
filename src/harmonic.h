@@ -1,7 +1,8 @@
 /** @file harmonic.h
-  @brief A brief, one sentence description.
+  @brief Declaration of the Harmonic Propagator class.
 
-  A more detailed multiline description...
+  The Harmonic Propgator is used for spatially homogeneous models, where the
+  Laplacian Operator term is zero and one finds a damped oscillator response.
 
   @author Peter Drysdale, Felix Fung,
 */

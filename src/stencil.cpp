@@ -1,5 +1,5 @@
 /** @file stencil.cpp
-  @brief A brief, one sentence description.
+  @brief Stencil definition -- spatial neighbourhood used to evaluate \f[{\Delta}x\f].
 
   A more detailed multiline description...
 

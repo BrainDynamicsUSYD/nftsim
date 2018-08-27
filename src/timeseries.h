@@ -1,5 +1,5 @@
 /** @file timeseries.h
-  @brief A brief, one sentence description.
+  @brief Declarations for a collection of time-series, primarily for use as stimuli.
 
   A more detailed multiline description...
 
@@ -97,7 +97,7 @@ namespace TIMESERIES {
   struct White : public Timeseries {
     uint_fast64_t seed = 0; ///<
     double stddev = 0.0;    ///<
-    double asd = 0.0;       ///<
+    double asd = 0.0;       ///< Amplitude spectral density.
     double mean = 0.0;      ///<
     double deltax = 0.0;    ///<
     Random* random;
@@ -112,7 +112,7 @@ namespace TIMESERIES {
   struct WhiteCoherent : public Timeseries {
     uint_fast64_t seed = 0; ///<
     double stddev = 0.0;      ///<
-    double asd    = 0.0;      ///<
+    double asd    = 0.0;      ///< Amplitude spectral density.
     double mean   = 0.0;      ///<
     Random* random;
     WhiteCoherent(size_type nodes, double deltat, size_type index) : Timeseries(nodes, deltat, index) {}

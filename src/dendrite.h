@@ -1,7 +1,8 @@
 /** @file dendrite.h
-  @brief Defines the Dendrite class, which handles the response of the postsynaptic population.
+  @brief Declares the Dendrite class, which handles dendritic dynamics.
 
-  A more detailed multiline description...
+  Dendrite dynamics are applied to incoming activity to postsynaptic Population
+  objects.
 
   @author Peter Drysdale, Felix Fung,
 */

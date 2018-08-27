@@ -1,7 +1,8 @@
 /** @file tau.h
-  @brief A brief, one sentence description.
+  @brief Declaration of Tau, which handles the activity history.
 
-  A more detailed multiline description...
+  Tau objects are used to retrieve the appropriate delayed activity when the
+  discrete time delay \f$\tau_{ab}\f$ is nonzero.
 
   @author Peter Drysdale, Felix Fung,
 */

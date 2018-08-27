@@ -1,7 +1,10 @@
 /** @file coupling.cpp
-  @brief A brief, one sentence description.
+  @brief Definition of the main class handling synaptic connections.
 
-  A more detailed multiline description...
+  This class assumes that the synaptic strengths are constant over space and
+  time. The classes: CouplingRamp; CouplingDiffArctan; LongCoupling; and CaDP,
+  which are derived from Coupling, implement temporally varying synaptic
+  strengths or modulation by pre- or postsynaptic activity.
 
   @author Peter Drysdale, Felix Fung,
 */
@@ -24,6 +27,7 @@ using std::endl;
 using std::string;
 using std::vector;
 
+/// Read `.conf` file and initialise synaptic coupling strengths and weighted presynaptic inputs.
 void Coupling::init( Configf& configf ) {
   configf.next("nu");
   vector<double> temp = configf.numbers();
@@ -54,12 +58,14 @@ Coupling::Coupling( size_type nodes, double deltat, size_type index,
 
 Coupling::~Coupling() = default;
 
+/// Calculate next value for synaptic-coupling-strength-weighted-presynaptic-inputs.
 void Coupling::step() {
   for( size_type i=0; i<nodes; i++ ) {
     P[i] = nu[i]*prepropag[i];
   }
 }
 
+/// Read synaptic coupling strength from `.conf` file.
 double Coupling::nuinit( Configf& configf ) const {
   string buffer = configf.find( label("Coupling ",index+1)+"*nu:");
   return atof(buffer.c_str());

@@ -2,7 +2,7 @@
   @brief StencilLegacy, square nine-point stencil definition.
 
   As well as a constructor and destructor, this file defines the set() and
-  get() member functions and a custom equals (=) operator.
+  get() member functions and a custom copy assignment operator(=).
 
   @author Peter Drysdale, Felix Fung.
 */

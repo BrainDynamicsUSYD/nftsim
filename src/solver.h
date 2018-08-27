@@ -90,8 +90,8 @@ class Solver : public NF {
   //virtual void restart( Restartf& restartf );
   //virtual void dump( Dumpf& dumpf ) const;
  public:
-  Solver() = delete;              // No default constructor allowed.
-  Solver(const Solver&) = delete; // No copy constructor allowed.
+  Solver() = delete;              ///< No default constructor allowed.
+  Solver(const Solver&) = delete; ///< No copy constructor allowed.
 
   explicit Solver( Dumpf& dumpf );
   ~Solver() override;

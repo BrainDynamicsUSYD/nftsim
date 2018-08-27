@@ -1,6 +1,6 @@
 /** @file dendrite_integral.h
-  @brief Defines the DendriteIntegral class, which handles the response of the
-         postsynaptic population using the integral form for the step()
+  @brief Declares the DendriteIntegral class, which handles the response of the
+         postsynaptic population using the integral form for the DendriteIntegral::step()
          member-function.
 
   A more detailed multiline description...

@@ -1,6 +1,7 @@
 /** @file dendrite_integral.cpp
   @brief DendriteIntegral handles the dendritic response of the postsynaptic
-         population using the integral form for the step() member-function.
+         population using the integral form for the DendriteIntegral::step()
+         member-function.
 
   A more detailed multiline description...
 

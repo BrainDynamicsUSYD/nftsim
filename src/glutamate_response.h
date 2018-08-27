@@ -1,5 +1,5 @@
 /** @file glutamate_response.h
-  @brief Defines the GlutamateResponse class, for the soma response of neural populations.
+  @brief Declares the GlutamateResponse class, for the soma response of neural populations.
 
   @author Peter Drysdale, Felix Fung,
 */

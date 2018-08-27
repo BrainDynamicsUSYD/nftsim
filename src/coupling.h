@@ -1,5 +1,5 @@
 /** @file coupling.h
-  @brief A brief, one sentence description.
+  @brief Declaration of the main class handling synaptic connections.
 
   A more detailed multiline description...
 
@@ -30,12 +30,12 @@ class Coupling : public NF {
 
   const Propagator& prepropag;
   const Population& postpop;
-  std::vector<double> nu; ///< \f$\nu\f$
-  std::vector<double> P;  ///< \f$\nu\phi\f$
+  std::vector<double> nu; ///< Synaptic coupling strength (\f$\nu\f$).
+  std::vector<double> P;  ///< Presynaptic inputs weighted by synaptic coupling strength (\f$\nu\phi\f$).
   int pos = 0;
  public:
-  Coupling() = delete;                // No default constructor allowed.
-  Coupling(const Coupling&) = delete; // No copy constructor allowed.
+  Coupling() = delete;                ///< No default constructor allowed.
+  Coupling(const Coupling&) = delete; ///< No copy constructor allowed.
 
   Coupling( size_type nodes, double deltat, size_type index,
           const Propagator& prepropag, const Population& postpop );

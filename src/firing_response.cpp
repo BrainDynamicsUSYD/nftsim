@@ -4,7 +4,8 @@
   Each neural population is associated with a FiringResponse object which produces
   the soma response governed by a specified equation, for example Sigmoid:
   \f[
-    Insert equation 9 from draft nftsim paper here.
+    S_{a}[V_a(\mathbf{r}, t), \theta_{a}(\mathbf{r},t)] = \frac{Q_{a}^{\text{max}}}
+        {1 + \exp[-\{ V_a(\mathbf{r}, t) - \theta_a(\mathbf{r}, t)\}/\sigma'_a(\mathbf{r}, t)]}
   \f]
 
   @author Peter Drysdale, Felix Fung,
@@ -31,6 +32,7 @@ using std::exp;
 using std::string;
 using std::vector;
 
+/// Initialise FiringResponse, reading function and parameters to use from file.
 void FiringResponse::init( Configf& configf ) {
   configf.param("Function", mode);
   if( mode == "Sigmoid" ) {
@@ -62,8 +64,8 @@ FiringResponse::FiringResponse( size_type nodes, double deltat, size_type index 
 
 FiringResponse::~FiringResponse() = default;
 
+/// Step through dendrites, then sum up soma potentials.
 void FiringResponse::step() {
-  // step through dendrites, then sum up soma potential
   dendrites.step();
   for( size_type i=0; i<nodes; i++ ) {
     v[i] = 0;

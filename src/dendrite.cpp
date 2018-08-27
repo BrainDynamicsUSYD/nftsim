@@ -1,7 +1,9 @@
 /** @file dendrite.cpp
-  @brief Dendrite handles the dendritic response of the postsynaptic population.
+  @brief Defines the Dendrite class, which handles dendritic dynamics.
 
-  A more detailed multiline description...
+  Dendrite dynamics are applied to incoming activity to postsynaptic Population
+  objects. The differential equation defining the dendritic dynamics are in the
+  member function Dendrite::DendriteDE::rhs.
 
   @author Peter Drysdale, Felix Fung,
 */

@@ -1,5 +1,5 @@
 /** @file stencil.h
-  @brief Stencil declaration -- spatial neighbourhood use to evaluate \f[{\Delta}x\f].
+  @brief Stencil declaration -- spatial neighbourhood used to evaluate \f[{\Delta}x\f].
 
   This file contains the Stencil declaration, including a definition of Stencil's
   grid increment operator (ie, ++), and the parentheses operator (ie, ()). The
@@ -27,17 +27,17 @@
 
 class Stencil {
  protected:
-  int nodes;
-  int longside;
-  int shortside;
-  std::string boundary;
+  int nodes;    ///< Number of nodes covering the spatial domain.
+  int longside; ///< Length of the long-side of the spatial domain (in number of nodes).
+  int shortside; ///< Length of the short-side of the spatial domain (in number of nodes).
+  std::string boundary; ///< Type of boundary conditions.
   double* m;
 
   mutable int ptr;
  public:
-  Stencil() = delete;               // No default constructor allowed.
-  Stencil(const Stencil&) = delete; // No copy constructor allowed.
-  Stencil& operator=(const Stencil&) = delete; // No copy assignment operator allowed.
+  Stencil() = delete;               ///< No default constructor allowed.
+  Stencil(const Stencil&) = delete; ///< No copy constructor allowed.
+  Stencil& operator=(const Stencil&) = delete; ///< No copy assignment operator allowed.
 
   enum Neighbours {
        n=-2,
@@ -49,9 +49,9 @@ class Stencil {
   virtual ~Stencil();
 
   const std::vector<double>& operator= ( const std::vector<double>& field );
-  inline void operator++ (int) const; // increment Neighbours grid
-  void set( int node ) const; // point to node
-  int get() const; // get ptr
+  inline void operator++ (int) const; ///< increment Neighbours grid
+  void set( int node ) const; ///< point to node
+  int get() const; ///< get ptr
 
   inline double operator() ( Neighbours neighbour=c ) const {
     int arr[5] = {       ptr-longside-2,

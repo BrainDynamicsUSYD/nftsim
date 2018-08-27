@@ -46,10 +46,10 @@ class Configf : public std::ifstream { // derived class
   /// Find the next "Check", then returns the next input entry as string
   std::string find( const std::string& Check );
 
-  /// points to next delim, and verify it is "check"+"delim"
+  /// Points to next delim, and verify it is "check"+"delim"
   bool next( const std::string& Check, int delim=':' );
 
-  /// searches and points to next keyword
+  /// Searches and points to next keyword
   void go2( const std::string& keyword );
 
   std::streamsize tell() {

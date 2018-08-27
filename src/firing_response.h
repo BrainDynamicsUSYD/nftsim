@@ -1,5 +1,5 @@
 /** @file firing_response.h
-  @brief Defines the FiringResponse class, for the soma response of neural populations.
+  @brief Declares the FiringResponse class, for the soma response of neural populations.
 
   Each neural population is associated with a FiringResponse object, which produces
   the soma response.
@@ -43,8 +43,8 @@ class FiringResponse : public NF {
   std::vector<double> v; ///< soma potential for the population
 
  public:
-  FiringResponse(const FiringResponse& ) = delete; // No copy constructor allowed.
-  FiringResponse() = delete;                       // No default constructor allowed.
+  FiringResponse(const FiringResponse& ) = delete; ///< No copy constructor allowed.
+  FiringResponse() = delete;                       ///< No default constructor allowed.
 
   FiringResponse( size_type nodes, double deltat, size_type index );
   ~FiringResponse() override;
