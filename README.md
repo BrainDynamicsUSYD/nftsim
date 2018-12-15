@@ -21,13 +21,14 @@ NFTsim comes with a collection of custom made Matlab functions that allow for an
 
 ## Requirements
 
-Make sure you have a compiler that supports the `C++11` standard.  
-On Linux: `gcc` 4.8 or higher; `clang 3.7` or higher.
-On MacOS: `clang` 3.3 or later version;
++ **Compilers**: Make sure you have a compiler that supports the `C++11` standard.  
+    + On Linux: `gcc` 4.8 or higher; `clang 3.7` or higher. If you have use your own makefile or compile by hand, and have 4.8.1 <= gcc < 5.1.0, the flag `-std=c++11` must be passed to the compiler. 
+    + On MacOS: `clang` 3.3 or later version;
 
-Additionally, to build the developer reference manual you'll need `doxygen` and `graphviz`. The latter provides the DOT language.
-
-The user manual is compiled using `pdflatex` an it is also provided as a pdf (`doc/NFTsimManual.pdf`).
++ **Documentation**: To build the developer reference manual you'll need 
+    + `doxygen` and,
+    + `graphviz`. The latter provides the DOT language.
+    + `pdflatex`. The user manual is compiled using `pdflatex` an it is also provided as a pdf (`doc/NFTsimManual.pdf`).
 
 
 ### Compiling and building from the source code
