@@ -52,7 +52,7 @@ class NF:
         """
         Docstring for the init method
         """
-        with open(nf_output_file, 'rU') as outfile:
+        with open(nf_output_file, 'r') as outfile:
             [conf, skip] = self.read_conf(outfile)
 
             headers = outfile.readline()
