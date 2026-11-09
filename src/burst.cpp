@@ -119,7 +119,7 @@ void BurstResponse::step() {
 
   if (sec_time <= th1 || gH2 == gH1) {
     // Do nothing here!
-  } else if (sec_time > tx1 && sec_time <= tx2) {
+  } else if (sec_time > th1 && sec_time <= th2) {
     gH[0] =  gH1 + (sec_time - th1) * (gH2 - gH1) / (th2 - th1);
   } else if (sec_time > th2 && sec_time <= th3) {
     gH[0] = gH2;
