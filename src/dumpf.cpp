@@ -90,7 +90,6 @@ Dumpf& Dumpf::operator<< ( ostream& (*pf)(ostream&) ) {
 }
 
 ostream& septor( ostream& os ) {
-  //os<<"|";
   return os;
 }
 

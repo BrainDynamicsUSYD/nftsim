@@ -55,8 +55,6 @@ class Dendrite : public NF {
   void startSecondOrder( const double* np ); ///< sets prevnp on the first step
 
   void init( Configf& configf ) override;
-  //virtual void restart( Restartf& restartf );
-  //virtual void dump( Dumpf& dumpf ) const;
  public:
   Dendrite() = delete;                // No default constructor allowed.
   Dendrite(const Dendrite&) = delete; // No copy constructor allowed.

@@ -49,7 +49,6 @@ class Population : public NF {
   virtual const std::vector<double>& Q( const Tau& tau ) const;
   double Qinit( Configf& configf ) const;
   virtual const std::vector<double>& V() const;
-  inline double operator[]( size_type node ) const;
   const std::vector<double>& glu() const;
   inline double sheetlength() const {
     return length;

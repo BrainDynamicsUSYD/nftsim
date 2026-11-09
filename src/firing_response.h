@@ -29,8 +29,6 @@ class FiringResponse;
 class FiringResponse : public NF {
  protected:
   void init( Configf& configf ) override;
-  //virtual void restart( Restartf& restartf );
-  //virtual void dump( Dumpf& dumpf ) const;
 
   std::string mode;
   double theta = 0.0; ///< Mean firing threshold.

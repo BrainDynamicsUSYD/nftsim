@@ -21,8 +21,6 @@
 class HarmonicIntegral : public virtual Propagator {
  protected:
   void init( Configf& configf ) override;
-  //virtual void restart( Restartf& restartf );
-  //virtual void dump( Dumpf& dumpf ) const;
 
   std::vector<double> oldp;
   std::vector<double> oldQ;

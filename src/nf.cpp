@@ -24,19 +24,6 @@ Configf& operator>> ( Configf& configf, NF& nf ) {
   return configf;
 }
 
-/*Restartf& operator>> ( Restartf& restartf, NF& nf )
-{
-  //nf.init( restartf );
-  nf.restart(restartf);
-  return restartf;
-}
-
-Dumpf& operator<< ( Dumpf& dumpf, const NF& nf )
-{
-  nf.dump(dumpf);
-  return dumpf;
-}*/
-
 NF::NF( size_type nodes, double deltat, size_type index )
   : nodes(nodes), deltat(deltat), index(index) {
 }

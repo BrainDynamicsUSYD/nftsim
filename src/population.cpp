@@ -124,8 +124,6 @@ void Population::add2Dendrite( size_type index, const Propagator& prepropag,
       firing_response = new BurstResponse(nodes, deltat, this->index);
     } else if( temp == "GlutamateResponse" ){
       firing_response = new GlutamateResponse(nodes, deltat, this->index);
-      //else if( temp == "FS" )
-      //firing_response = new FS(nodes,deltat,this->index);
     // END PUT YOUR FIRING_RESPONSE HERE
     } else {
       firing_response = new FiringResponse(nodes, deltat, this->index);
@@ -194,12 +192,7 @@ const vector<double>& Population::V() const {
 }
 
 void Population::growHistory( const Tau& tau ) {
-  /*if( settled ) {
-    cerr<<"Population is already settled, cannot resize firing history!"
-        <<endl;
-    exit(EXIT_FAILURE);
-  }*/
-
+  // Called from Propagator::init, after this population has settled.
   // A delay of m steps needs m+1 stored time-points (current plus m past).
   // This was `tau.max > qhistory.size()`, so a delay equal to the history
   // length was not grown and wrapped round to zero delay.

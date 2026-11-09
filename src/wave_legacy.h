@@ -27,8 +27,6 @@ class WaveLegacy : public Propagator {
   WaveLegacy(WaveLegacy&); // no copy constructor
  protected:
   void init( Configf& configf ) override;
-  //void restart( Restartf& restartf );
-  //void dump( Dumpf& dumpf ) const;
 
   StencilLegacy* oldp[2]; ///< keyring stencil to past phi, oldp[key]==most recent
   StencilLegacy* oldQ[2]; ///< keyring stencil to past Q, oldQ[key]==most recent

@@ -34,11 +34,8 @@ class Solver : public NF {
 
     std::vector<std::vector<double>::size_type> pre;  ///< presynaptic connection index for each population
     std::vector<std::vector<double>::size_type> post; ///< postsynaptic connection index for each population
-    std::vector<std::vector<double>::size_type> ndr;  ///< number of dendrites for each population
 
     void init( Configf& configf ) override;
-    //void restart( Restartf& restartf ) {}
-    //void dump( Dumpf& dumpf ) const;
     CntMat() : NF(0,0,0) {}
     ~CntMat() override = default;
     void step() override {}
@@ -57,8 +54,6 @@ class Solver : public NF {
     Array<Coupling>& couplings;
 
     void init( Configf& configf ) override;
-    //void restart( Restartf& restartf ) {}
-    //void dump( Dumpf& dumpf ) const {}
     Outputs( size_type nodes, double deltat, Dumpf& dumpf, CntMat& cnt,
              Array<Population>& pops, Array<Propagator>& propagators,
              Array<Coupling>& couplings )
@@ -87,8 +82,6 @@ class Solver : public NF {
   Array<Coupling> couplings;
  protected:
   void init( Configf& configf ) override;
-  //virtual void restart( Restartf& restartf );
-  //virtual void dump( Dumpf& dumpf ) const;
  public:
   Solver() = delete;              ///< No default constructor allowed.
   Solver(const Solver&) = delete; ///< No copy constructor allowed.

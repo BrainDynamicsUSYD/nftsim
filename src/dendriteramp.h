@@ -49,10 +49,6 @@ class DendriteRamp : public Dendrite {
                 const Propagator& prepropag, const Coupling& precouple );
   ~DendriteRamp() override;
   void step() override;
-
-  inline const std::vector<double>& V() const {
-    return (*de)[1]; //NOTE: Pretty sure this is an error: index=1 points to dv/dt, to get voltage, which is what I think is wanted here, it should be index=0
-  }
   void output( Output& output ) const override;
 };
 

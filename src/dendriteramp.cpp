@@ -43,8 +43,6 @@ void DendriteRamp::DendriteDE::rhs( const vector<double>& y, vector<double>& dyd
 
 void DendriteRamp::init( Configf& configf ) {
   Dendrite::init(configf);
-  //configf.param("alpha1",alpha1);
-  //configf.param("beta1",beta1);
   configf.param("alpha2",de->alpha2);
   configf.param("beta2",de->beta2);
   configf.param("t1",de->t1);
@@ -114,21 +112,10 @@ void DendriteRamp::ramp( double t ) {
   if (t > de->t1 && t <= de->t2) {  // ramp alpha, beta up
     de->alpha_vec[0] = alpha + (t - de->t1) * (de->alpha2-alpha) / (de->t2 - de->t1);
     de->beta_vec[0] = beta + (t - de->t1) * (de->beta2-beta) / (de->t2 - de->t1);
-  }
-//else if (time > de->t2 && time <= de->t3)  // alpha == alpha_0 + K
-// {
-//  de->alpha = de->alpha2;
-//  de->beta = de->beta2;
-//  }
-  else if (t > de->t3 && t <= de->t4) {  // ramp nu down
+  } else if (t > de->t3 && t <= de->t4) {  // ramp nu down
     de->alpha_vec[0] =  de->alpha2 - (t - de->t3) * (de->alpha2 - alpha) / (de->t4 - de->t3);
     de->beta_vec[0] = de->beta2 - (t - de->t3) * (de->beta2 - beta) /(de->t4 - de->t3);
   }
-//else if (time > t4)    // nu == nu_0
-//{
-//   de->alpha_vec[0] = alpha;
-//   de->beta_vec[0] = beta;
-//}
 }
 
 /**
@@ -158,6 +145,5 @@ void DendriteRamp::rampMidstep( double t ) {
 }
 
 void DendriteRamp::output( Output& output ) const {
-  // output("Dendrite",index+1,"V",V());
   output.singleNode("Dendrite", index+1,"beta",de->beta_vec);
 }

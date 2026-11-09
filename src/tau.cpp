@@ -51,7 +51,6 @@ void Tau::init( Configf& configf ) {
            << "    Tau: " << scientific << setprecision(full_precision)
                           << m[0]*deltat
            << endl;
-      //exit(EXIT_FAILURE);
     }
   } else if( temp.size() == nodes ) {
     m.resize(nodes);
@@ -63,12 +62,10 @@ void Tau::init( Configf& configf ) {
     }
     // Warn if any provided Tau values are not exact integer multiples of deltat
     if ( std::any_of(temp.begin(), temp.end(), [this](double x){return !is_step_multiple(x, deltat);}) ) {
-      //int full_precision = std::numeric_limits<double>::max_digits10;
       cerr << "WARNING: One or more values of Tau not divisible by Deltat!\n"
            << "  It is recommended that Tau be specified as an exact integer\n"
            << "  multiple of Deltat."
            << endl;
-      //exit(EXIT_FAILURE);
     }
   } else {
     cerr << "The number of Tau values has to be one or the same as the number of nodes." << endl;

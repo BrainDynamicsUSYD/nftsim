@@ -189,8 +189,6 @@ void Wave::step() {
 
   //If key==1, set it to 0; if key==0, set it to 1.
   key = static_cast<int>(key == 0);
-  //*oldp[key] = p;
-  //*oldQ[key] = prepop.Q(tau);
   stencil_oldp = p;
   stencil_oldQ = Qnew;
 }

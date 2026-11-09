@@ -21,16 +21,12 @@
 
 class BCM : public CaDP {
  protected:
-  //double t_BCM;
   struct BCMDE : public CaDE {
     double t_BCM = 0.0;
     double t_rec = 0.0;
     double gnmda_0 = 0.0;
     BCMDE( size_type nodes, double deltat ) : CaDE(nodes,deltat) {
       extend(1);
-    }
-    BCMDE( BCMDE& bcmDE ) : CaDE(bcmDE.nodes,bcmDE.deltat) {
-      *this = bcmDE;
     }
     BCMDE& operator= ( const BCMDE& bcmDE ) {
       this->nu_init = bcmDE.nu_init;

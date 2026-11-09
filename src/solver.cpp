@@ -110,7 +110,6 @@ void Solver::init( Configf& configf ) {
          << "    values of Deltat. A simple means of achieving this is to use\n"
          << "    powers of two for Deltat (eg. 2^-13 == 1.220703125e-04)."
          << endl;
-    //exit(EXIT_FAILURE);
   }
 
   steps = static_cast<int>(lround(tempf/deltat));
@@ -166,17 +165,8 @@ void Solver::init( Configf& configf ) {
 
   // construct populations
   for( vector<double>::size_type i=0; i<cnt.npop; i++ ) {
-    /*{
-      bool neuralpop = false; // marker of neural or Betz population
-      for( vector<int>::size_type j=0; j<cnt.ncnt; j++ )
-        if( cnt.pre[j] == i )
-          neuralpop = true; // a Betz cell is one without postsynaptic connections
-      if( neuralpop ) // neural population includes stimulus populations too*/
     pops.add( new Population(nodes,deltat,i) );
   }
-  /*else // Betz cell
-    pops.add( new Single(nodes,deltat,i) );
-  }*/
 
   for( vector<int>::size_type i=0; i<cnt.ncnt; i++ ) {
     string ptype = configf.find( label("Propagator ",i+1) +":" );
@@ -232,12 +222,6 @@ void Solver::init( Configf& configf ) {
     } else if(ctype=="Ramp") {
       couplings.add( new
                    CouplingRamp(nodes,deltat,i, *propagators[i], *pops[cnt.post[i]] ) );
-      //else if(ctype=="fCaP")
-      //couplings.add( new
-      //fCaP(nodes,deltat,i, *propagators[i], *pops[cnt.post[i]] ) );
-      //else if(ctype=="Epilepsy")
-      //couplings.add( new
-      //Epilepsy(nodes,deltat,i, *propagators[i], *pops[cnt.post[i]] ) );
     } else if(ctype=="DiffArctan") {
       couplings.add( new
                    CouplingDiffArctan(nodes,deltat,i, *propagators[i], *pops[cnt.post[i]], tempf ) );
@@ -293,9 +277,9 @@ void Solver::solve() {
 
 void Solver::step() {
   // step through populations
-  couplings.pstep();
-  pops.pstep();
-  propagators.pstep();
+  couplings.step();
+  pops.step();
+  propagators.step();
   outputs->step();
 }
 
@@ -321,12 +305,10 @@ void Solver::Outputs::init( Configf& configf ) {
   string temps;
   vector<double> temp_node;
   // read in nodes to output
-  //int position = tellg();
   if( configf.next("Node") ) {
     temp_node = configf.numbers();
   }
   if( temp_node.empty() ) {
-    //seekg(position,ios::beg);
     for( size_type i=0; i<nodes; i++ ) {
       node.push_back(i);
     }
@@ -355,7 +337,6 @@ void Solver::Outputs::init( Configf& configf ) {
            << "    values of Deltat. A simple means of achieving this is to use\n"
            << "    powers of two for Deltat (eg. 2^-13 == 1.220703125e-04)."
            << endl;
-      //exit(EXIT_FAILURE);
     }
     outputstart = static_cast<int>(lround(tempf/deltat));
   }
@@ -374,7 +355,6 @@ void Solver::Outputs::init( Configf& configf ) {
            << "    values of Deltat. A simple means of achieving this is to use\n"
            << "    powers of two for Deltat (eg. 2^-13 == 1.220703125e-04)."
            << endl;
-      //exit(EXIT_FAILURE);
     }
     outputinterval = static_cast<int>(lround(tempf/deltat));
   }

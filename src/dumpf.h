@@ -35,7 +35,7 @@ class Dumpf {
   Dumpf& operator<< ( std::ostream& (*pf)(std::ostream&) ); // for manupulators eg endl
 };
 
-std::ostream& septor( std::ostream& os ); ///< implements the separator "|" between fields
+std::ostream& septor( std::ostream& os ); ///< separator between groups of fields; prints nothing (it used to print "|")
 std::ostream& space( std::ostream& os );  ///< puts a space into dumpfile
 std::ostream& setw( std::ostream& os );
 

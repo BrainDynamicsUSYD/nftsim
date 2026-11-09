@@ -39,8 +39,6 @@ class Harmonic : public virtual Propagator {
 
  protected:
   void init( Configf& configf ) override;
-  //virtual void restart( Restartf& restartf );
-  //virtual void dump( Dumpf& dumpf ) const;
 
  public:
   Harmonic() = delete;                // No default constructor allowed.

@@ -22,7 +22,6 @@ class Array {
  public:
   using size_type = typename std::vector<T>::size_type;
   virtual void step(); ///< iteratively calls `step()` member of Array's elements.
-  virtual void pstep(); ///< OpenMP parallel version of `Array::step()` //NOTE: OpenMP pragma currently disabled.
 
   void add(T* t); ///< adds a pointer to a NF object to the Array.
   void add(std::vector<T*> t); ///< adds a vector of pointers to NF objects to the Array.
@@ -53,16 +52,6 @@ bool Array<T>::empty() const {
 
 template<class T>
 void Array<T>::step() {
-  for( size_type i=0; i<m.size(); i++ ) {
-    m[i]->step();
-  }
-}
-
-template<class T>
-void Array<T>::pstep() {
-  // Note pstep() is needed as well as step() because output must use
-  // step so that it is not parallelized
-  //#pragma omp parallel for num_threads(5)
   for( size_type i=0; i<m.size(); i++ ) {
     m[i]->step();
   }

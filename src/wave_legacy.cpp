@@ -120,8 +120,6 @@ void WaveLegacy::step() {
   }
 
   key = static_cast<int>(key == 0);
-  //*oldp[key] = p;
-  //*oldQ[key] = prepop.Q(tau);
   stencil_oldp = p;
   stencil_oldQ = prepop.Q(tau);
 }

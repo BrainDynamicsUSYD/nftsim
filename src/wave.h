@@ -25,8 +25,6 @@
 class Wave : public Propagator {
  protected:
   void init( Configf& configf ) override;
-  //void restart( Restartf& restartf );
-  //void dump( Dumpf& dumpf ) const;
 
   Stencil* oldp[2]; ///< keyring stencil to past phi, oldp[key]==most recent
   Stencil* oldQ[2]; ///< keyring stencil to past Q, oldQ[key]==most recent

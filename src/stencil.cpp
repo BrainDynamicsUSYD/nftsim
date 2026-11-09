@@ -75,26 +75,6 @@ const vector<double>& Stencil::operator= ( const vector<double>& field ) {
       *p2 = *p1;
     }
 
-    /*// copy centre square
-    for( int j=0; j< nodes/longside; j++ )
-      for( int i=0; i<longside; i++ )
-        m[(j+1)*(longside+2)+i+1] = field[j*longside+i];
-
-    // copy right edge into left boundary
-    for( int i=0; i<=nodes/longside; i++ )
-      m[i*(longside+2)] = field[i*longside-1];
-
-    // copy left edge into right boundary
-    for( int i=0; i<=nodes/longside; i++ )
-      m[(i+2)*(longside+2)-1] = field[i*longside];
-
-    // copy bottom edge into top boundary
-    for( int i=0; i<longside; i++ )
-      m[i+1] = field[nodes-longside+i];
-
-    // copy top edge into bottom boundary
-    for( int i=0; i<longside; i++ )
-      m[(nodes/longside+1)*(longside+2)+1+i] = field[i];*/
 
     // copy 4 corners
     m[0] = field[nodes-1];
@@ -168,12 +148,3 @@ int Stencil::get() const {
   return x+y*longside;
 }
 
-/*double Stencil::nw() const { return m[ ptr-longside-2-1]; }
-double Stencil::n () const { return m[ ptr-longside-2  ]; }
-double Stencil::ne() const { return m[ ptr-longside-2+1]; }
-double Stencil:: w() const { return m[ ptr           -1]; }
-double Stencil:: c() const { return m[ ptr             ]; }
-double Stencil:: e() const { return m[ ptr           +1]; }
-double Stencil::sw() const { return m[ ptr+longside+2-1]; }
-double Stencil::s () const { return m[ ptr+longside+2  ]; }
-double Stencil::se() const { return m[ ptr+longside+2+1]; }*/

@@ -25,8 +25,6 @@ class Coupling;
 class Coupling : public NF {
  protected:
   void init( Configf& configf ) override;
-  //virtual void restart( Restartf& restartf );
-  //virtual void dump( Dumpf& dumpf ) const;
 
   const Propagator& prepropag;
   const Population& postpop;

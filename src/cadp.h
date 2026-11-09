@@ -22,11 +22,8 @@
 
 class CaDP : public Coupling {
  protected:
-  double nu_init = 0.0;
   struct CaDE : public DE {
     double nu_init = 0.0;
-    //double alpha; // for fCaDE
-    //double alpha_beta; // for fCaDE, == alpha -beta
 
     double B = 0.0; ///< 1/standard deviation of glutamate binding
     double glu_0 = 0.0; ///< glutamate dose-response threshold
