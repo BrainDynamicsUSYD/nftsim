@@ -45,12 +45,19 @@ void CouplingRamp::init( Configf& configf ) {
   }
 
   nbp = tempt.size(); // number of breakpoints (equivalently tempn.size();)
-  ndnu = nbp - static_cast<size_type>(1); // number of delta nu.
-
-  deltanu.reserve(ndnu); // Reserve memory to avoid growing inside loop.
-  for ( size_type i=0; i<ndnu; i++ ) {
-    deltanu[i] = deltat*((tempn[i+1]-tempn[i])/(tempt[i+1]-tempt[i]));
+  if( nbp == 0 ) {
+    cerr<<" The nu and timepoints vectors of CouplingRamp must not be empty." <<endl;
+    exit(EXIT_FAILURE);
   }
+  for( size_type i=1; i<nbp; i++ ) {
+    if( !(tempt[i] > tempt[i-1]) ) {
+      cerr<<" The timepoints of CouplingRamp must be strictly increasing." <<endl;
+      exit(EXIT_FAILURE);
+    }
+  }
+  tpts = tempt;
+  nupts = tempn;
+
   // Assume that at t=0, nu=nu[0], ie, the segment between t=0 and timepoints[0] is constant.
   nu.assign(nodes, tempn[0]);
   pos = (tempn[0]>0)?1:-1;
@@ -59,20 +66,29 @@ void CouplingRamp::init( Configf& configf ) {
     P[i] = nu[i]*prepropag.phiinit(configf);
   }
 
+  steps = 0;
   time = 0.0;
-  for( size_type i=0; i<nbp; i++ ) {
-    tpts.push_back(tempt[i]);
-  }
 }
 
 void CouplingRamp::step() {
-  time += deltat;
-  for ( size_type j=1; j<nbp; j++ ) {
-    if( time >= tpts[j-1] && time < tpts[j] ) {
-      for( size_type i=0; i<nodes; i++ ) {
-        nu[i] += deltanu[j-1];
-      }
+  // Compute time from an integer step count to avoid accumulating rounding error.
+  steps++;
+  time = static_cast<double>(steps)*deltat;
+  // Piecewise-linear interpolation of nupts over tpts, constant outside [tpts[0], tpts[nbp-1]].
+  double nu_now;
+  if( time <= tpts[0] ) {
+    nu_now = nupts[0];
+  } else if( time >= tpts[nbp-1] ) {
+    nu_now = nupts[nbp-1];
+  } else {
+    size_type j = 1;
+    while( time > tpts[j] ) {
+      j++;
     }
+    nu_now = nupts[j-1] + (nupts[j]-nupts[j-1])*(time-tpts[j-1])/(tpts[j]-tpts[j-1]);
+  }
+  for( size_type i=0; i<nodes; i++ ) {
+    nu[i] = nu_now;
   }
   Coupling::step();
 }

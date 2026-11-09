@@ -25,10 +25,10 @@
 class CouplingRamp : public Coupling {
  protected:
   std::vector<double> tpts; ///< A vector of times [s] when breakpoints occur.
-  std::vector<double> deltanu; ///< A vector with slopes of segments between breakpoints.
+  std::vector<double> nupts; ///< Values of nu at the breakpoints tpts.
   double time = 0.0; ///< Time [s] used internally by CouplingRamp::step().
+  size_type steps = 0; ///< Number of steps taken; time = steps*deltat.
   size_type nbp = 0; ///< Number of breakpoints.
-  size_type ndnu = 0; ///< Number of segments, with an explicit deltanu.
  public:
   CouplingRamp() = delete;                    // No default constructor allowed.
   CouplingRamp(const CouplingRamp&) = delete; // No copy constructor allowed.
