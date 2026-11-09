@@ -1,16 +1,20 @@
-/** @file stencil_legacy.cpp
-  @brief StencilLegacy, square nine-point stencil definition.
+/** @file stencil_grid.cpp
+  @brief StencilGrid: a field on a 2-D grid with a one-node halo, shared by
+         Stencil and StencilLegacy.
 
-  As well as a constructor and destructor, this file defines the set() and
-  get() member functions and a custom copy assignment operator(=).
+  operator= copies a field into the interior of the padded grid and fills the
+  halo from the opposite edges (Torus; for Sphere the top and bottom halo rows
+  are the opposite edge rows reversed), so the neighbours of every interior
+  node can be read without wrapping indices.
 
-  @author Peter Drysdale, Felix Fung.
+  @author Peter Drysdale, Felix Fung,
 */
 
 // Main module header
-#include "stencil_legacy.h"  // StencilLegacy
+#include "stencil_grid.h" // StencilGrid;
 
 // C++ standard library headers
+#include <cstdlib>  // std::exit; EXIT_FAILURE;
 #include <iostream> // std::cerr; std::endl;
 #include <string>   // std::string;
 #include <vector>   // std::vector;
@@ -19,25 +23,26 @@ using std::endl;
 using std::string;
 using std::vector;
 
-StencilLegacy::StencilLegacy( int nodes, int longside, const string& boundary )
+StencilGrid::StencilGrid( int nodes, int longside, const string& boundary )
   : nodes(nodes), longside(longside), shortside(nodes/longside),
-    boundary(boundary), ptr(0) {
-  if( boundary != "Torus" && boundary != "Sphere" ) {
-    cerr<<"StencilLegacy boundary must be Torus or Sphere, not '"<<boundary<<"'."<<endl;
+    boundary(Boundary::Torus), ptr(0) {
+  if( boundary == "Sphere" ) {
+    this->boundary = Boundary::Sphere;
+  } else if( boundary != "Torus" ) {
+    cerr<<"Stencil boundary must be Torus or Sphere, not '"<<boundary<<"'."<<endl;
     if( boundary.compare(0, 11, "Nonperiodic") == 0 ) {
       cerr<<"Nonperiodic boundaries are not implemented for Wave propagators."<<endl;
     }
     exit(EXIT_FAILURE);
   }
-  m = new double[ (shortside+2)*(longside+2) ];
+  storage.resize( static_cast<vector<double>::size_type>((shortside+2)*(longside+2)) );
+  m = storage.data();
 }
 
-StencilLegacy::~StencilLegacy() {
-  delete[] m;
-}
+StencilGrid::~StencilGrid() = default;
 
-const vector<double>& StencilLegacy::operator= ( const vector<double>& field ) {
-  if( boundary == "Torus" ) {
+const vector<double>& StencilGrid::operator= ( const vector<double>& field ) {
+  if( boundary == Boundary::Torus ) {
     // copy centre square
     const double* __restrict__ p1 = &field[0];
     double* __restrict__ p2 = &m[3+longside];
@@ -82,7 +87,7 @@ const vector<double>& StencilLegacy::operator= ( const vector<double>& field ) {
     m[longside+1] = field[nodes-longside];
     m[(longside+2)*(nodes/longside+1)] = field[longside-1];
     m[(longside+2)*(nodes/longside+2)-1] = field[0];
-  } else if( boundary == "Sphere" ) {
+  } else { // Boundary::Sphere
     // copy centre square
     const double* __restrict__ p1 = &field[0];
     double* __restrict__ p2 = &m[3+longside];
@@ -121,7 +126,7 @@ const vector<double>& StencilLegacy::operator= ( const vector<double>& field ) {
       *p2 = *p1;
     }
 
-    // copy 4 corners NEEDS TO MODIFY SOMEWHERE!!
+    // copy 4 corners (the same as for a torus, which is not exact for a sphere)
     m[0] = field[nodes-1];
     m[longside+1] = field[nodes-longside];
     m[(longside+2)*(nodes/longside+1)] = field[longside-1];
@@ -132,18 +137,18 @@ const vector<double>& StencilLegacy::operator= ( const vector<double>& field ) {
   return field;
 }
 
-void StencilLegacy::set( int node ) const {
+void StencilGrid::set( int node ) const {
   if( node>=0 && node<nodes ) {
     int x = node%longside;
     int y = node/longside;
     ptr = (y+1)*(longside+2) +x+1;
   } else {
-    cerr<<"StencilLegacy node setting out of bound: "<<node<<endl;
+    cerr<<"Stencil node setting out of bound: "<<node<<endl;
     exit(EXIT_FAILURE);
   }
 }
 
-int StencilLegacy::get() const {
+int StencilGrid::get() const {
   int x = ptr%(longside+2)-1;
   int y = ptr/(longside+2)-1;
   return x+y*longside;
