@@ -19,6 +19,7 @@
 #include "propagator.h" // Propagator;
 
 // C++ standard library headers
+#include <cstdlib>   // std::atof; std::exit; EXIT_FAILURE;
 #include <iostream>  // std::cerr; std::endl;
 #include <string>    // std::string;
 #include <vector>    // std::vector;
@@ -68,24 +69,13 @@ void Coupling::step() {
 /** @brief Initial synaptic coupling strength, read from this coupling's section.
 
   Used (before the couplings are initialised) for a dendrite's steady-state
-  initial potential. This is the first value of `nu:` (Map, Matrix, Ramp,
-  CaDP, BCM and BCM-Spatial couplings), or `nu_min:` for a DiffArctan
-  coupling, which has no `nu:` and starts at nu_min. The search is confined
-  to this coupling's section; it used to run on to a later coupling's `nu:`.
+  initial potential. This is the first value of `nu:`, which Map, Matrix,
+  Ramp, CaDP, BCM and BCM-Spatial couplings require; CouplingDiffArctan
+  overrides it. The search is confined to this coupling's section; it used
+  to run on to a later coupling's `nu:`.
 */
 double Coupling::nuinit( Configf& configf ) const {
-  const string section = label("Coupling ",index+1);
-  string buffer = configf.lookup(section, "nu", false);
-  if( buffer.empty() ) {
-    buffer = configf.lookup(section, "nu_min", false);
-  }
-  if( buffer.empty() ) {
-    cerr << "Configuration error: section '" << section << "' has no 'nu:'"
-         << " (or 'nu_min:') entry to give the initial steady-state"
-         << " dendritic potential." << endl;
-    exit(EXIT_FAILURE);
-  }
-  return atof(buffer.c_str());
+  return atof(configf.lookup(label("Coupling ",index+1), "nu", true).c_str());
 }
 
 void Coupling::output( Output& output ) const {

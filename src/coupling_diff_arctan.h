@@ -34,6 +34,8 @@ class CouplingDiffArctan : public Coupling {
 
   void init( Configf& configf ) override;
   void step() override;
+  /// A DiffArctan coupling has no `nu:`; it starts at `nu_min:`.
+  double nuinit( Configf& configf ) const override;
   CouplingDiffArctan( size_type nodes, double deltat, size_type index,
                     const Propagator& prepropag, const Population& postpop, double tempf );
   ~CouplingDiffArctan() override;

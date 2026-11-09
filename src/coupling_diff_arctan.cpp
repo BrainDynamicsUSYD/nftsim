@@ -19,7 +19,7 @@
 
 // C++ standard library headers
 #include <cmath>     // std::atan; std::lround;
-#include <cstdlib>   // std::exit; EXIT_FAILURE;
+#include <cstdlib>   // std::atof; std::exit; EXIT_FAILURE;
 #include <iostream>  // std::cerr; std::endl;
 using std::atan;
 using std::lround;
@@ -69,6 +69,10 @@ void CouplingDiffArctan::init( Configf& configf ) {
   //initial time
   steps = 0;
   time = 0;
+}
+
+double CouplingDiffArctan::nuinit( Configf& configf ) const {
+  return atof(configf.lookup(label("Coupling ",index+1), "nu_min", true).c_str());
 }
 
 double CouplingDiffArctan::profile( double t ) const {

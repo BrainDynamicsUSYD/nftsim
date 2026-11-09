@@ -39,7 +39,8 @@ class Coupling : public NF {
           const Propagator& prepropag, const Population& postpop );
   ~Coupling() override;
   void step() override;
-  double nuinit( Configf& configf ) const;
+  /// Initial nu, read from this coupling's section (before init() is called).
+  virtual double nuinit( Configf& configf ) const;
   void output( Output& output ) const override;
   virtual const std::vector<double>& nuphi() const;
   inline double operator[]( size_type node ) const;
