@@ -118,8 +118,9 @@ void Solver::init( Configf& configf ) {
   // Optional time-stepping scheme, eg, "Integration: SecondOrder" after Deltat.
   // Default is the original scheme, which is first order in Deltat for the
   // coupled system. SecondOrder extrapolates each dendrite's input nu*phi
-  // linearly over a step and takes the delayed firing rate as linear over a
-  // step in Harmonic propagators.
+  // linearly over a step, takes the delayed firing rate as linear over a step
+  // in Harmonic propagators, and interpolates fractional delays Tau/Deltat
+  // instead of rounding them (see README.md, "Time-stepping scheme").
   string integration("Default");
   if( configf.optional("Integration", integration) ) {
     if( integration != "Default" && integration != "SecondOrder" ) {

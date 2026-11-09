@@ -37,6 +37,7 @@ class Population : public NF {
   double qinit = 0.0;  ///< initial firing rate
 
   void init( Configf& configf ) override;
+  const std::vector<double>& Qinterpolated( const Tau& tau ) const;
 
  public:
   Population() = delete;                   // No default constructor allowed.

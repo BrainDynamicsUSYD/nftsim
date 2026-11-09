@@ -51,10 +51,12 @@ class Propagator : public NF {
   ~Propagator() override;
   void step() override;
   double phiinit( Configf& configf ) const;
-  /// Select the second-order scheme (`Integration: SecondOrder`): Harmonic
-  /// takes the delayed Q as linear over each step. Call before init().
+  /// Select the second-order scheme (`Integration: SecondOrder`): fractional
+  /// delays are interpolated rather than rounded, and Harmonic takes the
+  /// delayed Q as linear over each step. Call before init().
   void useSecondOrder( bool so ) {
     second_order = so;
+    tau.useSecondOrder(so);
   }
   virtual const std::vector<double>& phi() const;
   inline double operator[]( size_type node ) const;

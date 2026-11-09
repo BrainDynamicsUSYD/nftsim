@@ -135,6 +135,9 @@ void Population::add2Dendrite( size_type index, const Propagator& prepropag,
 }
 
 const vector<double>& Population::Q( const Tau& tau) const {
+  if( !tau.frac.empty() ) { // fractional delays (Integration: SecondOrder only)
+    return Qinterpolated(tau);
+  }
   if( tau.m.size() == 1 ) { // homogeneous tau
     return qhistory[(qkey-tau.m[0]+qhistory.size())%qhistory.size()];
   }// tau.m.size() == nodes, inhomogeneous tau
@@ -145,6 +148,39 @@ const vector<double>& Population::Q( const Tau& tau) const {
   delayed.resize(nodes);
   for( size_type i=0; i<nodes; i++ ) {
     delayed[i] = qhistory[(qkey-tau.m[i]+qhistory.size())%qhistory.size()][i];
+  }
+  return delayed;
+}
+
+/**
+  @brief Firing rate delayed by a fractional number of steps, tau = (m+f)*deltat.
+
+  Interpolates linearly between the firing rates stored m and m+1 steps back:
+  Q(t - tau) ~= Q(t - m deltat) + f [Q(t - (m+1) deltat) - Q(t - m deltat)],
+  which is second-order accurate in deltat. Written as a + f(b - a) so that a
+  constant history is returned exactly.
+*/
+const vector<double>& Population::Qinterpolated( const Tau& tau ) const {
+  vector<double>& delayed = tau.delayed;
+  delayed.resize(nodes);
+  const size_type hs = qhistory.size();
+  if( tau.m.size() == 1 ) { // homogeneous tau
+    const double f = tau.frac[0];
+    const vector<double>& a = qhistory[(qkey+hs-tau.m[0])%hs];
+    const vector<double>& b = qhistory[(qkey+hs-tau.m[0]-1)%hs];
+    for( size_type i=0; i<nodes; i++ ) {
+      delayed[i] = a[i] + f*(b[i]-a[i]);
+    }
+  } else { // inhomogeneous tau
+    for( size_type i=0; i<nodes; i++ ) {
+      const double a = qhistory[(qkey+hs-tau.m[i])%hs][i];
+      if( tau.frac[i] > 0.0 ) {
+        const double b = qhistory[(qkey+hs-tau.m[i]-1)%hs][i];
+        delayed[i] = a + tau.frac[i]*(b-a);
+      } else {
+        delayed[i] = a;
+      }
+    }
   }
   return delayed;
 }
