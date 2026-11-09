@@ -17,7 +17,17 @@
 #include "output.h"    // Output;
 
 // C++ standard library headers
+#include <cmath>     // std::fabs; std::round;
 #include <vector>    // std::vector;
+
+/// True when time x is an integer number of time-steps deltat, to within
+/// 1e-6 of a step. Used to decide whether to warn about times that will be
+/// rounded to the nearest step (an exact floating-point test warns for almost
+/// every decimal value of deltat).
+inline bool is_step_multiple( double x, double deltat ) {
+  const double steps = x/deltat;
+  return std::fabs(steps - std::round(steps)) <= 1e-6;
+}
 
 class NF {
  protected:

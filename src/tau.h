@@ -23,6 +23,7 @@ class Population;
 class Tau : public NF {
   size_type max; ///< if tau is inhomogeneous, == biggest element
   std::vector<size_type> m; ///< tau values across nodes, size()==1 if homogeneous
+  mutable std::vector<double> delayed; ///< per-Tau buffer for Population::Q() when tau is inhomogeneous
  protected:
   void init( Configf& configf ) override;
  public:

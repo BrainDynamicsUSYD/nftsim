@@ -131,11 +131,15 @@ const vector<double>& Population::Q( const Tau& tau) const {
   if( tau.m.size() == 1 ) { // homogeneous tau
     return qhistory[(qkey-tau.m[0]+qhistory.size())%qhistory.size()];
   }// tau.m.size() == nodes, inhomogeneous tau
-  static vector<double> temp(nodes);
+  // Each Tau (one per propagator) owns its buffer. This used to be a function-
+  // local static shared by every population and propagator, so one call could
+  // overwrite the vector another caller still held a reference to.
+  vector<double>& delayed = tau.delayed;
+  delayed.resize(nodes);
   for( size_type i=0; i<nodes; i++ ) {
-    temp[i] = qhistory[(qkey-tau.m[i]+qhistory.size())%qhistory.size()][i];
+    delayed[i] = qhistory[(qkey-tau.m[i]+qhistory.size())%qhistory.size()][i];
   }
-  return temp;
+  return delayed;
 }
 
 const vector<double>& Population::V() const {
@@ -153,7 +157,10 @@ void Population::growHistory( const Tau& tau ) {
     exit(EXIT_FAILURE);
   }*/
 
-  if( tau.max > qhistory.size() ) {
+  // A delay of m steps needs m+1 stored time-points (current plus m past).
+  // This was `tau.max > qhistory.size()`, so a delay equal to the history
+  // length was not grown and wrapped round to zero delay.
+  if( tau.max >= qhistory.size() ) {
     qhistory.resize( tau.max+1 );
     for(auto & i : qhistory) {
       i.resize( nodes, qinit );
