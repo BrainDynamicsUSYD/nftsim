@@ -10,9 +10,12 @@
 #define NFTSIM_SRC_OUTPUT_H
 
 // C++ standard library headers
+#include <memory> // std::unique_ptr;
 #include <string> // std::string;
 #include <vector> // std::vector;
 
+/// One field to write to the output file: its column name and a reference
+/// to the vector that holds its current values.
 class Outlet {
  public:
   Outlet( std::string  name, const std::vector<double>& field, bool single_output );
@@ -21,8 +24,13 @@ class Outlet {
   const bool single_output;
 };
 
+/// Collects the Outlets an object offers for a requested output key.
+/** Solver::Outputs passes an Output to an object's output() member, which
+    calls operator() (or singleNode()) for each field it can write. Fields
+    whose name matches the key (or all fields, if the key is empty) become
+    Outlets, which Solver::Outputs then takes with release(). */
 class Output {
-  std::vector<Outlet*> outputs;
+  std::vector<std::unique_ptr<Outlet>> outputs;
   const std::string key;
   std::string m_prefix;
  public:
@@ -35,7 +43,8 @@ class Output {
   void singleNode( const std::string& object, std::vector<double>::size_type index,
                    const std::string& name, const std::vector<double>& field );
   bool empty() const;
-  operator std::vector<Outlet*>() const;
+  /// Hands over the collected Outlets, leaving this Output empty.
+  std::vector<std::unique_ptr<Outlet>> release();
 };
 
 #endif //NFTSIM_SRC_OUTPUT_H

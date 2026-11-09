@@ -16,6 +16,7 @@
 
 // C++ standard library headers
 #include <limits>   // std::numeric_limits<double>::infinity()
+#include <memory>   // std::unique_ptr;
 #include <vector>   // std::vector;
 
 class Timeseries : public NF {
@@ -24,7 +25,7 @@ class Timeseries : public NF {
   void init( Configf& configf ) override;
   double gridSpacing( Configf& configf ) const;
 
-  std::vector<Timeseries*> series;
+  std::vector<std::unique_ptr<Timeseries>> series; ///< Superimposed stimuli (only in the top-level Timeseries).
   std::vector<size_type> node;
   double inf = std::numeric_limits<double>::infinity(); ///< Infinity
   double t = 0.0;     ///< Current time relative to stimulus onset.
@@ -105,11 +106,8 @@ namespace TIMESERIES {
     double asd = 0.0;       ///< Amplitude spectral density.
     double mean = 0.0;      ///<
     double deltax = 0.0;    ///<
-    Random* random;
+    std::unique_ptr<Random> random;
     White(size_type nodes, double deltat, size_type index) : Timeseries(nodes, deltat, index) {}
-    ~White() override {
-      delete random;
-    }
     void init( Configf& configf ) override;
     void fire( std::vector<double>& Q ) const override;
   };
@@ -119,11 +117,8 @@ namespace TIMESERIES {
     double stddev = 0.0;      ///<
     double asd    = 0.0;      ///< Amplitude spectral density.
     double mean   = 0.0;      ///<
-    Random* random;
+    std::unique_ptr<Random> random;
     WhiteCoherent(size_type nodes, double deltat, size_type index) : Timeseries(nodes, deltat, index) {}
-    ~WhiteCoherent() override {
-      delete random;
-    }
     void init( Configf& configf ) override;
     void fire( std::vector<double>& Q ) const override;
   };

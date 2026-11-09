@@ -18,6 +18,7 @@
 
 // Other nftsim headers
 #include "configf.h"         // Configf;
+#include "make_unique.h" // nftsim::make_unique;
 #include "population.h"      // Population;
 #include "stencil_legacy.h"  // StencilLegacy;
 
@@ -88,18 +89,13 @@ WaveLegacy::WaveLegacy( size_type nodes, double deltat, size_type index, Populat
             Population& postpop, size_type longside, string topology )
   : Propagator(nodes,deltat,index,prepop,postpop,longside,topology),
     key(0) {
-  oldp[0] = new StencilLegacy(nodes,longside,topology);
-  oldp[1] = new StencilLegacy(nodes,longside,topology);
-  oldQ[0] = new StencilLegacy(nodes,longside,topology);
-  oldQ[1] = new StencilLegacy(nodes,longside,topology);
+  for( int k=0; k<2; k++ ) {
+    oldp[k] = nftsim::make_unique<StencilLegacy>(nodes,longside,topology);
+    oldQ[k] = nftsim::make_unique<StencilLegacy>(nodes,longside,topology);
+  }
 }
 
-WaveLegacy::~WaveLegacy() {
-  delete oldp[0];
-  delete oldp[1];
-  delete oldQ[0];
-  delete oldQ[1];
-}
+WaveLegacy::~WaveLegacy() = default;
 
 void WaveLegacy::step() {
   StencilLegacy& stencilp = *oldp[key];

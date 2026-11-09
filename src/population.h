@@ -23,11 +23,12 @@ class Population;
 #include "timeseries.h" // Timeseries;
 
 // C++ standard library headers
+#include <memory> // std::unique_ptr;
 #include <vector> // std::vector;
 
 class Population : public NF {
-  FiringResponse* firing_response;   ///< firing_response for neural population
-  Timeseries* timeseries; ///< timeseries for stimulus
+  std::unique_ptr<FiringResponse> firing_response; ///< firing response of a neural population (null for a stimulus)
+  std::unique_ptr<Timeseries> timeseries; ///< stimulus of a stimulus population (null for a neural one)
  protected:
   std::vector< std::vector<double> >::size_type qkey; ///< index to the present q in qhistory
   std::vector< std::vector<double> > qhistory; ///< keyring of Q

@@ -25,6 +25,7 @@
 #include "harmonic.h"      // Harmonic;
 #include "harmonic_integral.h" // HarmonicIntegral;
 #include "long_coupling.h" // LongCoupling;
+#include "make_unique.h"   // nftsim::make_unique;
 #include "output.h"        // Output; Outlet;
 #include "population.h"    // Population;
 #include "wave.h"          // Wave;
@@ -90,9 +91,7 @@ Solver::Solver( Dumpf& dumpf )
   : NF(0,0,0), dumpf(dumpf), cnt() {
 }
 
-Solver::~Solver() {
-  delete outputs;
-}
+Solver::~Solver() = default;
 
 void Solver::init( Configf& configf ) {
   // Anything before the first ':' is ignored as comment
@@ -165,36 +164,29 @@ void Solver::init( Configf& configf ) {
 
   // construct populations
   for( vector<double>::size_type i=0; i<cnt.npop; i++ ) {
-    pops.add( new Population(nodes,deltat,i) );
+    pops.add( nftsim::make_unique<Population>(nodes,deltat,i) );
   }
 
   for( vector<int>::size_type i=0; i<cnt.ncnt; i++ ) {
     string ptype = configf.find( label("Propagator ",i+1) +":" );
     // PUT YOUR PROPAGATORS HERE
     if(ptype=="Map") {
-      propagators.add( new
-                   Propagator(nodes,deltat,i, *pops[cnt.pre[i]], *pops[cnt.post[i]], longside, topology));
+      propagators.add( nftsim::make_unique<Propagator>(nodes,deltat,i, *pops[cnt.pre[i]], *pops[cnt.post[i]], longside, topology));
     } else if(ptype=="Wave") {
       if( nodes==1 ) {
-        propagators.add( new
-                     Harmonic(nodes,deltat,i, *pops[cnt.pre[i]], *pops[cnt.post[i]], longside, topology));
+        propagators.add( nftsim::make_unique<Harmonic>(nodes,deltat,i, *pops[cnt.pre[i]], *pops[cnt.post[i]], longside, topology));
       } else {
-        propagators.add( new
-                     Wave(nodes,deltat,i, *pops[cnt.pre[i]], *pops[cnt.post[i]], longside, topology));
+        propagators.add( nftsim::make_unique<Wave>(nodes,deltat,i, *pops[cnt.pre[i]], *pops[cnt.post[i]], longside, topology));
       }
     } else if(ptype=="Harmonic") {
-      propagators.add( new
-                   Harmonic(nodes,deltat,i, *pops[cnt.pre[i]], *pops[cnt.post[i]], longside, topology));
+      propagators.add( nftsim::make_unique<Harmonic>(nodes,deltat,i, *pops[cnt.pre[i]], *pops[cnt.post[i]], longside, topology));
     } else if(ptype=="HarmonicIntegral") {
-      propagators.add( new
-                   HarmonicIntegral(nodes,deltat,i, *pops[cnt.pre[i]], *pops[cnt.post[i]], longside, topology));
+      propagators.add( nftsim::make_unique<HarmonicIntegral>(nodes,deltat,i, *pops[cnt.pre[i]], *pops[cnt.post[i]], longside, topology));
     } else if(ptype=="WaveLegacy") {
       if( nodes==1 ) {
-        propagators.add( new
-                     Harmonic(nodes,deltat,i, *pops[cnt.pre[i]], *pops[cnt.post[i]], longside, topology));
+        propagators.add( nftsim::make_unique<Harmonic>(nodes,deltat,i, *pops[cnt.pre[i]], *pops[cnt.post[i]], longside, topology));
       } else {
-        propagators.add( new
-                     WaveLegacy(nodes,deltat,i, *pops[cnt.pre[i]], *pops[cnt.post[i]], longside, topology));
+        propagators.add( nftsim::make_unique<WaveLegacy>(nodes,deltat,i, *pops[cnt.pre[i]], *pops[cnt.post[i]], longside, topology));
       }
     } else {
       cerr<<"Invalid propagator type '"<<ptype<<"'."<<endl;
@@ -205,26 +197,19 @@ void Solver::init( Configf& configf ) {
     string ctype = configf.find( label("Coupling ",i+1) +":" );
     // PUT YOUR COUPLINGS HERE
     if(ctype=="Map") {
-      couplings.add( new
-                   Coupling(nodes,deltat,i, *propagators[i], *pops[cnt.post[i]] ) );
+      couplings.add( nftsim::make_unique<Coupling>(nodes,deltat,i, *propagators[i], *pops[cnt.post[i]] ) );
     } else if(ctype=="Matrix") {
-      couplings.add( new
-                   LongCoupling(nodes,deltat,i, *propagators[i], *pops[cnt.post[i]] ) );
+      couplings.add( nftsim::make_unique<LongCoupling>(nodes,deltat,i, *propagators[i], *pops[cnt.post[i]] ) );
     } else if(ctype=="CaDP") {
-      couplings.add( new
-                   CaDP(nodes,deltat,i, *propagators[i], *pops[cnt.post[i]] ) );
+      couplings.add( nftsim::make_unique<CaDP>(nodes,deltat,i, *propagators[i], *pops[cnt.post[i]] ) );
     } else if(ctype=="BCM") {
-      couplings.add( new
-                   BCM(nodes,deltat,i, *propagators[i], *pops[cnt.post[i]] ) );
+      couplings.add( nftsim::make_unique<BCM>(nodes,deltat,i, *propagators[i], *pops[cnt.post[i]] ) );
     } else if(ctype=="BCM-Spatial") {
-      couplings.add( new
-                   BCMLong(nodes,deltat,i, *propagators[i], *pops[cnt.post[i]] ) );
+      couplings.add( nftsim::make_unique<BCMLong>(nodes,deltat,i, *propagators[i], *pops[cnt.post[i]] ) );
     } else if(ctype=="Ramp") {
-      couplings.add( new
-                   CouplingRamp(nodes,deltat,i, *propagators[i], *pops[cnt.post[i]] ) );
+      couplings.add( nftsim::make_unique<CouplingRamp>(nodes,deltat,i, *propagators[i], *pops[cnt.post[i]] ) );
     } else if(ctype=="DiffArctan") {
-      couplings.add( new
-                   CouplingDiffArctan(nodes,deltat,i, *propagators[i], *pops[cnt.post[i]], tempf ) );
+      couplings.add( nftsim::make_unique<CouplingDiffArctan>(nodes,deltat,i, *propagators[i], *pops[cnt.post[i]], tempf ) );
     } else {
       cerr<<"Invalid coupling type '"<<ctype<<"'."<<endl;
       exit(EXIT_FAILURE);
@@ -265,7 +250,7 @@ void Solver::init( Configf& configf ) {
   // initialize outputs
   configf.go2("Output");
   configf.next("Output");
-  outputs = new Outputs(nodes,deltat,dumpf,cnt,pops,propagators,couplings);
+  outputs = nftsim::make_unique<Outputs>(nodes,deltat,dumpf,cnt,pops,propagators,couplings);
   outputs->init(configf);
 }
 

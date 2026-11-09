@@ -22,6 +22,7 @@
 
 // Other nftsim headers
 #include "configf.h"    // Configf;
+#include "make_unique.h" // nftsim::make_unique;
 #include "random.h"     // Random;
 
 // C++ standard library headers
@@ -87,23 +88,23 @@ void Timeseries::init( Configf& configf ) {
 
     // PUT YOUR TIMEFUNCTION HERE
     if( mode[0]=="Const" ) {
-      series.push_back( new TIMESERIES::Const(nodes, deltat, index) );
+      series.push_back( nftsim::make_unique<TIMESERIES::Const>(nodes, deltat, index) );
     } else if( mode[0]=="PulseRect" ) {
-      series.push_back( new TIMESERIES::PulseRect(nodes, deltat, index) );
+      series.push_back( nftsim::make_unique<TIMESERIES::PulseRect>(nodes, deltat, index) );
     } else if( mode[0]=="PulseSine" ) {
-      series.push_back( new TIMESERIES::PulseSine(nodes, deltat, index) );
+      series.push_back( nftsim::make_unique<TIMESERIES::PulseSine>(nodes, deltat, index) );
     } else if( mode[0]=="PulseSigmoid" ) {
-      series.push_back( new TIMESERIES::PulseSigmoid(nodes, deltat, index) );
+      series.push_back( nftsim::make_unique<TIMESERIES::PulseSigmoid>(nodes, deltat, index) );
     } else if( mode[0]=="Sine" ) {
-      series.push_back( new TIMESERIES::Sine(nodes, deltat, index) );
+      series.push_back( nftsim::make_unique<TIMESERIES::Sine>(nodes, deltat, index) );
     } else if( mode[0]=="White" ) {
-      series.push_back( new TIMESERIES::White(nodes, deltat, index) );
+      series.push_back( nftsim::make_unique<TIMESERIES::White>(nodes, deltat, index) );
     } else if( mode[0]=="WhiteCoherent" ) {
-      series.push_back( new TIMESERIES::WhiteCoherent(nodes, deltat, index) );
+      series.push_back( nftsim::make_unique<TIMESERIES::WhiteCoherent>(nodes, deltat, index) );
     } else if( mode[0]=="PAS" ) {
-      series.push_back( new TIMESERIES::PAS(nodes, deltat, index) );
+      series.push_back( nftsim::make_unique<TIMESERIES::PAS>(nodes, deltat, index) );
     } else if( mode[0]=="Burst" ) {
-      series.push_back( new TIMESERIES::Burst(nodes, deltat, index) );
+      series.push_back( nftsim::make_unique<TIMESERIES::Burst>(nodes, deltat, index) );
     } else {
       cerr<<"Stimulus mode "<<mode[0].c_str()<<" not found"<<endl;
       exit(EXIT_FAILURE);
@@ -128,11 +129,7 @@ Timeseries::Timeseries( size_type nodes, double deltat, size_type index )
   : NF(nodes,deltat,index) {
 }
 
-Timeseries::~Timeseries() {
-  for(auto & serie : series) {
-    delete serie;
-  }
-}
+Timeseries::~Timeseries() = default;
 
 /** @brief Spacing between grid nodes, matching that used by the Wave propagator.
 
@@ -153,7 +150,7 @@ double Timeseries::gridSpacing( Configf& configf ) const {
 void Timeseries::fire( vector<double>& Q ) const {
   vector<double> temp(nodes, 0.0);
   Q.assign(nodes, 0.0); // Zero the Q vector we were provided.
-  for(auto serie : series) { // for each timeseries
+  for(const auto& serie : series) { // for each timeseries
     // if the timeseries is active
     if( (serie->t >= 0.0) && (serie->t < serie->duration) ) {
       temp.assign(nodes, 0.0); // re-zero temp vector.
@@ -395,9 +392,9 @@ namespace TIMESERIES {
 
     }
     if(configf.optional("Ranseed", seed)) {
-      random = new Random(seed, mean, stddev);
+      random = nftsim::make_unique<Random>(seed, mean, stddev);
     } else {
-      random = new Random(mean, stddev);
+      random = nftsim::make_unique<Random>(mean, stddev);
     }
   }
 
@@ -421,9 +418,9 @@ namespace TIMESERIES {
       stddev = sqrt(2.0*4.0*pow(M_PI,3.0)*pow(asd,2)/deltat/pow(deltax,2));
     }
     if(configf.optional("Ranseed", seed)) {
-      random = new Random(seed, mean, stddev);
+      random = nftsim::make_unique<Random>(seed, mean, stddev);
     } else {
-      random = new Random(mean, stddev);
+      random = nftsim::make_unique<Random>(mean, stddev);
     }
   }
 

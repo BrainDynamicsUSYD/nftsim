@@ -21,6 +21,7 @@
 #include "dendrite.h"   // Dendrite;
 #include "dendrite_integral.h" // DendriteIntegral;
 #include "dendriteramp.h"      // DendriteRamp;
+#include "make_unique.h"       // nftsim::make_unique;
 #include "output.h"     // Output;
 #include "propagator.h" // Propagator;
 
@@ -90,12 +91,12 @@ void FiringResponse::add2Dendrite( size_type index, const Propagator& prepropag,
   dendrite_index.push_back(index);
   // PUT YOUR DENDRITE HERE
   if( temp == "Ramp" ) {
-    dendrites.add( new DendriteRamp(nodes, deltat, index, prepropag, precouple) );
+    dendrites.add( nftsim::make_unique<DendriteRamp>(nodes, deltat, index, prepropag, precouple) );
   } else if ( temp == "Integral" ) {
-    dendrites.add( new DendriteIntegral(nodes, deltat, index, prepropag, precouple) );
+    dendrites.add( nftsim::make_unique<DendriteIntegral>(nodes, deltat, index, prepropag, precouple) );
   // END PUT YOUR DENDRITE HERE
   } else {
-    dendrites.add( new Dendrite(nodes, deltat, index, prepropag, precouple) );
+    dendrites.add( nftsim::make_unique<Dendrite>(nodes, deltat, index, prepropag, precouple) );
   }
 }
 

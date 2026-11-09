@@ -40,12 +40,13 @@
 // C++ standard library headers
 #include <fstream>  // std::ifstream; tellg; seekg;
 #include <iostream> // std::endl; std::cerr; std::streamsize; std::ios::beg;
+#include <memory>   // std::unique_ptr;
 #include <string>   // std::string;
 #include <vector>   // std::vector;
 
 
 class Configf : public std::ifstream { // derived class
-  char* buffer;
+  std::unique_ptr<char[]> buffer; ///< Scratch space as large as the file (plus a terminating '\0').
   std::streamsize filesize;
   std::string content;       ///< Whole file, as read on construction.
   size_t content_start;      ///< Offset of the end of the leading comment.
@@ -136,12 +137,12 @@ template<class T> void Configf::param(const std::string& param, T& ret, int deli
   } else {
     std::streamsize position = tellg();
     seekg(0,std::ios::beg);
-    read(buffer,position);
+    read(buffer.get(),position);
     buffer[position] = '\0';
     std::cerr << "Unable to find next input variable: "
          << param << std::endl
          << "From configuration file:" << std::endl
-         << buffer << std::endl;
+         << buffer.get() << std::endl;
     size_t global_begin;
     size_t global_end;
     sectionBounds("", global_begin, global_end);
@@ -158,13 +159,13 @@ template<class T> void Configf::param(const std::string& param, T& ret, int deli
 template<> inline void Configf::param<std::string>(const std::string& param,
                                                    std::string& ret, int delim ) {
   if( next(param,delim) ) {
-    *this >> buffer;
+    *this >> buffer.get();
     if( !good() ) {
       std::cerr << "Input variable '" << param << "' is given a wrong type."
            << std::endl;
       exit(EXIT_FAILURE);
     }
-    ret = std::string(buffer);
+    ret = std::string(buffer.get());
   } else {
     std::cerr << "Unable to find next input variable: " << param << std::endl;
     printContext( static_cast<size_t>(tellg()) );

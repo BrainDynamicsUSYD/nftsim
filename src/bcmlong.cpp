@@ -12,6 +12,7 @@
 // Other nftsim headers
 #include "configf.h"    // Configf;
 #include "de.h"         // RK4;
+#include "make_unique.h" // nftsim::make_unique;
 #include "output.h"     // Output;
 
 // C++ standard library headers
@@ -72,8 +73,8 @@ BCMLong::BCMLong( size_type nodes, double deltat, size_type index,
                   const Propagator& prepropag, const Population& postpop )
   : BCM(nodes,deltat,index,prepropag,postpop,nullptr), de_2d(nodes), rk4_2d(nodes) {
   for( size_type i=0; i<nodes; i++ ) {
-    de_2d [i].reset(new BCMDE(nodes,deltat));
-    rk4_2d[i].reset(new RK4(*de_2d[i]));
+    de_2d [i] = nftsim::make_unique<BCMDE>(nodes,deltat);
+    rk4_2d[i] = nftsim::make_unique<RK4>(*de_2d[i]);
   }
 }
 

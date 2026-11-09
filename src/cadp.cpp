@@ -11,6 +11,7 @@
 
 // Other nftsim headers
 #include "configf.h"    // Configf;
+#include "make_unique.h" // nftsim::make_unique;
 #include "output.h"     // Output;
 #include "population.h" // Population;
 #include "propagator.h" // Propagator;
@@ -104,7 +105,7 @@ void CaDP::CaDE::init( Configf& configf ) {
 CaDP::CaDP( size_type nodes, double deltat, size_type index,
             const Propagator& prepropag, const Population& postpop )
   : CaDP(nodes, deltat, index, prepropag, postpop,
-         std::unique_ptr<CaDE>(new CaDE(nodes,deltat))) {
+         nftsim::make_unique<CaDE>(nodes,deltat)) {
 }
 
 CaDP::CaDP( size_type nodes, double deltat, size_type index,
@@ -112,7 +113,7 @@ CaDP::CaDP( size_type nodes, double deltat, size_type index,
             std::unique_ptr<CaDE> de )
   : Coupling(nodes,deltat,index,prepropag,postpop), de(std::move(de)) {
   if( this->de ) {
-    rk4.reset(new RK4(*this->de));
+    rk4 = nftsim::make_unique<RK4>(*this->de);
   }
 }
 

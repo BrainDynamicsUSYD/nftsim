@@ -14,6 +14,7 @@
 #include "configf.h"    // Configf;
 #include "coupling.h"   // Coupling;
 #include "glutamate_response.h"  // GlutamateResponse;
+#include "make_unique.h" // nftsim::make_unique;
 #include "output.h"     // Output;
 #include "propagator.h" // Propagator;
 #include "firing_response.h"  // FiringResponse;
@@ -41,7 +42,7 @@ void Population::init( Configf& configf ) {
     configf.param("Q", temp);
     configf.param( "Firing", *firing_response );
   } else { // stimulus population
-    timeseries = new Timeseries(nodes, deltat, index);
+    timeseries = nftsim::make_unique<Timeseries>(nodes, deltat, index);
     configf.param( "Stimulus", *timeseries );
   }
   settled = true;
@@ -49,17 +50,10 @@ void Population::init( Configf& configf ) {
 
 Population::Population( size_type nodes, double deltat, size_type index )
   : NF(nodes,deltat,index),
-    firing_response(nullptr), timeseries(nullptr), qkey(0), settled(false) {
+    qkey(0), settled(false) {
 }
 
-Population::~Population() {
-  if(firing_response != nullptr) {
-    delete firing_response;
-  }
-  if(timeseries != nullptr) {
-    delete timeseries;
-  }
-}
+Population::~Population() = default;
 
 void Population::step() {
   // move pointer to keyring
@@ -97,7 +91,7 @@ double Population::Qinit( Configf& configf ) const {
 
 const vector<double>& Population::glu() const {
   if( firing_response != nullptr ) {
-    auto local_qr = dynamic_cast<GlutamateResponse*>(firing_response);
+    auto local_qr = dynamic_cast<GlutamateResponse*>(firing_response.get());
     if( local_qr == nullptr ){
       cerr<<"Trying to access glu of a non-GlutatmateResponse population."<<endl;
       exit(EXIT_FAILURE);
@@ -121,12 +115,12 @@ void Population::add2Dendrite( size_type index, const Propagator& prepropag,
     string temp(configf.find( label("Population ", this->index+1)+"*Firing:" ));
     // PUT YOUR FIRING_RESPONSE HERE
     if( temp == "Bursting" ) {
-      firing_response = new BurstResponse(nodes, deltat, this->index);
+      firing_response = nftsim::make_unique<BurstResponse>(nodes, deltat, this->index);
     } else if( temp == "GlutamateResponse" ){
-      firing_response = new GlutamateResponse(nodes, deltat, this->index);
+      firing_response = nftsim::make_unique<GlutamateResponse>(nodes, deltat, this->index);
     // END PUT YOUR FIRING_RESPONSE HERE
     } else {
-      firing_response = new FiringResponse(nodes, deltat, this->index);
+      firing_response = nftsim::make_unique<FiringResponse>(nodes, deltat, this->index);
     }
   }
   firing_response->add2Dendrite( index, prepropag, precouple, configf );

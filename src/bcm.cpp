@@ -11,7 +11,7 @@
 
 // Other nftsim headers
 #include "configf.h"    // Configf;
-#include "de.h"         // RK4;
+#include "make_unique.h" // nftsim::make_unique;
 
 // C++ standard library headers
 #include <memory>   // std::unique_ptr;
@@ -51,7 +51,7 @@ void BCM::BCMDE::init( Configf& configf ) {
 BCM::BCM( size_type nodes, double deltat, size_type index,
           const Propagator& prepropag, const Population& postpop )
   : BCM(nodes, deltat, index, prepropag, postpop,
-        std::unique_ptr<CaDE>(new BCMDE(nodes,deltat))) {
+        nftsim::make_unique<BCMDE>(nodes,deltat)) {
 }
 
 BCM::BCM( size_type nodes, double deltat, size_type index,

@@ -33,9 +33,9 @@ Dumpf::~Dumpf() {
 void Dumpf::outputConfig( Configf& configf ) {
   int sp = configf.tellg();
   configf.seekg(0,std::ios::beg);
-  configf.read(configf.buffer,configf.filesize);
+  configf.read(configf.buffer.get(),configf.filesize);
   configf.seekg(sp);
-  s->write(configf.buffer,configf.filesize);
+  s->write(configf.buffer.get(),configf.filesize);
   *this<<endl<<"============================================="<<endl<<endl;
 }
 

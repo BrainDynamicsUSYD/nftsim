@@ -20,14 +20,15 @@
 #include "stencil.h"    // Stencil;
 
 // C++ standard library headers
+#include <memory>  // std::unique_ptr;
 #include <string>  // std::string
 
 class Wave : public Propagator {
  protected:
   void init( Configf& configf ) override;
 
-  Stencil* oldp[2]; ///< keyring stencil to past phi, oldp[key]==most recent
-  Stencil* oldQ[2]; ///< keyring stencil to past Q, oldQ[key]==most recent
+  std::unique_ptr<Stencil> oldp[2]; ///< keyring stencil to past phi, oldp[key]==most recent
+  std::unique_ptr<Stencil> oldQ[2]; ///< keyring stencil to past Q, oldQ[key]==most recent
   int key;          ///< used as an index into a length 2 cyclical history of phi and Q.
 
   // variables that are initialized once only

@@ -20,6 +20,7 @@
 #include "stencil_legacy.h"  // StencilLegacy;
 
 // C++ standard library headers
+#include <memory>  // std::unique_ptr;
 #include <string>  // std::string
 
 class WaveLegacy : public Propagator {
@@ -28,8 +29,8 @@ class WaveLegacy : public Propagator {
  protected:
   void init( Configf& configf ) override;
 
-  StencilLegacy* oldp[2]; ///< keyring stencil to past phi, oldp[key]==most recent
-  StencilLegacy* oldQ[2]; ///< keyring stencil to past Q, oldQ[key]==most recent
+  std::unique_ptr<StencilLegacy> oldp[2]; ///< keyring stencil to past phi, oldp[key]==most recent
+  std::unique_ptr<StencilLegacy> oldQ[2]; ///< keyring stencil to past Q, oldQ[key]==most recent
   int key;
 
   // variables that's initialized once only
