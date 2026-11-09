@@ -1,7 +1,11 @@
 /** @file bcm.h
-  @brief A brief, one sentence description.
+  @brief Declares BCM, calcium-dependent plasticity with BCM metaplasticity.
 
-  A more detailed multiline description...
+  BCM extends CaDP (`Coupling N: BCM ...`) with metaplasticity (Fung and
+  Robinson): the NMDA-receptor gain gNMDA becomes a ninth state variable,
+  which changes at the rate -gNMDA (nutilde/nu - 1)/t_BCM (so it falls while
+  the target strength nutilde exceeds nu) and relaxes back to its initial
+  value with time-scale t_rec. The equations are in BCM::BCMDE::rhs().
 
   @author Peter Drysdale, Felix Fung,
 */

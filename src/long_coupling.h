@@ -1,7 +1,10 @@
 /** @file long_coupling.h
-  @brief A brief, one sentence description.
+  @brief Declares LongCoupling (`Coupling N: Matrix`), a coupling between every pair of nodes.
 
-  A more detailed multiline description...
+  LongCoupling gives each pair of nodes its own synaptic strength, so the
+  input to node j is P[j] = sum_i nu[i][j] phi[i], with nu given as one value
+  or a Nodes x Nodes matrix. It supports spatially nonuniform connectivity
+  and costs O(Nodes^2) per step.
 
   @author Peter Drysdale, Felix Fung,
 */

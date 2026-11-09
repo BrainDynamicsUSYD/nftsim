@@ -1,7 +1,9 @@
 /** @file cadp.cpp
-  @brief A brief, one sentence description.
+  @brief Defines CaDP, a coupling whose strength follows calcium-dependent plasticity.
 
-  A more detailed multiline description...
+  CaDP::step() sets the glutamate binding B and the voltage dependence H of
+  each node, updates the potentiation and depression rates, integrates the
+  state one step with RK4 and sets P = nu*phi.
 
   @author Peter Drysdale, Felix Fung,
 */

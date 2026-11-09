@@ -1,7 +1,5 @@
 /** @file population.cpp
-  @brief A brief, one sentence description.
-
-  A more detailed multiline description...
+  @brief Defines Population, a neural or stimulus population and its firing-rate history.
 
   @author Peter Drysdale, Felix Fung,
 */

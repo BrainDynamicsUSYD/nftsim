@@ -1,7 +1,8 @@
 /** @file output.cpp
-  @brief A brief, one sentence description.
+  @brief Defines Output and Outlet, which collect the fields an object can write to the output file.
 
-  A more detailed multiline description...
+  Output names each field as Object.Index.Name (eg Pop.1.V), with a prefix
+  set by prefix() or the four-argument operator().
 
   @author Peter Drysdale, Felix Fung,
 */

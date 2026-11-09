@@ -1,7 +1,5 @@
 /** @file dumpf.cpp
-  @brief A brief, one sentence description.
-
-  A more detailed multiline description...
+  @brief Defines Dumpf, which writes nftsim's output file (or standard output).
 
   @author Peter Drysdale, Felix Fung,
 */

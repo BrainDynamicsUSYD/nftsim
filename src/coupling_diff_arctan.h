@@ -1,9 +1,10 @@
 /** @file coupling_diff_arctan.h
-  @brief A new Coupling class, where nu_ab follows a smooth function.
+  @brief Declares CouplingDiffArctan (`Coupling N: DiffArctan`), a coupling whose nu rises and falls smoothly.
 
-  The smooth variation of nu_ab is defined by the difference of
-  two arctangent functions.
-
+  nu follows the difference of two arctangents,
+  atan((t - t_half_up)/delta) - atan((t - t_half_down)/delta), scaled so
+  that it spans [nu_min, nu_max] over the simulated time: it rises around
+  t_half_up and falls around t_half_down, each over a time of about delta.
 
   @author Farah Deeba, Paula Sanz-Leon, Sahand Assadzadeh
 */

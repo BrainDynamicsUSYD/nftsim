@@ -1,7 +1,5 @@
 /** @file dendriteramp.cpp
-  @brief A brief, one sentence description.
-
-  A more detailed multiline description...
+  @brief Defines DendriteRamp (`Dendrite N: Ramp`), a dendrite whose alpha and beta change over time.
 
   @author Peter Drysdale, Felix Fung,
 */

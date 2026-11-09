@@ -1,7 +1,5 @@
 /** @file output.h
-  @brief A brief, one sentence description.
-
-  A more detailed multiline description...
+  @brief Declares Output and Outlet, which collect the fields an object can write to the output file.
 
   @author Peter Drysdale, Felix Fung,
 */

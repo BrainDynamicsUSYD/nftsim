@@ -7,9 +7,10 @@
     + TIMESERIES::PulseSine: A pulsed sine wave.
     + TIMESERIES::PulseSigmoid: A sigmoidal pulse train.
     + TIMESERIES::White: Gaussian amplitude distribution white noise.
-    + TIMESERIES::WhiteCoherent: .
+    + TIMESERIES::WhiteCoherent: Gaussian white noise, the same at every node.
     + TIMESERIES::PAS: Paired Associative Stimulation.
-    + TIMESERIES::Burst: .
+    + TIMESERIES::Sine: A sine wave.
+    + TIMESERIES::Burst: Bursts of rectangular pulses (eg, theta-burst stimulation).
 
     Multiple `Timeseries` can be combined using the `Superimpose` keyword in
     the configuration file.

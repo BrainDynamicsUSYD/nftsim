@@ -1,13 +1,11 @@
-/**
- * @file coupling_ramp.h
- * Coupling class to produce piecewise linear segments of increasing or decreasing nu.
- * In other words it produces a temporal profile for nu.
- *
- * @brief Can use "brief" tag to explicitly generate comments for file documentation.
- *
- * @author Paula Sanz-Leon , Romesh Abeysuriya
- *
- */
+/** @file coupling_ramp.h
+  @brief Declares CouplingRamp (`Coupling N: Ramp`), a coupling whose nu is piecewise linear in time.
+
+  nu is interpolated linearly between values given at breakpoint times, and
+  held constant before the first and after the last breakpoint.
+
+  @author Paula Sanz-Leon, Romesh Abeysuriya
+*/
 
 
 #ifndef NFTSIM_SRC_COUPLINGRAMP_H

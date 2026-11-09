@@ -1,7 +1,11 @@
 /** @file burst.h
-  @brief A brief, one sentence description.
+  @brief Declares BurstResponse (`Firing: Bursting`), a firing response with a burst-modulated threshold.
 
-  A more detailed multiline description...
+  BurstResponse is a sigmoid firing response whose threshold is modulated by
+  two slow variables, Xtilde and Htilde, which model the currents (with
+  conductances gX and gH) behind thalamic bursting. gX and gH can be ramped
+  over time (gX2, tx1..tx4 and gH2, th1..th4). The equations are given at
+  BurstResponse::BurstResponseDE::rhs().
 
   @author Peter Drysdale, Felix Fung,
 */

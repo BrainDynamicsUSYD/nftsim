@@ -1,7 +1,9 @@
 /** @file burst.cpp
-  @brief A brief, one sentence description.
+  @brief Defines BurstResponse (`Firing: Bursting`), a firing response with a burst-modulated threshold.
 
-  A more detailed multiline description...
+  Each step sums the dendritic potentials, sets the threshold from Xtilde and
+  Htilde, integrates them one step with RK4 and fires with the updated
+  threshold.
 
   @author Peter Drysdale, Felix Fung,
 */
@@ -173,12 +175,17 @@ void BurstResponse::fire( vector<double>& Q ) const {
 }
 
 /**
-  @brief Computes the derivatives of the BurstResponse function.
+  @brief Computes the derivatives of the BurstResponse state {Xtilde, Htilde}.
 
-  The BurstResponse equation is given by:
   \f{eqnarray*}{
-    equation &=& goes here
+    \frac{d\tilde{X}}{dt} &=& \frac{X_\infty - \tilde{X}}{\tau_x} \\
+    \frac{d\tilde{H}}{dt} &=& \frac{3\tilde{X} - \tilde{H}}{\tau_h}
   \f}
+  where \f$X_\infty = a_x Q_{max}/(1 + \exp[-(V - \theta)/\sigma])\f$
+  (set to 0 if negative) and the threshold is
+  \f$\theta = (i_c - 3 i_b \tilde{X} + (i_b - i_a)\tilde{H})/\mu\f$, with
+  \f$i_b = -g_X (V_{eff} - V_x)/3\f$ and \f$i_a = i_b - g_H (V_{eff} - V_k)\f$
+  (see BurstResponse::step()).
 */
 void BurstResponse::BurstResponseDE::rhs( const vector<double>& y, vector<double>& dydt, size_type n ){
   //function returns the derivatives for modulated threshold eqns

@@ -1,7 +1,9 @@
 /** @file bcmlong.cpp
-  @brief A brief, one sentence description.
+  @brief Defines BCMLong (`BCM-Spatial`), BCM plasticity of a node-to-node coupling matrix.
 
-  A more detailed multiline description...
+  `nu:` is a single value (the diagonal, with small off-diagonal strengths)
+  or Nodes x Nodes values. Each step updates the plasticity state of every
+  connection, then sums P[j] = sum_i nu[i][j] phi[i].
 
   @author Peter Drysdale, Felix Fung,
 */

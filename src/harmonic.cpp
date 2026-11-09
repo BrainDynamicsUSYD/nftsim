@@ -1,7 +1,7 @@
 /** @file harmonic.cpp
   @brief Definition of the Harmonic Propagator class.
 
-  The Harmonic Propgator is used for spatially homogeneous models, where the
+  The Harmonic Propagator is used for spatially homogeneous models, where the
   Laplacian Operator term is zero and one finds a damped oscillator response.
 
   @author Peter Drysdale, Felix Fung,

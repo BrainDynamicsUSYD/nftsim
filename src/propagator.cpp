@@ -1,7 +1,9 @@
 /** @file propagator.cpp
   @brief Propagator computes the axonal propagation of instantaneous firing rate.
 
-  A more detailed multiline description...
+  The base Propagator (`Propagator N: Map`) passes on the presynaptic firing
+  rate delayed by Tau, phi = Q(t - Tau), without spatial or temporal
+  spreading. Harmonic, HarmonicIntegral, Wave and WaveLegacy derive from it.
 
   @author Peter Drysdale, Felix Fung,
 */

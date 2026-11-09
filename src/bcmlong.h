@@ -1,7 +1,11 @@
 /** @file bcmlong.h
-  @brief A brief, one sentence description.
+  @brief Declares BCMLong (`BCM-Spatial`), BCM plasticity of a node-to-node coupling matrix.
 
-  A more detailed multiline description...
+  Like LongCoupling, BCMLong couples every presynaptic node i to every
+  postsynaptic node j, but each strength nu[i][j] evolves under the BCM
+  plasticity rule. It keeps one BCM state per presynaptic node (de_2d[i], with
+  the postsynaptic nodes as its nodes), so its memory and run time grow as
+  Nodes^2.
 
   @author Peter Drysdale, Felix Fung,
 */

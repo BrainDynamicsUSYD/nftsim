@@ -1,7 +1,8 @@
 /** @file bcm.cpp
-  @brief A brief, one sentence description.
+  @brief Defines BCM, calcium-dependent plasticity with BCM metaplasticity.
 
-  A more detailed multiline description...
+  BCM::BCMDE::rhs() replaces the calcium equation of CaDP with one whose NMDA
+  gain is the state variable gNMDA, and adds the equation for gNMDA.
 
   @author Peter Drysdale, Felix Fung,
 */

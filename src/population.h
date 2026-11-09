@@ -1,7 +1,12 @@
 /** @file population.h
-  @brief A brief, one sentence description.
+  @brief Declares Population, a neural or stimulus population and its firing-rate history.
 
-  A more detailed multiline description...
+  A neural population has a FiringResponse (with its dendrites), which turns
+  the soma potential V into the firing rate Q; a stimulus population has a
+  Timeseries instead. Each population keeps a ring buffer of past Q long
+  enough for the longest delay Tau of the propagators it drives, and
+  Population::Q() returns Q delayed by a Tau (interpolated between steps for
+  fractional delays with `Integration: SecondOrder`).
 
   @author Peter Drysdale, Felix Fung,
 */

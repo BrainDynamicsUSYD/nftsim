@@ -1,7 +1,13 @@
 /** @file cadp.h
-  @brief A brief, one sentence description.
+  @brief Declares CaDP, a coupling whose strength follows calcium-dependent plasticity.
 
-  A more detailed multiline description...
+  In CaDP (`Coupling N: CaDP ...`, Fung and Robinson) the synaptic strength
+  nu follows the postsynaptic calcium concentration. Calcium enters through
+  NMDA receptors, at a rate set by glutamate binding (from the postsynaptic
+  GlutamateResponse) and the postsynaptic potential; it drives potentiation
+  and depression rates x(Ca) and y(Ca) that set a target strength nutilde,
+  which nu follows through a critically damped filter. The state has eight
+  variables per node (see CaDP::CaDE::rhs()). BCM and BCMLong extend it.
 
   @author Peter Drysdale, Felix Fung,
 */
@@ -38,8 +44,8 @@ constexpr double ca_threshold_slope = 4e7;
 constexpr double ca_init = 0.01e-6;  ///< Initial calcium concentration.
 constexpr double default_tCa = 50e-3; ///< [s] Default `tCa:`, the calcium decay time.
 constexpr double default_gNMDA = 2e-3; ///< Default `gNMDA:`, the NMDA-receptor gain.
-/// [1/s] Default `z:`, the rate of the critically damped filter from nutilde
-/// to nu (dnu/dt follows nutilde with time-scale 1/z, ie 100 s).
+/// [1/s] Default `z:`. nu follows nutilde through the critically damped
+/// filter nu'' + 2 z nu' + z^2 nu = z^2 nutilde, with time-scale 1/z (100 s).
 constexpr double default_z = 0.01;
 constexpr double default_t_rec = 1e3; ///< [s] Default BCM `t_rec:`, the recovery time of gNMDA.
 /// Initial off-diagonal coupling strength of a BCM-Spatial matrix when `nu:`

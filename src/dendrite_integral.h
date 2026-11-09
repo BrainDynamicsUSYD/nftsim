@@ -1,9 +1,11 @@
 /** @file dendrite_integral.h
-  @brief Declares the DendriteIntegral class, which handles the response of the
-         postsynaptic population using the integral form for the DendriteIntegral::step()
-         member-function.
+  @brief Declares DendriteIntegral (`Dendrite N: Integral`), a dendrite stepped with an exact integral.
 
-  A more detailed multiline description...
+  DendriteIntegral solves the same equation as Dendrite (see dendrite.h) but
+  steps it with the exact solution for nu*phi that varies linearly over each
+  step (from its value at the previous step to its current value), rather
+  than with RK4 and nu*phi held constant. It uses Dendrite::init() and the
+  same state (V, dV/dt). Its result differs from Dendrite's at O(deltat).
 
   @author Peter Drysdale, Felix Fung,
 */

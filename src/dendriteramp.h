@@ -1,7 +1,11 @@
 /** @file dendriteramp.h
-  @brief A brief, one sentence description.
+  @brief Declares DendriteRamp (`Dendrite N: Ramp`), a dendrite whose alpha and beta change over time.
 
-  A more detailed multiline description...
+  DendriteRamp solves the dendritic equation of Dendrite (see dendrite.h)
+  with RK4, but ramps alpha and beta linearly from their initial values to
+  alpha2 and beta2 between times t1 and t2, holds them until t3, and ramps
+  them back by t4. It uses Dendrite::init() for V, alpha and beta, and keeps
+  its own state in a RampDE. Its output is beta (one value for all nodes).
 
   @author Peter Drysdale, Felix Fung,
 */

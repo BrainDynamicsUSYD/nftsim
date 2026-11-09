@@ -5,6 +5,11 @@
  * The WaveLegacy propagator declaration, including parameters from the wave
  * equation and coefficients related to the nine-point stencil implementation.
  *
+ * WaveLegacy (`Propagator N: WaveLegacy`) is the earlier nine-point form of
+ * Wave (wave.h). It was found to be incorrectly derived (see
+ * wave_legacy.cpp) and is kept only to reproduce published results; use Wave
+ * for new work.
+ *
  *
  * @author Peter Drysdale, Felix Fung, Romesh Abeysuriya, Paula Sanz-Leon.
  *

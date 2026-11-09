@@ -1,7 +1,5 @@
 /** @file long_coupling.cpp
-  @brief A brief, one sentence description.
-
-  This class provides support for spatially nonuniform connectivity. 
+  @brief Defines LongCoupling (`Coupling N: Matrix`), a coupling between every pair of nodes.
 
   @author Peter Drysdale, Felix Fung,
 */

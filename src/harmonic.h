@@ -1,8 +1,17 @@
 /** @file harmonic.h
   @brief Declaration of the Harmonic Propagator class.
 
-  The Harmonic Propgator is used for spatially homogeneous models, where the
-  Laplacian Operator term is zero and one finds a damped oscillator response.
+  The Harmonic Propagator is used for spatially homogeneous models, where the
+  Laplacian Operator term is zero and one finds a damped oscillator response:
+  \f[
+    \frac{1}{\gamma^2}\frac{d^2\phi}{dt^2} + \frac{2}{\gamma}\frac{d\phi}{dt} + \phi = Q(t - \tau).
+  \f]
+  Harmonic (`Propagator N: Harmonic`, and Wave or WaveLegacy on a single
+  node) integrates it with RK4, holding the delayed Q constant over a step
+  (or linear, with `Integration: SecondOrder`). HarmonicIntegral
+  (harmonic_integral.h) uses the exact solution for Q linear over the step
+  instead. The two share only the Propagator base: their state and step
+  differ entirely.
 
   @author Peter Drysdale, Felix Fung,
 */
