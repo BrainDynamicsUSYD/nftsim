@@ -30,7 +30,7 @@ using std::vector;
     \frac{d\nu\phi}{dt}&=&0
   \f}
 */
-void DendriteRamp::DendriteDE::rhs( const vector<double>& y, vector<double>& dydt, size_type n ) {
+void DendriteRamp::RampDE::rhs( const vector<double>& y, vector<double>& dydt, size_type n ) {
   // y = {V,W==dv/dt,nuphi}
   // dydt = {dv/dt==W, dW/dt==d^2V/dt^2,dnuphi/dt}  d(nuphi)/dt from precouple
   dydt[0] = y[1];
@@ -43,19 +43,19 @@ void DendriteRamp::DendriteDE::rhs( const vector<double>& y, vector<double>& dyd
 
 void DendriteRamp::init( Configf& configf ) {
   Dendrite::init(configf);
-  configf.param("alpha2",de->alpha2);
-  configf.param("beta2",de->beta2);
-  configf.param("t1",de->t1);
-  configf.param("t2",de->t2);
-  configf.param("t3",de->t3);
-  configf.param("t4",de->t4);
+  configf.param("alpha2",de.alpha2);
+  configf.param("beta2",de.beta2);
+  configf.param("t1",de.t1);
+  configf.param("t2",de.t2);
+  configf.param("t3",de.t3);
+  configf.param("t4",de.t4);
   time = 0;
-  de->init(v); // call DendriteRamp::DendriteDE::init
-  de->alpha_vec.push_back(alpha);
-  de->beta_vec.push_back(beta);
+  de.init(v); // call DendriteRamp::RampDE::init
+  de.alpha_vec.push_back(alpha);
+  de.beta_vec.push_back(beta);
 }
 
-void DendriteRamp::DendriteDE::init(const vector<double>& vinit) {
+void DendriteRamp::RampDE::init(const vector<double>& vinit) {
   variables[0] = vinit;
   variables[1].assign(nodes, 0.0);
   variables[2].assign(nodes, 0.0);
@@ -63,17 +63,10 @@ void DendriteRamp::DendriteDE::init(const vector<double>& vinit) {
 
 DendriteRamp::DendriteRamp( size_type nodes, double deltat, size_type index,
                             const Propagator& prepropag, const Coupling& precouple )
-  : Dendrite(nodes,deltat,index,prepropag,precouple)
-
-{
-  de = new DendriteDE(nodes, deltat);
-  rk4 = new RK4(*de);
+  : Dendrite(nodes,deltat,index,prepropag,precouple), de(nodes, deltat), rk4(de) {
 }
 
-DendriteRamp::~DendriteRamp() {
-  delete de;
-  delete rk4;
-}
+DendriteRamp::~DendriteRamp() = default;
 
 void DendriteRamp::step() {
   if( second_order ) {
@@ -83,15 +76,15 @@ void DendriteRamp::step() {
     // step second order (alpha and beta are still constant within a step).
     const double* np = precouple.nuphi().data();
     startSecondOrder(np);
-    de->dPdt.resize(nodes);
+    de.dPdt.resize(nodes);
     for( size_type i=0; i<nodes; i++ ) {
-      (*de)[2][i] = np[i];
-      de->dPdt[i] = (np[i] - prevnp[i])/deltat;
+      de[2][i] = np[i];
+      de.dPdt[i] = (np[i] - prevnp[i])/deltat;
       prevnp[i] = np[i];
     }
   } else {
     for( size_type i=0; i<nodes; i++ ) {
-      (*de)[2][i] = precouple[i];
+      de[2][i] = precouple[i];
     }
   }
   time += deltat;
@@ -100,21 +93,21 @@ void DendriteRamp::step() {
   } else {
     ramp(time);
   }
-  rk4->step();
+  rk4.step();
   for( size_type i=0; i<nodes; i++ ) {
-    v[i] = (*de)[0][i]; // Voltage
+    v[i] = de[0][i]; // Voltage
   }
 }
 
 /// Sets the ramped alpha and beta for time `t` (only inside the ramps).
 void DendriteRamp::ramp( double t ) {
   // alpha_vec and beta_vec already initialized
-  if (t > de->t1 && t <= de->t2) {  // ramp alpha, beta up
-    de->alpha_vec[0] = alpha + (t - de->t1) * (de->alpha2-alpha) / (de->t2 - de->t1);
-    de->beta_vec[0] = beta + (t - de->t1) * (de->beta2-beta) / (de->t2 - de->t1);
-  } else if (t > de->t3 && t <= de->t4) {  // ramp nu down
-    de->alpha_vec[0] =  de->alpha2 - (t - de->t3) * (de->alpha2 - alpha) / (de->t4 - de->t3);
-    de->beta_vec[0] = de->beta2 - (t - de->t3) * (de->beta2 - beta) /(de->t4 - de->t3);
+  if (t > de.t1 && t <= de.t2) {  // ramp alpha, beta up
+    de.alpha_vec[0] = alpha + (t - de.t1) * (de.alpha2-alpha) / (de.t2 - de.t1);
+    de.beta_vec[0] = beta + (t - de.t1) * (de.beta2-beta) / (de.t2 - de.t1);
+  } else if (t > de.t3 && t <= de.t4) {  // ramp nu down
+    de.alpha_vec[0] =  de.alpha2 - (t - de.t3) * (de.alpha2 - alpha) / (de.t4 - de.t3);
+    de.beta_vec[0] = de.beta2 - (t - de.t3) * (de.beta2 - beta) /(de.t4 - de.t3);
   }
 }
 
@@ -130,20 +123,20 @@ void DendriteRamp::ramp( double t ) {
 void DendriteRamp::rampMidstep( double t ) {
   double a = alpha;
   double b = beta;
-  if( t > de->t1 && t <= de->t2 ) {
-    a = alpha + (t - de->t1) * (de->alpha2-alpha) / (de->t2 - de->t1);
-    b = beta + (t - de->t1) * (de->beta2-beta) / (de->t2 - de->t1);
-  } else if( t > de->t2 && t <= de->t3 ) {
-    a = de->alpha2;
-    b = de->beta2;
-  } else if( t > de->t3 && t <= de->t4 ) {
-    a = de->alpha2 - (t - de->t3) * (de->alpha2 - alpha) / (de->t4 - de->t3);
-    b = de->beta2 - (t - de->t3) * (de->beta2 - beta) / (de->t4 - de->t3);
+  if( t > de.t1 && t <= de.t2 ) {
+    a = alpha + (t - de.t1) * (de.alpha2-alpha) / (de.t2 - de.t1);
+    b = beta + (t - de.t1) * (de.beta2-beta) / (de.t2 - de.t1);
+  } else if( t > de.t2 && t <= de.t3 ) {
+    a = de.alpha2;
+    b = de.beta2;
+  } else if( t > de.t3 && t <= de.t4 ) {
+    a = de.alpha2 - (t - de.t3) * (de.alpha2 - alpha) / (de.t4 - de.t3);
+    b = de.beta2 - (t - de.t3) * (de.beta2 - beta) / (de.t4 - de.t3);
   }
-  de->alpha_vec[0] = a;
-  de->beta_vec[0] = b;
+  de.alpha_vec[0] = a;
+  de.beta_vec[0] = b;
 }
 
 void DendriteRamp::output( Output& output ) const {
-  output.singleNode("Dendrite", index+1,"beta",de->beta_vec);
+  output.singleNode("Dendrite", index+1,"beta",de.beta_vec);
 }

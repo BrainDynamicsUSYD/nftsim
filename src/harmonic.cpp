@@ -64,9 +64,9 @@ void Harmonic::init( Configf& configf ) {
   gammasquared = gamma * gamma;
   twoongamma = 2.0 / gamma;
 
-  de->init(p[0]); // call Harmonic::HarmonicDE::init
-  de->gammasquared = gammasquared;
-  de->twoongamma = twoongamma;
+  de.init(p[0]); // call Harmonic::HarmonicDE::init
+  de.gammasquared = gammasquared;
+  de.twoongamma = twoongamma;
 }
 
 void Harmonic::HarmonicDE::init(const double pinit) {
@@ -80,15 +80,11 @@ void Harmonic::HarmonicDE::init(const double pinit) {
 
 Harmonic::Harmonic( size_type nodes, double deltat, size_type index, Population& prepop,
                     Population& postpop, size_type longside, string topology )
-  : Propagator(nodes,deltat,index,prepop,postpop,longside,topology) {
-  de = new HarmonicDE(nodes, deltat);
-  rk4 = new RK4(*de);
+  : Propagator(nodes,deltat,index,prepop,postpop,longside,topology),
+    de(nodes, deltat), rk4(de) {
 }
 
-Harmonic::~Harmonic() {
-  delete de;
-  delete rk4;
-}
+Harmonic::~Harmonic() = default;
 
 void Harmonic::step() {
   if( second_order ) {
@@ -98,27 +94,27 @@ void Harmonic::step() {
     // RK4 integrates the linear Q exactly (dQ/dt is constant in rhs), leaving
     // the step second order overall, like HarmonicIntegral.
     const vector<double>& Qnew = prepop.Q(tau);
-    de->dQdt.resize(nodes);
+    de.dQdt.resize(nodes);
     for( size_type i=0; i<nodes; i++ ) {
-      (*de)[2][i] = oldQ[i];
-      de->dQdt[i] = (Qnew[i] - oldQ[i])/deltat;
+      de[2][i] = oldQ[i];
+      de.dQdt[i] = (Qnew[i] - oldQ[i])/deltat;
       oldQ[i] = Qnew[i];
     }
-    rk4->step();
+    rk4.step();
     for( size_type i=0; i<nodes; i++ ) {
-      p[i] = (*de)[0][i]; // phi
+      p[i] = de[0][i]; // phi
     }
     return;
   }
   const vector<double>& Q = prepop.Q(tau);
   //Copy the Q to its corresponding variable in the DE.
   for( size_type i=0; i<nodes; i++ ) {
-    (*de)[2][i] = Q[i]; // Q
+    de[2][i] = Q[i]; // Q
   }
   //Integrate the Harmonic Propagator one step forward in time.
-  rk4->step();
+  rk4.step();
   //Copy the phi from the updated DE to the local variable p.
   for( size_type i=0; i<nodes; i++ ) {
-    p[i] = (*de)[0][i]; // phi
+    p[i] = de[0][i]; // phi
   }
 }

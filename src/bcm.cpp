@@ -14,6 +14,8 @@
 #include "de.h"         // RK4;
 
 // C++ standard library headers
+#include <memory>   // std::unique_ptr;
+#include <utility>  // std::move;
 #include <vector>   // std::vector;
 using std::vector;
 
@@ -48,11 +50,14 @@ void BCM::BCMDE::init( Configf& configf ) {
 
 BCM::BCM( size_type nodes, double deltat, size_type index,
           const Propagator& prepropag, const Population& postpop )
-  : CaDP(nodes,deltat,index,prepropag,postpop) {
-  delete de;
-  de = new BCMDE(nodes,deltat);
-  delete rk4;
-  rk4 = new RK4(*de);
+  : BCM(nodes, deltat, index, prepropag, postpop,
+        std::unique_ptr<CaDE>(new BCMDE(nodes,deltat))) {
+}
+
+BCM::BCM( size_type nodes, double deltat, size_type index,
+          const Propagator& prepropag, const Population& postpop,
+          std::unique_ptr<CaDE> de )
+  : CaDP(nodes, deltat, index, prepropag, postpop, std::move(de)) {
 }
 
 BCM::~BCM() = default;

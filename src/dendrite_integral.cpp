@@ -28,12 +28,11 @@ void DendriteIntegral::init( Configf& configf ) {
   aminusb = alpha - beta;
   expa = exp(-alpha*deltat);
   expb = exp(-beta*deltat);
-  factorab = 1./alpha + 1./beta;
 }
 
 DendriteIntegral::DendriteIntegral( size_type nodes, double deltat, size_type index,
                     const Propagator& prepropag, const Coupling& precouple )
-  : Dendrite(nodes, deltat, index, prepropag, precouple), dvdt(nodes,0), oldnp(nodes) {
+  : Dendrite(nodes, deltat, index, prepropag, precouple), oldnp(nodes) {
 }
 
 DendriteIntegral::~DendriteIntegral() = default;

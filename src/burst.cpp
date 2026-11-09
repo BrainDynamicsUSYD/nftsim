@@ -78,9 +78,9 @@ void BurstResponse::init( Configf& configf ) {
   qfiring.resize(nodes, 0.0);
   xinfinity.resize(nodes, 0.0);
 
-  de->init(xinit, hinit); // call BurstResponse::BurstResponseDE::init
-  de->taux = taux;
-  de->tauh = tauh;
+  de.init(xinit, hinit); // call BurstResponse::BurstResponseDE::init
+  de.taux = taux;
+  de.tauh = tauh;
 }
 
 void BurstResponse::BurstResponseDE::init(const double xinit, const double hinit) {
@@ -91,16 +91,11 @@ void BurstResponse::BurstResponseDE::init(const double xinit, const double hinit
 }
 
 BurstResponse::BurstResponse( size_type nodes, double deltat, size_type index )  // constructor
-  : FiringResponse(nodes,deltat,index) {
-  de = new BurstResponseDE(nodes, deltat);
-  rk4 = new RK4(*de);
+  : FiringResponse(nodes,deltat,index), de(nodes, deltat), rk4(de) {
   time = 0;
 }
 
-BurstResponse::~BurstResponse() {
-  delete de;
-  delete rk4;
-}
+BurstResponse::~BurstResponse() = default;
 
 void BurstResponse::step() {
   time++;
@@ -142,14 +137,14 @@ void BurstResponse::step() {
       xinfinity[i] = 0.0;
     }
   }
-  de->xinfinity = xinfinity;
+  de.xinfinity = xinfinity;
 
   //Integrate the burst response one step forward in time.
-  rk4->step();
+  rk4.step();
   //Copy the burst response from the updated DE to the local variables.
   for( size_type i=0; i<nodes; i++ ) {
-    xtilde[i] = (*de)[0][i];
-    htilde[i] = (*de)[1][i];
+    xtilde[i] = de[0][i];
+    htilde[i] = de[1][i];
   }
 
   for(size_type i=0; i<nodes; i++ ) {

@@ -33,8 +33,8 @@ class Harmonic : public virtual Propagator {
     ~HarmonicDE() override = default;
     void rhs( const std::vector<double>& y, std::vector<double>& dydt, size_type /*unused*/ ) override;
   };
-  HarmonicDE* de;
-  RK4* rk4;
+  HarmonicDE de; ///< State {phi, dphi/dt, Q}.
+  RK4 rk4;       ///< Integrates de (declared after it, so constructed after it).
   std::vector<double> oldQ; ///< delayed Q at the previous step (Integration: SecondOrder)
 
  protected:

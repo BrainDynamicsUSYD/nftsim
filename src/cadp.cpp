@@ -17,6 +17,8 @@
 
 // C++ standard library headers
 #include <cmath>     // std::exp;
+#include <memory>   // std::unique_ptr;
+#include <utility>  // std::move;
 #include <vector>   // std::vector;
 using std::exp;
 using std::vector;
@@ -101,15 +103,20 @@ void CaDP::CaDE::init( Configf& configf ) {
 
 CaDP::CaDP( size_type nodes, double deltat, size_type index,
             const Propagator& prepropag, const Population& postpop )
-  : Coupling(nodes,deltat,index,prepropag,postpop) {
-  de = new CaDE(nodes,deltat);
-  rk4 = new RK4(*de);
+  : CaDP(nodes, deltat, index, prepropag, postpop,
+         std::unique_ptr<CaDE>(new CaDE(nodes,deltat))) {
 }
 
-CaDP::~CaDP() {
-  delete de;
-  delete rk4;
+CaDP::CaDP( size_type nodes, double deltat, size_type index,
+            const Propagator& prepropag, const Population& postpop,
+            std::unique_ptr<CaDE> de )
+  : Coupling(nodes,deltat,index,prepropag,postpop), de(std::move(de)) {
+  if( this->de ) {
+    rk4.reset(new RK4(*this->de));
+  }
 }
+
+CaDP::~CaDP() = default;
 
 void CaDP::step() {
   const vector<double>& glu = postpop.glu();

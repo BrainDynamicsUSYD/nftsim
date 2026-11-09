@@ -29,8 +29,8 @@ class BurstResponse : public FiringResponse { //derived class; constructor initi
     ~BurstResponseDE() override = default;
     void rhs( const std::vector<double>& y, std::vector<double>& dydt, size_type n ) override;
   };
-  BurstResponseDE* de;
-  RK4* rk4;
+  BurstResponseDE de; ///< State {Xtilde, Htilde}.
+  RK4 rk4;            ///< Integrates de (declared after it, so constructed after it).
 
   std::vector<double> modtheta;
   std::vector<double> gX,gH,xtilde,htilde;

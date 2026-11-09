@@ -25,10 +25,8 @@ class DendriteIntegral : public Dendrite {
   double aminusb = 0.0;  ///< == alpha - beta
   double expa = 0.0;     ///< == exp(-alpha*deltat)
   double expb = 0.0;     ///< == exp(-beta*deltat)
-  double factorab = 0.0; ///< == 1./alpha + 1./beta;
 
  protected:
-  std::vector<double> dvdt; ///< Temporal derivative of the membrane potential.
   std::vector<double> oldnp; ///< Pulse density (nu*phi) of the previous time-step.
 
   void init( Configf& configf ) override;

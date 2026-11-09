@@ -18,6 +18,7 @@
 #include "propagator.h" // Propagator;
 
 // C++ standard library headers
+#include <memory> // std::unique_ptr;
 #include <vector> // std::vector;
 
 class CaDP : public Coupling {
@@ -55,9 +56,14 @@ class CaDP : public Coupling {
     virtual void pot();
     virtual void dep();
   };
-  CaDE* de;
-  RK4* rk4;
+  std::unique_ptr<CaDE> de;  ///< Plasticity state; a BCMDE for BCM, null for BCMLong (which keeps one per node).
+  std::unique_ptr<RK4> rk4;  ///< Integrates de (null when de is).
   void init( Configf& configf ) override;
+  /// For derived classes: takes ownership of `de`, the plasticity state to
+  /// integrate (CaDE or a class derived from it), which may be null.
+  CaDP( size_type nodes, double deltat, size_type index,
+        const Propagator& prepropag, const Population& postpop,
+        std::unique_ptr<CaDE> de );
  public:
   CaDP() = delete;            // No default constructor allowed.
   CaDP(const CaDP&) = delete; // No copy constructor allowed.

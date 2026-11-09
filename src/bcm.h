@@ -17,6 +17,7 @@
 #include "propagator.h" // Propagator;
 
 // C++ standard library headers
+#include <memory> // std::unique_ptr;
 #include <vector> // std::vector;
 
 class BCM : public CaDP {
@@ -57,6 +58,10 @@ class BCM : public CaDP {
     void init( Configf& configf ) override;
     void rhs( const std::vector<double>& y, std::vector<double>& dydt, size_type /*unused*/ ) override;
   };
+  /// For derived classes: takes ownership of `de` (see CaDP), which may be null.
+  BCM( size_type nodes, double deltat, size_type index,
+       const Propagator& prepropag, const Population& postpop,
+       std::unique_ptr<CaDE> de );
  public:
   BCM(const BCM&) = delete; // No copy constructor allowed.
   BCM() = delete;           // No default constructor allowed.

@@ -18,14 +18,17 @@
 #include "propagator.h" // Propagator;
 
 // C++ standard library headers
+#include <memory> // std::unique_ptr;
 #include <vector> // std::vector;
 
 class BCMLong : public BCM {
  protected:
   void init( Configf& configf ) override;
 
-  std::vector<BCMDE*> de_2d;
-  std::vector<RK4*> rk4_2d;
+  /// One BCM state per presynaptic node i: (*de_2d[i])[k][j] is variable k
+  /// of the connection from node i to node j. BCMLong passes no DE to CaDP.
+  std::vector<std::unique_ptr<BCMDE>> de_2d;
+  std::vector<std::unique_ptr<RK4>> rk4_2d; ///< Integrates de_2d[i].
 
  public:
   BCMLong() = delete;               // No default constructor allowed.
