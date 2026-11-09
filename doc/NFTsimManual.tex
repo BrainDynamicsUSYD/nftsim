@@ -220,6 +220,8 @@ Object parameter: value
     \item Most parameters are essential. Failure to provide these parameters would result in \NF terminating with an error message. A minority of the parameters are optional.
     \item The ordering of the parameters are important. Wrong parameter ordering results in \NF terminating with an error message.
     \item The configuration file is white-space independent, e.g., there can be either no spaces, many spaces, or new lines between parameters.
+    \item Object labels must be written exactly as \type{Population 1:}, \type{Propagator 1:}, \type{Coupling 1:} and \type{Dendrite 1:} (one space before the number, and the colon straight after it).
+    Each label starts a section that runs to the next label (\type{Output:} starts the output specification), and an object's parameters are read only from its own section, so that, e.g., a stimulus population without a \type{Mean} starts from zero rather than from another population's \type{Mean}.
     \item For readability, users are encouraged to arrange parameter entries for different objects (via new lines and indentations) and aligning corresponding parameters between different objects.
     \item Tip for \type{vi} users: \type{./Helper\_scripts/nftsim.vim} implements syntax highlighting for configuration files in \type{vi}. See comments within for installation instructions.
 \end{enumerate}
@@ -277,6 +279,7 @@ The remainder of this section refers to an example configuration for the illustr
 Example config file of cortical model with excitatory and inhibitory neurons
 \end{lstlisting}
 Any text before the text \type{Time:}, is disregarded by \NF and serves as comment, which is strongly recommended for all configuration files.
+The comment may contain any text, including colons and object labels such as \type{Population 2}, except the text \type{Time:} itself.
 \item  {\em Integration time and timestep}
 \begin{lstlisting}
 Time: 10 Deltat: 1e-4
