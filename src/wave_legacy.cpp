@@ -65,12 +65,12 @@ void WaveLegacy::init( Configf& configf ) {
   expfact1 = exp(-1.0*deltat*gamma);
   expfact2 = exp(-2.0*deltat*gamma);
 
-  if(gamma/2.0 < deltat || range/2.0 < deltax) {
-    cerr << "WaveLegacy equation with gamma: " << gamma << " and range: " << range << endl;
-    cerr << "is neither adequately captured by grid spacing chosen" << endl;
-    cerr << "nor sufficiently localized so the potential can be approximated by Q" << endl;
-    cerr << "gamma = " << gamma << " requires deltat < " << gamma/2.0 << endl;
-    cerr << "and range = " << range << " requires deltax < " << range/2.0 << endl;
+  // See Wave::init: resolve the damping time 1/gamma and the axonal range.
+  if(deltat > 0.5/gamma || range/2.0 < deltax) {
+    cerr << "WaveLegacy equation with gamma: " << gamma << " [s^-1] and range: " << range << " [m]" << endl;
+    cerr << "is not adequately resolved by the chosen time-step and grid spacing." << endl;
+    cerr << "gamma = " << gamma << " [s^-1] requires deltat <= " << 0.5/gamma << " [s]" << endl;
+    cerr << "and range = " << range << " [m] requires deltax <= " << range/2.0 << " [m]" << endl;
     exit(EXIT_FAILURE);
   }
 

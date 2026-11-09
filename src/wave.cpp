@@ -66,13 +66,15 @@ void Wave::init( Configf& configf ) {
   expfactneg = exp(-deltat*gamma);
   expfactpos = exp(deltat*gamma);
 
-  if(gamma/2.0 < deltat || range/2.0 < deltax) {
+  // The damping time 1/gamma must be resolved by the time-step and the axonal
+  // range by the grid. (This used to test gamma/2 < deltat, which compares a
+  // rate with a time and so could never fail.)
+  if(deltat > 0.5/gamma || range/2.0 < deltax) {
     cerr << "Wave equation with gamma: " << gamma << " [s^-1] and range: " << range << " [m]" << endl;
-    cerr << "is neither adequately captured by grid spacing chosen" << endl;
-    cerr << "nor sufficiently localized so the potential can be approximated by Q" << endl;
-    cerr << "gamma = " << gamma << " [s^-1] requires deltat < " << gamma/2.0 << endl;
-    cerr << "and range = " << range << " [m] requires deltax < " << range/2.0 << " [m]" << endl;
-    cerr << "Current deltax is = " << deltax << " [m]" << endl;
+    cerr << "is not adequately resolved by the chosen time-step and grid spacing." << endl;
+    cerr << "gamma = " << gamma << " [s^-1] requires deltat <= " << 0.5/gamma << " [s]" << endl;
+    cerr << "and range = " << range << " [m] requires deltax <= " << range/2.0 << " [m]" << endl;
+    cerr << "Current deltat is = " << deltat << " [s] and deltax is = " << deltax << " [m]" << endl;
     exit(EXIT_FAILURE);
   }
 
