@@ -40,26 +40,34 @@ DendriteIntegral::~DendriteIntegral() = default;
 
 void DendriteIntegral::step() {
   // assume that alpha, beta are constant and nu*phi is linear for the time step
+  // Per-node temporaries are locals (they were class members, which forced a
+  // store per node and blocked vectorisation).
+  const double* __restrict__ np = precouple.nuphi().data(); // current nu*phi
+  double* __restrict__ vv = v.data();
+  double* __restrict__ dv = dvdt.data();
+  double* __restrict__ onp = oldnp.data();
+  const double invdt = 1.0/deltat;
   if(alpha!=beta) {
+    const double inv_amb = 1.0/aminusb;
     for(size_type i=0; i<nodes; i++) {
-      dpdt = ( precouple[i] -oldnp[i] )/deltat;
-      adjustednp = oldnp[i] -factorab*dpdt -v[i];
-      C1 = ( adjustednp*beta -dvdt[i] +dpdt )/aminusb;
-      C1expa = C1*expa;
-      C2expb = expb*(-C1-adjustednp);
-      v[i] = C1expa+C2expb+precouple[i] -factorab*dpdt;
-      dvdt[i] = C1expa*(-alpha) +C2expb*(-beta)+dpdt;
-      oldnp[i]=precouple[i]; //Save current pulse density for next step
+      const double dpdt = ( np[i] -onp[i] )*invdt;
+      const double adjustednp = onp[i] -factorab*dpdt -vv[i];
+      const double C1 = ( adjustednp*beta -dv[i] +dpdt )*inv_amb;
+      const double C1expa = C1*expa;
+      const double C2expb = expb*(-C1-adjustednp);
+      vv[i] = C1expa+C2expb+np[i] -factorab*dpdt;
+      dv[i] = C1expa*(-alpha) +C2expb*(-beta)+dpdt;
+      onp[i] = np[i]; //Save current pulse density for next step
     }
   } else { // alpha==beta
     for(size_type i=0; i<nodes; i++) {
-      dpdt = ( precouple[i] -oldnp[i] )/deltat;
-      adjustednp = oldnp[i] -factorab*dpdt -v[i];
-      C1 = dvdt[i] -alpha*adjustednp -dpdt;
-      C1dtplusC2 = C1*deltat -adjustednp;
-      v[i] = C1dtplusC2*expa +precouple[i] -factorab*dpdt;
-      dvdt[i] = (C1-alpha*C1dtplusC2)*expa +dpdt;
-      oldnp[i]=precouple[i]; //Save current pulse density for next step
+      const double dpdt = ( np[i] -onp[i] )*invdt;
+      const double adjustednp = onp[i] -factorab*dpdt -vv[i];
+      const double C1 = dv[i] -alpha*adjustednp -dpdt;
+      const double C1dtplusC2 = C1*deltat -adjustednp;
+      vv[i] = C1dtplusC2*expa +np[i] -factorab*dpdt;
+      dv[i] = (C1-alpha*C1dtplusC2)*expa +dpdt;
+      onp[i] = np[i]; //Save current pulse density for next step
     }
   }
 }

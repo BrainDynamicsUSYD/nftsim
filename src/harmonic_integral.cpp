@@ -78,11 +78,12 @@ HarmonicIntegral::~HarmonicIntegral() = default;
 */
 void HarmonicIntegral::step() {
   const vector<double>& Q = prepop.Q(tau);
+  const double invdt = 1.0/deltat;
   for( size_type i=0; i<nodes; i++ ) {
-    dQdt = ( Q[i] -oldQ[i] )/deltat;
-    adjustedQ = oldQ[i] -twoongamma*dQdt -oldp[i];
-    C1 = dpdt[i] -gamma*adjustedQ -dQdt;
-    C1dtplusC2 = C1*deltat -adjustedQ;
+    const double dQdt = ( Q[i] -oldQ[i] )*invdt;
+    const double adjustedQ = oldQ[i] -twoongamma*dQdt -oldp[i];
+    const double C1 = dpdt[i] -gamma*adjustedQ -dQdt;
+    const double C1dtplusC2 = C1*deltat -adjustedQ;
     p[i] = C1dtplusC2*expgamma +Q[i] -twoongamma*dQdt;
     dpdt[i] = (C1-gamma*C1dtplusC2)*expgamma +dQdt;
     oldQ[i] = Q[i];
