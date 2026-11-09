@@ -22,6 +22,7 @@ class Timeseries : public NF {
  protected:
   using series_size_type = std::vector<double>::size_type;
   void init( Configf& configf ) override;
+  double gridSpacing( Configf& configf ) const;
 
   std::vector<Timeseries*> series;
   std::vector<size_type> node;

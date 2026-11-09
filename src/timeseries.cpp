@@ -134,6 +134,23 @@ Timeseries::~Timeseries() {
   }
 }
 
+/** @brief Spacing between grid nodes, matching that used by the Wave propagator.
+
+  The Wave propagator uses deltax = Length/longside, where longside is the
+  optional "Longside nodes" parameter, or sqrt(Nodes) for a square grid.
+*/
+double Timeseries::gridSpacing( Configf& configf ) const {
+  double length = atof(configf.find(
+                         label("Population ",index+1)+"*Length").c_str());
+  // "Nodes:" is a required parameter and "Longside nodes:" (if present)
+  // follows it, so this returns "" rather than exiting when it is absent.
+  string longside = configf.find("Nodes:*Longside nodes:");
+  if( longside.empty() ) {
+    return length/sqrt(nodes);
+  }
+  return length/atof(longside.c_str());
+}
+
 void Timeseries::fire( vector<double>& Q ) const {
   vector<double> temp(nodes, 0.0);
   Q.assign(nodes, 0.0); // Zero the Q vector we were provided.
@@ -362,8 +379,7 @@ namespace TIMESERIES {
       // index of timeseries the same as that of population
 
       if(nodes>1) {
-        deltax = atof(configf.find(
-                        label("Population ",index+1)+"*Length").c_str()) /sqrt(nodes);
+        deltax = gridSpacing(configf);
         stddev = sqrt(2.0*4.0*pow(M_PI,3)*pow(asd,2)/deltat/pow(deltax,2));
       } else {
         stddev = sqrt(2.0*M_PI*pow(asd,2)/deltat);
@@ -393,8 +409,7 @@ namespace TIMESERIES {
     if( !configf.optional("StdDev", stddev) ) {
       configf.param("ASD", asd);
       // index of timeseries the same as that of population
-      double deltax = atof(configf.find(
-                             label("Population ",index+1)+"*Length").c_str()) /sqrt(nodes);
+      double deltax = gridSpacing(configf);
       stddev = sqrt(2.0*4.0*pow(M_PI,3.0)*pow(asd,2)/deltat/pow(deltax,2));
     }
     if(configf.optional("Ranseed", seed)) {
