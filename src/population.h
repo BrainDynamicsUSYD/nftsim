@@ -56,6 +56,9 @@ class Population : public NF {
   virtual void add2Dendrite( size_type index, const Propagator& prepropag,
                              const Coupling& precouple, Configf& configf );
   virtual void growHistory( const Tau& tau );
+  /// Select the second-order scheme (`Integration: SecondOrder`) for this
+  /// population's dendrites. Call after add2Dendrite() and before init().
+  void useSecondOrder( bool second_order );
   void output( Output& output ) const override;
   virtual void outputDendrite( size_type index, Output& output ) const;
 };

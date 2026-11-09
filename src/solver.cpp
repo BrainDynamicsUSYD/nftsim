@@ -115,6 +115,21 @@ void Solver::init( Configf& configf ) {
 
   steps = static_cast<int>(lround(tempf/deltat));
 
+  // Optional time-stepping scheme, eg, "Integration: SecondOrder" after Deltat.
+  // Default is the original scheme, which is first order in Deltat for the
+  // coupled system. SecondOrder extrapolates each dendrite's input nu*phi
+  // linearly over a step and takes the delayed firing rate as linear over a
+  // step in Harmonic propagators.
+  string integration("Default");
+  if( configf.optional("Integration", integration) ) {
+    if( integration != "Default" && integration != "SecondOrder" ) {
+      cerr << "Invalid Integration '" << integration << "'. Valid options are:"
+           << " Default, SecondOrder." << endl;
+      exit(EXIT_FAILURE);
+    }
+  }
+  const bool second_order = (integration == "SecondOrder");
+
   // read in grid size and grid geometry
   configf.param("Nodes",nodes);
   size_type longside;
@@ -238,6 +253,16 @@ void Solver::init( Configf& configf ) {
       if( cnt.post[j] == i ) {
         pops[i]->add2Dendrite( j, *propagators[j], *couplings[j], configf );
       }
+    }
+  }
+
+  // select the time-stepping scheme, which must precede the objects' init
+  if( second_order ) {
+    for( vector<double>::size_type i=0; i<cnt.npop; i++ ) {
+      pops[i]->useSecondOrder(true);
+    }
+    for( vector<int>::size_type i=0; i<cnt.ncnt; i++ ) {
+      propagators[i]->useSecondOrder(true);
     }
   }
 

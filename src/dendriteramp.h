@@ -25,6 +25,7 @@ class DendriteRamp : public Dendrite {
  protected:
   struct DendriteDE : public DE {
     std::vector<double> alpha_vec, beta_vec;
+    std::vector<double> dPdt; ///< d(nu*phi)/dt over the step; empty unless Integration: SecondOrder
     double alpha2 = 0.0, beta2 = 0.0;
     double t1 = 0.0, t2 = 0.0, t3 = 0.0, t4 = 0.0;
     virtual void init(const std::vector<double>& vinit);
@@ -36,6 +37,8 @@ class DendriteRamp : public Dendrite {
   RK4* rk4;       //Must redeclare here otherwise we get seg-fault
 
   double time = 0.0;
+  void ramp( double t ); ///< sets alpha_vec and beta_vec at time t (default scheme)
+  void rampMidstep( double t ); ///< sets alpha_vec and beta_vec at time t (second-order scheme)
 
   void init( Configf& configf ) override;
  public:

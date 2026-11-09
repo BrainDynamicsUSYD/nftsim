@@ -175,6 +175,12 @@ void Population::growHistory( const Tau& tau ) {
   }
 }
 
+void Population::useSecondOrder( bool second_order ) {
+  if( firing_response != nullptr ) { // stimulus populations have no dendrites
+    firing_response->useSecondOrder(second_order);
+  }
+}
+
 void Population::output( Output& output ) const {
   output("Pop",index+1,"Q",q);
   if(firing_response != nullptr) {

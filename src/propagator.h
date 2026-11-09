@@ -40,6 +40,7 @@ class Propagator : public NF {
   double range = 0.0;     ///< Characteristic axonal range
   double velocity = 0.0;  ///< Mean axonal conduction Speed
   double gamma = 0.0;     ///< Damping coefficient
+  bool second_order = false; ///< Integration: SecondOrder (see useSecondOrder())
 
  public:
   Propagator() = delete;                  // No default constructor allowed.
@@ -50,6 +51,11 @@ class Propagator : public NF {
   ~Propagator() override;
   void step() override;
   double phiinit( Configf& configf ) const;
+  /// Select the second-order scheme (`Integration: SecondOrder`): Harmonic
+  /// takes the delayed Q as linear over each step. Call before init().
+  void useSecondOrder( bool so ) {
+    second_order = so;
+  }
   virtual const std::vector<double>& phi() const;
   inline double operator[]( size_type node ) const;
   void output( Output& output ) const override;

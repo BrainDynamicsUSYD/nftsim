@@ -46,6 +46,14 @@ class Dendrite : public NF {
 
   std::vector<double> v; ///< Membrane potential.
 
+  // Integration: SecondOrder. The input nu*phi over the step [t_n, t_n+1] is
+  // extrapolated linearly from its values at t_n and t_n-1 (like a second-order
+  // Adams-Bashforth step), instead of being held at its value at t_n.
+  bool second_order = false; ///< if true, use the second-order scheme
+  bool started = false;      ///< false until the first second-order step
+  std::vector<double> prevnp; ///< nu*phi at the previous step (second-order scheme)
+  void startSecondOrder( const double* np ); ///< sets prevnp on the first step
+
   void init( Configf& configf ) override;
   //virtual void restart( Restartf& restartf );
   //virtual void dump( Dumpf& dumpf ) const;
@@ -60,6 +68,10 @@ class Dendrite : public NF {
             const Propagator& prepropag, const Coupling& precouple );
   ~Dendrite() override;
   void step() override;
+  /// Select the second-order scheme (`Integration: SecondOrder`). Call before init().
+  void useSecondOrder( bool so ) {
+    second_order = so;
+  }
   inline const std::vector<double>& V() const;
   void output( Output& output ) const override;
 };
