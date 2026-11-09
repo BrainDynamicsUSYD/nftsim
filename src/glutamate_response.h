@@ -35,11 +35,14 @@ class GlutamateResponse : public FiringResponse {
   Glu glu_m;
   RK4 glu_rk4;
 
+  void excitatoryPhi( std::vector<double>& phi_e ) const;
+
  public:
   GlutamateResponse(const GlutamateResponse& ) = delete; // No copy constructor allowed.
   GlutamateResponse() = delete;                          // No default constructor allowed.
 
   void step() override;
+  void initFromInputs() override;
   GlutamateResponse( size_type nodes, double deltat, size_type index );
   ~GlutamateResponse() override;
   const std::vector<double>& glu() const;

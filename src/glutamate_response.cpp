@@ -17,15 +17,6 @@
 #include <vector>   // std::vector;
 using std::vector;
 
-namespace {
-/// Initial glutamate concentration in the synaptic cleft, at every node.
-/// (This used to be passed to resize() on a vector that DE's constructor had
-/// already sized, so it had no effect and glutamate started at 0.) Note that
-/// neither value is the steady state, Lambda*tGlu*(sum of excitatory phi),
-/// which is ~4e-5 for the shipped plasticity configs; glutamate relaxes to it
-/// within a few tGlu.
-constexpr double glu_init = 1.0e-6;
-} // namespace
 
 void GlutamateResponse::init( Configf& configf ) {
   // Glu::init() must be called before FiringResponse::init() as the latter
@@ -39,7 +30,9 @@ void GlutamateResponse::init( Configf& configf ) {
 void GlutamateResponse::Glu::init( Configf& configf ) {
   configf.optional("Lambda", Lambda);
   configf.optional("tGlu", tGlu);
-  variables[0].assign(nodes, glu_init);
+  // Placeholders: GlutamateResponse::initFromInputs() sets both once the
+  // excitatory inputs have their initial values.
+  variables[0].assign(nodes, 0.0);
   variables[1].assign(nodes, 0.0);
 }
 
@@ -65,17 +58,39 @@ void GlutamateResponse::step() {
 
   // glutamate dynamics
   if( glu_m.Lambda != 0 ) {
-    for( size_type j=0; j<nodes; j++ ) {
-      glu_m[1][j] = 0; // reset excitatory phi
-    }
-    for( Array<Dendrite>::size_type  i=0; i<dendrites.size(); i++ ) {
-      if( dendrites[i]->precouple.excite() ) {
-        for( size_type j=0; j<nodes; j++ ) {
-          glu_m[1][j] += dendrites[i]->prepropag[j]; // put in excitatory phi
-        }
+    excitatoryPhi(glu_m[1]); // excitatory phi drives glutamate
+    glu_rk4.step();
+  }
+}
+
+/// Sum, at each node, of the axonal fields phi of the excitatory inputs: the
+/// drive that glutamate integrates in step().
+void GlutamateResponse::excitatoryPhi( vector<double>& phi_e ) const {
+  phi_e.assign(nodes, 0.0);
+  for( Array<Dendrite>::size_type i=0; i<dendrites.size(); i++ ) {
+    if( dendrites[i]->precouple.excite() ) {
+      for( size_type j=0; j<nodes; j++ ) {
+        phi_e[j] += dendrites[i]->prepropag[j];
       }
     }
-    glu_rk4.step();
+  }
+}
+
+/** @brief Starts glutamate at its steady state for the initial inputs.
+
+  Glutamate obeys d(glu)/dt = Lambda*phi_e - glu/tGlu, whose fixed point is
+  glu = Lambda*tGlu*phi_e. nftsim starts every other variable at the steady
+  state of its initial inputs, so glutamate does too. (It used to start at 0,
+  because Glu::init() resized an already-sized vector; it then relaxed
+  towards ~4e-5 within a few tGlu in the shipped plasticity configs.) With
+  Lambda = 0 glutamate is not integrated and stays at 0.
+*/
+void GlutamateResponse::initFromInputs() {
+  vector<double> phi_e;
+  excitatoryPhi(phi_e);
+  for( size_type j=0; j<nodes; j++ ) {
+    glu_m[0][j] = glu_m.Lambda*glu_m.tGlu*phi_e[j];
+    glu_m[1][j] = phi_e[j];
   }
 }
 

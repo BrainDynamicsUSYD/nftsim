@@ -246,6 +246,12 @@ void Solver::init( Configf& configf ) {
   for( vector<int>::size_type i=0; i<cnt.ncnt; i++ ) {
     configf.param( label("Coupling ",i+1), *couplings[i] );
   }
+  // Everything has its initial value now, so state that depends on other
+  // objects' initial values can be set (eg, glutamate's steady state needs
+  // the initial phi of the population's excitatory inputs).
+  for( vector<double>::size_type i=0; i<cnt.npop; i++ ) {
+    pops[i]->initFromInputs();
+  }
 
   // initialize outputs
   configf.go2("Output");

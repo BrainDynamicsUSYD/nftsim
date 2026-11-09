@@ -65,6 +65,10 @@ class Population : public NF {
   /// Select the second-order scheme (`Integration: SecondOrder`) for this
   /// population's dendrites. Call after add2Dendrite() and before init().
   void useSecondOrder( bool second_order );
+  /// Initialise state that depends on the initial values of other objects
+  /// (see FiringResponse::initFromInputs). Call after every population,
+  /// propagator and coupling has been initialised.
+  void initFromInputs();
   void output( Output& output ) const override;
   virtual void outputDendrite( size_type index, Output& output ) const;
 };
