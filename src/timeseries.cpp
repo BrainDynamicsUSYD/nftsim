@@ -372,6 +372,15 @@ namespace TIMESERIES {
     // Mean: 1 StdDev: 1 Ranseed: 1
     // Mean: 1 ASD: 1e-05 Ranseed: 1
     // ASD stands for Amplitude Spectral Density, which is the square root of PSD (Power Spectral Density)
+    // Convention: ASD^2 is the two-sided power spectral density in angular
+    // frequency, so the variance is its integral over omega in
+    // [-pi/deltat, pi/deltat] (and over spatial wavenumbers on a grid):
+    //   one node: stddev^2 = 2*pi*ASD^2/deltat
+    //   grid:     stddev^2 = 2*(2*pi)^2*pi*ASD^2/(deltat*deltax^2).
+    // doc/noise.pdf (2012) omits the leading factor of 2 because it treats
+    // the density as one-sided. The factor was added in 2018 (a2d4a46) and the
+    // shipped configs were rescaled to match. WhiteCoherent uses the same
+    // convention. See the White stimulus section of the user manual.
     configf.param("Mean", mean);
     if( !configf.optional("StdDev", stddev) ) {
       configf.param("ASD", asd);

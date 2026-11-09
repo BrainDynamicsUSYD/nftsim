@@ -76,6 +76,18 @@ Romesh Abeysuriya
 14/9/12
 \end_layout
 
+\begin_layout Standard
+
+\series bold
+Note added in 2026:
+\series default
+ nftsim no longer uses the expressions derived here exactly.
+ Since 2018 (commit a2d4a46) the code treats ASD^2 as the two-sided power spectral density in angular frequency, so the standard deviations it uses are larger by a factor of sqrt(2) than those below: sigma = sqrt(2 pi ASD^2 / Delta t) for a single node, and sigma = sqrt(8 pi^3 ASD^2 / (Delta t Delta x^2)) on a grid, with Delta x = Length / Longside nodes.
+ The shipped configuration files were rescaled to match.
+ See the White stimulus section of the user manual (doc/NFTsimManual.tex).
+ The PDF of this note has not been regenerated.
+\end_layout
+
 \begin_layout Section
 Introduction
 \end_layout
