@@ -58,8 +58,9 @@ void CouplingRamp::init( Configf& configf ) {
   nu.assign(nodes, tempn[0]);
   pos = (tempn[0]>0)?1:-1;
 
+  const double phi0 = prepropag.phiinit(configf); // a config lookup, so read it once
   for( size_type i=0; i<nodes; i++ ) {
-    P[i] = nu[i]*prepropag.phiinit(configf);
+    P[i] = nu[i]*phi0;
   }
 
   steps = 0;

@@ -47,8 +47,9 @@ void Coupling::init( Configf& configf ) {
     cerr<<"nu either has a homogeneous initial value or has one intial value per node."<<endl;
     exit(EXIT_FAILURE);
   }
+  const double phi0 = prepropag.phiinit(configf); // a config lookup, so read it once
   for( size_type i=0; i<nodes; i++ ) {
-    P[i] = nu[i]*prepropag.phiinit(configf);
+    P[i] = nu[i]*phi0;
   }
 }
 

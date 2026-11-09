@@ -300,9 +300,9 @@ void Solver::Outputs::init( Configf& configf ) {
   }
 
   for(double i : temp_node) {
-    if( i > nodes ) {
-      cerr<<"Trying to plot node number "<<i
-          <<", which is bigger than the highest node index."<<endl;
+    if( i < 1 || i > nodes ) {
+      cerr<<"Output node number "<<i<<" is out of range: nodes are "
+          <<"numbered from 1 to "<<nodes<<"."<<endl;
       exit(EXIT_FAILURE);
     } else {
       node.push_back( i-1 );

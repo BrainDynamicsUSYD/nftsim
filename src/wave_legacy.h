@@ -29,8 +29,6 @@
 #include <string>  // std::string
 
 class WaveLegacy : public Propagator {
-  WaveLegacy(); // no default constructor
-  WaveLegacy(WaveLegacy&); // no copy constructor
  protected:
   void init( Configf& configf ) override;
 
@@ -51,6 +49,8 @@ class WaveLegacy : public Propagator {
  public:
   WaveLegacy( size_type nodes, double deltat, size_type index, Population& prepop,
         Population& postpop, size_type longside, std::string topology );
+  WaveLegacy() = delete;                  // No default constructor allowed.
+  WaveLegacy(const WaveLegacy&) = delete; // No copy constructor allowed.
   ~WaveLegacy() override;
   void step() override;
 };

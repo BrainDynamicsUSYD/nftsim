@@ -18,6 +18,7 @@
 #include "output.h"     // Output;
 
 // C++ standard library headers
+#include <cmath>    // std::pow;
 #include <iostream> // std::endl; std::cerr; std::streamoff;
 #include <vector>   // std::vector;
 using std::cerr;

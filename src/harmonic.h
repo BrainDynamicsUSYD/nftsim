@@ -29,7 +29,7 @@
 #include <string> // std::string;
 #include <vector> // std::vector;
 
-class Harmonic : public virtual Propagator {
+class Harmonic : public Propagator {
   // variables that are initialized once to speed up computation
   double gammasquared = 0.0; ///< == gamma^2;
   double twoongamma = 0.0;   ///< == 2.0/gamma;

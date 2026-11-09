@@ -22,7 +22,7 @@
 #include <string> // std::string;
 #include <vector> // std::vector;
 
-class HarmonicIntegral : public virtual Propagator {
+class HarmonicIntegral : public Propagator {
  protected:
   void init( Configf& configf ) override;
 
