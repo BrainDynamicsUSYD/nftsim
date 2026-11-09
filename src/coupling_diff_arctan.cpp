@@ -18,10 +18,11 @@
 #include "propagator.h" // Propagator;
 
 // C++ standard library headers
-#include <algorithm> // std::min_element; std::max_element;
-#include <cmath>     // std::atan;
+#include <cmath>     // std::atan; std::lround;
+#include <cstdlib>   // std::exit; EXIT_FAILURE;
 #include <iostream>  // std::cerr; std::endl;
 using std::atan;
+using std::lround;
 using std::cerr;
 using std::endl;
 
@@ -32,24 +33,30 @@ void CouplingDiffArctan::init( Configf& configf ) {
   configf.param("delta",delta);
   configf.param("t_half_up",t_half_up);
   configf.param("t_half_down",t_half_down);
-  if(t_half_up > t_half_down) {
-    cerr<<"t_half_up must be less than t_half_down" <<endl;
-  } else if(t_half_up == t_half_down) {
-    cerr<<"t_half_up must be less than t_half_down" <<endl;
-    exit (EXIT_FAILURE);
+  if( t_half_up >= t_half_down ) {
+    cerr<<"CouplingDiffArctan: t_half_up must be less than t_half_down." <<endl;
+    exit(EXIT_FAILURE);
   }
 
-  //size of time vector:
-  time_int = time_tot/deltat;
-
-  //pre-compute the profile
-  for( int i=0; i<time_tot; i++ ) {
-    diff_atan = (atan((i-t_half_up)/delta)-atan((i-t_half_down)/delta));
-    deltanu.push_back(diff_atan);
+  // Find the min and max of the profile over exactly the times at which
+  // step() evaluates it (time = k*deltat, k = 1..nsteps), to standardise
+  // nu between nu_min and nu_max.
+  size_type nsteps = static_cast<size_type>(lround(time_tot/deltat));
+  for( size_type k=1; k<=nsteps; k++ ) {
+    double diff_atan = profile(static_cast<double>(k)*deltat);
+    if( k == 1 || diff_atan < diff_atan_min ) {
+      diff_atan_min = diff_atan;
+    }
+    if( k == 1 || diff_atan > diff_atan_max ) {
+      diff_atan_max = diff_atan;
+    }
   }
-  //min and max value -  standardise values between 0 and 1
-  diff_atan_min=*std::min_element(deltanu.begin(), deltanu.end());
-  diff_atan_max=*std::max_element(deltanu.begin(), deltanu.end());
+  if( !(diff_atan_max > diff_atan_min) ) {
+    cerr<<"CouplingDiffArctan: the arctan profile is constant over the simulation time,"
+        <<" so nu cannot be scaled between nu_min and nu_max. Check Time, t_half_up,"
+        <<" t_half_down and delta." <<endl;
+    exit(EXIT_FAILURE);
+  }
 
   nu.clear();
   nu.resize(nodes, nu_min);
@@ -60,14 +67,21 @@ void CouplingDiffArctan::init( Configf& configf ) {
   }
 
   //initial time
+  steps = 0;
   time = 0;
+}
+
+double CouplingDiffArctan::profile( double t ) const {
+  return atan((t-t_half_up)/delta)-atan((t-t_half_down)/delta);
 }
 
 void CouplingDiffArctan::step() {
   // Return the right value at each time point
-  time += deltat;
+  steps++;
+  time = static_cast<double>(steps)*deltat;
+  double nu_now = nu_min + (nu_max-nu_min)*((profile(time)-diff_atan_min)/(diff_atan_max-diff_atan_min));
   for( size_type i=0; i<nodes; i++ ) {
-    nu[i]= nu_min + (nu_max-nu_min)*(((atan((time-t_half_up)/delta)-atan((time-t_half_down)/delta))-diff_atan_min)/(diff_atan_max-diff_atan_min));
+    nu[i] = nu_now;
   }
   Coupling::step();
 }
