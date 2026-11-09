@@ -18,10 +18,12 @@
 using std::vector;
 
 namespace {
-/// Intended initial glutamate concentration in the synaptic cleft. Glu::init()
-/// passes it to resize(), but the vector already has `nodes` elements (set by
-/// DE's constructor), so it has no effect and glutamate starts at 0. That is
-/// left as it is here so that outputs do not change.
+/// Initial glutamate concentration in the synaptic cleft, at every node.
+/// (This used to be passed to resize() on a vector that DE's constructor had
+/// already sized, so it had no effect and glutamate started at 0.) Note that
+/// neither value is the steady state, Lambda*tGlu*(sum of excitatory phi),
+/// which is ~4e-5 for the shipped plasticity configs; glutamate relaxes to it
+/// within a few tGlu.
 constexpr double glu_init = 1.0e-6;
 } // namespace
 
@@ -37,8 +39,8 @@ void GlutamateResponse::init( Configf& configf ) {
 void GlutamateResponse::Glu::init( Configf& configf ) {
   configf.optional("Lambda", Lambda);
   configf.optional("tGlu", tGlu);
-  variables[0].resize(nodes, glu_init);
-  variables[1].resize(nodes);
+  variables[0].assign(nodes, glu_init);
+  variables[1].assign(nodes, 0.0);
 }
 
 void GlutamateResponse::Glu::rhs( const vector<double>& y, vector<double>& dydt, size_type /*unused*/ ) {
