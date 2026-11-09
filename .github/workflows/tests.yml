@@ -1,0 +1,62 @@
+# Build nftsim and run its unit and numerical regression tests.
+#
+# Linux only for now. Noise configs (White stimuli) used std::normal_distribution,
+# whose output differs between libc++ (macOS) and libstdc++ (Linux), so they
+# failed the numerical check on macOS. The portable-noise change this builds on
+# fixes that (the whole suite then passes with Apple clang locally); add a
+# macos-latest job (make CXX=clang++) once that change is merged.
+#
+# The numerical check (nf_numerical --check all) compares each output with its
+# reference in test/numerical/data within a tolerance (rtol 1e-9 of each
+# column's largest value), which absorbs round-off from different compilers,
+# optimisation levels and CPUs.
+
+name: tests
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    name: ${{ matrix.compiler }} (Makefile build)
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler: [g++, clang++]
+    env:
+      CXX: ${{ matrix.compiler }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Show compiler version
+        run: $CXX --version
+      - name: Build nftsim
+        # The Makefile's Linux flags (-O3 -flto -march=native ...) apply to both compilers.
+        run: make -j"$(nproc)" nftsim CXX="$CXX"
+      - name: Unit tests
+        run: make test-unit CXX="$CXX"
+      - name: Numerical regression tests
+        run: ./nf_numerical --check all
+
+  sanitizers:
+    name: AddressSanitizer + UndefinedBehaviorSanitizer (clang++)
+    runs-on: ubuntu-latest
+    env:
+      CXX: clang++
+      SAN_FLAGS: -std=c++11 -O1 -g -fno-omit-frame-pointer -fsanitize=address,undefined -fno-sanitize-recover=all
+      # Any report (including a leak) makes the program exit non-zero, which
+      # fails the unit tests or the nftsim run inside nf_numerical.
+      ASAN_OPTIONS: detect_leaks=1:detect_stack_use_after_return=1:strict_init_order=1:check_initialization_order=1
+      UBSAN_OPTIONS: print_stacktrace=1:halt_on_error=1
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build nftsim and unit tests with sanitizers
+        run: make -j"$(nproc)" nftsim bin/unit_tests CXX="$CXX" CXXFLAGS="$SAN_FLAGS"
+      - name: Unit tests
+        run: ./bin/unit_tests
+      - name: Numerical regression tests
+        run: ./nf_numerical --check all
