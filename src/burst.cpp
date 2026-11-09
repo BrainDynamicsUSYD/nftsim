@@ -21,6 +21,13 @@
 using std::exp;
 using std::vector;
 
+/// Fixed potentials of the bursting model, from the original Matlab scripts.
+namespace burst {
+constexpr double Veff = -0.066; ///< [V] effective membrane potential at which the currents are evaluated.
+constexpr double Vx = 0.14;     ///< [V] reversal potential of the current with conductance gX.
+constexpr double Vk = -0.095;   ///< [V] reversal potential of the current with conductance gH (potassium).
+} // namespace burst
+
 void BurstResponse::init( Configf& configf ) {
   configf.param("Sigma",sigma);
   configf.param("Qmax",Q_max);
@@ -28,10 +35,6 @@ void BurstResponse::init( Configf& configf ) {
   configf.param("Htilde",hinit);
   double xinit;
   configf.param("Xtilde",xinit);
-
-  Veff = -0.066;  // from Matlab scripts
-  Vx = 0.14;
-  Vk = -0.095;
 
   double temp;
   configf.param("gX",temp);
@@ -126,8 +129,8 @@ void BurstResponse::step() {
 
   FiringResponse::step(); // sum soma potential
 
-  ib = -gX[0] * (Veff -Vx) / 3.0;
-  ia = ib - gH[0] * (Veff - Vk);
+  ib = -gX[0] * (burst::Veff -burst::Vx) / 3.0;
+  ia = ib - gH[0] * (burst::Veff - burst::Vk);
 
   for( size_type i=0; i<nodes; i++ ) {
     thetatemp[i] = (ic-3.0*ib*xtilde[i]+(ib-ia)*htilde[i])/mu;

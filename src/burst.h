@@ -34,9 +34,6 @@ class BurstResponse : public FiringResponse { //derived class; constructor initi
 
   std::vector<double> modtheta;
   std::vector<double> gX,gH,xtilde,htilde;
-  double Veff = 0.0;
-  double Vk = 0.0;
-  double Vx = 0.0;
   double ia = 0.0, ib = 0.0;
   double ic = 0.0;
   double taux = 0.0;  // time constant

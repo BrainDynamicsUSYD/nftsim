@@ -17,6 +17,10 @@
 #include <vector>   // std::vector;
 using std::vector;
 
+namespace {
+constexpr double glu_init = 1.0e-6; ///< Initial glutamate concentration in the synaptic cleft.
+} // namespace
+
 void GlutamateResponse::init( Configf& configf ) {
   // Glu::init() must be called before FiringResponse::init() as the latter
   // expects to be able to consume the Dendrite lines following Firing.
@@ -29,7 +33,7 @@ void GlutamateResponse::init( Configf& configf ) {
 void GlutamateResponse::Glu::init( Configf& configf ) {
   configf.optional("Lambda", Lambda);
   configf.optional("tGlu", tGlu);
-  variables[0].resize(nodes, 1.0e-6);
+  variables[0].resize(nodes, glu_init);
   variables[1].resize(nodes);
 }
 

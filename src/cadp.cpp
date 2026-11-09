@@ -49,7 +49,7 @@ double CaDP::CaDE::sig( double x, double beta ) const {
 }
 
 double CaDP::CaDE::_x(double Ca) const {
-  return xth +ltp*sig(Ca-pth, 4e7);
+  return xth +ltp*sig(Ca-pth, cadp::ca_threshold_slope);
 }
 
 void CaDP::CaDE::pot() {
@@ -59,7 +59,7 @@ void CaDP::CaDE::pot() {
 }
 
 double CaDP::CaDE::_y(double Ca) const {
-  return yth + ltd*sig(Ca-dth, 4e7) - ltd*sig(Ca-pth, 4e7);
+  return yth + ltd*sig(Ca-dth, cadp::ca_threshold_slope) - ltd*sig(Ca-pth, cadp::ca_threshold_slope);
 }
 
 void CaDP::CaDE::dep() {
@@ -80,7 +80,7 @@ void CaDP::CaDE::init( Configf& configf ) {
   variables[7].clear();
   variables[7].resize(nodes,nu_init);
   variables[2].clear();
-  variables[2].resize(nodes,.01e-6);
+  variables[2].resize(nodes,cadp::ca_init);
   pos = (nu_init>0)?1:-1;
   configf.param("nu_max",max);
   configf.param("Dth",dth);
@@ -92,13 +92,13 @@ void CaDP::CaDE::init( Configf& configf ) {
   configf.param("B",B);
   configf.param("glu_0",glu_0);
   if( !configf.optional("tCa",tCa) ) {
-    tCa = 50e-3;
+    tCa = cadp::default_tCa;
   }
   if( !configf.optional("gNMDA",gnmda) ) {
-    gnmda = 2e-3;
+    gnmda = cadp::default_gNMDA;
   }
   if( !configf.optional("z",z) ) {
-    z = .01;
+    z = cadp::default_z;
   }
 }
 
@@ -124,7 +124,7 @@ void CaDP::step() {
   const vector<double>& V = postpop.V();
   for( size_type i=0; i<nodes; i++ ) {
     (*de)[0][i] = de->sig( glu[i] -de->glu_0, de->B );
-    (*de)[1][i] = (195e-3-V[i])*de->sig( V[i]-45.5e-3, 62);
+    (*de)[1][i] = (cadp::nmda_reversal-V[i])*de->sig( V[i]-cadp::nmda_half_v, cadp::nmda_slope);
   }
   de->pot();
   de->dep();

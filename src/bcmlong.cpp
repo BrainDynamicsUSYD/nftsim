@@ -40,7 +40,7 @@ void BCMLong::init( Configf& configf ) {
     // diagonals == temp[0], off-diagonals ~= 0
     for( size_type i=0; i<nodes; i++ ) {
       for( size_type j=0; j<nodes; j++ ) {
-        (*de_2d[i])[7][j] = (*de_2d[i])[3][j] = 1e-8;
+        (*de_2d[i])[7][j] = (*de_2d[i])[3][j] = cadp::bcmlong_offdiagonal_nu;
       }
     }
     for( size_type i=0; i<nodes; i++ ) {
@@ -91,7 +91,7 @@ void BCMLong::step() {
   for( size_type i=0; i<nodes; i++ ) {
     for( size_type j=0; j<nodes; j++ ) {
       (*de_2d[i])[0][j] = de_2d[0]->sig( postpop.glu()[i] -de_2d[0]->glu_0, de_2d[0]->B );
-      (*de_2d[i])[1][j] = (195e-3-postpop.V()[j])*de_2d[0]->sig( postpop.V()[j]-45.5e-3,62 );
+      (*de_2d[i])[1][j] = (cadp::nmda_reversal-postpop.V()[j])*de_2d[0]->sig( postpop.V()[j]-cadp::nmda_half_v,cadp::nmda_slope );
     }
   }
 

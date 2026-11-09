@@ -21,6 +21,32 @@
 #include <memory> // std::unique_ptr;
 #include <vector> // std::vector;
 
+/// Fixed constants of the calcium-dependent plasticity model (CaDP, BCM,
+/// BCM-Spatial). Ca is a concentration in the units of `Dth:` and `Pth:`
+/// (mol/L in the shipped configs, which use about 0.25e-6 and 0.45e-6).
+namespace cadp {
+/// The NMDA-receptor calcium current is gNMDA*B*H(V), with
+/// H(V) = (nmda_reversal - V) / (1 + exp(-nmda_slope*(V - nmda_half_v))):
+/// a driving force times the sigmoidal voltage dependence of NMDA receptors
+/// (relief of their magnesium block).
+constexpr double nmda_reversal = 195e-3; ///< [V] potential at which H(V) changes sign.
+constexpr double nmda_half_v = 45.5e-3;  ///< [V] potential at which the voltage-dependent factor is 1/2.
+constexpr double nmda_slope = 62.0;      ///< [1/V] steepness of the voltage-dependent factor.
+/// Steepness [1/(units of Ca)] of the sigmoidal thresholds at Dth and Pth in
+/// the potentiation and depression rates x(Ca) and y(Ca).
+constexpr double ca_threshold_slope = 4e7;
+constexpr double ca_init = 0.01e-6;  ///< Initial calcium concentration.
+constexpr double default_tCa = 50e-3; ///< [s] Default `tCa:`, the calcium decay time.
+constexpr double default_gNMDA = 2e-3; ///< Default `gNMDA:`, the NMDA-receptor gain.
+/// [1/s] Default `z:`, the rate of the critically damped filter from nutilde
+/// to nu (dnu/dt follows nutilde with time-scale 1/z, ie 100 s).
+constexpr double default_z = 0.01;
+constexpr double default_t_rec = 1e3; ///< [s] Default BCM `t_rec:`, the recovery time of gNMDA.
+/// Initial off-diagonal coupling strength of a BCM-Spatial matrix when `nu:`
+/// is a single value (which sets the diagonal).
+constexpr double bcmlong_offdiagonal_nu = 1e-8;
+} // namespace cadp
+
 class CaDP : public Coupling {
  protected:
   struct CaDE : public DE {

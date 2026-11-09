@@ -44,7 +44,7 @@ void BCM::BCMDE::init( Configf& configf ) {
   }
   gnmda_0 = gnmda;
   if( !configf.optional("t_rec",t_rec) ) {
-    t_rec = 1e3;
+    t_rec = cadp::default_t_rec;
   }
 }
 
