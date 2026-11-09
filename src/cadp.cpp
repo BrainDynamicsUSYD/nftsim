@@ -116,15 +116,17 @@ CaDP::~CaDP() {
 }
 
 void CaDP::step() {
+  const vector<double>& glu = postpop.glu();
+  const vector<double>& V = postpop.V();
   for( size_type i=0; i<nodes; i++ ) {
-    (*de)[0][i] = de->sig( postpop.glu()[i] -de->glu_0, de->B );
-    (*de)[1][i] = (195e-3-postpop.V()[i])*de->sig( postpop.V()[i]-45.5e-3, 62);
+    (*de)[0][i] = de->sig( glu[i] -de->glu_0, de->B );
+    (*de)[1][i] = (195e-3-V[i])*de->sig( V[i]-45.5e-3, 62);
   }
   de->pot();
   de->dep();
   rk4->step();
   for( size_type i=0; i<nodes; i++ ) {
-    P[i] = (*de)[7][0]*prepropag[i];
+    P[i] = (*de)[7][i]*prepropag[i];
   }
 }
 
