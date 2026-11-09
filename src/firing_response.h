@@ -30,7 +30,10 @@ class FiringResponse : public NF {
  protected:
   void init( Configf& configf ) override;
 
-  std::string mode;
+  /// Firing-rate function, parsed from `Function:` by init() so that fire()
+  /// need not compare strings at every step.
+  enum class Function { None, Sigmoid, Linear, Quadratic, Cubic };
+  Function function = Function::None; ///< None until init() (BurstResponse never sets it).
   double theta = 0.0; ///< Mean firing threshold.
   double sigma = 0.0; ///< Standard deviation of the firing threshold.
   double Q_max = 0.0; ///< Maximum firing rate.

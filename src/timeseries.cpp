@@ -148,7 +148,7 @@ double Timeseries::gridSpacing( Configf& configf ) const {
 }
 
 void Timeseries::fire( vector<double>& Q ) const {
-  vector<double> temp(nodes, 0.0);
+  vector<double>& temp = scratch; // reused, to avoid an allocation per step
   Q.assign(nodes, 0.0); // Zero the Q vector we were provided.
   for(const auto& serie : series) { // for each timeseries
     // if the timeseries is active

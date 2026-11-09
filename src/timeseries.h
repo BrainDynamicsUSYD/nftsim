@@ -27,6 +27,7 @@ class Timeseries : public NF {
 
   std::vector<std::unique_ptr<Timeseries>> series; ///< Superimposed stimuli (only in the top-level Timeseries).
   std::vector<size_type> node;
+  mutable std::vector<double> scratch; ///< Work space for fire(), one value per node.
   double inf = std::numeric_limits<double>::infinity(); ///< Infinity
   double t = 0.0;     ///< Current time relative to stimulus onset.
   double onset = 0.0; ///< Onset time for the stimulus.

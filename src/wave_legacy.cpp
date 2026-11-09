@@ -103,19 +103,22 @@ void WaveLegacy::step() {
   StencilLegacy& stencilQ = *oldQ[key];
   StencilLegacy& stencil_oldQ = *oldQ[key == 0];
 
+  // Delayed Q at the new time-step, fetched once (as in Wave::step).
+  const vector<double>& Qnew = prepop.Q(tau);
+
   for( size_type i=0; i<nodes; i++,
        stencilp++, stencilQ++, stencil_oldp++, stencil_oldQ++ ) {
-    sump     = stencilp(stencilp.n)  +stencilp(stencilp.s)  +stencilp(stencilp.w)  +stencilp(stencilp.e) ; // sum of the von Neumann (orthogonal) neighbourhood (phi)
-    diagsump = stencilp(stencilp.nw) +stencilp(stencilp.ne) +stencilp(stencilp.sw) +stencilp(stencilp.se); // sum of the diagonal neighbourhood (phi)
-    sumQ     = stencilQ(stencilQ.n)  +stencilQ(stencilQ.s)  +stencilQ(stencilQ.w)  +stencilQ(stencilQ.e) ; // sum of the von Neumann (orthogonal) neighbourhood (Q)
-    diagsumQ = stencilQ(stencilQ.nw) +stencilQ(stencilQ.ne) +stencilQ(stencilQ.sw) +stencilQ(stencilQ.se); // sum of the diagonal neighbourhood (Q)
-    drive    = dfact*( tenminus3p2*expfact1* stencilQ +prepop.Q(tau)[i]
-                       +expfact2* stencil_oldQ +expfact1*.5*p2*(sumQ+.5*diagsumQ) );
+    const double sump     = stencilp(stencilp.n)  +stencilp(stencilp.s)  +stencilp(stencilp.w)  +stencilp(stencilp.e) ; // sum of the von Neumann (orthogonal) neighbourhood (phi)
+    const double diagsump = stencilp(stencilp.nw) +stencilp(stencilp.ne) +stencilp(stencilp.sw) +stencilp(stencilp.se); // sum of the diagonal neighbourhood (phi)
+    const double sumQ     = stencilQ(stencilQ.n)  +stencilQ(stencilQ.s)  +stencilQ(stencilQ.w)  +stencilQ(stencilQ.e) ; // sum of the von Neumann (orthogonal) neighbourhood (Q)
+    const double diagsumQ = stencilQ(stencilQ.nw) +stencilQ(stencilQ.ne) +stencilQ(stencilQ.sw) +stencilQ(stencilQ.se); // sum of the diagonal neighbourhood (Q)
+    const double drive    = dfact*( tenminus3p2*expfact1* stencilQ +Qnew[i]
+                                    +expfact2* stencil_oldQ +expfact1*.5*p2*(sumQ+.5*diagsumQ) );
     p[i]     = twominus3p2*expfact1 *stencilp +expfact1*.5*p2*(sump+.5*diagsump)
                -expfact2 *stencil_oldp +drive;
   }
 
   key = static_cast<int>(key == 0);
   stencil_oldp = p;
-  stencil_oldQ = prepop.Q(tau);
+  stencil_oldQ = Qnew;
 }

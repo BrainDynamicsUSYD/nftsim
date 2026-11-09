@@ -43,13 +43,6 @@ class WaveLegacy : public Propagator {
   double twominus3p2; ///< Factor in wave algorithm
   double expfact1;    ///< Factor of Exp(- gamma deltat) - scale factor applied to each step due to damping
   double expfact2;    ///< Factor of Exp(- 2 gamma deltat)
-
-  // variables that are changed every timestep
-  double sump;     ///< sum of the points in the von Neumann neighbourhood (phi)
-  double diagsump; ///< sum of the points in the diagonal neighbourhood (phi)
-  double sumQ;     ///< sum of the points in the von Neumann neighbourhood (Q)
-  double diagsumQ; ///< sum of the points in the diagonal neighbourhood (Q)
-  double drive;
  public:
   WaveLegacy( size_type nodes, double deltat, size_type index, Population& prepop,
         Population& postpop, size_type longside, std::string topology );
