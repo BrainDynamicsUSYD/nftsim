@@ -51,6 +51,13 @@ For a brief description of available Makefile targets, type:
 
 Are you on Windows and want to use `NFTsim`. Check [some options here](https://github.com/BrainDynamicsUSYD/nftsim/wiki/All:-Cross-platform-support). 
 
+### Reproducibility of random noise
+
+White-noise stimuli (`White`, `WhiteCoherent`) draw from a 64-bit Mersenne Twister (`std::mt19937_64`) and turn its output into Gaussian variates with Marsaglia's polar method, written out in `src/random.cpp`.
+`std::normal_distribution` is not used, because its algorithm differs between standard libraries.
+So a given `Ranseed` (or the default seeds 1, 2, 3, ... given to the stimuli in turn) produces the same noise whether `NFTsim` is built with GCC (libstdc++) or clang (libc++), and the same noise (to round-off) as earlier versions built with GCC.
+Outputs from different compilers or platforms can still differ by round-off, typically below 1e-12 relative, because compilers may fuse multiply-adds (clang does by default; `-ffp-contract=off` turns this off) and maths libraries can differ in the last bit.
+
 
 ## Demos
 
