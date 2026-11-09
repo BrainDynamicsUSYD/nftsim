@@ -94,15 +94,42 @@ Dendrite::~Dendrite() {
 }
 
 void Dendrite::step() {
-  //Copy the \nu\phi into their corresponding variable in the DE.
+  // Classical RK4 for DendriteDE, written out over all nodes. It performs the
+  // same arithmetic, in the same order, as RK4::step() with DendriteDE::rhs
+  // (so results are unchanged), but avoids a virtual rhs() call and a gather
+  // per node per stage, which dominated nftsim's run time. nu*phi is held
+  // constant over the step (d(nu*phi)/dt = 0 in DendriteDE::rhs).
+  const double* __restrict__ np = precouple.nuphi().data();
+  double* __restrict__ V = (*de)[0].data();
+  double* __restrict__ W = (*de)[1].data();
+  double* __restrict__ P = (*de)[2].data();
+  const double h = deltat;
+  const double h2 = deltat*0.5;
+  const double h6 = deltat/6.0;
+  const double fab = factorab;
+  const double ab = alphaxbeta;
   for( size_type i=0; i<nodes; i++ ) {
-    (*de)[2][i] = precouple[i]; // \nu\phi
-  }
-  //Integrate the dendritic response one step forward in time.
-  rk4->step();
-  //Copy the voltages from the updated DE to the local variable v.
-  for( size_type i=0; i<nodes; i++ ) {
-    v[i] = (*de)[0][i]; // Voltage
+    const double p = np[i];
+    P[i] = p;
+    const double v0 = V[i];
+    const double w0 = W[i];
+    const double kv1 = w0;
+    const double kw1 = (p - v0 - fab * w0) * ab;
+    const double v1 = v0 + (h2 * kv1);
+    const double w1 = w0 + (h2 * kw1);
+    const double kv2 = w1;
+    const double kw2 = (p - v1 - fab * w1) * ab;
+    const double v2 = v0 + (h2 * kv2);
+    const double w2 = w0 + (h2 * kw2);
+    const double kv3 = w2;
+    const double kw3 = (p - v2 - fab * w2) * ab;
+    const double v3 = v0 + (h * kv3);
+    const double w3 = w0 + (h * kw3);
+    const double kv4 = w3;
+    const double kw4 = (p - v3 - fab * w3) * ab;
+    V[i] = v0 + h6*(kv1 + (2.0 * kv2) + (2.0 * kv3) + kv4);
+    W[i] = w0 + h6*(kw1 + (2.0 * kw2) + (2.0 * kw3) + kw4);
+    v[i] = V[i];
   }
 }
 
