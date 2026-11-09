@@ -15,6 +15,8 @@
 #include "population.h" // Population;
 
 // C++ standard library headers
+#include <cstdlib>  // std::exit; EXIT_FAILURE;
+#include <iostream> // std::cerr; std::endl;
 #include <string>   // std::string;
 #include <vector>   // std::vector;
 using std::string;
@@ -39,6 +41,12 @@ void Propagator::init( Configf& configf ) {
   configf.optional("Range",range);
   if( !configf.optional("gamma",gamma) ) {
     if( configf.optional("velocity",velocity) ) {
+      if( range <= 0.0 ) {
+        std::cerr << "Propagator " << index+1 << ": velocity given without a "
+                  << "positive Range (Range must precede velocity), so gamma "
+                  << "= velocity/Range cannot be computed." << std::endl;
+        exit(EXIT_FAILURE);
+      }
       gamma = velocity/range;
     }
   }
