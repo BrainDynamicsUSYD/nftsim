@@ -69,10 +69,10 @@ void Timeseries::init( Configf& configf ) {
     }
 
     // Check user supplied Node indices are valid.
-    for(size_type j : temp_node) {
-      if( j > nodes ) {
-        cerr<<"Trying to plot node number "<<j
-            <<", which is bigger than the highest node index."<<endl;
+    for(double j : temp_node) {
+      if( j < 1 || j > nodes ) {
+        cerr<<"Stimulus node number "<<j<<" is out of range: nodes are "
+            <<"numbered from 1 to "<<nodes<<"."<<endl;
         exit(EXIT_FAILURE);
       }
     }
