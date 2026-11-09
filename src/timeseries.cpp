@@ -26,7 +26,7 @@
 
 // C++ standard library headers
 #include <algorithm>  // std::min; std::max
-#include <cmath>    // std::pow; std::sqrt; std::sin; std::fmod; M_PI; std::ceil; std::exp
+#include <cmath>    // std::abs; std::pow; std::sqrt; std::sin; std::fmod; M_PI; std::ceil; std::exp
 #include <iostream> // std::cerr; std::endl;
 #include <string>   // std::string;
 #include <vector>   // std::vector;
@@ -116,6 +116,10 @@ void Timeseries::init( Configf& configf ) {
       series[i]->node.push_back( j-1 );
     }
     series[i]->init(configf);
+    // Some series adjust t in their init (eg, PulseSigmoid, PAS), so record
+    // the starting time only after init. Timeseries::step then computes t
+    // from an integer step count rather than accumulating deltat.
+    series[i]->t0 = series[i]->t;
   }
 
 }
@@ -148,7 +152,14 @@ void Timeseries::fire( vector<double>& Q ) const {
 
 void Timeseries::step() {
   for(auto & serie : series) {
-    serie->t += deltat;
+    serie->step_count++;
+    serie->t = serie->t0 + static_cast<double>(serie->step_count)*deltat;
+    // Snap to exactly zero when within rounding error of onset, so that a
+    // step falling on onset is not skipped (eg, -onset + 123*deltat can
+    // evaluate to -1e-18 for decimal Onset and Deltat).
+    if( std::abs(serie->t) < time_tolerance*deltat ) {
+      serie->t = 0.0;
+    }
   }
 }
 
@@ -196,7 +207,10 @@ namespace TIMESERIES {
   void PulseRect::fire( vector<double>& Q ) const {
     //  Between start of each pulse and start plus width && as long as we have
     //  not reached the maximum number of pulses.
-    if((fmod(t, period) <= width) && (t/period < pulses) ) {
+    //  The pulse is on for t in [start, start + width); a small tolerance
+    //  keeps rounding error in t from adding or dropping a step at either end.
+    const double t_tol = t + time_tolerance*deltat;
+    if((fmod(t_tol, period) < width) && (t_tol/period < pulses) ) {
       Q.assign(nodes, amp); // assign nodes instances of amp to Q.
     }
   }
