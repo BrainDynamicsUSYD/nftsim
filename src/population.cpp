@@ -78,14 +78,21 @@ void Population::step() {
   }
 }
 
-double Population::Qinit( Configf& configf ) const {
-  if( firing_response != nullptr ) {
-    string buffer = configf.find( label("Population ",index+1)+"*Q:");
-    return atof(buffer.c_str());
-  }
+/** @brief Initial firing rate, read from this population's section.
 
-  string temp = configf.find( label("Population ",index+1)+"*Mean:");
-  return atof( temp.c_str() );
+  A neural population must give `Q:`. A stimulus population starts at its
+  `Mean:` if its stimulus has one (Const, White, WhiteCoherent; with
+  Superimpose, the first `Mean:` in the section), and otherwise at 0: the
+  remaining stimuli (pulses, Sine, PAS, Burst) have a zero baseline. The
+  search is confined to this population's section; it used to run on through
+  the file, so a stimulus without `Mean:` took a later population's `Mean:`.
+*/
+double Population::Qinit( Configf& configf ) const {
+  const string section = label("Population ",index+1);
+  if( firing_response != nullptr ) {
+    return atof( configf.lookup(section, "Q", true).c_str() );
+  }
+  return atof( configf.lookup(section, "Mean", false).c_str() );
 }
 
 const vector<double>& Population::glu() const {

@@ -140,11 +140,10 @@ Timeseries::~Timeseries() {
   optional "Longside nodes" parameter, or sqrt(Nodes) for a square grid.
 */
 double Timeseries::gridSpacing( Configf& configf ) const {
-  double length = atof(configf.find(
-                         label("Population ",index+1)+"*Length").c_str());
-  // "Nodes:" is a required parameter and "Longside nodes:" (if present)
-  // follows it, so this returns "" rather than exiting when it is absent.
-  string longside = configf.find("Nodes:*Longside nodes:");
+  double length = atof(configf.lookup(
+                         label("Population ",index+1), "Length", true).c_str());
+  // "Longside nodes:" is an optional global parameter.
+  string longside = configf.lookup("", "Longside nodes", false);
   if( longside.empty() ) {
     return length/sqrt(nodes);
   }
