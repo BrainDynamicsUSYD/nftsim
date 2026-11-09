@@ -51,18 +51,15 @@ void DendriteRamp::init( Configf& configf ) {
   configf.param("t3",de->t3);
   configf.param("t4",de->t4);
   time = 0;
-  de->init(v[0]); // call DendriteRamp::DendriteDE::init
+  de->init(v); // call DendriteRamp::DendriteDE::init
   de->alpha_vec.push_back(alpha);
   de->beta_vec.push_back(beta);
 }
 
-void DendriteRamp::DendriteDE::init(const double vinit) {
-  variables[0].clear();
-  variables[1].clear();
-  variables[2].clear();
-  variables[0].resize(nodes, vinit);
-  variables[1].resize(nodes, 0.0);
-  variables[2].resize(nodes, 0.0);
+void DendriteRamp::DendriteDE::init(const vector<double>& vinit) {
+  variables[0] = vinit;
+  variables[1].assign(nodes, 0.0);
+  variables[2].assign(nodes, 0.0);
 }
 
 DendriteRamp::DendriteRamp( size_type nodes, double deltat, size_type index,

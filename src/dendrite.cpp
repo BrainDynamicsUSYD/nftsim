@@ -53,11 +53,9 @@ void Dendrite::init( Configf& configf ) {
   string buffer("Steady");
   configf.optional("V",buffer);
   if( buffer == "Steady" ) {
-    for( size_type i=0; i<nodes; i++ ) {
-      v[i] = precouple.nuinit(configf)*prepropag.phiinit(configf);
-    }
+    v.assign(nodes, precouple.nuinit(configf)*prepropag.phiinit(configf));
   } else {
-    v.resize(nodes,atof(buffer.c_str()));
+    v.assign(nodes, atof(buffer.c_str()));
   }
 
   configf.param("alpha",alpha);
@@ -67,18 +65,15 @@ void Dendrite::init( Configf& configf ) {
   factorab = 1./alpha + 1./beta;
   alphaxbeta = alpha * beta;
 
-  de->init(v[0]); // call Dendrite::DendriteDE::init
+  de->init(v); // call Dendrite::DendriteDE::init
   de->factorab = factorab;
   de->alphaxbeta = alphaxbeta;
 }
 
-void Dendrite::DendriteDE::init(const double vinit) {
-  variables[0].clear();
-  variables[1].clear();
-  variables[2].clear();
-  variables[0].resize(nodes, vinit);
-  variables[1].resize(nodes, 0.0);
-  variables[2].resize(nodes, 0.0);
+void Dendrite::DendriteDE::init(const vector<double>& vinit) {
+  variables[0] = vinit;
+  variables[1].assign(nodes, 0.0);
+  variables[2].assign(nodes, 0.0);
 }
 
 Dendrite::Dendrite( size_type nodes, double deltat, size_type index,
