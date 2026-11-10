@@ -549,7 +549,8 @@ Dendrite 1: V: Steady alpha: 83 beta: 769
     \end{lstlisting}
     The identifier \type{Dendrite 1}, where the number 1 is the presynaptic connection index, is required for cross-checking. Users should find that these indices are simply ordered as 1, 2, 3, 4, ...
 
-    Optional parameter \type{V} may be used to specify the initial depolarization contribution from presynaptic activity. If unspecified, or set to \type{Steady}, \NF calculates the initial value by \(V_{ab}=\nu_{ab}\phi_{ab}\), node by node, with the initial \(\phi_{ab}\) of the presynaptic propagator (its \type{phi}, Sec.~\ref{sec:prop}) and the initial \type{nu} of the coupling (the first value, if several are given).
+    Optional parameter \type{V} may be used to specify the initial depolarization contribution from presynaptic activity. If unspecified, or set to \type{Steady}, \NF sets it to the coupling's initial input \(\nu_{ab}\phi_{ab}\) at each node, using the initial \(\phi_{ab}\) of the presynaptic propagator (its \type{phi}, Sec.~\ref{sec:prop}).
+    This is the input the coupling actually delivers: with one \type{nu} per node it uses each node's value, and for a \type{Matrix} coupling it is the sum over source nodes, \(\sum_i \nu_{ij}\phi_i\).
 
     \type{alpha} and \type{beta} are the parameters for the depolarization response.
     \end{itemize}
