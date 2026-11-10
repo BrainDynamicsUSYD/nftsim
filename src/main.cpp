@@ -45,11 +45,15 @@ int main(int argc, char* argv[]) {
              << "  -i, --input [FILE]         Read from a particular configuration;" << endl
              << "  -o, --output [FILE]        Write to a particular output file;" << endl
              << "  -t, --time-stamp           Add time-stamp to auto-generated output file name;" << endl
+             << "  -f, --format [FORMAT]      Write the data as Text (the default), Binary (float64)" << endl
+             << "                             or Binary32 (float32), overriding the config's Format;" << endl
+             << "  -b, --binary               Same as --format Binary;" << endl
              << "  -h, -?, --help             Print this message;" << endl
              << "  -v, --verbose              Send output to stdout." << endl << endl
              << "Examples:" << endl
              << "  nftsim " << endl
              << "  nftsim -i alternate.conf -o alternate.output" << endl
+             << "  nftsim -i alternate.conf -o alternate.output --binary" << endl
              << endl
              << "(c) Copyright Complex Systems Group, School of Physics, University of Sydney 2015" << endl
              << "Use of NFTsim indicates your acceptance of the licensing conditions distributed with this end" << endl;
@@ -97,6 +101,21 @@ int main(int argc, char* argv[]) {
   // open file for outputting data - default is confname with .conf suffix
   // replaced by .output, so nftsim.conf => nftsim.output.
   Dumpf dumpf;
+  // Output format: text unless --format or --binary (or the config's Format:) says otherwise.
+  for( int i=1; i<argc; i++) {
+    if( strcmp(argv[i],"-b")==0 || strcmp(argv[i],"--binary")==0 ) {
+      dumpf.format(OutputFormat::binary64, true);
+    } else if( strcmp(argv[i],"-f")==0 || strcmp(argv[i],"--format")==0 ) {
+      OutputFormat format;
+      if( i+1>=argc || !parseOutputFormat(argv[i+1], format) ) {
+        cerr << "Error: " << argv[i] << " needs a format: Text, Binary (or Binary64) or Binary32." << endl;
+        return EXIT_FAILURE;
+      }
+      dumpf.format(format, true);
+      i++;
+    }
+  }
+
   int ioutarg = 0;
   if( argc>2 ) {
     for( int i=1; i<argc-1; i++) {
