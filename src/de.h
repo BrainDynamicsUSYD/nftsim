@@ -46,10 +46,10 @@ class DE {
   }
   virtual ~DE() = default;
 
-  virtual std::vector<double>& operator[] ( vvd_size_type index ) {
+  std::vector<double>& operator[] ( vvd_size_type index ) {
     return variables[index];
   }
-  virtual const std::vector<double>& operator[] ( vvd_size_type index ) const {
+  const std::vector<double>& operator[] ( vvd_size_type index ) const {
     return variables[index];
   }
   /// Classes derived from DE, define their specific differential equations here.

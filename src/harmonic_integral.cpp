@@ -1,7 +1,5 @@
 /** @file harmonic_integral.cpp
-  @brief A brief, one sentence description.
-
-  A more detailed multiline description...
+  @brief Defines HarmonicIntegral, a Harmonic propagator stepped with an exact integral.
 
   @author Peter Drysdale, Felix Fung,
 */
@@ -56,25 +54,26 @@ HarmonicIntegral::HarmonicIntegral( size_type nodes, double deltat, size_type in
 HarmonicIntegral::~HarmonicIntegral() = default;
 
 /**
-  @brief Uses an integral approximation to advance the Harmonic Propogator.
-  
-  This implementation assumes gamma is constant and Q(t) is linear for the 
+  @brief Advances the Harmonic propagator with the exact solution for Q linear over the step.
+
+  This implementation assumes gamma is constant and Q(t) is linear for the
   timestep. If you are working in a regime that does not conform to these
   assumptions then use the Harmonic class, which uses a more general
   differential form for the step method.
 
-  x(t)  =  C1 t e(pt) + C2 e(pt)
-  
-  TODO: add equations and reference for the integral approximation used here.
-  \f{eqnarray*}{
-    \frac{dp}{dt}&=&\left(C1 - \gamma \left(C2\right)\right) \\
-    \phi&=&something
-  \f}
-  where
-  \f{eqnarray*}{
-    C1&=& stuff \\
-    C2&=& stuff
-  \f}
+  The propagator obeys
+  \f[
+    \frac{1}{\gamma^2}\frac{d^2\phi}{dt^2} + \frac{2}{\gamma}\frac{d\phi}{dt} + \phi = Q.
+  \f]
+  Over a step, with \f$Q(t) = Q_0 + s t\f$ (\f$Q_0\f$ the previous delayed Q
+  and \f$s = (Q - Q_0)/\Delta t\f$), the solution is
+  \f[
+    \phi(t) = (C_1 t + C_2) e^{-\gamma t} + Q_0 + s t - \frac{2}{\gamma} s,
+  \f]
+  with \f$C_2 = \phi_0 - Q_0 + 2s/\gamma\f$ (= -adjustedQ) and
+  \f$C_1 = \dot\phi_0 + \gamma C_2 - s\f$ fitted to \f$\phi\f$ and
+  \f$d\phi/dt\f$ at the start of the step. It is evaluated at
+  \f$t = \Delta t\f$, with \f$e^{-\gamma\Delta t}\f$ precomputed.
 */
 void HarmonicIntegral::step() {
   const vector<double>& Q = prepop.Q(tau);

@@ -1,7 +1,12 @@
 /** @file coupling.h
   @brief Declaration of the main class handling synaptic connections.
 
-  A more detailed multiline description...
+  A Coupling scales the presynaptic field phi from its Propagator by the
+  synaptic strength nu, giving the input P = nu*phi to a postsynaptic
+  Dendrite. The base class (`Coupling N: Map - nu: ...`) has a fixed nu, one
+  value or one per node; derived classes vary it over time or with activity
+  (CouplingRamp, CouplingDiffArctan, CaDP, BCM, BCMLong) or couple all pairs
+  of nodes (LongCoupling, `Matrix`).
 
   @author Peter Drysdale, Felix Fung,
 */
@@ -25,8 +30,6 @@ class Coupling;
 class Coupling : public NF {
  protected:
   void init( Configf& configf ) override;
-  //virtual void restart( Restartf& restartf );
-  //virtual void dump( Dumpf& dumpf ) const;
 
   const Propagator& prepropag;
   const Population& postpop;
@@ -41,7 +44,8 @@ class Coupling : public NF {
           const Propagator& prepropag, const Population& postpop );
   ~Coupling() override;
   void step() override;
-  double nuinit( Configf& configf ) const;
+  /// Initial nu, read from this coupling's section (before init() is called).
+  virtual double nuinit( Configf& configf ) const;
   void output( Output& output ) const override;
   virtual const std::vector<double>& nuphi() const;
   inline double operator[]( size_type node ) const;

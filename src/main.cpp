@@ -72,7 +72,7 @@ int main(int argc, char* argv[]) {
   if(iconfarg == 0) {
     cerr << "Warning: Using nftsim.conf for input by default" << endl;
   }
-  auto inputf = new Configf(confname);
+  Configf inputf(confname);
 
   // Current local time, optionally appended to auto-generated output file name.
   // The time-stamp format used is ISO 8601: YYYY-mm-ddThhMMSS.
@@ -121,9 +121,8 @@ int main(int argc, char* argv[]) {
 
   // construct, initialize and solve the neural field theory
   Solver nftsim(dumpf);
-  *inputf>>nftsim;
+  inputf>>nftsim;
   nftsim.solve();
 
-  delete inputf;
   return EXIT_SUCCESS;
 }

@@ -27,8 +27,6 @@ class Propagator;
 class Propagator : public NF {
  protected:
   void init( Configf& configf ) override;
-  //void restart( Restartf& restartf );
-  //void dump( Dumpf& dumpf ) const;
 
   Population& prepop;
   Population& postpop;

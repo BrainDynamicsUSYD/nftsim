@@ -2,7 +2,18 @@
   @brief Declares the Dendrite class, which handles dendritic dynamics.
 
   Dendrite dynamics are applied to incoming activity to postsynaptic Population
-  objects.
+  objects. A Dendrite turns the weighted input nu*phi from its presynaptic
+  Coupling into a contribution V to the soma potential, by solving
+  \f[
+    \frac{1}{\alpha\beta}\frac{d^2V}{dt^2}
+      + \left(\frac{1}{\alpha} + \frac{1}{\beta}\right)\frac{dV}{dt} + V = \nu\phi.
+  \f]
+  Dendrite (the default, `Dendrite N: alpha: ... beta: ...`) integrates this
+  with classical RK4, holding nu*phi constant over each step.
+  DendriteIntegral (`Dendrite N: Integral ...`, dendrite_integral.h) uses the
+  exact solution for nu*phi linear over the step. DendriteRamp
+  (`Dendrite N: Ramp ...`, dendriteramp.h) ramps alpha and beta over time.
+  The two derived classes reuse Dendrite::init() and its state (V, dV/dt).
 
   @author Peter Drysdale, Felix Fung,
 */
@@ -16,7 +27,6 @@ class Dendrite;
 // Other nftsim headers
 #include "configf.h"    // Configf;
 #include "coupling.h"   // Coupling;
-#include "de.h"         // DE; RK4;
 #include "nf.h"         // NF;
 #include "output.h"     // Output;
 #include "population.h" // Population;
@@ -26,25 +36,14 @@ class Dendrite;
 #include <vector> // std::vector;
 
 class Dendrite : public NF {
-  // variables that are initialized once to speed up computation
-  double factorab = 0.0;   ///< == 1./alpha + 1./beta;
-  double alphaxbeta = 0.0; ///< == alpha * beta;
-
  protected:
-  struct DendriteDE : public DE {
-    double factorab = 0.0, alphaxbeta = 0.0;
-    virtual void init(const std::vector<double>& vinit);
-    DendriteDE( size_type nodes, double deltat) : DE(nodes, deltat, 3) {}
-    ~DendriteDE() override = default;
-    void rhs( const std::vector<double>& y, std::vector<double>& dydt, size_type /*unused*/ ) override;
-  };
-  DendriteDE* de;
-  RK4* rk4;
-
-  double alpha = 0.0; ///< Mean decay rate of the soma response to a delta-function synaptic input (needed here for DendriteRamp).
+  double alpha = 0.0; ///< Mean decay rate of the soma response to a delta-function synaptic input.
   double beta = 0.0; ///< Mean rise rate of the soma response to a delta-function synaptic input.
+  double factorab = 0.0;   ///< == 1./alpha + 1./beta, set by init().
+  double alphaxbeta = 0.0; ///< == alpha * beta, set by init().
 
-  std::vector<double> v; ///< Membrane potential.
+  std::vector<double> v;    ///< Membrane potential V.
+  std::vector<double> dvdt; ///< dV/dt (not used by DendriteRamp, which keeps its own in its DE).
 
   // Integration: SecondOrder. The input nu*phi over the step [t_n, t_n+1] is
   // extrapolated linearly from its values at t_n and t_n-1 (like a second-order
@@ -55,8 +54,6 @@ class Dendrite : public NF {
   void startSecondOrder( const double* np ); ///< sets prevnp on the first step
 
   void init( Configf& configf ) override;
-  //virtual void restart( Restartf& restartf );
-  //virtual void dump( Dumpf& dumpf ) const;
  public:
   Dendrite() = delete;                // No default constructor allowed.
   Dendrite(const Dendrite&) = delete; // No copy constructor allowed.

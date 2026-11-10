@@ -1,7 +1,9 @@
 /** @file timeseries.h
   @brief Declarations for a collection of time-series, primarily for use as stimuli.
 
-  A more detailed multiline description...
+  A stimulus population owns one Timeseries, which holds one or more
+  (`Superimpose: N`) time-series from namespace TIMESERIES, each with its own
+  onset, duration and nodes, and sums them in fire().
 
   @author Peter Drysdale, Felix Fung,
 */
@@ -16,6 +18,7 @@
 
 // C++ standard library headers
 #include <limits>   // std::numeric_limits<double>::infinity()
+#include <memory>   // std::unique_ptr;
 #include <vector>   // std::vector;
 
 class Timeseries : public NF {
@@ -24,8 +27,9 @@ class Timeseries : public NF {
   void init( Configf& configf ) override;
   double gridSpacing( Configf& configf ) const;
 
-  std::vector<Timeseries*> series;
+  std::vector<std::unique_ptr<Timeseries>> series; ///< Superimposed stimuli (only in the top-level Timeseries).
   std::vector<size_type> node;
+  mutable std::vector<double> scratch; ///< Work space for fire(), one value per node.
   double inf = std::numeric_limits<double>::infinity(); ///< Infinity
   double t = 0.0;     ///< Current time relative to stimulus onset.
   double onset = 0.0; ///< Onset time for the stimulus.
@@ -47,7 +51,7 @@ class Timeseries : public NF {
 namespace TIMESERIES {
 
   struct Const : public Timeseries {
-    double mean = 0.0; ///<
+    double mean = 0.0; ///< The constant value.
     Const(size_type nodes, double deltat, size_type index) : Timeseries(nodes, deltat, index) {}
     void init( Configf& configf ) override;
     void fire( std::vector<double>& Q ) const override;
@@ -99,31 +103,27 @@ namespace TIMESERIES {
     void fire( std::vector<double>& Q ) const override;
   };
 
+  /// Gaussian white noise, independent at each node (`White`).
   struct White : public Timeseries {
-    uint_fast64_t seed = 0; ///<
-    double stddev = 0.0;    ///<
+    uint_fast64_t seed = 0; ///< Ranseed, if given.
+    double stddev = 0.0;    ///< Standard deviation per step (StdDev, or computed from ASD).
     double asd = 0.0;       ///< Amplitude spectral density.
-    double mean = 0.0;      ///<
-    double deltax = 0.0;    ///<
-    Random* random;
+    double mean = 0.0;      ///< Mean.
+    double deltax = 0.0;    ///< Grid spacing used to scale ASD on a grid.
+    std::unique_ptr<Random> random;
     White(size_type nodes, double deltat, size_type index) : Timeseries(nodes, deltat, index) {}
-    ~White() override {
-      delete random;
-    }
     void init( Configf& configf ) override;
     void fire( std::vector<double>& Q ) const override;
   };
 
+  /// Gaussian white noise in time, the same at every node (`WhiteCoherent`).
   struct WhiteCoherent : public Timeseries {
-    uint_fast64_t seed = 0; ///<
-    double stddev = 0.0;      ///<
+    uint_fast64_t seed = 0; ///< Ranseed, if given.
+    double stddev = 0.0;      ///< Standard deviation per step (StdDev, or computed from ASD).
     double asd    = 0.0;      ///< Amplitude spectral density.
-    double mean   = 0.0;      ///<
-    Random* random;
+    double mean   = 0.0;      ///< Mean.
+    std::unique_ptr<Random> random;
     WhiteCoherent(size_type nodes, double deltat, size_type index) : Timeseries(nodes, deltat, index) {}
-    ~WhiteCoherent() override {
-      delete random;
-    }
     void init( Configf& configf ) override;
     void fire( std::vector<double>& Q ) const override;
   };
@@ -135,22 +135,24 @@ namespace TIMESERIES {
     double p25h = 0.0;  ///< Height of the positive amplitude response at around 25 ms.
     double tmsw = 0.0;  ///< Width of the Transcranial Magnetic Stimulation(TMS).
     double tmsh = 0.0;  ///< Height of the Transcranial Magnetic Stimulation(TMS).
-    double t_mns = 0.0; ///<
+    double t_mns = 0.0; ///< Time of the median nerve stimulation (later than onset when ISI < 0).
     double isi = 0.0;   ///< Inter-Stimulus-Interval.
     PAS(size_type nodes, double deltat, size_type index) : Timeseries(nodes, deltat, index) {}
     void init( Configf& configf ) override;
     void fire( std::vector<double>& Q ) const override;
   };
 
+  /// Bursts of rectangular pulses (`Burst`), eg theta-burst stimulation:
+  /// pulses of width `Width` at `Burst Frequency`, `Bursts` pulses per burst,
+  /// bursts at `Oscillation Frequency`, in trains `On` seconds on and `Off` off.
   struct Burst : public Timeseries {
-    double amp = 0.0;    ///<
-    double width = 0.0;  ///<
-    double bursts = 0.0; ///<
-    double freq = 0.0;   ///<
-    double oscillation_freq = 0.0; ///<
-    double on = 0.0;    ///<
-    double off = 0.0;   ///<
-    double total = 0.0; ///<
+    double amp = 0.0;    ///< Pulse amplitude.
+    double width = 0.0;  ///< Pulse width [s].
+    double bursts = 0.0; ///< Pulses per burst.
+    double freq = 0.0;   ///< Pulse frequency within a burst [s^-1].
+    double oscillation_freq = 0.0; ///< Burst frequency [s^-1].
+    double on = 0.0;    ///< Duration of each train of bursts [s].
+    double off = 0.0;   ///< Pause between trains [s].
     Burst(size_type nodes, double deltat, size_type index) : Timeseries(nodes, deltat, index) {}
     void init( Configf& configf ) override;
     void fire( std::vector<double>& Q ) const override;

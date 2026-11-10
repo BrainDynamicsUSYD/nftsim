@@ -1,9 +1,10 @@
 /** @file dendrite_integral.cpp
-  @brief DendriteIntegral handles the dendritic response of the postsynaptic
-         population using the integral form for the DendriteIntegral::step()
-         member-function.
+  @brief Defines DendriteIntegral (`Dendrite N: Integral`), a dendrite stepped with an exact integral.
 
-  A more detailed multiline description...
+  With nu*phi = P0 + s t over a step, V = P0 + s t - (1/alpha + 1/beta) s
+  plus a combination of exp(-alpha t) and exp(-beta t) (or (C1 t + C2)
+  exp(-alpha t) when alpha == beta) fitted to V and dV/dt at the start of the
+  step.
 
   @author Peter Drysdale, Felix Fung,
 */
@@ -28,12 +29,11 @@ void DendriteIntegral::init( Configf& configf ) {
   aminusb = alpha - beta;
   expa = exp(-alpha*deltat);
   expb = exp(-beta*deltat);
-  factorab = 1./alpha + 1./beta;
 }
 
 DendriteIntegral::DendriteIntegral( size_type nodes, double deltat, size_type index,
                     const Propagator& prepropag, const Coupling& precouple )
-  : Dendrite(nodes, deltat, index, prepropag, precouple), dvdt(nodes,0), oldnp(nodes) {
+  : Dendrite(nodes, deltat, index, prepropag, precouple), oldnp(nodes) {
 }
 
 DendriteIntegral::~DendriteIntegral() = default;

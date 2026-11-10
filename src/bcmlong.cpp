@@ -1,7 +1,9 @@
 /** @file bcmlong.cpp
-  @brief A brief, one sentence description.
+  @brief Defines BCMLong (`BCM-Spatial`), BCM plasticity of a node-to-node coupling matrix.
 
-  A more detailed multiline description...
+  `nu:` is a single value (the diagonal, with small off-diagonal strengths)
+  or Nodes x Nodes values. Each step updates the plasticity state of every
+  connection, then sums P[j] = sum_i nu[i][j] phi[i].
 
   @author Peter Drysdale, Felix Fung,
 */
@@ -12,9 +14,11 @@
 // Other nftsim headers
 #include "configf.h"    // Configf;
 #include "de.h"         // RK4;
+#include "make_unique.h" // nftsim::make_unique;
 #include "output.h"     // Output;
 
 // C++ standard library headers
+#include <cmath>    // std::pow;
 #include <iostream> // std::endl; std::cerr; std::streamoff;
 #include <vector>   // std::vector;
 using std::cerr;
@@ -39,7 +43,7 @@ void BCMLong::init( Configf& configf ) {
     // diagonals == temp[0], off-diagonals ~= 0
     for( size_type i=0; i<nodes; i++ ) {
       for( size_type j=0; j<nodes; j++ ) {
-        (*de_2d[i])[7][j] = (*de_2d[i])[3][j] = 1e-8;
+        (*de_2d[i])[7][j] = (*de_2d[i])[3][j] = cadp::bcmlong_offdiagonal_nu;
       }
     }
     for( size_type i=0; i<nodes; i++ ) {
@@ -70,19 +74,14 @@ void BCMLong::init( Configf& configf ) {
 
 BCMLong::BCMLong( size_type nodes, double deltat, size_type index,
                   const Propagator& prepropag, const Population& postpop )
-  : BCM(nodes,deltat,index,prepropag,postpop), de_2d(nodes), rk4_2d(nodes) {
+  : BCM(nodes,deltat,index,prepropag,postpop,nullptr), de_2d(nodes), rk4_2d(nodes) {
   for( size_type i=0; i<nodes; i++ ) {
-    de_2d [i] = new BCMDE(nodes,deltat);
-    rk4_2d[i] = new RK4(*de_2d[i]);
+    de_2d [i] = nftsim::make_unique<BCMDE>(nodes,deltat);
+    rk4_2d[i] = nftsim::make_unique<RK4>(*de_2d[i]);
   }
 }
 
-BCMLong::~BCMLong() {
-  for( size_type i=0; i<nodes; i++ ) {
-    delete de_2d[i];
-    delete rk4_2d[i];
-  }
-}
+BCMLong::~BCMLong() = default;
 
 void BCMLong::step() {
   // (*de_2d[i])[k][j] : i=from node i, j=to node j, k=kth field of y
@@ -95,7 +94,7 @@ void BCMLong::step() {
   for( size_type i=0; i<nodes; i++ ) {
     for( size_type j=0; j<nodes; j++ ) {
       (*de_2d[i])[0][j] = de_2d[0]->sig( postpop.glu()[i] -de_2d[0]->glu_0, de_2d[0]->B );
-      (*de_2d[i])[1][j] = (195e-3-postpop.V()[j])*de_2d[0]->sig( postpop.V()[j]-45.5e-3,62 );
+      (*de_2d[i])[1][j] = (cadp::nmda_reversal-postpop.V()[j])*de_2d[0]->sig( postpop.V()[j]-cadp::nmda_half_v,cadp::nmda_slope );
     }
   }
 

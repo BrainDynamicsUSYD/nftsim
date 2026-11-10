@@ -13,7 +13,6 @@
 
 // Other nftsim headers
 #include "configf.h"   // Configf;
-//#include "dumpf.h"     // Dumpf;
 #include "output.h"    // Output;
 
 // C++ standard library headers
@@ -33,8 +32,6 @@ class NF {
  protected:
   using size_type = std::vector<double>::size_type;
   virtual void init( Configf& configf ) = 0; ///< pure virtual method, all derived classes must implement this.
-  //virtual void restart( Restartf& restartf ) = 0;
-  //virtual void dump( Dumpf& dumpf ) const = 0;
   NF( size_type nodes, double deltat, size_type index );
   size_type nodes;  ///< number of nodes in simulation
   double deltat;    ///< time increment per timestep
@@ -43,8 +40,6 @@ class NF {
   NF() = delete;  ///< No default constructor allowed.
 
   friend Configf&  operator>> ( Configf& configf, NF& nf );
-  //friend Restartf& operator>> ( Restartf& restartf, NF& nf );
-  //friend Dumpf&    operator<< ( Dumpf& dumpf, const NF& nf );
   virtual void step() = 0; ///< pure virtual method, all derived classes must implement this.
   virtual void output( Output&  /*unused*/) const;
 

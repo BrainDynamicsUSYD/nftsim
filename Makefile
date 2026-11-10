@@ -5,6 +5,21 @@
 #  option -d, eg 'make -d help'. Also 'make info' will display the contents
 #  of key variables in the Makefile, to help with debugging.
 #
+#  Variables that can be set on the command line:
+#    ARCH     Target-architecture flags. The default (-march=native, plus
+#             -mtune=native and SSE flags on Linux) optimises for the build
+#             machine's CPU, so the binary may not run on an older or different
+#             CPU (eg, another node type on a cluster). For a portable binary
+#             use 'make ARCH=' or name a baseline, eg 'make ARCH=-march=x86-64-v2'.
+#    FPFLAGS  Extra floating-point flags, empty by default. 'make
+#             FPFLAGS=-ffp-contract=off' stops the compiler fusing a*b + c into
+#             fused multiply-adds, so clang and g++ builds at any optimisation
+#             level give bit-identical output (and match the regression
+#             references exactly); it costs about 14% in run time on Apple M1.
+#    LDLIBS   Libraries to link (default -lm).
+#  Objects are not rebuilt when only these flags change, so run 'make clean'
+#  first, eg 'make clean && make ARCH='.
+#
 
 #Specify our directories.
 SRCDIR := src/
@@ -30,18 +45,23 @@ CAT := cat
 # Standard Linux (gcc must be >= 4.8.5) performance
 ifeq ($(shell uname -s), Linux)
   CXX := g++
-  CXXFLAGS := -std=c++11 -lm -Wall -Wextra -pedantic -msse -msse2 -msse3 -mfpmath=sse -march=native -mtune=native -funroll-loops -flto -O3
-  DEBUG := -std=c++11 -ggdb3 -Og -lm -Wall -Wextra -pedantic -msse -msse2 -msse3 -mfpmath=sse -march=native -mtune=native -funroll-loops
+  ARCH ?= -msse -msse2 -msse3 -mfpmath=sse -march=native -mtune=native
+  CXXFLAGS := -std=c++11 -Wall -Wextra -pedantic $(ARCH) $(FPFLAGS) -funroll-loops -flto -O3
+  DEBUG := -std=c++11 -ggdb3 -Og -Wall -Wextra -pedantic $(ARCH) $(FPFLAGS) -funroll-loops
   DEPFLAGS = -std=c++11 -MM -MP -MT $(OBJDIR)$*.o
 endif
 
 # Mac OS, default to clang++
 ifeq ($(shell uname -s), Darwin)
   CXX := clang++
-  CXXFLAGS := -std=c++11 -Wall -Wno-padded -Wno-c++98-compat -Wno-c++98-compat-pedantic -fdiagnostics-fixit-info -Wdocumentation -march=native -funroll-loops -flto -O3
-  DEBUG := -std=c++11 -g -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -fdiagnostics-fixit-info -Wdocumentation
+  ARCH ?= -march=native
+  CXXFLAGS := -std=c++11 -Wall -Wno-padded -Wno-c++98-compat -Wno-c++98-compat-pedantic -fdiagnostics-fixit-info -Wdocumentation $(ARCH) $(FPFLAGS) -funroll-loops -flto -O3
+  DEBUG := -std=c++11 -g -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -fdiagnostics-fixit-info -Wdocumentation $(FPFLAGS)
   DEPFLAGS = -std=c++11 -MM -MP -MT $(OBJDIR)$*.o
 endif
+
+# Libraries, passed to the linker (not the compiler).
+LDLIBS ?= -lm
 
 # Source and header files
 HEADER := $(wildcard $(SRCDIR)*.h)
@@ -78,7 +98,7 @@ ifeq ($(MAKECMDGOALS), gcc)
   ifndef CXX
     $(error "You don't appear to have g++ installed. If it is installed make sure it's in your PATH.")
   endif
-  CXXFLAGS := -std=c++11 -lm -Wall -Wextra -pedantic -msse -msse2 -msse3 -mfpmath=sse -march=native -mtune=native -funroll-loops -flto -O3
+  CXXFLAGS := -std=c++11 -Wall -Wextra -pedantic $(ARCH) $(FPFLAGS) -funroll-loops -flto -O3
   DEPFLAGS = -std=c++11 -MM -MP -MT $(OBJDIR)$*.o
 endif
 gcc: nftsim
@@ -89,7 +109,7 @@ ifeq ($(MAKECMDGOALS), clang)
   ifndef CXX
     $(error "You don't appear to have clang++ installed. If it is installed make sure it's in your PATH.")
   endif
-  CXXFLAGS := -std=c++11 -Weverything -Wno-padded -Wno-c++98-compat -Wno-c++98-compat-pedantic -fdiagnostics-fixit-info -Wdocumentation -march=native -funroll-loops -flto -O3
+  CXXFLAGS := -std=c++11 -Weverything -Wno-padded -Wno-c++98-compat -Wno-c++98-compat-pedantic -fdiagnostics-fixit-info -Wdocumentation $(ARCH) $(FPFLAGS) -funroll-loops -flto -O3
   DEPFLAGS = -std=c++11 -MM -MP -MT $(OBJDIR)$*.o
 endif
 clang: nftsim
@@ -102,14 +122,14 @@ ifeq ($(MAKECMDGOALS), intel)
   endif
   #TODO: consider/test -ipp -mkl -unroll-aggressive
   #NOTE: -fast => -static -ipo -xHost -O3... build system needs dev stuff for -static to work...
-  CXXFLAGS := -std=c++11 -Wall -Wremarks -Wchecks -Weffec++ -xHost -funroll-loops -ipo -O3
+  CXXFLAGS := -std=c++11 -Wall -Wremarks -Wchecks -Weffec++ -xHost $(FPFLAGS) -funroll-loops -ipo -O3
   DEPFLAGS = -std=c++11 -MM -MP -MT $(OBJDIR)$*.o
 endif
 intel: nftsim
 
 #   target: $(BINDIR)$(BIN) - Main target for the final build, linking objects into an executable.
 $(BINDIR)$(BIN): $(OBJ) | make_bin_dir
-	$(CXX) $(CXXFLAGS) $(OBJ) -o $@
+	$(CXX) $(CXXFLAGS) $(OBJ) -o $@ $(LDLIBS)
 	@$(CAT) conditions.txt
 	@echo "USE OF NFTSIM CONSTITUTES ACCEPTANCE OF THE APACHE 2.0 LICENSE"
 
@@ -158,7 +178,7 @@ test-numerical: nftsim
 
 #   target: $(UNIT_BIN) - Link the unit tests.
 $(UNIT_BIN): $(UNIT_SRC) $(UNIT_HEADER) $(HEADER) $(LIB_OBJ) | make_bin_dir
-	$(CXX) $(CXXFLAGS) -I$(SRCDIR) -I$(UNIT_DIR) $(UNIT_SRC) $(LIB_OBJ) -o $@
+	$(CXX) $(CXXFLAGS) -I$(SRCDIR) -I$(UNIT_DIR) $(UNIT_SRC) $(LIB_OBJ) -o $@ $(LDLIBS)
 
 #   target: clean-test - Delete the unit-test executable.
 clean-test:
@@ -190,6 +210,9 @@ info:
 	@echo "  DEP: $(DEP)"
 	@echo "  CXX: $(CXX)"
 	@echo "  CXXFLAGS: $(CXXFLAGS)"
+	@echo "  ARCH: $(ARCH)"
+	@echo "  FPFLAGS: $(FPFLAGS)"
+	@echo "  LDLIBS: $(LDLIBS)"
 	@echo "  AR: $(AR)"
 	@echo "  LD: $(LD)"
 	@echo "  DEBUG: $(DEBUG)"

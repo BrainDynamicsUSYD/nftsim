@@ -1,7 +1,5 @@
 /** @file dumpf.cpp
-  @brief A brief, one sentence description.
-
-  A more detailed multiline description...
+  @brief Defines Dumpf, which writes nftsim's output file (or standard output).
 
   @author Peter Drysdale, Felix Fung,
 */
@@ -33,9 +31,9 @@ Dumpf::~Dumpf() {
 void Dumpf::outputConfig( Configf& configf ) {
   int sp = configf.tellg();
   configf.seekg(0,std::ios::beg);
-  configf.read(configf.buffer,configf.filesize);
+  configf.read(configf.buffer.get(),configf.filesize);
   configf.seekg(sp);
-  s->write(configf.buffer,configf.filesize);
+  s->write(configf.buffer.get(),configf.filesize);
   *this<<endl<<"============================================="<<endl<<endl;
 }
 
@@ -90,7 +88,6 @@ Dumpf& Dumpf::operator<< ( ostream& (*pf)(ostream&) ) {
 }
 
 ostream& septor( ostream& os ) {
-  //os<<"|";
   return os;
 }
 

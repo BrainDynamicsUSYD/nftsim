@@ -1,7 +1,11 @@
 /** @file bcm.h
-  @brief A brief, one sentence description.
+  @brief Declares BCM, calcium-dependent plasticity with BCM metaplasticity.
 
-  A more detailed multiline description...
+  BCM extends CaDP (`Coupling N: BCM ...`) with metaplasticity (Fung and
+  Robinson): the NMDA-receptor gain gNMDA becomes a ninth state variable,
+  which changes at the rate -gNMDA (nutilde/nu - 1)/t_BCM (so it falls while
+  the target strength nutilde exceeds nu) and relaxes back to its initial
+  value with time-scale t_rec. The equations are in BCM::BCMDE::rhs().
 
   @author Peter Drysdale, Felix Fung,
 */
@@ -17,20 +21,17 @@
 #include "propagator.h" // Propagator;
 
 // C++ standard library headers
+#include <memory> // std::unique_ptr;
 #include <vector> // std::vector;
 
 class BCM : public CaDP {
  protected:
-  //double t_BCM;
   struct BCMDE : public CaDE {
     double t_BCM = 0.0;
     double t_rec = 0.0;
     double gnmda_0 = 0.0;
     BCMDE( size_type nodes, double deltat ) : CaDE(nodes,deltat) {
       extend(1);
-    }
-    BCMDE( BCMDE& bcmDE ) : CaDE(bcmDE.nodes,bcmDE.deltat) {
-      *this = bcmDE;
     }
     BCMDE& operator= ( const BCMDE& bcmDE ) {
       this->nu_init = bcmDE.nu_init;
@@ -61,6 +62,10 @@ class BCM : public CaDP {
     void init( Configf& configf ) override;
     void rhs( const std::vector<double>& y, std::vector<double>& dydt, size_type /*unused*/ ) override;
   };
+  /// For derived classes: takes ownership of `de` (see CaDP), which may be null.
+  BCM( size_type nodes, double deltat, size_type index,
+       const Propagator& prepropag, const Population& postpop,
+       std::unique_ptr<CaDE> de );
  public:
   BCM(const BCM&) = delete; // No copy constructor allowed.
   BCM() = delete;           // No default constructor allowed.

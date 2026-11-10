@@ -31,11 +31,11 @@ Configf::Configf( const string filename )
   std::streamoff sp = tellg(); ///< stores current file position
   seekg(0,std::ios::end);
   filesize = tellg();
-  buffer = new char[filesize+1];
+  buffer.reset(new char[filesize+1]);
   buffer[filesize] = '\0';
   seekg(0,std::ios::beg);
-  read(buffer,filesize);
-  content = string(buffer);
+  read(buffer.get(),filesize);
+  content = string(buffer.get());
   clear();
 
   // The leading free-text comment runs up to the first "Time:", the first
@@ -54,9 +54,7 @@ Configf::Configf( const string filename )
   seekg( sp + static_cast<std::streamoff>(content_start) );
 }
 
-Configf::~Configf() {
-  delete[] buffer;
-}
+Configf::~Configf() = default;
 
 /// Reads an arbitrary number of doubles and return it in an array
 vector<double> Configf::numbers() {
@@ -267,12 +265,12 @@ bool Configf::next( const string& Check, int delim ) {
     exit(EXIT_FAILURE);
   }
   std::streampos sp = tellg();
-  getline( buffer, filesize, delim );
+  getline( buffer.get(), filesize, delim );
   if( !good() ) {
     cerr << "Error reading config file when looking for: " << Check << endl;
     exit(EXIT_FAILURE);
   }
-  string param(buffer);
+  string param(buffer.get());
   int pos = param.find( Check, param.length()-Check.length() );
   if( pos == -1 ) {
     seekg(sp);

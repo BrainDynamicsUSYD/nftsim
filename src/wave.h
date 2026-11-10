@@ -2,9 +2,16 @@
  * @file wave.h
  * @brief Wave propagator declaration.
  *
- * The wave propagator declaration, inlcuding parameters from the wave equation
+ * The wave propagator declaration, including parameters from the wave equation
  * and coefficients related to the five-point stencil implementation.
  *
+ * Wave (`Propagator N: Wave`) solves the damped wave equation on the grid
+ * with the scheme of Rennie (2001), Eq. A.16, using Stencil. WaveLegacy
+ * (wave_legacy.h, `Propagator N: WaveLegacy`) is an older nine-point version,
+ * kept to reproduce published results. They share no code beyond the
+ * Propagator base and the StencilGrid behind their stencils, because their
+ * coefficients and update formulas differ. With one node, both are replaced
+ * by Harmonic (see Solver::init).
  *
  * @author Peter Drysdale, Felix Fung, Romesh Abeysuriya, Paula Sanz-Leon,
  *
@@ -20,16 +27,15 @@
 #include "stencil.h"    // Stencil;
 
 // C++ standard library headers
+#include <memory>  // std::unique_ptr;
 #include <string>  // std::string
 
 class Wave : public Propagator {
  protected:
   void init( Configf& configf ) override;
-  //void restart( Restartf& restartf );
-  //void dump( Dumpf& dumpf ) const;
 
-  Stencil* oldp[2]; ///< keyring stencil to past phi, oldp[key]==most recent
-  Stencil* oldQ[2]; ///< keyring stencil to past Q, oldQ[key]==most recent
+  std::unique_ptr<Stencil> oldp[2]; ///< keyring stencil to past phi, oldp[key]==most recent
+  std::unique_ptr<Stencil> oldQ[2]; ///< keyring stencil to past Q, oldQ[key]==most recent
   int key;          ///< used as an index into a length 2 cyclical history of phi and Q.
 
   // variables that are initialized once only

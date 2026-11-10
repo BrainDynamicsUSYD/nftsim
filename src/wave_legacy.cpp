@@ -18,6 +18,7 @@
 
 // Other nftsim headers
 #include "configf.h"         // Configf;
+#include "make_unique.h" // nftsim::make_unique;
 #include "population.h"      // Population;
 #include "stencil_legacy.h"  // StencilLegacy;
 
@@ -88,18 +89,13 @@ WaveLegacy::WaveLegacy( size_type nodes, double deltat, size_type index, Populat
             Population& postpop, size_type longside, string topology )
   : Propagator(nodes,deltat,index,prepop,postpop,longside,topology),
     key(0) {
-  oldp[0] = new StencilLegacy(nodes,longside,topology);
-  oldp[1] = new StencilLegacy(nodes,longside,topology);
-  oldQ[0] = new StencilLegacy(nodes,longside,topology);
-  oldQ[1] = new StencilLegacy(nodes,longside,topology);
+  for( int k=0; k<2; k++ ) {
+    oldp[k] = nftsim::make_unique<StencilLegacy>(nodes,longside,topology);
+    oldQ[k] = nftsim::make_unique<StencilLegacy>(nodes,longside,topology);
+  }
 }
 
-WaveLegacy::~WaveLegacy() {
-  delete oldp[0];
-  delete oldp[1];
-  delete oldQ[0];
-  delete oldQ[1];
-}
+WaveLegacy::~WaveLegacy() = default;
 
 void WaveLegacy::step() {
   StencilLegacy& stencilp = *oldp[key];
@@ -107,21 +103,22 @@ void WaveLegacy::step() {
   StencilLegacy& stencilQ = *oldQ[key];
   StencilLegacy& stencil_oldQ = *oldQ[key == 0];
 
+  // Delayed Q at the new time-step, fetched once (as in Wave::step).
+  const vector<double>& Qnew = prepop.Q(tau);
+
   for( size_type i=0; i<nodes; i++,
        stencilp++, stencilQ++, stencil_oldp++, stencil_oldQ++ ) {
-    sump     = stencilp(stencilp.n)  +stencilp(stencilp.s)  +stencilp(stencilp.w)  +stencilp(stencilp.e) ; // sum of the von Neumann (orthogonal) neighbourhood (phi)
-    diagsump = stencilp(stencilp.nw) +stencilp(stencilp.ne) +stencilp(stencilp.sw) +stencilp(stencilp.se); // sum of the diagonal neighbourhood (phi)
-    sumQ     = stencilQ(stencilQ.n)  +stencilQ(stencilQ.s)  +stencilQ(stencilQ.w)  +stencilQ(stencilQ.e) ; // sum of the von Neumann (orthogonal) neighbourhood (Q)
-    diagsumQ = stencilQ(stencilQ.nw) +stencilQ(stencilQ.ne) +stencilQ(stencilQ.sw) +stencilQ(stencilQ.se); // sum of the diagonal neighbourhood (Q)
-    drive    = dfact*( tenminus3p2*expfact1* stencilQ +prepop.Q(tau)[i]
-                       +expfact2* stencil_oldQ +expfact1*.5*p2*(sumQ+.5*diagsumQ) );
+    const double sump     = stencilp(stencilp.n)  +stencilp(stencilp.s)  +stencilp(stencilp.w)  +stencilp(stencilp.e) ; // sum of the von Neumann (orthogonal) neighbourhood (phi)
+    const double diagsump = stencilp(stencilp.nw) +stencilp(stencilp.ne) +stencilp(stencilp.sw) +stencilp(stencilp.se); // sum of the diagonal neighbourhood (phi)
+    const double sumQ     = stencilQ(stencilQ.n)  +stencilQ(stencilQ.s)  +stencilQ(stencilQ.w)  +stencilQ(stencilQ.e) ; // sum of the von Neumann (orthogonal) neighbourhood (Q)
+    const double diagsumQ = stencilQ(stencilQ.nw) +stencilQ(stencilQ.ne) +stencilQ(stencilQ.sw) +stencilQ(stencilQ.se); // sum of the diagonal neighbourhood (Q)
+    const double drive    = dfact*( tenminus3p2*expfact1* stencilQ +Qnew[i]
+                                    +expfact2* stencil_oldQ +expfact1*.5*p2*(sumQ+.5*diagsumQ) );
     p[i]     = twominus3p2*expfact1 *stencilp +expfact1*.5*p2*(sump+.5*diagsump)
                -expfact2 *stencil_oldp +drive;
   }
 
   key = static_cast<int>(key == 0);
-  //*oldp[key] = p;
-  //*oldQ[key] = prepop.Q(tau);
   stencil_oldp = p;
-  stencil_oldQ = prepop.Q(tau);
+  stencil_oldQ = Qnew;
 }

@@ -1,9 +1,10 @@
 /** @file coupling_diff_arctan.cpp
-  @brief A new Coupling class, where nu_ab follows a smooth function.
+  @brief Defines CouplingDiffArctan (`Coupling N: DiffArctan`), a coupling whose nu rises and falls smoothly.
 
-  The smooth variation of nu_ab is defined by the difference of
-  two arctangent functions.
-
+  nu follows the difference of two arctangents,
+  atan((t - t_half_up)/delta) - atan((t - t_half_down)/delta), scaled so
+  that it spans [nu_min, nu_max] over the simulated time: it rises around
+  t_half_up and falls around t_half_down, each over a time of about delta.
 
   @author Farah Deeba, Paula Sanz-Leon, Sahand Assadzadeh
 */
@@ -19,7 +20,7 @@
 
 // C++ standard library headers
 #include <cmath>     // std::atan; std::lround;
-#include <cstdlib>   // std::exit; EXIT_FAILURE;
+#include <cstdlib>   // std::atof; std::exit; EXIT_FAILURE;
 #include <iostream>  // std::cerr; std::endl;
 using std::atan;
 using std::lround;
@@ -62,13 +63,18 @@ void CouplingDiffArctan::init( Configf& configf ) {
   nu.resize(nodes, nu_min);
   pos = (nu_min>0)?1:-1;
 
-  for( size_type i=0; i<nodes; i++) {
-    P[i] = nu[i]*prepropag.phiinit(configf);
+  const double phi0 = prepropag.phiinit(configf); // a config lookup, so read it once
+  for( size_type i=0; i<nodes; i++ ) {
+    P[i] = nu[i]*phi0;
   }
 
   //initial time
   steps = 0;
   time = 0;
+}
+
+double CouplingDiffArctan::nuinit( Configf& configf ) const {
+  return atof(configf.lookup(label("Coupling ",index+1), "nu_min", true).c_str());
 }
 
 double CouplingDiffArctan::profile( double t ) const {

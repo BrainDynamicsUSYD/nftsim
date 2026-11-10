@@ -1,7 +1,11 @@
 /** @file bcmlong.h
-  @brief A brief, one sentence description.
+  @brief Declares BCMLong (`BCM-Spatial`), BCM plasticity of a node-to-node coupling matrix.
 
-  A more detailed multiline description...
+  Like LongCoupling, BCMLong couples every presynaptic node i to every
+  postsynaptic node j, but each strength nu[i][j] evolves under the BCM
+  plasticity rule. It keeps one BCM state per presynaptic node (de_2d[i], with
+  the postsynaptic nodes as its nodes), so its memory and run time grow as
+  Nodes^2.
 
   @author Peter Drysdale, Felix Fung,
 */
@@ -18,14 +22,17 @@
 #include "propagator.h" // Propagator;
 
 // C++ standard library headers
+#include <memory> // std::unique_ptr;
 #include <vector> // std::vector;
 
 class BCMLong : public BCM {
  protected:
   void init( Configf& configf ) override;
 
-  std::vector<BCMDE*> de_2d;
-  std::vector<RK4*> rk4_2d;
+  /// One BCM state per presynaptic node i: (*de_2d[i])[k][j] is variable k
+  /// of the connection from node i to node j. BCMLong passes no DE to CaDP.
+  std::vector<std::unique_ptr<BCMDE>> de_2d;
+  std::vector<std::unique_ptr<RK4>> rk4_2d; ///< Integrates de_2d[i].
 
  public:
   BCMLong() = delete;               // No default constructor allowed.

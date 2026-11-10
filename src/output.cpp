@@ -1,7 +1,8 @@
 /** @file output.cpp
-  @brief A brief, one sentence description.
+  @brief Defines Output and Outlet, which collect the fields an object can write to the output file.
 
-  A more detailed multiline description...
+  Output names each field as Object.Index.Name (eg Pop.1.V), with a prefix
+  set by prefix() or the four-argument operator().
 
   @author Peter Drysdale, Felix Fung,
 */
@@ -11,9 +12,10 @@
 
 // Other nftsim headers
 #include "configf.h"    // Configf;
-#include "dumpf.h"      // Dumpf;
+#include "make_unique.h" // nftsim::make_unique;
 
 // C++ standard library headers
+#include <memory>   // std::unique_ptr;
 #include <string>   // std::string;
 #include <utility>  // std::move;
 #include <vector>   // std::vector;
@@ -30,7 +32,7 @@ Output::Output( string  key )
 
 void Output::operator() ( const string& name, const vector<double>& field ) {
   if( key=="" || key==name ) {
-    outputs.push_back( new Outlet( m_prefix+name, field, false ) );
+    outputs.push_back( nftsim::make_unique<Outlet>( m_prefix+name, field, false ) );
   }
 }
 
@@ -46,7 +48,7 @@ void Output::operator() ( const string& object, vector<double>::size_type index,
 
 void Output::singleNode ( const string& name, const vector<double>& field ) {
   if( key=="" || key==name ) {
-    outputs.push_back( new Outlet( m_prefix+name, field, true ) );
+    outputs.push_back( nftsim::make_unique<Outlet>( m_prefix+name, field, true ) );
   }
 }
 
@@ -60,6 +62,8 @@ bool Output::empty() const {
   return outputs.empty();
 }
 
-Output::operator vector<Outlet*>() const {
-  return outputs;
+vector<std::unique_ptr<Outlet>> Output::release() {
+  vector<std::unique_ptr<Outlet>> released;
+  released.swap(outputs);
+  return released;
 }

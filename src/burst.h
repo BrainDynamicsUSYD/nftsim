@@ -1,7 +1,11 @@
 /** @file burst.h
-  @brief A brief, one sentence description.
+  @brief Declares BurstResponse (`Firing: Bursting`), a firing response with a burst-modulated threshold.
 
-  A more detailed multiline description...
+  BurstResponse is a sigmoid firing response whose threshold is modulated by
+  two slow variables, Xtilde and Htilde, which model the currents (with
+  conductances gX and gH) behind thalamic bursting. gX and gH can be ramped
+  over time (gX2, tx1..tx4 and gH2, th1..th4). The equations are given at
+  BurstResponse::BurstResponseDE::rhs().
 
   @author Peter Drysdale, Felix Fung,
 */
@@ -29,14 +33,11 @@ class BurstResponse : public FiringResponse { //derived class; constructor initi
     ~BurstResponseDE() override = default;
     void rhs( const std::vector<double>& y, std::vector<double>& dydt, size_type n ) override;
   };
-  BurstResponseDE* de;
-  RK4* rk4;
+  BurstResponseDE de; ///< State {Xtilde, Htilde}.
+  RK4 rk4;            ///< Integrates de (declared after it, so constructed after it).
 
   std::vector<double> modtheta;
   std::vector<double> gX,gH,xtilde,htilde;
-  double Veff = 0.0;
-  double Vk = 0.0;
-  double Vx = 0.0;
   double ia = 0.0, ib = 0.0;
   double ic = 0.0;
   double taux = 0.0;  // time constant

@@ -1,7 +1,9 @@
 /** @file dumpf.h
-  @brief A brief, one sentence description.
+  @brief Declares Dumpf, which writes nftsim's output file (or standard output).
 
-  A more detailed multiline description...
+  Solver::Outputs writes the configuration, a header of trace names and node
+  numbers, and then one row of values per output time through a Dumpf.
+  Numbers are written in scientific notation with 14 digits.
 
   @author Peter Drysdale, Felix Fung,
 */
@@ -35,7 +37,7 @@ class Dumpf {
   Dumpf& operator<< ( std::ostream& (*pf)(std::ostream&) ); // for manupulators eg endl
 };
 
-std::ostream& septor( std::ostream& os ); ///< implements the separator "|" between fields
+std::ostream& septor( std::ostream& os ); ///< separator between groups of fields; prints nothing (it used to print "|")
 std::ostream& space( std::ostream& os );  ///< puts a space into dumpfile
 std::ostream& setw( std::ostream& os );
 

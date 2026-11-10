@@ -1,16 +1,12 @@
-/**
- * @file coupling_ramp.cpp
- * Produce piecewise linear segments to vary synaptic couplings nu **over time**.
- * Assumes that at t=0, nu=nu[0], ie, the segment between t=0 and timepoints[0] is constant.
- *
- * @author Paula Sanz-Leon , Romesh Abeysuriya
- *
- */
+/** @file coupling_ramp.cpp
+  @brief Defines CouplingRamp (`Coupling N: Ramp`), a coupling whose nu is piecewise linear in time.
 
-/**
-   Reads from the configuration file
-   + @param[in]  nu: vector with the values of nu at specific time points.
-   + @param[in]  timepoints: vector of specific time points corresponding to the nu.
+  The configuration gives `nu:` (values of nu) and `timepoints:` (the
+  strictly increasing times [s] at which nu takes those values). nu is
+  nu[0] from t = 0 to timepoints[0], interpolated linearly in between, and
+  held at its last value after the last time point.
+
+  @author Paula Sanz-Leon, Romesh Abeysuriya
 */
 
 // Main module header
@@ -62,8 +58,9 @@ void CouplingRamp::init( Configf& configf ) {
   nu.assign(nodes, tempn[0]);
   pos = (tempn[0]>0)?1:-1;
 
+  const double phi0 = prepropag.phiinit(configf); // a config lookup, so read it once
   for( size_type i=0; i<nodes; i++ ) {
-    P[i] = nu[i]*prepropag.phiinit(configf);
+    P[i] = nu[i]*phi0;
   }
 
   steps = 0;

@@ -1,7 +1,12 @@
 /** @file population.h
-  @brief A brief, one sentence description.
+  @brief Declares Population, a neural or stimulus population and its firing-rate history.
 
-  A more detailed multiline description...
+  A neural population has a FiringResponse (with its dendrites), which turns
+  the soma potential V into the firing rate Q; a stimulus population has a
+  Timeseries instead. Each population keeps a ring buffer of past Q long
+  enough for the longest delay Tau of the propagators it drives, and
+  Population::Q() returns Q delayed by a Tau (interpolated between steps for
+  fractional delays with `Integration: SecondOrder`).
 
   @author Peter Drysdale, Felix Fung,
 */
@@ -23,11 +28,12 @@ class Population;
 #include "timeseries.h" // Timeseries;
 
 // C++ standard library headers
+#include <memory> // std::unique_ptr;
 #include <vector> // std::vector;
 
 class Population : public NF {
-  FiringResponse* firing_response;   ///< firing_response for neural population
-  Timeseries* timeseries; ///< timeseries for stimulus
+  std::unique_ptr<FiringResponse> firing_response; ///< firing response of a neural population (null for a stimulus)
+  std::unique_ptr<Timeseries> timeseries; ///< stimulus of a stimulus population (null for a neural one)
  protected:
   std::vector< std::vector<double> >::size_type qkey; ///< index to the present q in qhistory
   std::vector< std::vector<double> > qhistory; ///< keyring of Q
@@ -49,7 +55,6 @@ class Population : public NF {
   virtual const std::vector<double>& Q( const Tau& tau ) const;
   double Qinit( Configf& configf ) const;
   virtual const std::vector<double>& V() const;
-  inline double operator[]( size_type node ) const;
   const std::vector<double>& glu() const;
   inline double sheetlength() const {
     return length;

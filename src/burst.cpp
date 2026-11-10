@@ -1,7 +1,9 @@
 /** @file burst.cpp
-  @brief A brief, one sentence description.
+  @brief Defines BurstResponse (`Firing: Bursting`), a firing response with a burst-modulated threshold.
 
-  A more detailed multiline description...
+  Each step sums the dendritic potentials, sets the threshold from Xtilde and
+  Htilde, integrates them one step with RK4 and fires with the updated
+  threshold.
 
   @author Peter Drysdale, Felix Fung,
 */
@@ -21,6 +23,13 @@
 using std::exp;
 using std::vector;
 
+/// Fixed potentials of the bursting model, from the original Matlab scripts.
+namespace burst {
+constexpr double Veff = -0.066; ///< [V] effective membrane potential at which the currents are evaluated.
+constexpr double Vx = 0.14;     ///< [V] reversal potential of the current with conductance gX.
+constexpr double Vk = -0.095;   ///< [V] reversal potential of the current with conductance gH (potassium).
+} // namespace burst
+
 void BurstResponse::init( Configf& configf ) {
   configf.param("Sigma",sigma);
   configf.param("Qmax",Q_max);
@@ -28,10 +37,6 @@ void BurstResponse::init( Configf& configf ) {
   configf.param("Htilde",hinit);
   double xinit;
   configf.param("Xtilde",xinit);
-
-  Veff = -0.066;  // from Matlab scripts
-  Vx = 0.14;
-  Vk = -0.095;
 
   double temp;
   configf.param("gX",temp);
@@ -78,9 +83,9 @@ void BurstResponse::init( Configf& configf ) {
   qfiring.resize(nodes, 0.0);
   xinfinity.resize(nodes, 0.0);
 
-  de->init(xinit, hinit); // call BurstResponse::BurstResponseDE::init
-  de->taux = taux;
-  de->tauh = tauh;
+  de.init(xinit, hinit); // call BurstResponse::BurstResponseDE::init
+  de.taux = taux;
+  de.tauh = tauh;
 }
 
 void BurstResponse::BurstResponseDE::init(const double xinit, const double hinit) {
@@ -91,16 +96,11 @@ void BurstResponse::BurstResponseDE::init(const double xinit, const double hinit
 }
 
 BurstResponse::BurstResponse( size_type nodes, double deltat, size_type index )  // constructor
-  : FiringResponse(nodes,deltat,index) {
-  de = new BurstResponseDE(nodes, deltat);
-  rk4 = new RK4(*de);
+  : FiringResponse(nodes,deltat,index), de(nodes, deltat), rk4(de) {
   time = 0;
 }
 
-BurstResponse::~BurstResponse() {
-  delete de;
-  delete rk4;
-}
+BurstResponse::~BurstResponse() = default;
 
 void BurstResponse::step() {
   time++;
@@ -131,8 +131,8 @@ void BurstResponse::step() {
 
   FiringResponse::step(); // sum soma potential
 
-  ib = -gX[0] * (Veff -Vx) / 3.0;
-  ia = ib - gH[0] * (Veff - Vk);
+  ib = -gX[0] * (burst::Veff -burst::Vx) / 3.0;
+  ia = ib - gH[0] * (burst::Veff - burst::Vk);
 
   for( size_type i=0; i<nodes; i++ ) {
     thetatemp[i] = (ic-3.0*ib*xtilde[i]+(ib-ia)*htilde[i])/mu;
@@ -142,14 +142,14 @@ void BurstResponse::step() {
       xinfinity[i] = 0.0;
     }
   }
-  de->xinfinity = xinfinity;
+  de.xinfinity = xinfinity;
 
   //Integrate the burst response one step forward in time.
-  rk4->step();
+  rk4.step();
   //Copy the burst response from the updated DE to the local variables.
   for( size_type i=0; i<nodes; i++ ) {
-    xtilde[i] = (*de)[0][i];
-    htilde[i] = (*de)[1][i];
+    xtilde[i] = de[0][i];
+    htilde[i] = de[1][i];
   }
 
   for(size_type i=0; i<nodes; i++ ) {
@@ -175,12 +175,17 @@ void BurstResponse::fire( vector<double>& Q ) const {
 }
 
 /**
-  @brief Computes the derivatives of the BurstResponse function.
+  @brief Computes the derivatives of the BurstResponse state {Xtilde, Htilde}.
 
-  The BurstResponse equation is given by:
   \f{eqnarray*}{
-    equation &=& goes here
+    \frac{d\tilde{X}}{dt} &=& \frac{X_\infty - \tilde{X}}{\tau_x} \\
+    \frac{d\tilde{H}}{dt} &=& \frac{3\tilde{X} - \tilde{H}}{\tau_h}
   \f}
+  where \f$X_\infty = a_x Q_{max}/(1 + \exp[-(V - \theta)/\sigma])\f$
+  (set to 0 if negative) and the threshold is
+  \f$\theta = (i_c - 3 i_b \tilde{X} + (i_b - i_a)\tilde{H})/\mu\f$, with
+  \f$i_b = -g_X (V_{eff} - V_x)/3\f$ and \f$i_a = i_b - g_H (V_{eff} - V_k)\f$
+  (see BurstResponse::step()).
 */
 void BurstResponse::BurstResponseDE::rhs( const vector<double>& y, vector<double>& dydt, size_type n ){
   //function returns the derivatives for modulated threshold eqns

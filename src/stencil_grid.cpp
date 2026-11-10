@@ -1,15 +1,20 @@
-/** @file stencil.cpp
-  @brief Stencil definition -- spatial neighbourhood used to evaluate \f[{\Delta}x\f].
+/** @file stencil_grid.cpp
+  @brief StencilGrid: a field on a 2-D grid with a one-node halo, shared by
+         Stencil and StencilLegacy.
 
-  A more detailed multiline description...
+  operator= copies a field into the interior of the padded grid and fills the
+  halo from the opposite edges (Torus; for Sphere the top and bottom halo rows
+  are the opposite edge rows reversed), so the neighbours of every interior
+  node can be read without wrapping indices.
 
   @author Peter Drysdale, Felix Fung,
 */
 
 // Main module header
-#include "stencil.h"
+#include "stencil_grid.h" // StencilGrid;
 
 // C++ standard library headers
+#include <cstdlib>  // std::exit; EXIT_FAILURE;
 #include <iostream> // std::cerr; std::endl;
 #include <string>   // std::string;
 #include <vector>   // std::vector;
@@ -18,25 +23,26 @@ using std::endl;
 using std::string;
 using std::vector;
 
-Stencil::Stencil( int nodes, int longside, const string& boundary )
+StencilGrid::StencilGrid( int nodes, int longside, const string& boundary )
   : nodes(nodes), longside(longside), shortside(nodes/longside),
-    boundary(boundary), ptr(0) {
-  if( boundary != "Torus" && boundary != "Sphere" ) {
+    boundary(Boundary::Torus), ptr(0) {
+  if( boundary == "Sphere" ) {
+    this->boundary = Boundary::Sphere;
+  } else if( boundary != "Torus" ) {
     cerr<<"Stencil boundary must be Torus or Sphere, not '"<<boundary<<"'."<<endl;
     if( boundary.compare(0, 11, "Nonperiodic") == 0 ) {
       cerr<<"Nonperiodic boundaries are not implemented for Wave propagators."<<endl;
     }
     exit(EXIT_FAILURE);
   }
-  m = new double[ (shortside+2)*(longside+2) ];
+  storage.resize( static_cast<vector<double>::size_type>((shortside+2)*(longside+2)) );
+  m = storage.data();
 }
 
-Stencil::~Stencil() {
-  delete[] m;
-}
+StencilGrid::~StencilGrid() = default;
 
-const vector<double>& Stencil::operator= ( const vector<double>& field ) {
-  if( boundary == "Torus" ) {
+const vector<double>& StencilGrid::operator= ( const vector<double>& field ) {
+  if( boundary == Boundary::Torus ) {
     // copy centre square
     const double* __restrict__ p1 = &field[0];
     double* __restrict__ p2 = &m[3+longside];
@@ -75,33 +81,13 @@ const vector<double>& Stencil::operator= ( const vector<double>& field ) {
       *p2 = *p1;
     }
 
-    /*// copy centre square
-    for( int j=0; j< nodes/longside; j++ )
-      for( int i=0; i<longside; i++ )
-        m[(j+1)*(longside+2)+i+1] = field[j*longside+i];
-
-    // copy right edge into left boundary
-    for( int i=0; i<=nodes/longside; i++ )
-      m[i*(longside+2)] = field[i*longside-1];
-
-    // copy left edge into right boundary
-    for( int i=0; i<=nodes/longside; i++ )
-      m[(i+2)*(longside+2)-1] = field[i*longside];
-
-    // copy bottom edge into top boundary
-    for( int i=0; i<longside; i++ )
-      m[i+1] = field[nodes-longside+i];
-
-    // copy top edge into bottom boundary
-    for( int i=0; i<longside; i++ )
-      m[(nodes/longside+1)*(longside+2)+1+i] = field[i];*/
 
     // copy 4 corners
     m[0] = field[nodes-1];
     m[longside+1] = field[nodes-longside];
     m[(longside+2)*(nodes/longside+1)] = field[longside-1];
     m[(longside+2)*(nodes/longside+2)-1] = field[0];
-  } else if( boundary == "Sphere" ) {
+  } else { // Boundary::Sphere
     // copy centre square
     const double* __restrict__ p1 = &field[0];
     double* __restrict__ p2 = &m[3+longside];
@@ -140,7 +126,7 @@ const vector<double>& Stencil::operator= ( const vector<double>& field ) {
       *p2 = *p1;
     }
 
-    // copy 4 corners NEEDS TO MODIFY SOMEWHERE!!
+    // copy 4 corners (the same as for a torus, which is not exact for a sphere)
     m[0] = field[nodes-1];
     m[longside+1] = field[nodes-longside];
     m[(longside+2)*(nodes/longside+1)] = field[longside-1];
@@ -151,7 +137,7 @@ const vector<double>& Stencil::operator= ( const vector<double>& field ) {
   return field;
 }
 
-void Stencil::set( int node ) const {
+void StencilGrid::set( int node ) const {
   if( node>=0 && node<nodes ) {
     int x = node%longside;
     int y = node/longside;
@@ -162,18 +148,9 @@ void Stencil::set( int node ) const {
   }
 }
 
-int Stencil::get() const {
+int StencilGrid::get() const {
   int x = ptr%(longside+2)-1;
   int y = ptr/(longside+2)-1;
   return x+y*longside;
 }
 
-/*double Stencil::nw() const { return m[ ptr-longside-2-1]; }
-double Stencil::n () const { return m[ ptr-longside-2  ]; }
-double Stencil::ne() const { return m[ ptr-longside-2+1]; }
-double Stencil:: w() const { return m[ ptr           -1]; }
-double Stencil:: c() const { return m[ ptr             ]; }
-double Stencil:: e() const { return m[ ptr           +1]; }
-double Stencil::sw() const { return m[ ptr+longside+2-1]; }
-double Stencil::s () const { return m[ ptr+longside+2  ]; }
-double Stencil::se() const { return m[ ptr+longside+2+1]; }*/

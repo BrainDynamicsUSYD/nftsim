@@ -19,6 +19,7 @@
 
 // Other nftsim headers
 #include "configf.h"    // Configf;
+#include "make_unique.h" // nftsim::make_unique;
 #include "population.h" // Population;
 #include "stencil.h"    // Stencil;
 
@@ -96,18 +97,13 @@ Wave::Wave( size_type nodes, double deltat, size_type index, Population& prepop,
             Population& postpop, size_type longside, string topology )
   : Propagator(nodes,deltat,index,prepop,postpop,longside,topology),
     key(0) {
-  oldp[0] = new Stencil(nodes,longside,topology);
-  oldp[1] = new Stencil(nodes,longside,topology);
-  oldQ[0] = new Stencil(nodes,longside,topology);
-  oldQ[1] = new Stencil(nodes,longside,topology);
+  for( int k=0; k<2; k++ ) {
+    oldp[k] = nftsim::make_unique<Stencil>(nodes,longside,topology);
+    oldQ[k] = nftsim::make_unique<Stencil>(nodes,longside,topology);
+  }
 }
 
-Wave::~Wave() {
-  delete oldp[0];
-  delete oldp[1];
-  delete oldQ[0];
-  delete oldQ[1];
-}
+Wave::~Wave() = default;
 
 /**
   @brief Computes the updated \f$\phi\f$ using the Wave Propagator function.
@@ -189,8 +185,6 @@ void Wave::step() {
 
   //If key==1, set it to 0; if key==0, set it to 1.
   key = static_cast<int>(key == 0);
-  //*oldp[key] = p;
-  //*oldQ[key] = prepop.Q(tau);
   stencil_oldp = p;
   stencil_oldQ = Qnew;
 }

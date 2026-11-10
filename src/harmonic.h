@@ -1,8 +1,17 @@
 /** @file harmonic.h
   @brief Declaration of the Harmonic Propagator class.
 
-  The Harmonic Propgator is used for spatially homogeneous models, where the
-  Laplacian Operator term is zero and one finds a damped oscillator response.
+  The Harmonic Propagator is used for spatially homogeneous models, where the
+  Laplacian Operator term is zero and one finds a damped oscillator response:
+  \f[
+    \frac{1}{\gamma^2}\frac{d^2\phi}{dt^2} + \frac{2}{\gamma}\frac{d\phi}{dt} + \phi = Q(t - \tau).
+  \f]
+  Harmonic (`Propagator N: Harmonic`, and Wave or WaveLegacy on a single
+  node) integrates it with RK4, holding the delayed Q constant over a step
+  (or linear, with `Integration: SecondOrder`). HarmonicIntegral
+  (harmonic_integral.h) uses the exact solution for Q linear over the step
+  instead. The two share only the Propagator base: their state and step
+  differ entirely.
 
   @author Peter Drysdale, Felix Fung,
 */
@@ -20,7 +29,7 @@
 #include <string> // std::string;
 #include <vector> // std::vector;
 
-class Harmonic : public virtual Propagator {
+class Harmonic : public Propagator {
   // variables that are initialized once to speed up computation
   double gammasquared = 0.0; ///< == gamma^2;
   double twoongamma = 0.0;   ///< == 2.0/gamma;
@@ -33,14 +42,12 @@ class Harmonic : public virtual Propagator {
     ~HarmonicDE() override = default;
     void rhs( const std::vector<double>& y, std::vector<double>& dydt, size_type /*unused*/ ) override;
   };
-  HarmonicDE* de;
-  RK4* rk4;
+  HarmonicDE de; ///< State {phi, dphi/dt, Q}.
+  RK4 rk4;       ///< Integrates de (declared after it, so constructed after it).
   std::vector<double> oldQ; ///< delayed Q at the previous step (Integration: SecondOrder)
 
  protected:
   void init( Configf& configf ) override;
-  //virtual void restart( Restartf& restartf );
-  //virtual void dump( Dumpf& dumpf ) const;
 
  public:
   Harmonic() = delete;                // No default constructor allowed.

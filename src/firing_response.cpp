@@ -21,6 +21,7 @@
 #include "dendrite.h"   // Dendrite;
 #include "dendrite_integral.h" // DendriteIntegral;
 #include "dendriteramp.h"      // DendriteRamp;
+#include "make_unique.h"       // nftsim::make_unique;
 #include "output.h"     // Output;
 #include "propagator.h" // Propagator;
 
@@ -36,19 +37,24 @@ using std::vector;
 
 /// Initialise FiringResponse, reading function and parameters to use from file.
 void FiringResponse::init( Configf& configf ) {
+  string mode;
   configf.param("Function", mode);
   if( mode == "Sigmoid" ) {
+    function = Function::Sigmoid;
     configf.param("Theta",theta);
     configf.param("Sigma",sigma);
     configf.param("Qmax",Q_max);
   } else if( mode == "Linear") { // Equation is q = av + b;
+    function = Function::Linear;
     configf.param("a",a);
     configf.param("b",b);
   } else if( mode == "Quadratic") { // Equation is q = av^2 + bv + c;
+    function = Function::Quadratic;
     configf.param("a",a);
     configf.param("b",b);
     configf.param("c",c);
   } else if( mode == "Cubic") { // Equation is q = av^3 + bv^2 + cv + d;
+    function = Function::Cubic;
     configf.param("a",a);
     configf.param("b",b);
     configf.param("c",c);
@@ -90,12 +96,12 @@ void FiringResponse::add2Dendrite( size_type index, const Propagator& prepropag,
   dendrite_index.push_back(index);
   // PUT YOUR DENDRITE HERE
   if( temp == "Ramp" ) {
-    dendrites.add( new DendriteRamp(nodes, deltat, index, prepropag, precouple) );
+    dendrites.add( nftsim::make_unique<DendriteRamp>(nodes, deltat, index, prepropag, precouple) );
   } else if ( temp == "Integral" ) {
-    dendrites.add( new DendriteIntegral(nodes, deltat, index, prepropag, precouple) );
+    dendrites.add( nftsim::make_unique<DendriteIntegral>(nodes, deltat, index, prepropag, precouple) );
   // END PUT YOUR DENDRITE HERE
   } else {
-    dendrites.add( new Dendrite(nodes, deltat, index, prepropag, precouple) );
+    dendrites.add( nftsim::make_unique<Dendrite>(nodes, deltat, index, prepropag, precouple) );
   }
 }
 
@@ -106,22 +112,29 @@ void FiringResponse::useSecondOrder( bool second_order ) {
 }
 
 void FiringResponse::fire( vector<double>& Q ) const {
-  if(mode == "Sigmoid") {
+  switch( function ) {
+  case Function::Sigmoid:
     for( size_type i=0; i<nodes; i++ ) {
       Q[i] = Q_max/( 1.0 + exp( -(v[i]-theta)/sigma ) );
     }
-  } else if (mode == "Linear") {
+    break;
+  case Function::Linear:
     for( size_type i=0; i<nodes; i++ ) {
       Q[i] = v[i]*a +b;
     }
-  } else if (mode == "Quadratic") {
+    break;
+  case Function::Quadratic:
     for( size_type i=0; i<nodes; i++ ) {
       Q[i] = v[i]*v[i]*a + v[i]*b +c;
     }
-  } else if (mode == "Cubic") {
+    break;
+  case Function::Cubic:
     for( size_type i=0; i<nodes; i++ ) {
       Q[i] = v[i]*v[i]*v[i]*a + v[i]*v[i]*b + v[i]*c +d;
     }
+    break;
+  case Function::None:
+    break;
   }
 }
 

@@ -1,7 +1,11 @@
 /** @file harmonic_integral.h
-  @brief A brief, one sentence description.
+  @brief Declares HarmonicIntegral, a Harmonic propagator stepped with an exact integral.
 
-  A more detailed multiline description...
+  HarmonicIntegral (`Propagator N: HarmonicIntegral`) solves the same damped
+  oscillator as Harmonic (see harmonic.h), for spatially homogeneous models,
+  but steps it with the exact solution for a delayed Q that varies linearly
+  over each step, rather than with RK4. Use Harmonic if gamma changes in time
+  or Q is far from linear over a step.
 
   @author Peter Drysdale, Felix Fung,
 */
@@ -18,11 +22,9 @@
 #include <string> // std::string;
 #include <vector> // std::vector;
 
-class HarmonicIntegral : public virtual Propagator {
+class HarmonicIntegral : public Propagator {
  protected:
   void init( Configf& configf ) override;
-  //virtual void restart( Restartf& restartf );
-  //virtual void dump( Dumpf& dumpf ) const;
 
   std::vector<double> oldp;
   std::vector<double> oldQ;
