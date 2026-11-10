@@ -54,13 +54,15 @@ class TempConfig {
 };
 
 /// Discards everything written to std::cerr while it is in scope (eg the
-/// warnings nftsim prints for intentionally odd test parameters).
+/// warnings nftsim prints for intentionally odd test parameters). text()
+/// returns what was written, so a test can check a warning's content.
 class SilenceCerr {
   std::ostringstream sink_;
   std::streambuf* saved_;
  public:
   SilenceCerr() : saved_(std::cerr.rdbuf(sink_.rdbuf())) {}
   ~SilenceCerr() { std::cerr.rdbuf(saved_); }
+  std::string text() const { return sink_.str(); }
   SilenceCerr(const SilenceCerr&) = delete;
   SilenceCerr& operator=(const SilenceCerr&) = delete;
 };

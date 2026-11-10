@@ -51,7 +51,7 @@ void Solver::CntMat::init( Configf& configf ) {
   // Read the number of populations
   configf.next("From");
   // Expect format "From: 1 2 3 4", read the
-  vector<double> pop = configf.numbers();
+  vector<size_type> pop = configf.indices();
   npop = pop.size();
 
   raw.resize(npop);
@@ -294,10 +294,10 @@ void Solver::Outputs::init( Configf& configf ) {
 
   double tempf;
   string temps;
-  vector<double> temp_node;
+  vector<size_type> temp_node;
   // read in nodes to output
   if( configf.next("Node") ) {
-    temp_node = configf.numbers();
+    temp_node = configf.indices();
   }
   if( temp_node.empty() ) {
     for( size_type i=0; i<nodes; i++ ) {
@@ -305,13 +305,13 @@ void Solver::Outputs::init( Configf& configf ) {
     }
   }
 
-  for(double i : temp_node) {
+  for(size_type i : temp_node) {
     if( i < 1 || i > nodes ) {
       cerr<<"Output node number "<<i<<" is out of range: nodes are "
           <<"numbered from 1 to "<<nodes<<"."<<endl;
       exit(EXIT_FAILURE);
     } else {
-      node.push_back( i-1 );
+      node.push_back( static_cast<unsigned int>(i-1) );
     }
   }
 

@@ -16,6 +16,7 @@
 #include "configf.h"    // Configf;
 #include "coupling.h"   // Coupling;
 #include "propagator.h" // Propagator;
+#include "restrict.h"   // NFTSIM_RESTRICT;
 
 // C++ standard library headers
 #include <cmath>     // std::exp;
@@ -46,10 +47,10 @@ void DendriteIntegral::step() {
   // assume that alpha, beta are constant and nu*phi is linear for the time step
   // Per-node temporaries are locals (they were class members, which forced a
   // store per node and blocked vectorisation).
-  const double* __restrict__ np = precouple.nuphi().data(); // current nu*phi
-  double* __restrict__ vv = v.data();
-  double* __restrict__ dv = dvdt.data();
-  double* __restrict__ onp = oldnp.data();
+  const double* NFTSIM_RESTRICT np = precouple.nuphi().data(); // current nu*phi
+  double* NFTSIM_RESTRICT vv = v.data();
+  double* NFTSIM_RESTRICT dv = dvdt.data();
+  double* NFTSIM_RESTRICT onp = oldnp.data();
   const double invdt = 1.0/deltat;
   if(alpha!=beta) {
     const double inv_amb = 1.0/aminusb;
@@ -87,11 +88,11 @@ void DendriteIntegral::step() {
   second order. The solution formula is the same with the end points changed.
 */
 void DendriteIntegral::stepSecondOrder() {
-  const double* __restrict__ np = precouple.nuphi().data(); // nu*phi at t_n
+  const double* NFTSIM_RESTRICT np = precouple.nuphi().data(); // nu*phi at t_n
   startSecondOrder(np);
-  double* __restrict__ vv = v.data();
-  double* __restrict__ dv = dvdt.data();
-  double* __restrict__ pp = prevnp.data(); // nu*phi at t_n-1
+  double* NFTSIM_RESTRICT vv = v.data();
+  double* NFTSIM_RESTRICT dv = dvdt.data();
+  double* NFTSIM_RESTRICT pp = prevnp.data(); // nu*phi at t_n-1
   const double invdt = 1.0/deltat;
   if(alpha!=beta) {
     const double inv_amb = 1.0/aminusb;

@@ -135,3 +135,53 @@ TEST(population_inhomogeneous_tau) {
   std::string err = check_lags(deltat, {"1.953125e-03 4.8828125e-03"}, {{2, 5}});
   CHECK_MSG(err.empty(), err);
 }
+
+namespace {
+/// The warning written to std::cerr while reading the delays `delays` (in
+/// seconds) into a Tau for `nodes` nodes at time-step `deltat`.
+std::string tau_warning( const std::string& delays, std::size_t nodes,
+                         double deltat ) {
+  unit::TempConfig conf(delays + "\n");
+  Configf configf(conf.path());
+  Tau tau(nodes, deltat, 0);
+  unit::SilenceCerr capture;
+  configf >> tau;
+  return capture.text();
+}
+
+bool contains( const std::string& text, const std::string& part ) {
+  return text.find(part) != std::string::npos;
+}
+} // namespace
+
+TEST(tau_warning_shows_how_values_are_rounded) {
+  // Whole numbers of steps: no warning.
+  std::string text = tau_warning("3e-4", 2, 1e-4);
+  CHECK_MSG(text.empty(), text);
+  text = tau_warning("1e-4 2e-4 3e-4 4e-4 5e-4", 5, 1e-4);
+  CHECK_MSG(text.empty(), text);
+
+  // A single value shows the given Tau, the step count and the Tau used.
+  text = tau_warning("2.6e-3", 2, 9.765625e-04);
+  CHECK_MSG(contains(text, "WARNING: Value of Tau not divisible by Deltat!"), text);
+  CHECK_MSG(contains(text, "    Tau: 0.0026 is rounded to 3 steps, ie Tau: 0.0029296875\n"), text);
+  text = tau_warning("1.3e-3", 2, 9.765625e-04);
+  CHECK_MSG(contains(text, "    Tau: 0.0013 is rounded to 1 step, ie Tau: 0.0009765625\n"), text);
+
+  // Per-node values: the number that fail, and the first three of them.
+  text = tau_warning("9.765625e-04 1.3e-3 2.6e-3 2.9296875e-03 4.6e-3 5.5e-3", 6,
+                     9.765625e-04);
+  CHECK_MSG(contains(text, "WARNING: 4 of the 6 values of Tau are not divisible by Deltat!"), text);
+  CHECK_MSG(contains(text, "    Node 2: Tau: 0.0013 is rounded to 1 step, ie Tau: 0.0009765625\n"), text);
+  CHECK_MSG(contains(text, "    Node 3: Tau: 0.0026 is rounded to 3 steps, ie Tau: 0.0029296875\n"), text);
+  CHECK_MSG(contains(text, "    Node 5: Tau: 0.0046 is rounded to 5 steps, ie Tau: 0.0048828125\n"), text);
+  CHECK_MSG(contains(text, "    ... and 1 more.\n"), text);
+  CHECK_MSG(!contains(text, "Node 1:") && !contains(text, "Node 4:")
+            && !contains(text, "Node 6:"), text);
+
+  // No "... and N more" line when every failing value is shown.
+  text = tau_warning("1.3e-3 9.765625e-04", 2, 9.765625e-04);
+  CHECK_MSG(contains(text, "WARNING: 1 of the 2 values of Tau are not divisible by Deltat!"), text);
+  CHECK_MSG(contains(text, "    Node 1: Tau: 0.0013 is rounded to 1 step"), text);
+  CHECK_MSG(!contains(text, "more."), text);
+}

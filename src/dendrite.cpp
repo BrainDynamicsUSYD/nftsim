@@ -16,6 +16,7 @@
 #include "coupling.h"   // Coupling;
 #include "output.h"     // Output;
 #include "propagator.h" // Propagator;
+#include "restrict.h"   // NFTSIM_RESTRICT;
 
 // C++ standard library headers
 #include <iostream> // std::endl; std::cerr;
@@ -75,11 +76,11 @@ void Dendrite::step() {
     // stages use nu*phi at t_n, t_n + h/2 and t_n + h. The input's own
     // truncation error is then O(h^2) over a step, giving a second-order scheme
     // for the coupled system (holding nu*phi constant is first order).
-    const double* __restrict__ np = precouple.nuphi().data();
+    const double* NFTSIM_RESTRICT np = precouple.nuphi().data();
     startSecondOrder(np);
-    double* __restrict__ pp = prevnp.data();
-    double* __restrict__ V = v.data();
-    double* __restrict__ W = dvdt.data();
+    double* NFTSIM_RESTRICT pp = prevnp.data();
+    double* NFTSIM_RESTRICT V = v.data();
+    double* NFTSIM_RESTRICT W = dvdt.data();
     const double h = deltat;
     const double h2 = deltat*0.5;
     const double h6 = deltat/6.0;
@@ -118,9 +119,9 @@ void Dendrite::step() {
   // It does the same arithmetic, in the same order, as the generic RK4::step()
   // in de.h would, but without a virtual rhs() call and a gather per node per
   // stage, which dominated nftsim's run time.
-  const double* __restrict__ np = precouple.nuphi().data();
-  double* __restrict__ V = v.data();
-  double* __restrict__ W = dvdt.data();
+  const double* NFTSIM_RESTRICT np = precouple.nuphi().data();
+  double* NFTSIM_RESTRICT V = v.data();
+  double* NFTSIM_RESTRICT W = dvdt.data();
   const double h = deltat;
   const double h2 = deltat*0.5;
   const double h6 = deltat/6.0;
