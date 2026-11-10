@@ -32,13 +32,14 @@ REQUIRES:
 .. moduleauthor:: John Griffiths <>
 """
 
-__version__ = '0.1.4'
+__version__ = '0.2.0'
 import logging
 logging.basicConfig(filename='nftsim.log', level=logging.INFO,
                     format='%(asctime)s:%(levelname)s:%(message)s')
 LOG = logging.getLogger(__name__)
 import os
 import sys
+import warnings
 
 import numpy as np
 
@@ -49,13 +50,23 @@ class NF:
 
     def __init__(self, nf_output_file):
         """
-        Docstring for the init method
+        Read an nftsim output file, in the text or a binary format (detected
+        from the file itself).
+
+        The attributes are the same for both formats: time, data, data_dict,
+        fields, nodes, deltat (the output sampling interval) and npoints, plus
+        format ('text' or 'binary') and metadata (the key=value pairs of a
+        binary file's NFTSIM-BINARY line; empty for text). Values are float64
+        in every case (binary32 values are converted).
+
+        A run that was interrupted (or is still running) leaves a last row
+        that is incomplete: it is dropped with a warning.
         """
-        with open(nf_output_file, 'r') as outfile:
+        with open(nf_output_file, 'rb') as outfile:
             [conf, skip] = self.read_conf(outfile)
 
-            headers = outfile.readline()
-            nodes = outfile.readline()
+            headers = outfile.readline().decode('utf-8', 'replace')
+            nodes = outfile.readline().decode('utf-8', 'replace')
             self.fields = []
 
             field_list = [x.strip() for x in headers.lower().split()]
@@ -70,7 +81,18 @@ class NF:
                 else:
                     self.nodes[field_list[i]] = [node_idx[i-1]]
 
-        data = np.loadtxt(nf_output_file, dtype=np.float64, skiprows=skip)
+            line = outfile.readline()
+            data_offset = outfile.tell()
+
+        self.metadata = {}
+        if line.startswith(BINARY_MAGIC):
+            self.format = 'binary'
+            self.metadata = parse_binary_metadata(line)
+            data = read_binary_rows(nf_output_file, data_offset, self.metadata,
+                                    len(field_list))
+        else:
+            self.format = 'text'
+            data = read_text_rows(nf_output_file, skip)
 
         self.time = data[:, 0]
         start_idx = 1
@@ -80,7 +102,10 @@ class NF:
             self.data[self.fields[i]] = data[:, start_idx:stop_idx]
             start_idx = stop_idx
 
-        self.deltat = self.time[1]-self.time[0]
+        if len(self.time) > 1 or 'interval' not in self.metadata:
+            self.deltat = self.time[1]-self.time[0]
+        else:
+            self.deltat = float(self.metadata['interval'])
         self.npoints = len(self.time)
 
         self.data_dict = {}
@@ -125,9 +150,17 @@ class NF:
 
     def read_conf(self, fid):
         """
-        Read a .conf file...
+        Skip the configuration echoed at the top of an output file, up to and
+        including the blank line after the line of '='. fid may be open in
+        text or binary mode. Returns ({}, the number of lines before the data
+        rows of a text file).
         """
         l = fid.readline()
+        if isinstance(l, bytes):
+            decode = lambda line: line.decode('utf-8', 'replace')
+            l = decode(l)
+        else:
+            decode = lambda line: line
         skiprows = 0
         while not l.startswith('======================='):
             if l == '':
@@ -137,19 +170,81 @@ class NF:
             if 'Time  |' in l:
                 LOG.error('Did you try to open an old style output file?')
                 sys.exit()
-            l = fid.readline()
+            l = decode(fid.readline())
             skiprows += 1
         fid.readline()
         skiprows += 4 # blank line, traces, node list
         conf = {}
         return (conf, skiprows)
 
-def run(filename, nftsim_path='./bin/nftsim'):
+
+# A binary output file has the same header as a text one, then a line that
+# starts with this, and then the rows (see the user manual, "Binary output").
+BINARY_MAGIC = b'NFTSIM-BINARY'
+BINARY_DTYPES = {'float64': '<f8', 'float32': '<f4'}
+
+
+def parse_binary_metadata(line):
+    """The key=value pairs of a NFTSIM-BINARY line, as a dict of strings."""
+    meta = dict(item.split('=', 1) for item in line.decode('ascii').split()[1:])
+    if meta.get('version') != '1':
+        raise ValueError('Unsupported nftsim binary format version %s.' % meta.get('version'))
+    if meta.get('byteorder') != 'little' or meta.get('dtype') not in BINARY_DTYPES:
+        raise ValueError('Unsupported nftsim binary dtype %s or byteorder %s.'
+                         % (meta.get('dtype'), meta.get('byteorder')))
+    return meta
+
+
+def read_binary_rows(path, offset, meta, ncols):
+    """Rows of a binary output file as a float64 array of shape (rows, ncols)."""
+    if int(meta['columns']) != ncols:
+        raise ValueError('%s: the header names %d columns but the binary metadata says %s.'
+                         % (path, ncols, meta['columns']))
+    values = np.fromfile(path, dtype=BINARY_DTYPES[meta['dtype']], offset=offset)
+    nrows = values.size // ncols
+    partial = os.path.getsize(path) - offset - nrows * ncols * values.itemsize
+    if meta['rows'] == 'stream':
+        # Written to standard output or a pipe, so the count was never known.
+        if partial:
+            warnings.warn('%s ends with a partial row: read %d complete rows.' % (path, nrows))
+    elif meta['rows'] == 'unknown':
+        warnings.warn('%s is incomplete (the run was interrupted or is still running): '
+                      'read %d complete rows%s.'
+                      % (path, nrows, ', dropped a partial row' if partial else ''))
+    elif int(meta['rows']) != nrows or partial:
+        warnings.warn('%s should have %s rows but holds %d complete rows%s; read those.'
+                      % (path, meta['rows'], nrows, ' and a partial row' if partial else ''))
+        nrows = min(nrows, int(meta['rows']))
+    return values[:nrows * ncols].reshape(nrows, ncols).astype(np.float64)
+
+
+def read_text_rows(path, skiprows):
+    """Rows of a text output file. A last line without a newline is the
+    incomplete row of an interrupted run, so it is dropped with a warning."""
+    with open(path, 'rb') as f:
+        f.seek(-1, os.SEEK_END)
+        complete = f.read(1) == b'\n'
+    if complete:
+        return np.loadtxt(path, dtype=np.float64, skiprows=skiprows, ndmin=2)
+    with open(path, 'rb') as f:
+        nrows = f.read().count(b'\n') - skiprows
+    warnings.warn('%s ends with an incomplete row (the run was interrupted or is '
+                  'still running): read %d complete rows.' % (path, nrows))
+    return np.loadtxt(path, dtype=np.float64, skiprows=skiprows, max_rows=nrows, ndmin=2)
+
+
+def run(filename, nftsim_path='./bin/nftsim', output_format=None):
     """
     Run nftsim and store output in NF object...
+
+    output_format, if given, is passed to nftsim's --format option ('text',
+    'binary' or 'binary32'); otherwise the configuration file's Format (text
+    by default) is used.
     """
     filename = filename.replace('.conf', '')
     cmd = '%s -i %s.conf -o %s.output' % (nftsim_path, filename, filename)
+    if output_format is not None:
+        cmd += ' --format %s' % output_format
     LOG.info('Running nftsim with command: \n %s \n' % cmd)
     result = os.system(cmd)
 

@@ -278,6 +278,7 @@ void Solver::solve() {
   for( int i=0; i<steps; i++ ) {
     step();
   }
+  outputs->finish();
 }
 
 void Solver::step() {
@@ -293,7 +294,21 @@ void Solver::Outputs::step() {
     outputstart--;
   } else {
     t++;
-    if( t%outputinterval==0 ) {
+    if( t%outputinterval==0 && dumpf.binary() ) {
+      // The same values as the text format, unrounded.
+      auto value = row.begin();
+      *value++ = double(t)*deltat;
+      for(auto & outlet : outlets) {
+        if( outlet->single_output ) {
+          *value++ = outlet->field[0];
+        } else {
+          for(unsigned int i : node) {
+            *value++ = outlet->field[i];
+          }
+        }
+      }
+      dumpf.binaryRow(row);
+    } else if( t%outputinterval==0 ) {
       dumpf<<double(t)*deltat<<space<<space<<septor;
       for(auto & outlet : outlets) {
         writeOutlet( *outlet );
@@ -302,10 +317,14 @@ void Solver::Outputs::step() {
     }
   }
 }
-void Solver::Outputs::init( Configf& configf ) {
-  // repeat config file into output
-  dumpf.outputConfig(configf);
 
+void Solver::Outputs::finish() {
+  if( dumpf.binary() ) {
+    dumpf.finish();
+  }
+}
+
+void Solver::Outputs::init( Configf& configf ) {
   double tempf;
   string temps;
   vector<size_type> temp_node;
@@ -363,6 +382,22 @@ void Solver::Outputs::init( Configf& configf ) {
     }
     outputinterval = static_cast<int>(lround(tempf/deltat));
   }
+
+  // read in the format of the data rows (the command line takes precedence)
+  if( configf.optional("Format",temps) ) {
+    OutputFormat format;
+    if( !parseOutputFormat(temps, format) ) {
+      cerr<<"Unknown output Format '"<<temps<<"': use Text, Binary (or Binary64) "
+          <<"or Binary32."<<endl;
+      exit(EXIT_FAILURE);
+    }
+    dumpf.format(format, false);
+  }
+
+  // Repeat the config file into the output. This is the first write, so it
+  // comes after the format is known: the file is reopened in binary mode for
+  // the binary formats (see Dumpf::format).
+  dumpf.outputConfig(configf);
 
   // read in populations to output
   configf.next("Population");
@@ -472,6 +507,15 @@ void Solver::Outputs::init( Configf& configf ) {
     writeNode(*outlet);
   }
   dumpf<<endl;
+
+  if( dumpf.binary() ) {
+    size_t columns = 1; // Time
+    for(auto & outlet : outlets) {
+      columns += outlet->single_output ? 1 : node.size();
+    }
+    row.resize(columns);
+    dumpf.binaryHeader(columns, deltat, outputinterval*deltat);
+  }
 }
 
 void Solver::Outputs::writeName( Outlet& outlet ) {

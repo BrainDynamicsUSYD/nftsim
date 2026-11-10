@@ -35,6 +35,7 @@ TARGET=''        # config name, path, 'all' or 'changed'
 EXACT=0          # 1 => byte-for-byte comparison with diff
 RTOL=''          # empty => compare_output.py's default
 ATOL=''          # empty => compare_output.py's default
+FORMAT=''        # empty => nftsim's default (text) output; else passed to --format
 
 nftsim_exists(){
   if [[ -e "$SCRIPTDIR"/bin/nftsim ]]; then
@@ -78,6 +79,11 @@ parse_args(){
       --exact)
         EXACT=1
       ;;
+      --format)
+        (($# > 1)) || { printf '%s\n' "$1 needs a value."; return 1; }
+        FORMAT="$2"
+        shift
+      ;;
       --rtol|--atol)
         (($# > 1)) || { printf '%s\n' "$1 needs a value."; return 1; }
         if [[ "$1" == '--rtol' ]]; then RTOL="$2"; else ATOL="$2"; fi
@@ -93,6 +99,10 @@ parse_args(){
   done
   if [[ -z "$MODE" ]]; then
     printf '%s\n' "No mode given. Run '${BASH_SOURCE[0]} --help' for usage."
+    return 1
+  fi
+  if [[ -n "$FORMAT" ]] && { [[ "$MODE" != 'check' ]] || ((EXACT)); }; then
+    printf '%s\n' "--format is for --check without --exact (the references are text)."
     return 1
   fi
   return 0
@@ -173,6 +183,10 @@ msg_help(){
   printf '\n%s\n' "  --atol <value>"
   printf '%s\n'   "    Absolute tolerance added to the relative one (default 0)."
   printf '%s\n\n' "    eg: ./nf_numerical --check 'all' --rtol 1e-6"
+  printf '%s\n' "  --format <format>"
+  printf '%s\n' "    Run nftsim with '--format <format>' (eg Binary) and check its output against"
+  printf '%s\n' "    the text references. Binary32 needs a looser tolerance, eg --rtol 1e-6."
+  printf '%s\n\n' "    eg: ./nf_numerical --check 'all' --format Binary"
 }
 
 #Sets the global variable OUTPUT_FILE to the default location for the
@@ -205,7 +219,7 @@ run_config(){
   fi
 
   #Run nftsim for the requested config file
-  "$SCRIPTDIR/bin/nftsim" -i "$config_file" -o "$output_file"
+  "$SCRIPTDIR/bin/nftsim" -i "$config_file" -o "$output_file" ${FORMAT:+--format "$FORMAT"}
   nftsim_status="$?"
 
   #If the run failed then print an error message.

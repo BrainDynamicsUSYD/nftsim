@@ -187,6 +187,15 @@ Or you can also specify an output file, using the \type{-o} switch. For example,
 
 will use the configuration file \type{example.conf} within the \type{configs} directory, and will write output to \type{example.output} in the current directory.
 
+Output is written as text by default.
+For large outputs (many nodes, or a short output interval) a binary format is much faster to write and to read, and about a third of the size:
+\begin{lstlisting}
+./bin/nftsim -i configs/example.conf -o example.output --binary
+\end{lstlisting}
+\type{--format Binary32} writes single-precision values instead, half the size again, and \type{--format Text} the default text.
+The format can also be set in the configuration file (\type{Format:}, Sec.~\ref{sec:output_conf}); the command line takes precedence.
+The binary format is described in Sec.~\ref{sec:binary_output}.
+
 A list of available switches can be displayed by using the \type{-h} or \type{--help} option i.e., \type{./bin/nftsim -h}
 
 \subsection{Writing a configuration file}
@@ -774,6 +783,13 @@ Optional parameters for the time to start output, and optional parameter for tim
 
 If undefined, defaults, to 0 and \type{Deltat}, respectively.
 \item \begin{lstlisting}
+Format: Binary
+\end{lstlisting}
+Optional format of the output data: \type{Text} (the default), \type{Binary} (or \type{Binary64}: 64-bit floating point) or \type{Binary32} (32-bit floating point), case-insensitive.
+It must come after \type{Start} and \type{Interval} (if they are given) and before \type{Population}.
+The \type{--format} and \type{--binary} command-line switches override it.
+See Sec.~\ref{sec:binary_output}.
+\item \begin{lstlisting}
 Population: 4.V
 Dendrite: 5
 Propagator: 1 4.phi
@@ -802,6 +818,44 @@ If a specific field of an object is specified, but that field does not exist, \N
 Each column is a time series with its name indicated in the first line. The first column is always time, and in this example, the second column is \type{Propagator.2.phi}, indicating that it is $\phi_{ee}$ (when checked against connection matrix). The node number is indicated in the second line.
 
 It is also worth noting that traces will be written in the order that they are specified. For example, if you write \type{Population: 3 1} then the columns in the output file will be arranged in this order.
+
+\subsection{Binary output}
+\label{sec:binary_output}
+
+Writing every node at every time-step as text can take most of a simulation's run time, and gives very large files: each value takes 21 or 22 characters.
+The binary formats (\type{--binary} or \type{--format Binary32} on the command line, or \type{Format:} in the \type{Output} section) write each value as 8 (or 4) bytes, with no conversion to text.
+For a 4096-node model writing three traces at every step, this made the run 25 times faster and the file 2.7 times smaller (5.5 times with \type{Binary32}).
+The Python and Matlab readers (\type{utils/nftsim.py} and \type{nf.read}) detect the format and return the same structures for both, so code that reads text output needs no change.
+
+A binary file starts exactly like a text one: the copy of the configuration file, the line of `\type{=}' characters, a blank line, the row of trace names and the row of node indices.
+One line of text then follows, of space-separated \type{key=value} pairs, for example
+\begin{lstlisting}
+NFTSIM-BINARY version=1 dtype=float64 byteorder=little columns=12289 deltat=1.0000000000000000e-04 interval=1.0000000000000000e-04 rows=2500
+\end{lstlisting}
+and the rest of the file is the data, one row per output time, each row \type{columns} values: the time and then the traces, in the same order as the columns of a text file.
+\begin{description}
+\item[\type{version}] Format version, \type{1}. A reader should refuse versions it does not know.
+\item[\type{dtype}] \type{float64} (IEEE 754 double precision, the values held by \NF, unrounded) or \type{float32} (each value rounded to single precision, about 7 significant digits; note this rounds the time too).
+\item[\type{byteorder}] Always \type{little}: values are little-endian on every platform.
+\item[\type{columns}] Number of values per row, including the time; the same as the number of names in the header row.
+\item[\type{deltat}, \type{interval}] The time-step and the output interval in seconds, with 17 significant digits.
+\item[\type{rows}] Number of rows. \NF writes \type{unknown} (padded with spaces) when it starts, and the count when the run finishes. So \type{unknown} means the run was interrupted, or is still running, and the file holds as many complete rows as have been written. When the output cannot be rewritten (written to standard output with \type{-v}, or to a pipe), it is \type{stream}.
+\end{description}
+The line is padded with spaces so that the data start at a multiple of 8 bytes from the start of the file (except for output to standard output), and it ends with a newline (byte 10), immediately after which the data start.
+Rows are written as the simulation runs, so a file can be read while \NF is still running, and if a run is stopped, the file holds every row written up to then.
+The readers keep the complete rows, drop an incomplete last row, and warn when \type{rows} is not a count or does not match the file (the text reader likewise drops a last line that has no newline).
+
+Text output has 15 significant digits, so values read from it differ from the binary ones by up to about $5\times 10^{-15}$ relative; the binary \type{float64} values are those \NF computed, bit for bit.
+The format needs no library to read.
+In Python, with numpy, the rows can be read with
+\begin{lstlisting}
+with open('example.output', 'rb') as f:
+    while not f.readline().startswith(b'NFTSIM-BINARY'):
+        pass
+    data = np.fromfile(f, dtype='<f8').reshape(-1, ncols)
+\end{lstlisting}
+(use \type{'<f4'} for \type{float32}, and \type{ncols} from \type{columns}; for an interrupted run, keep only the whole rows), or simply with \type{nftsim.NF('example.output')}.
+In Matlab, after reading the header lines with \type{fgetl}, \type{fread(fid, [ncols, Inf], 'double', 0, 'ieee-le')'} reads the rows; \type{nf.read} does this for you.
 
 \subsection{Matlab}
 A number of Matlab functions are provided to make it easy to manipulate \NF data from within Matlab. The functions are generally self-documenting with comments at the start of the file. To use these functions, you should add the \NF root directory to your Matlab path. All of the programs in the \type{+nf} directory will then be available for use within Matlab as part of the \type{nf} package (e.g., typing \type{nf.run()} will execute the function specified in \type{+nf/run.m}).
@@ -1397,7 +1451,7 @@ To accommodate the coding interface for \type{NF::output}, the output routine of
     \type{Outlet}&Stores a reference to field variable (\type{vector<double>}) and its associated name.\\
     \type{Output}&Helper class in the parsing of which objects and which fields to output, according to the configuration file.\\
     \type{Outputs}&Contains \type{Array<Outlet>} and performs output routine.\\
-    \type{Dumpf}&File handle (maybe to \type{stdout}) to output.
+    \type{Dumpf}&File handle (maybe to \type{stdout}) to output. It writes text, or, in the binary formats, the metadata line (\type{binaryHeader}), each row (\type{binaryRow}) and finally the number of rows (\type{finish}).
 \end{tabular}
 
 %\subsection{Other classes}

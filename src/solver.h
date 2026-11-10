@@ -49,6 +49,7 @@ class Solver : public NF {
     int outputstart = 0;
     int outputinterval = 0;
     std::vector<unsigned int> node;
+    std::vector<double> row; ///< One row of values, for the binary formats.
     Dumpf& dumpf;
     CntMat& cnt;
     Array<Population>& pops;
@@ -64,6 +65,8 @@ class Solver : public NF {
            couplings(couplings) {}
     ~Outputs() override = default;
     void step() override;
+    /// Completes the output file after the last step.
+    void finish();
     void writeName( Outlet& outlet );
     void writeNode( Outlet& outlet );
     void writeOutlet( Outlet& outlet );

@@ -7,6 +7,9 @@ USAGE:
 An nftsim output file holds an echo of the configuration file, a line of '='
 characters, then a data block: a row of trace names (eg 'Time', 'Pop.1.Q'), a
 row of node indices, and one row of numbers per output time-step.
+Either file may be in a binary format (nftsim --format Binary or Binary32),
+whose rows follow a NFTSIM-BINARY metadata line; it is detected automatically,
+so a binary run can be checked against a text reference.
 
 The two files match when:
   * the echoed configuration text is identical (ignoring trailing whitespace);
@@ -28,12 +31,15 @@ Uses only the Python 3 standard library.
 """
 
 import argparse
+import array
 import math
 import os
 import sys
 
 DEFAULT_RTOL = 1e-9
 DEFAULT_ATOL = 0.0
+BINARY_MAGIC = b"NFTSIM-BINARY"
+BINARY_TYPECODES = {"float64": ("d", 8), "float32": ("f", 4)}
 
 
 class ParseError(Exception):
@@ -47,10 +53,16 @@ def parse_output(path):
     trace names, the node indices (as strings), and a list of rows of floats.
     """
     try:
-        with open(path) as f:
-            lines = f.read().splitlines()
+        with open(path, "rb") as f:
+            raw = f.read()
     except OSError as err:
         raise ParseError("cannot read '{}': {}".format(path, err.strerror))
+    binary_rows = None
+    magic = raw.find(b"\n" + BINARY_MAGIC + b" ")
+    if magic >= 0:
+        binary_rows = parse_binary(path, raw[magic + 1:])
+        raw = raw[:magic + 1]
+    lines = raw.decode("utf-8", "replace").splitlines()
 
     separators = [i for i, line in enumerate(lines) if line.startswith("=====")]
     if not separators:
@@ -72,6 +84,16 @@ def parse_output(path):
                          .format(path, len(names), len(nodes)))
     nodes = [""] + nodes
 
+    if binary_rows is not None:
+        ncols, rows = binary_rows
+        if ncols != len(names):
+            raise ParseError("'{}': the binary metadata gives {} columns, the header {}"
+                             .format(path, ncols, len(names)))
+        if len(body) != 2:
+            raise ParseError("'{}': unexpected text between the header and the binary "
+                             "metadata line".format(path))
+        return header, names, nodes, rows
+
     rows = []
     for k, line in enumerate(body[2:]):
         fields = line.split()
@@ -84,6 +106,35 @@ def parse_output(path):
             raise ParseError("'{}': data row {} is not numeric: {!r}"
                              .format(path, k + 1, line.strip()))
     return header, names, nodes, rows
+
+
+def parse_binary(path, data):
+    """Rows of a binary output file, from `data`: the NFTSIM-BINARY line and
+    what follows it. Returns (number of columns, list of rows of floats)."""
+    eol = data.find(b"\n")
+    if eol < 0:
+        raise ParseError("'{}': the NFTSIM-BINARY line has no end".format(path))
+    try:
+        meta = dict(item.split("=", 1) for item in data[:eol].decode("ascii").split()[1:])
+        ncols = int(meta["columns"])
+        typecode, size = BINARY_TYPECODES[meta["dtype"]]
+        if meta["version"] != "1" or meta["byteorder"] != "little":
+            raise ValueError
+    except (ValueError, KeyError):
+        raise ParseError("'{}': unsupported NFTSIM-BINARY line {!r}"
+                         .format(path, data[:eol].decode("ascii", "replace")))
+    payload = data[eol + 1:]
+    nrows = len(payload) // (ncols * size)
+    if meta.get("rows") not in (str(nrows), "stream") or len(payload) != nrows * ncols * size:
+        raise ParseError("'{}' is incomplete: the metadata gives rows={}, the file holds "
+                         "{} bytes of data ({} complete rows of {} columns)"
+                         .format(path, meta.get("rows"), len(payload), nrows, ncols))
+    values = array.array(typecode)
+    values.frombytes(payload)
+    if sys.byteorder != "little":
+        values.byteswap()
+    values = values.tolist()
+    return ncols, [values[i * ncols:(i + 1) * ncols] for i in range(nrows)]
 
 
 def column_label(names, nodes, j):

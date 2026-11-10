@@ -7,7 +7,9 @@
 # The numerical check (nf_numerical --check all) compares each output with its
 # reference in test/numerical/data within a tolerance (rtol 1e-9 of each
 # column's largest value), which absorbs round-off from different compilers,
-# optimisation levels and CPUs.
+# optimisation levels and CPUs. Each job also runs the numerical tests with
+# binary output (--format Binary, and Binary32 at a float32 tolerance), read
+# back and checked against the same text references.
 
 name: tests
 
@@ -39,6 +41,10 @@ jobs:
         run: make test-unit CXX="$CXX"
       - name: Numerical regression tests
         run: ./nf_numerical --check all
+      - name: Numerical regression tests, binary output
+        run: |
+          ./nf_numerical --check all --format Binary
+          ./nf_numerical --check all --format Binary32 --rtol 1e-6
 
   macos:
     name: Apple clang (macOS, Makefile build)
@@ -54,6 +60,10 @@ jobs:
         run: make test-unit
       - name: Numerical regression tests
         run: ./nf_numerical --check all
+      - name: Numerical regression tests, binary output
+        run: |
+          ./nf_numerical --check all --format Binary
+          ./nf_numerical --check all --format Binary32 --rtol 1e-6
 
   python-reader:
     name: Python output reader (utils/nftsim.py)
@@ -66,8 +76,27 @@ jobs:
       - name: Install numpy
         # Only numpy: reading output must not need matplotlib.
         run: python -m pip install numpy
+      - name: Build nftsim
+        # For the tests that compare nftsim's binary and text output.
+        run: make -j"$(nproc)" nftsim
       - name: Reader tests
         run: python -m unittest discover -s test/python -v
+
+  matlab-reader:
+    name: Matlab output reader (+nf/read.m)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Build nftsim
+        run: make -j"$(nproc)" nftsim
+      - uses: matlab-actions/setup-matlab@v2
+        # MathWorks licenses MATLAB for CI on public repositories.
+        with:
+          release: latest
+      - name: Reader tests (text, Binary and Binary32)
+        uses: matlab-actions/run-command@v2
+        with:
+          command: run('test/matlab/test_read.m')
 
   sanitizers:
     name: AddressSanitizer + UndefinedBehaviorSanitizer (clang++)
@@ -87,3 +116,7 @@ jobs:
         run: ./bin/unit_tests
       - name: Numerical regression tests
         run: ./nf_numerical --check all
+      - name: Numerical regression tests, binary output
+        run: |
+          ./nf_numerical --check all --format Binary
+          ./nf_numerical --check all --format Binary32 --rtol 1e-6
