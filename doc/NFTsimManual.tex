@@ -535,7 +535,7 @@ Dendrite 1: V: Steady alpha: 83 beta: 769
     \end{lstlisting}
     The identifier \type{Dendrite 1}, where the number 1 is the presynaptic connection index, is required for cross-checking. Users should find that these indices are simply ordered as 1, 2, 3, 4, ...
 
-    Optional parameter \type{V} may be used to specify the initial depolarization contribution from presynaptic activity. If unspecified, or set to \type{Steady}, \NF calculates the initial value by \(V_{ab}=\nu_{ab}\phi_{ab}\).
+    Optional parameter \type{V} may be used to specify the initial depolarization contribution from presynaptic activity. If unspecified, or set to \type{Steady}, \NF calculates the initial value by \(V_{ab}=\nu_{ab}\phi_{ab}\), node by node, with the initial \(\phi_{ab}\) of the presynaptic propagator (its \type{phi}, Sec.~\ref{sec:prop}) and the initial \type{nu} of the coupling (the first value, if several are given).
 
     \type{alpha} and \type{beta} are the parameters for the depolarization response.
     \end{itemize}
@@ -549,7 +549,7 @@ Dendrite 1: V: Steady alpha: 83 beta: 769
 Propagator 1:
     \end{lstlisting}
     This identifier is required for cross-checking.
-\item A propagator type is required at this point. Choices are \type{Map}, \type{Wave}, and \type{Harmonic}.
+\item A propagator type is required at this point. Choices are \type{Map}, \type{Wave}, \type{WaveLegacy}, \type{Harmonic} and \type{HarmonicIntegral}.
 \begin{description}
     \item[Map]\ \\
     \begin{lstlisting}
@@ -559,7 +559,8 @@ Map - phi: Steady Tau: 0
     \[\phi_{ab}({\bf r}, t) = Q_b ({\bf r}, t - \tau_{ab}).\]
     Optional parameter, \type{Tau}, is the axonal delay term. If unspecified, it is taken as zero. Since all propagators contain this object, its description is given below.
 
-    Optional parameter \type{phi} may be used to specify the initial axonal firing rate. If unspecified, or set to \type{Steady}, \NF calculates the initial value by \(\phi_{ab}=Q_{b}\).
+    Optional parameter \type{phi} is the initial axonal firing rate, described below.
+    For \type{Map} it sets \(\phi_{ab}\) at \(t=0\) only, which the couplings use in the first time-step; from then on \(\phi_{ab}\) is the delayed \(Q_b\).
 
     \item[Wave]\ \\
     This propagator is the wave equation propagator governed by the equation
@@ -572,13 +573,16 @@ Map - phi: Steady Tau: 0
 Wave - phi: Steady Tau: 0 Range: 80e-3 gamma: 116
     \end{lstlisting}
 
-    Optional parameter \type{phi} may be used to specify the initial axonal firing rate. If unspecified, or set to \type{Steady}, \NF calculates the initial value by \(\phi_{ab}=Q_{b}\).
+    Optional parameter \type{phi} is the initial axonal firing rate, described below.
+    The wave equation starts with \(\partial\phi_{ab}/\partial t = 0\) at every node.
 
     \type{Range} is $r_{ab}$ in the wave equation.
 
     \type{gamma} is the damping coefficient. Alternatively, \type{velocity} may be specified, and \type{gamma} is calculated via \(\gamma_{ab}=\mathrm{v}_{ab}/r_{ab}\).
 
     In case there is only one node, this degenerates into a \type{Harmonic} propagator.
+
+    \type{WaveLegacy} takes the same parameters and solves the same equation with an older nine-point stencil, kept to reproduce published results.
 
     \item[Harmonic]
     This is a harmonic oscillator implementation of the damped wave equation, with no spatial variations:
@@ -588,6 +592,23 @@ Wave - phi: Steady Tau: 0 Range: 80e-3 gamma: 116
     \begin{lstlisting}
 Harmonic - phi: Steady Tau: 0 gamma: 116
     \end{lstlisting}
+    It starts from the initial \type{phi} at rest (\(d\phi_{ab}/dt = 0\)).
+    \type{HarmonicIntegral} takes the same parameters, and steps the same equation with its exact solution for \(Q_b\) varying linearly over each time-step.
+    It also starts at rest, taking the delayed \(Q_b\) before \(t=0\) to equal the initial \(\phi_{ab}\) at each node, so that an explicit \type{phi} is treated as the steady state of an earlier constant input.
+
+    \item[phi]\ \\
+    The initial axonal firing rate \(\phi_{ab}\), which must be the first entry after the propagator type.
+    If unspecified, or set to \type{Steady}, it is the initial firing rate of the presynaptic population, \(\phi_{ab}=Q_{b}\), at every node.
+    Otherwise, as for \type{Tau} and \type{nu}, it is either one number, used at every node, or \(n\) numbers, one per node, where \(n=\) \type{Nodes}; any other number of values is an error.
+    The per-node form sets arbitrary initial conditions.
+    For example, with \type{Nodes: 4},
+    \begin{lstlisting}
+Propagator 1: Harmonic - phi: 1 1 9 1 Tau: 0 gamma: 116
+    \end{lstlisting}
+    starts \(\phi_{ab}\) at 9 at node 3 and at 1 elsewhere.
+    The values may span several lines.
+    \type{test/numerical/wave-initial-phi.conf} starts a \type{Wave} propagator from a localized bump.
+    A dendrite whose \type{V} is \type{Steady} starts at \(\nu_{ab}\phi_{ab}\) with this initial \(\phi_{ab}\), node by node.
 
     \item[Tau]\ \\
     The axonal time delay between populations. If it is spatially homogeneous, then it is a number with units of seconds. If it is spatially inhomogeneous, then input \(n\) numbers, where \(n=\) \type{Nodes}.

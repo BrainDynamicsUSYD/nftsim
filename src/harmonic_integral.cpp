@@ -33,14 +33,13 @@ void HarmonicIntegral::init( Configf& configf ) {
     exit(EXIT_FAILURE);
   }
 
-  // If "Steady" then phi was set to Q in Propagator::init, so the
-  // following assignment does nothing. But if not "Steady" then
-  // for HarmonicIntegral we still want phi=Q.
-  Q = p[0];
-
-  oldp.resize(nodes,Q);
-  oldQ.resize(nodes,Q);
-  dpdt.resize(nodes,0.);
+  // Start at rest at the initial phi of each node: phi = p, dphi/dt = 0, and
+  // the previous delayed Q taken equal to phi (with phi: Steady, that is Q).
+  // With an explicit phi this is the state of a propagator that had settled
+  // to a constant input Q = phi before t = 0.
+  oldp = p;
+  oldQ = p;
+  dpdt.assign(nodes,0.);
 
   twoongamma = 2./gamma;
   expgamma = exp(-gamma*deltat);

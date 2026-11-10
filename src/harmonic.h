@@ -37,7 +37,7 @@ class Harmonic : public Propagator {
   struct HarmonicDE : public DE {
     double gammasquared = 0.0, twoongamma = 0.0;
     std::vector<double> dQdt; ///< dQ/dt over the step; empty unless Integration: SecondOrder
-    virtual void init(double pinit);
+    virtual void init( const std::vector<double>& pinit );
     HarmonicDE( size_type nodes, double deltat) : DE(nodes, deltat, 3) {}
     ~HarmonicDE() override = default;
     void rhs( const std::vector<double>& y, std::vector<double>& dydt, size_type /*unused*/ ) override;

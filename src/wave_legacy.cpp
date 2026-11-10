@@ -52,8 +52,10 @@ void WaveLegacy::init( Configf& configf ) {
 
   deltax = prepop.sheetlength()/longside;
 
-  *oldp[0] = vector<double>(nodes,p[0]);
-  *oldp[1] = vector<double>(nodes,p[0]);
+  // Both previous steps of phi start at the initial phi (node by node), so
+  // phi starts with zero time derivative.
+  *oldp[0] = p;
+  *oldp[1] = p;
   *oldQ[0] = vector<double>(nodes,Q);
   *oldQ[1] = vector<double>(nodes,Q);
 
