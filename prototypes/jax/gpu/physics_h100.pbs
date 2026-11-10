@@ -1,0 +1,62 @@
+#!/bin/bash
+#PBS -N nftsim-jax
+#PBS -q h100
+#PBS -S /bin/bash
+#PBS -l select=1:ncpus=16:ngpus=1:mem=32gb
+#PBS -l walltime=03:00:00
+#PBS -j oe
+#PBS -m n
+#
+# Benchmark the JAX prototype on the physics cluster's H100 (float64), plus,
+# on the same node, nftsim and CPU JAX with 16 cores, so both arms of the
+# comparison share hardware.  Setup and submission: see gpu/setup_physics.sh
+# and README.md ("GPU next step").  The node has one GPU and the queue allows
+# one GPU job per user (queued jobs count), so submit it once and let it run.
+# Results go to $BASE/results/<job id>/ (about 1 MB); the job log to the
+# directory qsub was run from.
+set -uo pipefail
+BASE=${BASE:-/taiji1/bful7291/nftsim-jax}
+cd "$BASE/nftsim" || exit 1
+OUT="$BASE/results/${PBS_JOBID:-manual}"
+mkdir -p "$OUT"
+PY="$BASE/venv/bin/python"
+export UV_CACHE_DIR="$BASE/uv-cache"
+export XDG_CACHE_HOME="$BASE/cache"  # keep JAX/XLA caches off the nearly full home
+
+echo "host $(hostname), job ${PBS_JOBID:-none}, $(date)"
+nvidia-smi --query-gpu=name,memory.total,driver_version --format=csv
+git log -1 --oneline
+
+# nftsim, built here for this node's CPU (-march=native).
+make -j16 nftsim > "$OUT/build.log" 2>&1 && HAVE_NFTSIM=1 || HAVE_NFTSIM=0
+echo "nftsim built: $HAVE_NFTSIM"
+export NFTSIM="$BASE/nftsim/bin/nftsim"
+
+cd prototypes/jax
+"$PY" -c "import jax; d = jax.devices(); print(d); assert d[0].platform == 'gpu', 'no GPU visible to JAX'" || exit 2
+
+# 1. Agreement with nftsim when the JAX model runs on the GPU.
+if [ "$HAVE_NFTSIM" = 1 ]; then
+  "$PY" scripts/validate.py --steps 8192 | tee "$OUT/validate_gpu.md"
+fi
+
+# 2. GPU throughput.  Short runs for the very large single-node batches keep
+#    the recorded traces (8 bytes per set per 8 steps) within GPU memory.
+"$PY" scripts/benchmark.py --model node --time 2 --no-nftsim \
+  --batches 1,8,64,512,4096,32768,131072 --out "$OUT/bench_node_gpu.json"
+"$PY" scripts/benchmark.py --model grid --time 0.25 --no-nftsim \
+  --batches 1,8,64,512,4096 --out "$OUT/bench_grid_gpu.json"
+
+# 3. Gradients on the GPU.
+"$PY" scripts/gradcheck.py --max-time 16 --out "$OUT"
+
+# 4. Same-node CPU baselines: nftsim as 16 processes, and JAX on 16 CPU devices.
+NOGRID=""
+[ "$HAVE_NFTSIM" = 1 ] || NOGRID="--no-nftsim"
+JAX_PLATFORMS=cpu "$PY" scripts/benchmark.py --model node --time 2 --devices 16 --procs 16 \
+  $NOGRID --batches 1,8,64,512,4096 --out "$OUT/bench_node_cpu.json"
+JAX_PLATFORMS=cpu "$PY" scripts/benchmark.py --model grid --time 0.25 --devices 16 --procs 16 \
+  $NOGRID --batches 1,8,64,512 --out "$OUT/bench_grid_cpu.json"
+
+"$PY" scripts/summarise.py "$OUT"/bench_*.json | tee "$OUT/summary.md"
+echo "done $(date); results in $OUT"
