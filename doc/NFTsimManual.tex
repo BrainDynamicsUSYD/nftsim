@@ -386,9 +386,29 @@ White - Mean: 1 StdDev: 20 Ranseed: 10
 White - Mean: 1 ASD: 20 Ranseed: 10
     \end{lstlisting}
 
-    In general, it is preferable to specify the noise amplitude using \texttt{ASD} rather than \texttt{StdDev}. Note that the ASD reported in paper is given assuming the power spectrum is calculated with respect to angular frequency $\omega$, instead of linear frequency $f$. ASD($f$) is larger than ASD($\omega$) by a factor of $2\pi$ (i.e.\ ASD($f$)=$2\pi$*ASD($\omega$)).
+    In general, it is preferable to specify the noise amplitude using \texttt{ASD} rather than \texttt{StdDev}.
+
+    \textbf{Convention.}
+    \type{ASD}\(^2\) is the \emph{two-sided} power spectral density of the noise with respect to \emph{angular} frequency \(\omega\), normalised so that the variance is its integral over \(\omega\) from \(-\pi/\Delta t\) to \(\pi/\Delta t\).
+    For a single node this gives
+    \[
+        \sigma = \sqrt{\frac{2\pi\,\mathrm{ASD}^2}{\Delta t}},
+    \]
+    and on a grid, where each spatial Fourier mode is also included,
+    \[
+        \sigma = \sqrt{\frac{2\,(2\pi)^2\pi\,\mathrm{ASD}^2}{\Delta t\,\Delta x^2}}
+               = \sqrt{\frac{8\pi^3\,\mathrm{ASD}^2}{\Delta t\,\Delta x^2}},
+    \]
+    with \(\Delta x = \) \type{Length}/\type{Longside nodes} (or \type{Length}/\(\sqrt{\text{\type{Nodes}}}\) on a square grid), the same spacing as the \type{Wave} propagator.
+
+    The note \texttt{doc/noise.pdf} (2012) derives the same expressions without the leading factor of 2, because it treats \(\phi_n^2(\omega)\) as a \emph{one-sided} spectral density.
+    The factor of 2 was added in 2018 (commit \texttt{a2d4a46}) so that \type{ASD} refers to the two-sided density, and the shipped configuration files were rescaled to match (for example, \texttt{ASD: 7.071067811865475e-06} \(= 10^{-5}/\sqrt{2}\)).
+    To reproduce a result that used the one-sided convention, divide its \type{ASD} by \(\sqrt{2}\).
+
+    If spectra are expressed per unit linear frequency \(f\) instead of \(\omega\), the power spectral densities differ by a factor of \(2\pi\) (since \(d\omega = 2\pi\,df\)), so \(\mathrm{ASD}(f) = \sqrt{2\pi}\,\mathrm{ASD}(\omega)\).
 
     The random number generator may be specified in \type{Ranseed}. If a seed is not specified, an automatically-incremented seed will be used instead, so that multiple stimulus populations will have independent sequences. In general it is not necessary to set the seed manually unless different random numbers are required for otherwise identical runs.
+    Because the automatic seeds are always 1, 2, 3, \ldots, repeated runs of the same configuration produce identical noise; set \type{Ranseed} explicitly to obtain independent realisations.
 
     \vspace{5mm}
     \textbf{Superimposing stimuli}
@@ -479,16 +499,24 @@ Q: 8.87145
     The initial firing rate.
     \item
     \begin{lstlisting}
-Firing: Sigmoid - Theta: 13e-3 Sigma: 3.8e-3 Qmax: 340
+Firing: Function: Sigmoid Theta: 13e-3 Sigma: 3.8e-3 Qmax: 340
     \end{lstlisting}
-    Specify the sigmoidal firing response of the population.
+    Specify the sigmoidal firing response of the population,
+    \[
+        Q = \frac{Q_{\max}}{1+\exp[-(V-\theta)/\sigma']}.
+    \]
+    \type{Sigma} is \(\sigma'\) in this formula (Eq.~10 of Sanz-Leon et al., 2018).
+    The standard deviation of firing thresholds across the population is \(\sigma = \sigma'\pi/\sqrt{3}\), so \type{Sigma} is that standard deviation already divided by \(\pi/\sqrt{3}\).
+    (Table 1 of the 2018 paper describes \(\sigma'\) itself as the standard deviation; the text under its Eq.~10, and the code, use the definition given here.)
 
-    \type{Sigma} is sometimes known as \(\tilde{\sigma}\). It is already scaled by \(\pi/\sqrt{3}\).
-
-    Alternatively, you can specify a linear firing response by using
+    Alternatively, you can specify a linear, quadratic or cubic firing response,
     \begin{lstlisting}
-Firing: Linear - Gradient: 1 Intercept: 1
+Firing: Function: Linear a: 1 b: 1
+Firing: Function: Quadratic a: 1 b: 1 c: 0
+Firing: Function: Cubic a: 1 b: 1 c: 0 d: 0
     \end{lstlisting}
+    which give \(Q = aV + b\), \(Q = aV^2 + bV + c\) and \(Q = aV^3 + bV^2 + cV + d\), respectively.
+    Any other \type{Function} name is an error.
 
     \item
     \begin{lstlisting}
@@ -552,6 +580,8 @@ Harmonic - phi: Steady Tau: 0 gamma: 116
 
     \item[Tau]\ \\
     The axonal time delay between populations. If it is spatially homogeneous, then it is a number with units of seconds. If it is spatially inhomogeneous, then input \(n\) numbers, where \(n=\) \type{Nodes}.
+    Delays are rounded to the nearest whole number of time-steps, and a warning is printed if a value is not within \(10^{-6}\) of a step multiple.
+    Choosing \type{Deltat} as a power of two (e.g.\ \(2^{-13}\) s) lets common delays be represented exactly.
 
 \end{description}
 \end{itemize}
@@ -998,10 +1028,13 @@ Models a neural population, which may be either a stimulus or normal population.
 In the former case, it contains the \type{FiringResponse} class and have a soma potential; in the latter case it contains the \type{Timeseries} class, and does not have a soma potential.
 
 In either cases, the \type{Population} class has a keyring storing the firing rate history, coded as a 2D array plus an integer key.
+The history holds \(D_a + 1\) time-points, where \(D_a\) is the largest delay (in time-steps) of any propagator leaving the population: a delay of \(D_a\) steps needs the current value plus \(D_a\) past values.
+(The Time delays section of Sanz-Leon et al., 2018, gives the depth as \(D_a\); versions of \NF before this correction used that depth, which turned a delay equal to the history length into no delay.)
 
 Functions \type{sheetlength()} and \type{glu()} provides access to the physical length and glutamate concentration in synaptic cleft, respectively.
 
-A population is ``settled" after \type{Population::init()} is called, after which no dendrites can be added, and the firing rate history cannot grow.
+A population is ``settled" after \type{Population::init()} is called, after which no dendrites can be added.
+The firing rate history is grown afterwards, as each \type{Propagator} reads its \type{Tau}.
 
 \subsubsection{Propagator}
 \label{sec:propagator}
@@ -1143,7 +1176,7 @@ where \type{field1} is a \type{vector<double>} of size 1.
 \subsection{Tools for solving differential equations}
 \label{sec:diffeqn}
 
-Classes \type{DE} and \type{Integrator} (currently RK4 is implemented) are used to solve generic systems of ODEs, where the dynamical variables are homogeneous fields. For inhomogeneous DEs and spatial dependency, a 9-point stencil is provided in \type{Stencil}.
+Classes \type{DE} and \type{Integrator} (currently RK4 is implemented) are used to solve generic systems of ODEs, where the dynamical variables are homogeneous fields. For spatial dependency, a five-point (von Neumann) stencil is provided in \type{Stencil}, used by \type{Wave}; a nine-point stencil is provided in \type{StencilLegacy}, used by \type{WaveLegacy}.
 
 \subsubsection{Class DE}
 \label{sec:de}
@@ -1254,18 +1287,25 @@ stencil(sw); stencil(s); stencil(se);
 One integration step of the model implements the following stages:
 
 \begin{enumerate}
-    \item  Dendritic response
+    \item  Coupling response, \(P = \nu\phi\), using \(\phi\) from the previous step.
+    \item  Dendritic response, advancing each \(V_{ab}\) one step with that input.
     \item  Afferent summation.
-    \item  Firing response/stimulus response.
-    \item  Wave equation integration step which includes Q delay processing
-    \item  Coupling response.
+    \item  Firing response/stimulus response, giving the new \(Q\).
+    \item  Propagator step (wave equation integration, or a direct map), which includes Q delay processing and uses the new \(Q\).
 \end{enumerate}
 
 Most of the computational {\em load} comes from integrating wave equations and harmonic oscillators within the dendritic responses. Most of the execution {\em time} is probably spent writing the output file.
 
-Wave equations are integrated by explicit finite differences integration. A nine point spatial stencil is used to reduce high frequency spatial instabilities when driven by random noise. Other parts of code are unaffected by spatial geometry so this can be switched to irregular gridding easily.
+Wave equations are integrated by explicit finite differences (Eq.~32 of Sanz-Leon et al., 2018, after Rennie, 2001), using a five-point spatial stencil (\type{Wave}); \type{WaveLegacy} uses a nine-point stencil. Other parts of code are unaffected by spatial geometry so this can be switched to irregular gridding easily.
 
-Harmonic oscillators with dendritic response are integrated using a heavily strength reduced explicit direct integration assuming constant drive. This was more efficient than a constant drive RK4 algorithm which would not be fourth order in any case due to the constant drive. Rennie used a constant drive RK4 for his 1997 code.
+The default \type{Dendrite} integrates its second-order response with RK4, holding the input \(\nu\phi\) constant over each step. The \type{Integral} dendrite instead uses the exact solution for an input that varies linearly over the step, which is cheaper. Neither is fourth order overall, because of how the input is supplied (see \emph{Accuracy} below).
+
+\subsubsection{Accuracy}
+The \type{Wave} update on its own is second-order accurate in space and time.
+However, the modules are advanced in sequence within a step (see \emph{Program flow}): each coupling uses \(\phi\) from the previous step, each dendrite holds (RK4) or extrapolates (\type{Integral}) that input over the step, and propagators then use the new firing rates.
+This splitting makes the coupled system \emph{first} order in \type{Deltat}, whatever integrator each module uses.
+For example, for a deterministic single-node corticothalamic model driven by a 7.8~ms pulse, the maximum error in the excitatory soma potential relative to a \(\Delta t = 2^{-19}\)~s reference was about 11\%, 6\%, 3\% and 1.4\% of the evoked response for \(\Delta t = 2^{-13}\), \(2^{-14}\), \(2^{-15}\) and \(2^{-16}\)~s.
+When fitting transient responses, check that results are converged in \type{Deltat}, for example by repeating a run with half the time-step.
 
 \subsubsection{Class Array}
 \label{sec:array}
@@ -1290,7 +1330,7 @@ We use the semicolon to denote a succession of functions/procedures, and \type{a
 &&Construct \type{Population}; construct \type{Propagator}; construct \type{Coupling}; \type{Population::add2Dendrite()};\\[6pt]
 &&Read configurations for \type{Population}, \type{Propagator}, \type{Coupling}, and \type{Output}.\\[6pt]
 \type{Solver::solve()}& $\Rightarrow$ & \type{for(...) \{ Solver::step(); \type{Output::step()}; \} }\\[6pt]
-\type{Solver::step()}& $\Rightarrow$ & \type{Population::step()}; \type{Propagator::step()}; \type{Coupling::step()};\\[6pt]
+\type{Solver::step()}& $\Rightarrow$ & \type{Coupling::step()}; \type{Population::step()}; \type{Propagator::step()};\\[6pt]
 \type{Population::step()}& $\Rightarrow$ & \type{FiringResponse::step()} if neural population;\\[6pt]
 &&\type{Timeseries::step()} if stimulus\\[6pt]
 \type{FiringResponse::step()}& $\Rightarrow$ & \type{Dendrite::step()}; sum over \(V_{ab}\)
