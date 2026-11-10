@@ -15,12 +15,13 @@
 // Other nftsim headers
 #include "configf.h"    // Configf;
 #include "coupling.h"   // Coupling;
-#include "parallel.h"   // NFTSIM_PARALLEL_FOR;
+#include "parallel.h"   // nftsim::par::range;
 #include "propagator.h" // Propagator;
 #include "restrict.h"   // NFTSIM_RESTRICT;
 
 // C++ standard library headers
 #include <cmath>     // std::exp;
+#include <typeinfo> // typeid;
 
 void DendriteIntegral::initFromInputs() {
   Dendrite::initFromInputs();
@@ -62,8 +63,8 @@ void DendriteIntegral::step() {
   const double invdt = 1.0/deltat;
   if(alpha!=beta) {
     const double inv_amb = 1.0/aminusb;
-    NFTSIM_PARALLEL_FOR
-    for(size_type i=0; i<nodes; i++) {
+    const nftsim::par::Range nr = nftsim::par::range(nodes); // this thread's nodes
+    for( size_type i=nr.begin; i<nr.end; i++ ) {
       const double dpdt = ( np[i] -onp[i] )*invdt;
       const double adjustednp = onp[i] -factorab*dpdt -vv[i];
       const double C1 = ( adjustednp*beta -dv[i] +dpdt )*inv_amb;
@@ -74,8 +75,8 @@ void DendriteIntegral::step() {
       onp[i] = np[i]; //Save current pulse density for next step
     }
   } else { // alpha==beta
-    NFTSIM_PARALLEL_FOR
-    for(size_type i=0; i<nodes; i++) {
+    const nftsim::par::Range nr = nftsim::par::range(nodes); // this thread's nodes
+    for( size_type i=nr.begin; i<nr.end; i++ ) {
       const double dpdt = ( np[i] -onp[i] )*invdt;
       const double adjustednp = onp[i] -factorab*dpdt -vv[i];
       const double C1 = dv[i] -alpha*adjustednp -dpdt;
@@ -106,8 +107,8 @@ void DendriteIntegral::stepSecondOrder() {
   const double invdt = 1.0/deltat;
   if(alpha!=beta) {
     const double inv_amb = 1.0/aminusb;
-    NFTSIM_PARALLEL_FOR
-    for(size_type i=0; i<nodes; i++) {
+    const nftsim::par::Range nr = nftsim::par::range(nodes); // this thread's nodes
+    for( size_type i=nr.begin; i<nr.end; i++ ) {
       const double p0 = np[i];
       const double dp = p0 - pp[i];
       const double p1 = p0 + dp;
@@ -121,8 +122,8 @@ void DendriteIntegral::stepSecondOrder() {
       pp[i] = p0;
     }
   } else { // alpha==beta
-    NFTSIM_PARALLEL_FOR
-    for(size_type i=0; i<nodes; i++) {
+    const nftsim::par::Range nr = nftsim::par::range(nodes); // this thread's nodes
+    for( size_type i=nr.begin; i<nr.end; i++ ) {
       const double p0 = np[i];
       const double dp = p0 - pp[i];
       const double p1 = p0 + dp;
@@ -135,4 +136,8 @@ void DendriteIntegral::stepSecondOrder() {
       pp[i] = p0;
     }
   }
+}
+
+bool DendriteIntegral::nodeParallel() const {
+  return typeid(*this) == typeid(DendriteIntegral);
 }

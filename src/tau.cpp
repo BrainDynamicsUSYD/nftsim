@@ -154,7 +154,7 @@ void Tau::initFractional( const vector<double>& temp ) {
 }
 
 Tau::Tau( size_type nodes, double deltat, size_type index )
-  : NF(nodes,deltat,index), max(0), m(1,0) {
+  : NF(nodes,deltat,index), max(0), m(1,0), delayed(nodes) {
 }
 
 Tau::~Tau() = default;

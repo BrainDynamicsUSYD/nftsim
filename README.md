@@ -56,6 +56,15 @@ To build a portable binary, override the architecture flags with the `ARCH` vari
 `make FPFLAGS=-ffp-contract=off` stops the compiler fusing multiply-adds, so builds with different compilers and optimisation levels give bit-identical output; it makes simulations about 14% slower.
 The variables are described at the top of the `Makefile`.
 
+### Running on several cores (OpenMP, prototype)
+
+`make OPENMP=1` builds `nftsim` with OpenMP, so that several threads share the nodes of a grid.
+Set the number of threads with `OMP_NUM_THREADS`, eg `OMP_NUM_THREADS=8 ./bin/nftsim -i model.conf -o model.output`.
+Grids of fewer than 256 nodes still run on one thread, where threads would only add overhead.
+The output is bit-for-bit the same for any number of threads, and the same as the serial build: with clang the default build, and with g++, which `OPENMP=1` builds with `-ffp-contract=off`, the build `make FPFLAGS=-ffp-contract=off`.
+White noise is still drawn on one thread, node by node, so that it stays the same as in the serial build.
+Apple clang needs Homebrew's `libomp` (`brew install libomp`); alternatively use g++, eg `make OPENMP=1 CXX=g++-16`.
+
 Are you on Windows and want to use `NFTsim`. Check [some options here](https://github.com/BrainDynamicsUSYD/nftsim/wiki/All:-Cross-platform-support). 
 
 ### Reproducibility of random noise

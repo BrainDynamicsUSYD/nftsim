@@ -42,6 +42,10 @@ class NF {
   friend Configf&  operator>> ( Configf& configf, NF& nf );
   virtual void step() = 0; ///< pure virtual method, all derived classes must implement this.
   virtual void output( Output&  /*unused*/) const;
+  /// True if step() steps only the calling thread's nodes, par::range(nodes),
+  /// so that threads can share the nodes (see parallel.h). Array::step() runs
+  /// the step() of any other object on one thread.
+  virtual bool nodeParallel() const { return false; }
 
   virtual ~NF();
 };

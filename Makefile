@@ -17,12 +17,14 @@
 #             level give bit-identical output (and match the regression
 #             references exactly); it costs about 14% in run time on Apple M1.
 #    LDLIBS   Libraries to link (default -lm).
-#    OPENMP   'make OPENMP=1' builds with OpenMP, running the per-node loops on
-#             several threads (prototype; the number of threads is set by
-#             OMP_NUM_THREADS). Results are bit-for-bit the same as the serial
-#             build for any number of threads. g++ needs nothing extra; Apple
-#             clang needs libomp (eg 'brew install libomp'), found under
-#             LIBOMP (default: Homebrew's prefix), or use g++, eg
+#    OPENMP   'make OPENMP=1' builds with OpenMP (prototype): threads share the
+#             nodes of grids of 256 nodes or more, and OMP_NUM_THREADS sets
+#             how many. Results are bit-for-bit the same for any number of
+#             threads and the same as the serial build: with clang, the
+#             default build; with g++, which OPENMP=1 builds with
+#             -ffp-contract=off, 'make FPFLAGS=-ffp-contract=off'. Apple clang
+#             needs libomp (eg 'brew install libomp'), found under LIBOMP
+#             (default: Homebrew's prefix); or use g++, eg
 #             'make OPENMP=1 CXX=g++-16'.
 #  Objects are not rebuilt when only these flags change, so run 'make clean'
 #  first, eg 'make clean && make ARCH='.
@@ -85,7 +87,10 @@ ifeq ($(OPENMP),1)
       OMPFLAGS := -fopenmp
     endif
   else
-    OMPFLAGS := -fopenmp
+    # g++ fuses multiply-adds (-ffp-contract=fast) differently in vectorised
+    # and scalar code, so a node's result would depend on where the thread
+    # blocks start. Without fusing, every node does the same arithmetic.
+    OMPFLAGS := -fopenmp -ffp-contract=off
   endif
   CXXFLAGS += $(OMPFLAGS)
   DEBUG += $(OMPFLAGS)

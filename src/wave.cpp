@@ -20,7 +20,7 @@
 // Other nftsim headers
 #include "configf.h"    // Configf;
 #include "make_unique.h" // nftsim::make_unique;
-#include "parallel.h"   // NFTSIM_PARALLEL_FOR;
+#include "parallel.h"   // nftsim::par::range; nftsim::par::serial;
 #include "population.h" // Population;
 #include "stencil.h"    // Stencil;
 
@@ -29,6 +29,7 @@
 #include <iostream>  // std::cerr; std::endl;
 #include <string>    // std::string;
 #include <vector>    // std::vector;
+#include <typeinfo> // typeid;
 using std::cerr;
 using std::endl;
 using std::exp;
@@ -178,10 +179,10 @@ void Wave::step() {
   const double* uq = stencilQ.data();
   const double* oldup = stencil_oldp.data();
   const double* olduq = stencil_oldQ.data();
-  const int stride = stencilp.stride();
-  NFTSIM_PARALLEL_FOR
-  for( size_type i=0; i<nodes; i++ ) {
-    const int k = stencilp.padded(static_cast<int>(i));
+  const size_type stride = static_cast<size_type>(stencilp.stride());
+  const nftsim::par::Range nr = nftsim::par::range(nodes); // this thread's nodes
+  for( size_type i=nr.begin; i<nr.end; i++ ) {
+    const size_type k = static_cast<size_type>(stencilp.padded(static_cast<int>(i)));
     const double sump  = up[k-stride] + up[k+stride] + up[k-1] + up[k+1] ; // sum of the von Neumann (orthogonal) neighbourhood (phi)
     const double sumQ  = uq[k-stride] + uq[k+stride] + uq[k-1] + uq[k+1] ; // sum of the von Neumann (orthogonal) neighbourhood (Q)
     const double drive = dfact * (tenminus4p2*uq[k] +
@@ -194,8 +195,19 @@ void Wave::step() {
                           drive);
   }
 
-  //If key==1, set it to 0; if key==0, set it to 1.
-  key = static_cast<int>(key == 0);
-  stencil_oldp = p;
-  stencil_oldQ = Qnew;
+  // Each thread copies its own nodes into the older stencils, which only it
+  // reads (at the centre) in this step; then one thread fills their halos,
+  // which need every node, and swaps them for the next step.
+  stencil_oldp.assignNodes(p, nr.begin, nr.end);
+  stencil_oldQ.assignNodes(Qnew, nr.begin, nr.end);
+  nftsim::par::serial( [&]{
+    stencil_oldp.fillHalo();
+    stencil_oldQ.fillHalo();
+    //If key==1, set it to 0; if key==0, set it to 1.
+    key = static_cast<int>(key == 0);
+  } );
+}
+
+bool Wave::nodeParallel() const {
+  return typeid(*this) == typeid(Wave);
 }

@@ -1,26 +1,129 @@
 /** @file parallel.h
   @brief Optional OpenMP parallelism over nodes (prototype, `make OPENMP=1`).
 
-  Without OpenMP the macros expand to nothing and nftsim is serial.
-  Every parallel loop is over nodes and does the same arithmetic per node as
-  the serial loop, with no reductions across nodes, so results are bit-for-bit
-  the same for any number of threads.
+  With OpenMP, Solver::solve() runs the whole time loop inside one parallel
+  region. Every thread calls every object's step(), and each object's per-node
+  loops cover only the calling thread's block of nodes, par::range(nodes).
+  The blocks are contiguous and fixed for the run, so in a chain of per-node
+  loops (coupling, dendrites, soma sum, firing, propagator) each thread reads
+  only values it wrote itself and no barrier is needed between them. The few
+  steps that are not per node (advancing a history index, filling the Wave
+  stencils' halos, white noise, output) run on one thread, par::single() or
+  par::serial(), with barriers.
+
+  Objects whose step() has not been written this way (nodeParallel() is false,
+  see NF) are stepped by Array::step() inside par::serial(): one thread steps
+  every node, as in the serial build.
+
+  Without OpenMP, or outside a parallel region, par::range(n) is [0, n), the
+  barriers do nothing and single() and serial() just call their argument, so
+  the code runs as before. Every loop over nodes does the same arithmetic per
+  node, in the same order, as the serial code, with no sums across nodes, so
+  results are bit-for-bit the same for any number of threads.
 */
 
 #ifndef NFTSIM_SRC_PARALLEL_H
 #define NFTSIM_SRC_PARALLEL_H
 
-/// Smallest number of nodes for which a loop is run in parallel.
+// C++ standard library headers
+#include <vector> // std::vector;
+
+#ifdef _OPENMP
+#include <omp.h>
+#endif
+
+/// Smallest number of nodes for which Solver::solve() uses several threads.
 #ifndef NFTSIM_OMP_MIN_NODES
 #define NFTSIM_OMP_MIN_NODES 256
 #endif
 
+namespace nftsim {
+namespace par {
+
+using size_type = std::vector<double>::size_type;
+
+/// The half-open range of nodes [begin, end).
+struct Range {
+  size_type begin;
+  size_type end;
+};
+
 #ifdef _OPENMP
-#define NFTSIM_PRAGMA(x) _Pragma(#x)
-/// Parallel loop over nodes (the enclosing scope must have `nodes`).
-#define NFTSIM_PARALLEL_FOR NFTSIM_PRAGMA(omp parallel for schedule(static) if(nodes >= NFTSIM_OMP_MIN_NODES))
-#else
-#define NFTSIM_PARALLEL_FOR
+/// True while the calling thread runs the body of serial().
+inline bool& in_serial() {
+  static thread_local bool flag = false;
+  return flag;
+}
 #endif
+
+/// True if the calling thread is one of a team of threads sharing the nodes.
+inline bool sharing() {
+#ifdef _OPENMP
+  return omp_in_parallel() && !in_serial();
+#else
+  return false;
+#endif
+}
+
+/// The calling thread's block of the nodes [0, n): all of them unless sharing().
+inline Range range( size_type n ) {
+#ifdef _OPENMP
+  if( sharing() ) {
+    const auto nt = static_cast<size_type>(omp_get_num_threads());
+    const auto t = static_cast<size_type>(omp_get_thread_num());
+    const size_type q = n/nt;
+    const size_type r = n%nt;
+    const size_type begin = t*q + (t < r ? t : r);
+    return Range{begin, begin + q + (t < r ? 1 : 0)};
+  }
+#endif
+  return Range{0, n};
+}
+
+/// Waits until every thread of the team has reached this point.
+inline void barrier() {
+#ifdef _OPENMP
+  if( sharing() ) {
+#pragma omp barrier
+  }
+#endif
+}
+
+/// Runs f on one thread of the team; the others wait at the end until it is
+/// done. Use it for state the following per-node loops read (eg an index into
+/// a history), when no other thread can still be using that state.
+template<class F> inline void single( F f ) {
+#ifdef _OPENMP
+  if( sharing() ) {
+#pragma omp single
+    {
+      f();
+    }
+    return;
+  }
+#endif
+  f();
+}
+
+/// Runs f on one thread once every thread has arrived; the others wait at the
+/// end until it is done. f may read and write every node.
+template<class F> inline void serial( F f ) {
+#ifdef _OPENMP
+  if( sharing() ) {
+#pragma omp barrier
+#pragma omp single
+    {
+      in_serial() = true;
+      f();
+      in_serial() = false;
+    }
+    return;
+  }
+#endif
+  f();
+}
+
+} // namespace par
+} // namespace nftsim
 
 #endif //NFTSIM_SRC_PARALLEL_H

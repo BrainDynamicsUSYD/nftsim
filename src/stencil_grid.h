@@ -43,6 +43,11 @@ class StencilGrid {
 
   /// Copies `field` into the grid, fills the halo and resets the cursor to node 0.
   const std::vector<double>& operator= ( const std::vector<double>& field );
+  /// Copies nodes [begin, end) of `field` into the interior of the grid.
+  void assignNodes( const std::vector<double>& field, std::vector<double>::size_type begin,
+                    std::vector<double>::size_type end );
+  /// Fills the halo from the interior and resets the cursor to node 0.
+  void fillHalo();
   inline void operator++ (int) const; ///< Moves the cursor to the next node.
   void set( int node ) const; ///< Moves the cursor to `node`.
   int get() const; ///< Node at the cursor.

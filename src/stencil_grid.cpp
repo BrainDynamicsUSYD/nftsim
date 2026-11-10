@@ -14,7 +14,6 @@
 #include "stencil_grid.h" // StencilGrid;
 
 // Other nftsim headers
-#include "parallel.h"     // NFTSIM_PARALLEL_FOR;
 #include "restrict.h"     // NFTSIM_RESTRICT;
 
 // C++ standard library headers
@@ -46,97 +45,64 @@ StencilGrid::StencilGrid( int nodes, int longside, const string& boundary )
 StencilGrid::~StencilGrid() = default;
 
 const vector<double>& StencilGrid::operator= ( const vector<double>& field ) {
-  // copy centre square, row by row
-  {
-    const double* NFTSIM_RESTRICT f = field.data();
-    double* NFTSIM_RESTRICT g = m;
-    const int L = longside;
-    NFTSIM_PARALLEL_FOR
-    for( int i=0; i<shortside; i++ ) {
-      for( int j=0; j<L; j++ ) {
-        g[(i+1)*(L+2)+j+1] = f[i*L+j];
-      }
-    }
-  }
-  if( boundary == Boundary::Torus ) {
-    const double* NFTSIM_RESTRICT p1;
-    double* NFTSIM_RESTRICT p2;
-
-    // copy top row from bottom row
-    p1 = &field[longside*(shortside-1)];
-    p2 = &m[1];
-    for( int i=0; i<longside; i++ ) {
-      *p2++ = *p1++;
-    }
-
-    // copy bottom row from top row
-    p1 = &field[0];
-    p2 = &m[(longside+2)*(shortside+1) +1];
-    for( int i=0; i<longside; i++ ) {
-      *p2++ = *p1++;
-    }
-
-    // copy left edge from right edge
-    p1 = &field[longside -1];
-    p2 = &m[longside +2];
-    for( int i=0; i<shortside; i++, p1+=longside, p2+=longside+2 ) {
-      *p2 = *p1;
-    }
-
-    // copy right edge from left edge
-    p1 = &field[0];
-    p2 = &m[2*longside +3];
-    for( int i=0; i<shortside; i++, p1+=longside, p2+=longside+2 ) {
-      *p2 = *p1;
-    }
-
-
-    // copy 4 corners
-    m[0] = field[nodes-1];
-    m[longside+1] = field[nodes-longside];
-    m[(longside+2)*(nodes/longside+1)] = field[longside-1];
-    m[(longside+2)*(nodes/longside+2)-1] = field[0];
-  } else { // Boundary::Sphere
-    const double* NFTSIM_RESTRICT p1;
-    double* NFTSIM_RESTRICT p2;
-
-    // copy top row from bottom row
-    p1 = &field[longside*(shortside-1)];
-    p2 = &m[longside+1];
-    for( int i=0; i<longside; i++ ) {
-      *p2-- = *p1++;
-    }
-
-    // copy bottom row from top row
-    p1 = &field[longside-1];
-    p2 = &m[(longside+2)*(shortside+1) +1];
-    for( int i=0; i<longside; i++ ) {
-      *p2++ = *p1--;
-    }
-
-    // copy left edge from right edge
-    p1 = &field[longside -1];
-    p2 = &m[longside +2];
-    for( int i=0; i<shortside; i++, p1+=longside, p2+=longside+2 ) {
-      *p2 = *p1;
-    }
-
-    // copy right edge from left edge
-    p1 = &field[0];
-    p2 = &m[2*longside +3];
-    for( int i=0; i<shortside; i++, p1+=longside, p2+=longside+2 ) {
-      *p2 = *p1;
-    }
-
-    // copy 4 corners (the same as for a torus, which is not exact for a sphere)
-    m[0] = field[nodes-1];
-    m[longside+1] = field[nodes-longside];
-    m[(longside+2)*(nodes/longside+1)] = field[longside-1];
-    m[(longside+2)*(nodes/longside+2)-1] = field[0];
-  }
-
-  set(0);
+  assignNodes(field, 0, static_cast<vector<double>::size_type>(nodes));
+  fillHalo();
   return field;
+}
+
+void StencilGrid::assignNodes( const vector<double>& field, vector<double>::size_type begin,
+                               vector<double>::size_type end ) {
+  const double* NFTSIM_RESTRICT p1 = field.data();
+  double* NFTSIM_RESTRICT p2 = m;
+  const auto L = static_cast<vector<double>::size_type>(longside);
+  for( vector<double>::size_type i=begin; i<end; ) {
+    // row by row: node i is at (i/L+1)*(L+2) + i%L + 1 in the padded grid
+    const vector<double>::size_type row = i/L;
+    const vector<double>::size_type rowend = (row+1)*L < end ? (row+1)*L : end;
+    const vector<double>::size_type shift = (row+1)*(L+2) + 1 - row*L;
+    for( ; i<rowend; i++ ) {
+      p2[i+shift] = p1[i];
+    }
+  }
+}
+
+void StencilGrid::fillHalo() {
+  // The halo is copied from the interior of the padded grid itself: interior
+  // node (x, y) is at row_ (y+1), column (x+1).
+  const int w = longside+2; // padded row length
+  if( boundary == Boundary::Torus ) {
+    // copy top row from bottom row
+    for( int i=0; i<longside; i++ ) {
+      m[1+i] = m[shortside*w +1+i];
+    }
+    // copy bottom row from top row
+    for( int i=0; i<longside; i++ ) {
+      m[(shortside+1)*w +1+i] = m[w +1+i];
+    }
+  } else { // Boundary::Sphere: the top and bottom halo rows are reversed
+    // copy top row from bottom row, reversed. This writes m[longside+1]
+    // (a corner, overwritten below) down to m[2], so m[1] is never set: kept
+    // as it was (this looks like an off-by-one, but changing it would change
+    // the output for Sphere).
+    for( int i=0; i<longside; i++ ) {
+      m[longside+1-i] = m[shortside*w +1+i];
+    }
+    // copy bottom row from top row, reversed
+    for( int i=0; i<longside; i++ ) {
+      m[(shortside+1)*w +1+i] = m[w +longside-i];
+    }
+  }
+  // copy left edge from right edge, and right edge from left edge
+  for( int i=1; i<=shortside; i++ ) {
+    m[i*w] = m[i*w +longside];
+    m[i*w +longside+1] = m[i*w +1];
+  }
+  // copy 4 corners (the same for a sphere as for a torus, which is not exact for a sphere)
+  m[0] = m[shortside*w +longside];              // field[nodes-1]
+  m[longside+1] = m[shortside*w +1];            // field[nodes-longside]
+  m[(shortside+1)*w] = m[w +longside];          // field[longside-1]
+  m[(shortside+2)*w -1] = m[w +1];              // field[0]
+  set(0);
 }
 
 void StencilGrid::set( int node ) const {

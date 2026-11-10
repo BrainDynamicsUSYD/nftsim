@@ -27,6 +27,7 @@
 #include "long_coupling.h" // LongCoupling;
 #include "make_unique.h"   // nftsim::make_unique;
 #include "output.h"        // Output; Outlet;
+#include "parallel.h"      // nftsim::par::serial;
 #include "population.h"    // Population;
 #include "wave.h"          // Wave;
 #include "wave_legacy.h"   // WaveLegacy;
@@ -261,6 +262,11 @@ void Solver::init( Configf& configf ) {
 }
 
 void Solver::solve() {
+  // With OpenMP, every thread runs the time loop and steps its own block of
+  // nodes (see parallel.h); small grids run on one thread.
+#ifdef _OPENMP
+#pragma omp parallel if( nodes >= NFTSIM_OMP_MIN_NODES )
+#endif
   for( int i=0; i<steps; i++ ) {
     step();
   }
@@ -271,7 +277,7 @@ void Solver::step() {
   couplings.step();
   pops.step();
   propagators.step();
-  outputs->step();
+  nftsim::par::serial( [this]{ outputs->step(); } );
 }
 
 void Solver::Outputs::step() {

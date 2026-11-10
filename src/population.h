@@ -52,6 +52,7 @@ class Population : public NF {
   Population( size_type nodes, double deltat, size_type index );
   ~Population() override;
   void step() override;
+  bool nodeParallel() const override { return true; } ///< see parallel.h
   virtual const std::vector<double>& Q( const Tau& tau ) const;
   double Qinit( Configf& configf ) const;
   virtual const std::vector<double>& V() const;

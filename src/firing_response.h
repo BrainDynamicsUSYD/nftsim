@@ -50,6 +50,7 @@ class FiringResponse : public NF {
   FiringResponse( size_type nodes, double deltat, size_type index );
   ~FiringResponse() override;
   void step() override;
+  bool nodeParallel() const override; ///< true for this class only (not derived classes); see parallel.h
   virtual void add2Dendrite( size_type index, const Propagator& prepropag,
                              const Coupling& precouple, Configf& configf );
 

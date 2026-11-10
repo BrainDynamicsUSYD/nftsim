@@ -41,6 +41,7 @@ class HarmonicIntegral : public Propagator {
             Population& postpop, size_type longside, std::string topology );
   ~HarmonicIntegral() override;
   void step() override;
+  bool nodeParallel() const override; ///< true for this class only (not derived classes); see parallel.h
 };
 
 #endif //NFTSIM_SRC_HARMONIC_INTEGRAL_H

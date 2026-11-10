@@ -42,6 +42,7 @@ class DendriteIntegral : public Dendrite {
             const Propagator& prepropag, const Coupling& precouple );
   ~DendriteIntegral() override;
   void step() override;
+  bool nodeParallel() const override; ///< true for this class only (not derived classes); see parallel.h
   void initFromInputs() override;
 };
 
