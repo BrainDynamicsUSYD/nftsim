@@ -9,6 +9,7 @@
 
 // Other nftsim headers
 #include "configf.h"    // Configf;
+#include "parallel.h"   // NFTSIM_PARALLEL_FOR;
 #include "population.h" // Population;
 
 // C++ standard library headers
@@ -77,6 +78,7 @@ HarmonicIntegral::~HarmonicIntegral() = default;
 void HarmonicIntegral::step() {
   const vector<double>& Q = prepop.Q(tau);
   const double invdt = 1.0/deltat;
+  NFTSIM_PARALLEL_FOR
   for( size_type i=0; i<nodes; i++ ) {
     const double dQdt = ( Q[i] -oldQ[i] )*invdt;
     const double adjustedQ = oldQ[i] -twoongamma*dQdt -oldp[i];

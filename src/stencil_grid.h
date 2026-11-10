@@ -46,6 +46,15 @@ class StencilGrid {
   inline void operator++ (int) const; ///< Moves the cursor to the next node.
   void set( int node ) const; ///< Moves the cursor to `node`.
   int get() const; ///< Node at the cursor.
+
+  /// The padded grid, for reading neighbours by index (see padded()).
+  const double* data() const { return m; }
+  /// Index into data() of interior node `node`.
+  int padded( int node ) const {
+    return (node/longside+1)*(longside+2) + node%longside + 1;
+  }
+  /// Distance in data() between vertically adjacent nodes.
+  int stride() const { return longside+2; }
 };
 
 void StencilGrid::operator++ (int) const {

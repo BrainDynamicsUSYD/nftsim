@@ -14,6 +14,7 @@
 #include "glutamate_response.h"  // GlutamateResponse;
 #include "make_unique.h" // nftsim::make_unique;
 #include "output.h"     // Output;
+#include "parallel.h"   // NFTSIM_PARALLEL_FOR;
 #include "propagator.h" // Propagator;
 #include "firing_response.h"  // FiringResponse;
 #include "tau.h"        // Tau;
@@ -65,6 +66,7 @@ void Population::step() {
   }
 
   // q is the current Q, only for output purpose
+  NFTSIM_PARALLEL_FOR
   for( size_type i=0; i<nodes; i++ ) {
     q[i] = qhistory[qkey][i];
   }
@@ -136,6 +138,7 @@ const vector<double>& Population::Q( const Tau& tau) const {
   // overwrite the vector another caller still held a reference to.
   vector<double>& delayed = tau.delayed;
   delayed.resize(nodes);
+  NFTSIM_PARALLEL_FOR
   for( size_type i=0; i<nodes; i++ ) {
     delayed[i] = qhistory[(qkey-tau.m[i]+qhistory.size())%qhistory.size()][i];
   }
@@ -158,10 +161,12 @@ const vector<double>& Population::Qinterpolated( const Tau& tau ) const {
     const double f = tau.frac[0];
     const vector<double>& a = qhistory[(qkey+hs-tau.m[0])%hs];
     const vector<double>& b = qhistory[(qkey+hs-tau.m[0]-1)%hs];
+    NFTSIM_PARALLEL_FOR
     for( size_type i=0; i<nodes; i++ ) {
       delayed[i] = a[i] + f*(b[i]-a[i]);
     }
   } else { // inhomogeneous tau
+    NFTSIM_PARALLEL_FOR
     for( size_type i=0; i<nodes; i++ ) {
       const double a = qhistory[(qkey+hs-tau.m[i])%hs][i];
       if( tau.frac[i] > 0.0 ) {

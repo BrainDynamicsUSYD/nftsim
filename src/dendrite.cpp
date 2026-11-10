@@ -15,6 +15,7 @@
 #include "configf.h"    // Configf;
 #include "coupling.h"   // Coupling;
 #include "output.h"     // Output;
+#include "parallel.h"   // NFTSIM_PARALLEL_FOR;
 #include "propagator.h" // Propagator;
 #include "restrict.h"   // NFTSIM_RESTRICT;
 
@@ -97,6 +98,7 @@ void Dendrite::step() {
     const double h6 = deltat/6.0;
     const double fab = factorab;
     const double ab = alphaxbeta;
+    NFTSIM_PARALLEL_FOR
     for( size_type i=0; i<nodes; i++ ) {
       const double p0 = np[i];
       const double dp = p0 - pp[i];
@@ -138,6 +140,7 @@ void Dendrite::step() {
   const double h6 = deltat/6.0;
   const double fab = factorab;
   const double ab = alphaxbeta;
+  NFTSIM_PARALLEL_FOR
   for( size_type i=0; i<nodes; i++ ) {
     const double p = np[i];
     const double v0 = V[i];

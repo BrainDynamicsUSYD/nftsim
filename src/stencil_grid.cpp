@@ -14,6 +14,7 @@
 #include "stencil_grid.h" // StencilGrid;
 
 // Other nftsim headers
+#include "parallel.h"     // NFTSIM_PARALLEL_FOR;
 #include "restrict.h"     // NFTSIM_RESTRICT;
 
 // C++ standard library headers
@@ -45,16 +46,21 @@ StencilGrid::StencilGrid( int nodes, int longside, const string& boundary )
 StencilGrid::~StencilGrid() = default;
 
 const vector<double>& StencilGrid::operator= ( const vector<double>& field ) {
-  if( boundary == Boundary::Torus ) {
-    // copy centre square
-    const double* NFTSIM_RESTRICT p1 = &field[0];
-    double* NFTSIM_RESTRICT p2 = &m[3+longside];
+  // copy centre square, row by row
+  {
+    const double* NFTSIM_RESTRICT f = field.data();
+    double* NFTSIM_RESTRICT g = m;
+    const int L = longside;
+    NFTSIM_PARALLEL_FOR
     for( int i=0; i<shortside; i++ ) {
-      for( int j=0; j<longside; j++ ) {
-        *p2++ = *p1++;
+      for( int j=0; j<L; j++ ) {
+        g[(i+1)*(L+2)+j+1] = f[i*L+j];
       }
-      p2 += 2;
     }
+  }
+  if( boundary == Boundary::Torus ) {
+    const double* NFTSIM_RESTRICT p1;
+    double* NFTSIM_RESTRICT p2;
 
     // copy top row from bottom row
     p1 = &field[longside*(shortside-1)];
@@ -91,15 +97,8 @@ const vector<double>& StencilGrid::operator= ( const vector<double>& field ) {
     m[(longside+2)*(nodes/longside+1)] = field[longside-1];
     m[(longside+2)*(nodes/longside+2)-1] = field[0];
   } else { // Boundary::Sphere
-    // copy centre square
-    const double* NFTSIM_RESTRICT p1 = &field[0];
-    double* NFTSIM_RESTRICT p2 = &m[3+longside];
-    for( int i=0; i<shortside; i++ ) {
-      for( int j=0; j<longside; j++ ) {
-        *p2++ = *p1++;
-      }
-      p2 += 2;
-    }
+    const double* NFTSIM_RESTRICT p1;
+    double* NFTSIM_RESTRICT p2;
 
     // copy top row from bottom row
     p1 = &field[longside*(shortside-1)];

@@ -20,6 +20,7 @@
 // Other nftsim headers
 #include "configf.h"    // Configf;
 #include "make_unique.h" // nftsim::make_unique;
+#include "parallel.h"   // NFTSIM_PARALLEL_FOR;
 #include "population.h" // Population;
 #include "stencil.h"    // Stencil;
 
@@ -170,18 +171,26 @@ void Wave::step() {
   // vector each time (O(nodes^2) per step).
   const vector<double>& Qnew = prepop.Q(tau);
 
-  //Iterate over space, calculating phi for the next time-step.
-  for( size_type i=0; i<nodes; i++,
-       stencilp++, stencilQ++, stencil_oldp++, stencil_oldQ++ ) {
-    const double sump  = stencilp(stencilp.n) + stencilp(stencilp.s) + stencilp(stencilp.w) + stencilp(stencilp.e) ; // sum of the von Neumann (orthogonal) neighbourhood (phi)
-    const double sumQ  = stencilQ(stencilQ.n) + stencilQ(stencilQ.s) + stencilQ(stencilQ.w) + stencilQ(stencilQ.e) ; // sum of the von Neumann (orthogonal) neighbourhood (Q)
-    const double drive = dfact * (tenminus4p2*stencilQ(stencilQ.c) +
+  //Iterate over space, calculating phi for the next time-step. The four
+  //stencils have the same layout, so node i is at index k = padded(i) of each,
+  //with neighbours n = k-stride, s = k+stride, w = k-1 and e = k+1.
+  const double* up = stencilp.data();
+  const double* uq = stencilQ.data();
+  const double* oldup = stencil_oldp.data();
+  const double* olduq = stencil_oldQ.data();
+  const int stride = stencilp.stride();
+  NFTSIM_PARALLEL_FOR
+  for( size_type i=0; i<nodes; i++ ) {
+    const int k = stencilp.padded(static_cast<int>(i));
+    const double sump  = up[k-stride] + up[k+stride] + up[k-1] + up[k+1] ; // sum of the von Neumann (orthogonal) neighbourhood (phi)
+    const double sumQ  = uq[k-stride] + uq[k+stride] + uq[k-1] + uq[k+1] ; // sum of the von Neumann (orthogonal) neighbourhood (Q)
+    const double drive = dfact * (tenminus4p2*uq[k] +
                      Qnew[i]*expfactpos +
-                     stencil_oldQ(stencil_oldQ.c)*expfactneg +
+                     olduq[k]*expfactneg +
                      p2*sumQ);
-    p[i]  = expfactneg * (twominus4p2*stencilp(stencilp.c) +
+    p[i]  = expfactneg * (twominus4p2*up[k] +
                           p2*sump -
-                          stencil_oldp(stencil_oldp.c)*expfactneg +
+                          oldup[k]*expfactneg +
                           drive);
   }
 

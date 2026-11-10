@@ -19,6 +19,7 @@
 // Other nftsim headers
 #include "configf.h"    // Configf;
 #include "output.h"     // Output;
+#include "parallel.h"   // NFTSIM_PARALLEL_FOR;
 #include "population.h" // Population;
 
 // C++ standard library headers
@@ -99,7 +100,11 @@ Propagator::Propagator( size_type nodes, double deltat, size_type index, Populat
 Propagator::~Propagator() = default;
 
 void Propagator::step() {
-  p = prepop.Q(tau);
+  const vector<double>& Q = prepop.Q(tau);
+  NFTSIM_PARALLEL_FOR
+  for( size_type i=0; i<nodes; i++ ) {
+    p[i] = Q[i];
+  }
 }
 
 /** @brief Initial phi at every node, read from this propagator's section.

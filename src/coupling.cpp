@@ -15,6 +15,7 @@
 // Other nftsim headers
 #include "configf.h"    // Configf;
 #include "output.h"     // Output;
+#include "parallel.h"   // NFTSIM_PARALLEL_FOR;
 #include "population.h" // Population;
 #include "propagator.h" // Propagator;
 
@@ -62,6 +63,7 @@ Coupling::~Coupling() = default;
 
 /// Calculate next value for synaptic-coupling-strength-weighted-presynaptic-inputs.
 void Coupling::step() {
+  NFTSIM_PARALLEL_FOR
   for( size_type i=0; i<nodes; i++ ) {
     P[i] = nu[i]*prepropag[i];
   }
