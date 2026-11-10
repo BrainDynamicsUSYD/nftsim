@@ -41,7 +41,7 @@ Keep tests fast: the whole suite should run in well under a second.
 | File | What it checks |
 |---|---|
 | `test_stencil.cpp` | `Stencil` and `StencilLegacy` neighbours and wrap-around on square and rectangular tori |
-| `test_delays.cpp` | `Tau` rounding to whole steps; `Population::Q(tau)` lags, including a delay equal to the history length and per-node delays |
+| `test_delays.cpp` | `Tau` rounding to whole steps and the warning for values that are not whole steps; `Population::Q(tau)` lags, including a delay equal to the history length and per-node delays |
 | `test_integrators.cpp` | `RK4` and `Euler` (`de.h`) errors and convergence order on a two-variable linear system with node-dependent rates |
 | `test_dendrite.cpp` | `Dendrite` (RK4) and `DendriteIntegral` against the analytic step response; numeric initial `V` |
 | `test_firing_response.cpp` | `FiringResponse` sigmoid and polynomial functions |

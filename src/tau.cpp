@@ -16,16 +16,46 @@
 // C++ standard library headers
 #include <algorithm> // std::any_of;
 #include <cmath>     // std::floor; std::lround;
+#include <cstdlib>   // std::strtod;
 #include <iomanip>   // std::setprecision;
-#include <iostream>  // std::cerr; std::endl; std::scientific;
+#include <iostream>  // std::cerr; std::endl;
 #include <limits>    // std::numeric_limits::max_digits10
+#include <sstream>   // std::ostringstream;
+#include <string>    // std::string;
 #include <vector>    // std::vector;
 using std::cerr;
 using std::endl;
 using std::lround;
-using std::scientific;
 using std::setprecision;
+using std::string;
 using std::vector;
+
+namespace {
+/// The shortest decimal form of x that reads back as exactly x, eg "1.33"
+/// rather than "1.3300000000000001".
+string shortest( double x ) {
+  const int max_digits = std::numeric_limits<double>::max_digits10;
+  std::ostringstream out;
+  for( int digits=1; digits<=max_digits; digits++ ) {
+    out.str("");
+    out << setprecision(digits) << x;
+    if( digits == max_digits || std::strtod(out.str().c_str(), nullptr) == x ) {
+      break;
+    }
+  }
+  return out.str();
+}
+
+/// Describes how a Tau that is not a whole number of steps is rounded, eg
+/// "Tau: 1.33 is rounded to 10895 steps, ie Tau: 1.3299560546875".
+string rounding( double tau, vector<double>::size_type steps, double deltat ) {
+  std::ostringstream out;
+  out << "Tau: " << shortest(tau) << " is rounded to " << steps
+      << (steps == 1 ? " step" : " steps") << ", ie Tau: "
+      << shortest(static_cast<double>(steps)*deltat);
+  return out.str();
+}
+} // namespace
 
 /// Initialises Tau::m by reading from a `.conf` file, setting Tau::max accordingly.
 void Tau::init( Configf& configf ) {
@@ -44,13 +74,10 @@ void Tau::init( Configf& configf ) {
     m[0] = static_cast<size_type>(lround(temp[0]/deltat));
     max = m[0];
     if( !is_step_multiple(temp[0], deltat) ) {
-      int full_precision = std::numeric_limits<double>::max_digits10;
       cerr << "WARNING: Value of Tau not divisible by Deltat!\n"
            << "  It is recommended that Tau be specified as an exact integer\n"
            << "  multiple of Deltat. Your simulation will be run using:\n"
-           << "    Tau: " << scientific << setprecision(full_precision)
-                          << m[0]*deltat
-           << endl;
+           << "    " << rounding(temp[0], m[0], deltat) << endl;
     }
   } else if( temp.size() == nodes ) {
     m.resize(nodes);
@@ -60,12 +87,27 @@ void Tau::init( Configf& configf ) {
         max = m[i];
       }
     }
-    // Warn if any provided Tau values are not exact integer multiples of deltat
-    if ( std::any_of(temp.begin(), temp.end(), [this](double x){return !is_step_multiple(x, deltat);}) ) {
-      cerr << "WARNING: One or more values of Tau not divisible by Deltat!\n"
+    // Warn if any provided Tau values are not exact integer multiples of
+    // deltat, showing how the first few of them are rounded.
+    const size_type max_shown = 3;
+    vector<size_type> failed; // indices of the values that are not multiples
+    for( size_type i=0; i<nodes; i++ ) {
+      if( !is_step_multiple(temp[i], deltat) ) {
+        failed.push_back(i);
+      }
+    }
+    if( !failed.empty() ) {
+      cerr << "WARNING: " << failed.size() << " of the " << nodes
+           << " values of Tau are not divisible by Deltat!\n"
            << "  It is recommended that Tau be specified as an exact integer\n"
-           << "  multiple of Deltat."
-           << endl;
+           << "  multiple of Deltat. Your simulation will be run using:\n";
+      for( size_type k=0; k<failed.size() && k<max_shown; k++ ) {
+        const size_type i = failed[k];
+        cerr << "    Node " << i+1 << ": " << rounding(temp[i], m[i], deltat) << "\n";
+      }
+      if( failed.size() > max_shown ) {
+        cerr << "    ... and " << failed.size()-max_shown << " more.\n";
+      }
     }
   } else {
     cerr << "The number of Tau values has to be one or the same as the number of nodes." << endl;
