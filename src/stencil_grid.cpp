@@ -13,6 +13,9 @@
 // Main module header
 #include "stencil_grid.h" // StencilGrid;
 
+// Other nftsim headers
+#include "restrict.h"     // NFTSIM_RESTRICT;
+
 // C++ standard library headers
 #include <cstdlib>  // std::exit; EXIT_FAILURE;
 #include <iostream> // std::cerr; std::endl;
@@ -44,8 +47,8 @@ StencilGrid::~StencilGrid() = default;
 const vector<double>& StencilGrid::operator= ( const vector<double>& field ) {
   if( boundary == Boundary::Torus ) {
     // copy centre square
-    const double* __restrict__ p1 = &field[0];
-    double* __restrict__ p2 = &m[3+longside];
+    const double* NFTSIM_RESTRICT p1 = &field[0];
+    double* NFTSIM_RESTRICT p2 = &m[3+longside];
     for( int i=0; i<shortside; i++ ) {
       for( int j=0; j<longside; j++ ) {
         *p2++ = *p1++;
@@ -89,8 +92,8 @@ const vector<double>& StencilGrid::operator= ( const vector<double>& field ) {
     m[(longside+2)*(nodes/longside+2)-1] = field[0];
   } else { // Boundary::Sphere
     // copy centre square
-    const double* __restrict__ p1 = &field[0];
-    double* __restrict__ p2 = &m[3+longside];
+    const double* NFTSIM_RESTRICT p1 = &field[0];
+    double* NFTSIM_RESTRICT p2 = &m[3+longside];
     for( int i=0; i<shortside; i++ ) {
       for( int j=0; j<longside; j++ ) {
         *p2++ = *p1++;
