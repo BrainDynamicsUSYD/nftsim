@@ -1,5 +1,7 @@
 # NFTsim (Neural Field Theory simulator)  
 
+[![tests](https://github.com/BrainDynamicsUSYD/nftsim/actions/workflows/tests.yml/badge.svg?branch=master)](https://github.com/BrainDynamicsUSYD/nftsim/actions/workflows/tests.yml)
+
 
 <p align="center">
   <img width="256" height="256" src="https://github.com/BrainDynamicsUSYD/nftsim/blob/master/doc/img/nftsim_logo_dark_background_256x256.png">
