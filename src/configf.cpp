@@ -11,6 +11,7 @@
 #include "configf.h"    // Configf;
 
 // C++ standard library headers
+#include <cctype>   // std::isalnum; std::isdigit; std::isspace;
 #include <iostream> // std::streamoff; std::ios::beg; std::ios::end; std::streampos; std::ifstream;
 #include <sstream>  // std::stringstream;
 #include <string>   // std::string;
@@ -32,7 +33,25 @@ Configf::Configf( const string filename )
   filesize = tellg();
   buffer = new char[filesize+1];
   buffer[filesize] = '\0';
-  seekg(sp);
+  seekg(0,std::ios::beg);
+  read(buffer,filesize);
+  content = string(buffer);
+  clear();
+
+  // The leading free-text comment runs up to the first "Time:", the first
+  // entry (see configf.h). Start reading there, so the comment may contain
+  // ':'. In a file whose comment has no ':', the first ':' follows "Time", so
+  // this changes nothing for such files. If there is no "Time:" at all, start
+  // at the beginning and let the read of "Time" report the error.
+  content_start = content.find("Time:");
+  if( content_start == string::npos ) {
+    content_start = 0;
+  }
+  for( size_t i = content.find(':', content_start); i != string::npos;
+       i = content.find(':', i+1) ) {
+    colons.push_back(i);
+  }
+  seekg( sp + static_cast<std::streamoff>(content_start) );
 }
 
 Configf::~Configf() {
@@ -71,61 +90,175 @@ vector<string> Configf::arb( const string& delim ) {
   return ret_value;
 }
 
-/**
-  This function implements a wildcard search that searches the config file
-  assuming a structure like:
+namespace {
+/// Characters that may form part of a word in a key.
+bool isWordChar( char c ) {
+  return std::isalnum(static_cast<unsigned char>(c)) != 0 || c == '_';
+}
+bool isSpace( char c ) {
+  return std::isspace(static_cast<unsigned char>(c)) != 0;
+}
+} // namespace
 
-      <unique>: extra_data - key1:value key2:value
+bool Configf::keyBefore( size_t colon, const string& key ) const {
+  if( key.empty() || colon < content_start + key.size() ) {
+    return false;
+  }
+  size_t start = colon - key.size();
+  if( content.compare(start, key.size(), key) != 0 ) {
+    return false;
+  }
+  return start == content_start || !isWordChar(content[start-1]);
+}
 
-  The search term Check takes the form "<unique>*keyn" or "<unique>"
-  and this function returns a string representation of the value associated
-  with the key that was being searched for. If the search term is "<unique>"
-  then a string representation of extra_data is returned. The file pointer is
-  returned to the same position as it was originally.
-  Search is CASE SENSITIVE
-*/
-string Configf::find( const string& Check ) {
+int Configf::labelLevel( size_t colon, size_t& start ) const {
+  if( keyBefore(colon, "Output") ) {
+    start = colon - 6;
+    return 1;
+  }
+  // "<Word> <digits>" immediately before the ':'
+  size_t d = colon;
+  while( d > content_start && std::isdigit(static_cast<unsigned char>(content[d-1])) != 0 ) {
+    d--;
+  }
+  if( d == colon || d == content_start || content[d-1] != ' ' ) {
+    return 0;
+  }
+  static const char* const top[] = {"Population", "Propagator", "Coupling"};
+  for( const char* word : top ) {
+    if( keyBefore(d-1, word) ) {
+      start = d - 1 - string(word).size();
+      return 1;
+    }
+  }
+  if( keyBefore(d-1, "Dendrite") ) {
+    start = d - 1 - 8;
+    return 2;
+  }
+  return 0;
+}
 
+void Configf::sectionBounds( const string& section, size_t& begin,
+                             size_t& end ) const {
+  size_t k = 0; // index into colons of the section's label
+  int level = 1;
+  size_t start = 0;
+  if( section.empty() ) { // global section: up to the first label
+    begin = content_start;
+  } else {
+    for( ; k < colons.size(); k++ ) {
+      if( keyBefore(colons[k], section) ) {
+        break;
+      }
+    }
+    if( k == colons.size() ) {
+      cerr << "Configuration error: the section '" << section
+           << "' was not found (expected an entry '" << section << ":')."
+           << endl;
+      exit(EXIT_FAILURE);
+    }
+    level = labelLevel(colons[k], start);
+    if( level == 0 ) {
+      cerr << "Configuration error: '" << section
+           << "' is not a section label." << endl;
+      exit(EXIT_FAILURE);
+    }
+    begin = colons[k] + 1;
+    k++;
+  }
+  end = content.size();
+  for( ; k < colons.size(); k++ ) {
+    if( colons[k] < begin ) {
+      continue;
+    }
+    int next_level = labelLevel(colons[k], start);
+    if( next_level != 0 && (section.empty() || next_level <= level) ) {
+      end = start;
+      return;
+    }
+  }
+}
+
+string Configf::tokenAt( size_t pos, size_t end ) const {
+  while( pos < content.size() && isSpace(content[pos]) ) {
+    pos++;
+  }
+  if( pos >= end ) {
+    return string("");
+  }
+  size_t stop = pos;
+  while( stop < content.size() && !isSpace(content[stop]) ) {
+    stop++;
+  }
+  return content.substr(pos, stop-pos);
+}
+
+void Configf::printContext( size_t pos ) const {
+  if( pos > content.size() ) {
+    return;
+  }
+  size_t line = 1;
+  for( size_t i = 0; i < pos; i++ ) {
+    if( content[i] == '\n' ) {
+      line++;
+    }
+  }
+  size_t a = content.rfind('\n', pos == 0 ? 0 : pos-1);
+  a = (a == string::npos || pos == 0) ? 0 : a+1;
+  size_t b = content.find('\n', pos);
+  if( b == string::npos ) {
+    b = content.size();
+  }
+  cerr << "Near line " << line << " of the configuration file:" << endl
+       << "  " << content.substr(a, b-a) << endl;
+}
+
+string Configf::lookup( const string& section, const string& key,
+                        bool required ) const {
+  size_t begin;
+  size_t end;
+  sectionBounds(section, begin, end);
+  if( key.empty() ) {
+    return tokenAt(begin, end);
+  }
+  for( size_t colon : colons ) {
+    if( colon <= begin ) {
+      continue;
+    }
+    if( colon >= end ) {
+      break;
+    }
+    if( keyBefore(colon, key) && colon - key.size() >= begin ) {
+      return tokenAt(colon+1, end);
+    }
+  }
+  if( required ) {
+    cerr << "Configuration error: no entry '" << key << ":' in "
+         << (section.empty() ? string("the global section (before 'Population 1:')")
+                             : "section '" + section + "'") << "." << endl;
+    printContext( section.empty() ? begin : begin-1 );
+    exit(EXIT_FAILURE);
+  }
+  return string("");
+}
+
+string Configf::find( const string& Check ) const {
   if( Check.empty() ) {
-    cerr << "Attempted to use Configf::Find searching for an empty string"
+    cerr << "Attempted to use Configf::find searching for an empty string"
          << endl;
     exit(EXIT_FAILURE);
   }
-  string result;
-  std::streamoff sp = tellg(); // store current file position
-  seekg(0,std::ios::beg);
-  read(buffer,filesize);
-  string file_content(buffer);
   size_t wildcard_pos = Check.find('*');
-  size_t match = file_content.find(Check.substr(0,wildcard_pos));
-  if( match == string::npos) {
-    cerr << "Failed to find '" << Check.substr(0,wildcard_pos) << "' which was the first part of the search term '" << Check << "'" << endl;
-    exit(EXIT_FAILURE);
+  string section = Check.substr(0, wildcard_pos);
+  string key = (wildcard_pos == string::npos) ? string("")
+                                               : Check.substr(wildcard_pos+1);
+  if( !section.empty() && section[section.size()-1] == ':' ) {
+    section.erase(section.size()-1);
   }
-
-  // skip searching for the second part if a star is not present
-  if(wildcard_pos != string::npos) {
-    match = file_content.find(Check.substr(wildcard_pos+1,Check.length()),match);
-    if( match == string::npos) {
-      seekg(sp);
-      return string("");
-      /*cerr << "Failed to find '" << Check.substr(wildcard_pos+1,Check.length()) << "' which was the second part of the search term '" << Check << "'" << endl;
-          exit(EXIT_FAILURE);*/
-    }
-    match += Check.substr(wildcard_pos+1,Check.length()).length();
-
-  } else {
-    match += Check.length();
+  if( !key.empty() && key[key.size()-1] == ':' ) {
+    key.erase(key.size()-1);
   }
-
-  // adjust the position if the user didn't include a colon in the search term
-  if(Check[Check.length()-1] != ':') {
-    match += 1;
-  }
-  seekg(0+match);
-  *this >> result;
-  seekg(sp);
-  return string(result);
+  return lookup(section, key, false);
 }
 
 bool Configf::next( const string& Check, int delim ) {
@@ -149,19 +282,20 @@ bool Configf::next( const string& Check, int delim ) {
 }
 
 void Configf::go2( const string& keyword ) {
-  seekg(0,std::ios::beg);
   if( keyword.empty() ) {
     cerr << "Searching for an empty string in configuration file." << endl;
     exit(EXIT_FAILURE);
   }
-  read(buffer,filesize);
-  string file_content(buffer);
-  if( file_content.find(keyword) == string::npos ) {
-    cerr<<"Configuration reading error: keyword "<<keyword<<"not found."
-        <<endl;
-    exit(EXIT_FAILURE);
+  for( size_t colon : colons ) {
+    if( keyBefore(colon, keyword) ) {
+      clear();
+      seekg( static_cast<std::streamoff>(colon - keyword.size()) );
+      return;
+    }
   }
-  seekg( file_content.find(keyword)-1 );
+  cerr << "Configuration reading error: keyword '" << keyword
+       << ":' not found." << endl;
+  exit(EXIT_FAILURE);
 }
 
 string label( const string& prefix, size_t index ) {
