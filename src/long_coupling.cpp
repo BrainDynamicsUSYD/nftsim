@@ -43,6 +43,9 @@ void LongCoupling::init( Configf& configf ) {
     cerr<<"ERROR:: BAD INPUT ARGUMENT SIZE: Coupling: Matrix - must be either a single value of nu or must be specifically a matrix of Nodes x Nodes."<<endl;
     exit(EXIT_FAILURE);
   }
+  // Initial nu*phi at each node, as step() computes it (P was left at 0 until
+  // the first step). A Steady dendrite starts from this.
+  step();
 }
 
 LongCoupling::LongCoupling( size_type nodes, double deltat, size_type index,

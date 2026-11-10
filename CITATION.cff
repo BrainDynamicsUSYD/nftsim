@@ -1,6 +1,8 @@
 cff-version: 1.2.0
 message: "If you use NFTsim in your research, please cite the paper below."
 title: "NFTsim"
+version: "1.2.0"
+date-released: "2026-11-10"
 abstract: "A C++ simulator for multiscale neural field dynamics."
 type: software
 license: Apache-2.0

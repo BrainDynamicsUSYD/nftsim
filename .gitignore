@@ -23,3 +23,6 @@ doc/latex/
 
 # Ignore figure files
 *.fig
+
+# Python bytecode (test/python, utils)
+__pycache__/

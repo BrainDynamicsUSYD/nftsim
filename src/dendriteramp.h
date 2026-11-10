@@ -53,6 +53,7 @@ class DendriteRamp : public Dendrite {
                 const Propagator& prepropag, const Coupling& precouple );
   ~DendriteRamp() override;
   void step() override;
+  void initFromInputs() override;
   void output( Output& output ) const override;
 };
 

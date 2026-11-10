@@ -58,10 +58,10 @@ class FiringResponse : public NF {
 
   virtual void fire( std::vector<double>& Q ) const;
   /// Called once every population, propagator and coupling has been
-  /// initialised, for state whose initial value depends on other objects
-  /// (eg, GlutamateResponse starts glutamate at its steady state). The default
-  /// does nothing.
-  virtual void initFromInputs() {}
+  /// initialised, for state whose initial value depends on other objects:
+  /// each dendrite's Steady V (Dendrite::initFromInputs), and, in
+  /// GlutamateResponse, glutamate's steady state. Overrides must call this.
+  virtual void initFromInputs();
   inline const std::vector<double>& V() const;
   void output( Output& output ) const override;
   virtual void outputDendrite( size_type index, Output& output ) const;

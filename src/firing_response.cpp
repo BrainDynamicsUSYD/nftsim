@@ -90,6 +90,12 @@ void FiringResponse::step() {
   }
 }
 
+void FiringResponse::initFromInputs() {
+  for( Array<Dendrite>::size_type i=0; i<dendrites.size(); i++ ) {
+    dendrites[i]->initFromInputs();
+  }
+}
+
 void FiringResponse::add2Dendrite( size_type index, const Propagator& prepropag,
                               const Coupling& precouple, Configf& configf ) {
   string temp(configf.find( label("Dendrite ",index+1)+":" ));

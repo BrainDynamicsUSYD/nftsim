@@ -42,6 +42,7 @@ class DendriteIntegral : public Dendrite {
             const Propagator& prepropag, const Coupling& precouple );
   ~DendriteIntegral() override;
   void step() override;
+  void initFromInputs() override;
 };
 
 #endif //NFTSIM_SRC_DENDRITE_INTEGRAL_H
