@@ -117,9 +117,9 @@ void BCMLong::output( Output& output ) const {
   // outputting a 2D matrix rather than a vector:
   // for each "to", output all "from"
   for( size_type i=0; i<nodes; i++ ) {
-    output( "C.Matrix", index+1, label("Ca.",        i+1), (*de_2d[i])[0] );
+    output( "C.Matrix", index+1, label("Ca.",        i+1), (*de_2d[i])[2] );
     output( "C.Matrix", index+1, label("nutilde.",   i+1), (*de_2d[i])[3] );
     output( "C.Matrix", index+1, label("nu.",        i+1), (*de_2d[i])[7] );
-    output( "C.Matrix", index+1, label("nu_Ca.",     i+1), (*de_2d[i])[1] );
+    output( "C.Matrix", index+1, label("nu_Ca.",     i+1), (*de_2d[i])[8] );
   }
 }

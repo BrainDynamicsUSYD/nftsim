@@ -71,7 +71,7 @@ void Stencil::operator++ (int) const {
     // Move stencil from far side to near side
     ptr += 2;
   }
-  if( ptr == (longside+1)*(shortside+2)+1 ) {
+  if( ptr == (shortside+1)*(longside+2)+1 ) {
     // Move stencil from very end of the array to the
     set(0);
   }

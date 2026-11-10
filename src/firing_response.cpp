@@ -26,6 +26,8 @@
 
 // C++ standard library headers
 #include <cmath>    // std::exp;
+#include <cstdlib>  // std::exit; EXIT_FAILURE;
+#include <iostream> // std::cerr; std::endl;
 #include <string>   // std::string;
 #include <vector>   // std::vector;
 using std::exp;
@@ -42,15 +44,20 @@ void FiringResponse::init( Configf& configf ) {
   } else if( mode == "Linear") { // Equation is q = av + b;
     configf.param("a",a);
     configf.param("b",b);
-  } else if( mode == "Quadratic") { // Equation is q = av^2 + b^v + c;
+  } else if( mode == "Quadratic") { // Equation is q = av^2 + bv + c;
     configf.param("a",a);
     configf.param("b",b);
     configf.param("c",c);
-  } else if( mode == "Cubic") { // Equation is q = av^2 + b^v + c;
+  } else if( mode == "Cubic") { // Equation is q = av^3 + bv^2 + cv + d;
     configf.param("a",a);
     configf.param("b",b);
     configf.param("c",c);
     configf.param("d",d);
+  } else {
+    std::cerr << "Firing response Function '" << mode << "' not recognised."
+              << " Valid options are: Sigmoid, Linear, Quadratic, Cubic."
+              << std::endl;
+    exit(EXIT_FAILURE);
   }
 
   for( Array<Dendrite>::size_type i=0; i<dendrites.size(); i++ ) {

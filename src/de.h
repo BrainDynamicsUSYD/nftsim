@@ -74,16 +74,23 @@ class Integrator {
 class Euler : public Integrator {
  protected:
   std::vector<double> dydt;
+  std::vector<double> temp; ///< state of the current node
  public:
   Euler() = delete;             ///< No default constructor allowed.
   Euler(const Euler&) = delete; ///< No copy constructor allowed.
   void operator=(const Euler&) = delete; ///< No copy assignment allowed.
 
-  explicit Euler( DE& de ) : Integrator(de), dydt(de.ndim) {}
+  explicit Euler( DE& de ) : Integrator(de), dydt(de.ndim), temp(de.ndim) {}
   ~Euler() override = default;
   void step() override {
     for( vvd_size_type j=0; j<de.nodes; j++ ) {
-      de.rhs( de.variables[j], dydt, j );
+      // Gather the state of node j. This used to pass de.variables[j] (one
+      // variable across all nodes), which is wrong and reads out of bounds
+      // once j >= ndim.
+      for( vvd_size_type i=0; i<de.ndim; i++ ) {
+        temp[i] = de.variables[i][j];
+      }
+      de.rhs( temp, dydt, j );
       for( vvd_size_type i=0; i<de.ndim; i++ ) {
         de.variables[i][j] += dydt[i]*de.deltat;
       }

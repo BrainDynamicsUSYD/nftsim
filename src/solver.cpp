@@ -31,7 +31,7 @@
 #include "wave_legacy.h"   // WaveLegacy;
 
 // C++ standard library headers
-#include <cmath>    // std::lround; std::remainder; std::sqrt;
+#include <cmath>    // std::lround; std::sqrt;
 #include <iostream> // std::cerr; std::endl;
 #include <sstream>  // std::stringstream;
 #include <string>   // std::string;
@@ -40,7 +40,6 @@ using std::cerr;
 using std::endl;
 using std::lround;
 using std::modf;
-using std::remainder;
 using std::sqrt;
 using std::string;
 using std::stringstream;
@@ -102,7 +101,7 @@ void Solver::init( Configf& configf ) {
   double tempf;
   configf.param("Time",tempf);
   configf.param("Deltat",deltat);
-  if( remainder(tempf, deltat) != 0.0 ) {
+  if( !is_step_multiple(tempf, deltat) ) {
     cerr << "WARNING: Value of total simulation Time not divisible by Deltat.\n"
          << "    It is STRONGLY RECOMMENDED that any times that you specify\n"
          << "    in your configuration files be exact integer multiples of\n"
@@ -321,7 +320,7 @@ void Solver::Outputs::init( Configf& configf ) {
   if( !configf.optional("Start",tempf) ) {
     outputstart = 0;
   } else {
-    if( remainder(tempf, deltat) != 0.0 ) {
+    if( !is_step_multiple(tempf, deltat) ) {
       cerr << "WARNING: Value of output Start time not divisible by Deltat.\n"
            << "    It is STRONGLY RECOMMENDED that any times that you specify\n"
            << "    in your configuration files be exact integer multiples of\n"
@@ -332,7 +331,7 @@ void Solver::Outputs::init( Configf& configf ) {
            << endl;
       //exit(EXIT_FAILURE);
     }
-    outputstart = static_cast<int>(tempf/deltat);
+    outputstart = static_cast<int>(lround(tempf/deltat));
   }
   t = 0;
 
@@ -340,7 +339,7 @@ void Solver::Outputs::init( Configf& configf ) {
   if( !configf.optional("Interval",tempf) ) {
     outputinterval = 1;
   } else {
-    if( remainder(tempf, deltat) != 0.0 ) {
+    if( !is_step_multiple(tempf, deltat) ) {
       cerr << "WARNING: Value of output Interval NOT divisible by Deltat.\n"
            << "    It is STRONGLY RECOMMENDED that any times that you specify\n"
            << "    Interval (ie, output sampling period) in your configuration files\n"

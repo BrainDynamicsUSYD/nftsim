@@ -26,7 +26,7 @@
 
 // C++ standard library headers
 #include <algorithm>  // std::min; std::max
-#include <cmath>    // std::pow; std::sqrt; std::sin; std::fmod; M_PI; std::ceil; std::exp
+#include <cmath>    // std::abs; std::pow; std::sqrt; std::sin; std::fmod; M_PI; std::ceil; std::exp
 #include <iostream> // std::cerr; std::endl;
 #include <string>   // std::string;
 #include <vector>   // std::vector;
@@ -69,10 +69,10 @@ void Timeseries::init( Configf& configf ) {
     }
 
     // Check user supplied Node indices are valid.
-    for(size_type j : temp_node) {
-      if( j > nodes ) {
-        cerr<<"Trying to plot node number "<<j
-            <<", which is bigger than the highest node index."<<endl;
+    for(double j : temp_node) {
+      if( j < 1 || j > nodes ) {
+        cerr<<"Stimulus node number "<<j<<" is out of range: nodes are "
+            <<"numbered from 1 to "<<nodes<<"."<<endl;
         exit(EXIT_FAILURE);
       }
     }
@@ -116,6 +116,10 @@ void Timeseries::init( Configf& configf ) {
       series[i]->node.push_back( j-1 );
     }
     series[i]->init(configf);
+    // Some series adjust t in their init (eg, PulseSigmoid, PAS), so record
+    // the starting time only after init. Timeseries::step then computes t
+    // from an integer step count rather than accumulating deltat.
+    series[i]->t0 = series[i]->t;
   }
 
 }
@@ -128,6 +132,23 @@ Timeseries::~Timeseries() {
   for(auto & serie : series) {
     delete serie;
   }
+}
+
+/** @brief Spacing between grid nodes, matching that used by the Wave propagator.
+
+  The Wave propagator uses deltax = Length/longside, where longside is the
+  optional "Longside nodes" parameter, or sqrt(Nodes) for a square grid.
+*/
+double Timeseries::gridSpacing( Configf& configf ) const {
+  double length = atof(configf.find(
+                         label("Population ",index+1)+"*Length").c_str());
+  // "Nodes:" is a required parameter and "Longside nodes:" (if present)
+  // follows it, so this returns "" rather than exiting when it is absent.
+  string longside = configf.find("Nodes:*Longside nodes:");
+  if( longside.empty() ) {
+    return length/sqrt(nodes);
+  }
+  return length/atof(longside.c_str());
 }
 
 void Timeseries::fire( vector<double>& Q ) const {
@@ -148,7 +169,14 @@ void Timeseries::fire( vector<double>& Q ) const {
 
 void Timeseries::step() {
   for(auto & serie : series) {
-    serie->t += deltat;
+    serie->step_count++;
+    serie->t = serie->t0 + static_cast<double>(serie->step_count)*deltat;
+    // Snap to exactly zero when within rounding error of onset, so that a
+    // step falling on onset is not skipped (eg, -onset + 123*deltat can
+    // evaluate to -1e-18 for decimal Onset and Deltat).
+    if( std::abs(serie->t) < time_tolerance*deltat ) {
+      serie->t = 0.0;
+    }
   }
 }
 
@@ -196,7 +224,10 @@ namespace TIMESERIES {
   void PulseRect::fire( vector<double>& Q ) const {
     //  Between start of each pulse and start plus width && as long as we have
     //  not reached the maximum number of pulses.
-    if((fmod(t, period) <= width) && (t/period < pulses) ) {
+    //  The pulse is on for t in [start, start + width); a small tolerance
+    //  keeps rounding error in t from adding or dropping a step at either end.
+    const double t_tol = t + time_tolerance*deltat;
+    if((fmod(t_tol, period) < width) && (t_tol/period < pulses) ) {
       Q.assign(nodes, amp); // assign nodes instances of amp to Q.
     }
   }
@@ -348,8 +379,7 @@ namespace TIMESERIES {
       // index of timeseries the same as that of population
 
       if(nodes>1) {
-        deltax = atof(configf.find(
-                        label("Population ",index+1)+"*Length").c_str()) /sqrt(nodes);
+        deltax = gridSpacing(configf);
         stddev = sqrt(2.0*4.0*pow(M_PI,3)*pow(asd,2)/deltat/pow(deltax,2));
       } else {
         stddev = sqrt(2.0*M_PI*pow(asd,2)/deltat);
@@ -379,8 +409,7 @@ namespace TIMESERIES {
     if( !configf.optional("StdDev", stddev) ) {
       configf.param("ASD", asd);
       // index of timeseries the same as that of population
-      double deltax = atof(configf.find(
-                             label("Population ",index+1)+"*Length").c_str()) /sqrt(nodes);
+      double deltax = gridSpacing(configf);
       stddev = sqrt(2.0*4.0*pow(M_PI,3.0)*pow(asd,2)/deltat/pow(deltax,2));
     }
     if(configf.optional("Ranseed", seed)) {

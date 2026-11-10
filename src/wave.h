@@ -43,11 +43,6 @@ class Wave : public Propagator {
   double expfactneg;  ///< Exp(- gamma deltat) - invert substitutions \f$u={\phi}e^{\gamma t}\f$; \f$w=Q e^{\gamma t}\f$.
   double expfactpos;  ///< Exp(gamma deltat) - invert substitutions \f$u={\phi}e^{\gamma t}\f$; \f$w=Q e^{\gamma t}\f$.
 
-  // variables that are changed every timestep
-  double sump;     ///< sum of the points in the von Neumann neighbourhood (phi)
-  double sumQ;     ///< sum of the points in the von Neumann neighbourhood (Q)
-  double drive;
-
  public:
   Wave() = delete;            // No default constructor allowed.
   Wave(const Wave&) = delete; // No copy constructor allowed.

@@ -22,6 +22,7 @@ class Timeseries : public NF {
  protected:
   using series_size_type = std::vector<double>::size_type;
   void init( Configf& configf ) override;
+  double gridSpacing( Configf& configf ) const;
 
   std::vector<Timeseries*> series;
   std::vector<size_type> node;
@@ -29,6 +30,10 @@ class Timeseries : public NF {
   double t = 0.0;     ///< Current time relative to stimulus onset.
   double onset = 0.0; ///< Onset time for the stimulus.
   double duration = inf; ///< Duration of the stimulus.
+  double t0 = 0.0;    ///< Value of t at the start of the simulation, set after init.
+  size_type step_count = 0; ///< Number of steps taken, so t = t0 + step_count*deltat.
+  /// Fraction of deltat within which times are treated as equal.
+  static constexpr double time_tolerance = 1.0e-6;
  public:
   Timeseries(const Timeseries&) = delete; // No copy constructor allowed.
   Timeseries() = delete;                  // No default constructor allowed.

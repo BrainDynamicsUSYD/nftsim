@@ -23,7 +23,10 @@ StencilLegacy::StencilLegacy( int nodes, int longside, const string& boundary )
   : nodes(nodes), longside(longside), shortside(nodes/longside),
     boundary(boundary), ptr(0) {
   if( boundary != "Torus" && boundary != "Sphere" ) {
-    cerr<<"StencilLegacy boundary must be Torus or Sphere."<<endl;
+    cerr<<"StencilLegacy boundary must be Torus or Sphere, not '"<<boundary<<"'."<<endl;
+    if( boundary.compare(0, 11, "Nonperiodic") == 0 ) {
+      cerr<<"Nonperiodic boundaries are not implemented for Wave propagators."<<endl;
+    }
     exit(EXIT_FAILURE);
   }
   m = new double[ (shortside+2)*(longside+2) ];

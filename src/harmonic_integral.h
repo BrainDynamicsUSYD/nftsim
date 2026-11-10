@@ -27,16 +27,10 @@ class HarmonicIntegral : public virtual Propagator {
   std::vector<double> oldp;
   std::vector<double> oldQ;
   std::vector<double> dpdt;
-  double dQdt;
 
   // variables that initializes once
   double twoongamma;
   double expgamma;
-
-  // variables that change every timestep
-  double adjustedQ;
-  double C1;
-  double C1dtplusC2;
  public:
   HarmonicIntegral() = delete;                        // No default constructor allowed.
   HarmonicIntegral(const HarmonicIntegral&) = delete; // No copy constructor allowed.

@@ -66,13 +66,15 @@ void Wave::init( Configf& configf ) {
   expfactneg = exp(-deltat*gamma);
   expfactpos = exp(deltat*gamma);
 
-  if(gamma/2.0 < deltat || range/2.0 < deltax) {
+  // The damping time 1/gamma must be resolved by the time-step and the axonal
+  // range by the grid. (This used to test gamma/2 < deltat, which compares a
+  // rate with a time and so could never fail.)
+  if(deltat > 0.5/gamma || range/2.0 < deltax) {
     cerr << "Wave equation with gamma: " << gamma << " [s^-1] and range: " << range << " [m]" << endl;
-    cerr << "is neither adequately captured by grid spacing chosen" << endl;
-    cerr << "nor sufficiently localized so the potential can be approximated by Q" << endl;
-    cerr << "gamma = " << gamma << " [s^-1] requires deltat < " << gamma/2.0 << endl;
-    cerr << "and range = " << range << " [m] requires deltax < " << range/2.0 << " [m]" << endl;
-    cerr << "Current deltax is = " << deltax << " [m]" << endl;
+    cerr << "is not adequately resolved by the chosen time-step and grid spacing." << endl;
+    cerr << "gamma = " << gamma << " [s^-1] requires deltat <= " << 0.5/gamma << " [s]" << endl;
+    cerr << "and range = " << range << " [m] requires deltax <= " << range/2.0 << " [m]" << endl;
+    cerr << "Current deltat is = " << deltat << " [s] and deltax is = " << deltax << " [m]" << endl;
     exit(EXIT_FAILURE);
   }
 
@@ -165,13 +167,18 @@ void Wave::step() {
   Stencil& stencilQ = *oldQ[key];
   Stencil& stencil_oldQ = *oldQ[key == 0];
 
+  // Delayed Q at the new time-step. Fetched once: it used to be re-evaluated
+  // for every node, which for inhomogeneous Tau rebuilt the whole delayed
+  // vector each time (O(nodes^2) per step).
+  const vector<double>& Qnew = prepop.Q(tau);
+
   //Iterate over space, calculating phi for the next time-step.
   for( size_type i=0; i<nodes; i++,
        stencilp++, stencilQ++, stencil_oldp++, stencil_oldQ++ ) {
-    sump  = stencilp(stencilp.n) + stencilp(stencilp.s) + stencilp(stencilp.w) + stencilp(stencilp.e) ; // sum of the von Neumann (orthogonal) neighbourhood (phi)
-    sumQ  = stencilQ(stencilQ.n) + stencilQ(stencilQ.s) + stencilQ(stencilQ.w) + stencilQ(stencilQ.e) ; // sum of the von Neumann (orthogonal) neighbourhood (Q)
-    drive = dfact * (tenminus4p2*stencilQ(stencilQ.c) +
-                     prepop.Q(tau)[i]*expfactpos +
+    const double sump  = stencilp(stencilp.n) + stencilp(stencilp.s) + stencilp(stencilp.w) + stencilp(stencilp.e) ; // sum of the von Neumann (orthogonal) neighbourhood (phi)
+    const double sumQ  = stencilQ(stencilQ.n) + stencilQ(stencilQ.s) + stencilQ(stencilQ.w) + stencilQ(stencilQ.e) ; // sum of the von Neumann (orthogonal) neighbourhood (Q)
+    const double drive = dfact * (tenminus4p2*stencilQ(stencilQ.c) +
+                     Qnew[i]*expfactpos +
                      stencil_oldQ(stencil_oldQ.c)*expfactneg +
                      p2*sumQ);
     p[i]  = expfactneg * (twominus4p2*stencilp(stencilp.c) +
@@ -185,5 +192,5 @@ void Wave::step() {
   //*oldp[key] = p;
   //*oldQ[key] = prepop.Q(tau);
   stencil_oldp = p;
-  stencil_oldQ = prepop.Q(tau);
+  stencil_oldQ = Qnew;
 }

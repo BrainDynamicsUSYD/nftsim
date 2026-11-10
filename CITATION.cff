@@ -1,0 +1,55 @@
+cff-version: 1.2.0
+message: "If you use NFTsim in your research, please cite the paper below."
+title: "NFTsim"
+abstract: "A C++ simulator for multiscale neural field dynamics."
+type: software
+license: Apache-2.0
+repository-code: "https://github.com/BrainDynamicsUSYD/nftsim"
+authors:
+  - given-names: Paula
+    family-names: Sanz-Leon
+    orcid: "https://orcid.org/0000-0002-1545-6380"
+  - given-names: Peter A.
+    family-names: Robinson
+  - given-names: Stuart A.
+    family-names: Knock
+  - given-names: Peter M.
+    family-names: Drysdale
+  - given-names: Romesh G.
+    family-names: Abeysuriya
+    orcid: "https://orcid.org/0000-0002-9618-6457"
+  - given-names: Felix K.
+    family-names: Fung
+  - given-names: Chris J.
+    family-names: Rennie
+  - given-names: Xuelong
+    family-names: Zhao
+preferred-citation:
+  type: article
+  title: "NFTsim: Theory and Simulation of Multiscale Neural Field Dynamics"
+  journal: "PLOS Computational Biology"
+  volume: 14
+  issue: 8
+  start: e1006387
+  year: 2018
+  month: 8
+  doi: "10.1371/journal.pcbi.1006387"
+  authors:
+    - given-names: Paula
+      family-names: Sanz-Leon
+      orcid: "https://orcid.org/0000-0002-1545-6380"
+    - given-names: Peter A.
+      family-names: Robinson
+    - given-names: Stuart A.
+      family-names: Knock
+    - given-names: Peter M.
+      family-names: Drysdale
+    - given-names: Romesh G.
+      family-names: Abeysuriya
+      orcid: "https://orcid.org/0000-0002-9618-6457"
+    - given-names: Felix K.
+      family-names: Fung
+    - given-names: Chris J.
+      family-names: Rennie
+    - given-names: Xuelong
+      family-names: Zhao

@@ -15,14 +15,14 @@
 
 // C++ standard library headers
 #include <algorithm> // std::any_of;
-#include <cmath>     // std::remainder;
+#include <cmath>     // std::lround;
 #include <iomanip>   // std::setprecision;
 #include <iostream>  // std::cerr; std::endl; std::scientific;
 #include <limits>    // std::numeric_limits::max_digits10
 #include <vector>    // std::vector;
 using std::cerr;
 using std::endl;
-using std::remainder;
+using std::lround;
 using std::scientific;
 using std::setprecision;
 using std::vector;
@@ -30,10 +30,16 @@ using std::vector;
 /// Initialises Tau::m by reading from a `.conf` file, setting Tau::max accordingly.
 void Tau::init( Configf& configf ) {
   vector<double> temp = configf.numbers();
+  if( std::any_of(temp.begin(), temp.end(), [](double x){return x < 0.0;}) ) {
+    cerr << "Tau must be non-negative." << endl;
+    exit(EXIT_FAILURE);
+  }
+  // Round (not truncate) to the nearest whole number of time-steps: truncation
+  // lost a step whenever tau/deltat fell just below an integer, eg, 3e-4/1e-4.
   if( temp.size() == 1 ) {
-    m[0] = static_cast<size_type>(temp[0]/deltat);
+    m[0] = static_cast<size_type>(lround(temp[0]/deltat));
     max = m[0];
-    if( remainder(temp[0], deltat) != 0.0 ) {
+    if( !is_step_multiple(temp[0], deltat) ) {
       int full_precision = std::numeric_limits<double>::max_digits10;
       cerr << "WARNING: Value of Tau not divisible by Deltat!\n"
            << "  It is recommended that Tau be specified as an exact integer\n"
@@ -46,13 +52,13 @@ void Tau::init( Configf& configf ) {
   } else if( temp.size() == nodes ) {
     m.resize(nodes);
     for( size_type i=0; i<nodes; i++ ) {
-      m[i] = static_cast<size_type>(temp[i]/deltat);
+      m[i] = static_cast<size_type>(lround(temp[i]/deltat));
       if( m[i]>max ) {
         max = m[i];
       }
     }
     // Warn if any provided Tau values are not exact integer multiples of deltat
-    if ( std::any_of(temp.begin(), temp.end(), [this](double x){return remainder(x, deltat) != 0.0;}) ) {
+    if ( std::any_of(temp.begin(), temp.end(), [this](double x){return !is_step_multiple(x, deltat);}) ) {
       //int full_precision = std::numeric_limits<double>::max_digits10;
       cerr << "WARNING: One or more values of Tau not divisible by Deltat!\n"
            << "  It is recommended that Tau be specified as an exact integer\n"
