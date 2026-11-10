@@ -12,7 +12,10 @@
 
 // C++ standard library headers
 #include <cctype>   // std::isalnum; std::isdigit; std::isspace;
-#include <iostream> // std::streamoff; std::ios::beg; std::ios::end; std::streampos; std::ifstream;
+#include <cmath>    // std::floor; std::isfinite;
+#include <cstdlib>  // std::strtod;
+#include <iostream> // std::streamoff; std::ios::beg; std::ios::end; std::streampos; std::ifstream; std::ws;
+#include <limits>   // std::numeric_limits;
 #include <sstream>  // std::stringstream;
 #include <string>   // std::string;
 #include <vector>   // std::vector;
@@ -67,6 +70,64 @@ vector<double> Configf::numbers() {
   ret.pop_back(); // deletes last element==0
   clear(); // clear the fail bit
   return ret;
+}
+
+vector<Configf::size_type> Configf::indices() {
+  vector<size_type> ret;
+  while( true ) {
+    *this >> std::ws;
+    if( !good() ) { // end of file
+      break;
+    }
+    const std::streampos start = tellg();
+    string token;
+    *this >> token;
+    size_type index = 0;
+    const IndexParse result = parseIndex(token, index);
+    if( result == IndexParse::not_a_number ) { // end of the list
+      clear();
+      seekg(start); // leave the token to be read next
+      break;
+    }
+    if( result != IndexParse::ok ) {
+      cerr << "Configuration error: '" << token << "' is "
+           << (result == IndexParse::negative ? "negative"
+               : result == IndexParse::too_large ? "too large"
+               : "not a whole number")
+           << ", but indices (eg node numbers) must be whole numbers"
+           << " 1, 2, 3, ..." << endl;
+      printContext( static_cast<size_t>(start) );
+      exit(EXIT_FAILURE);
+    }
+    ret.push_back(index);
+  }
+  clear(); // clear the eof and fail bits
+  return ret;
+}
+
+IndexParse parseIndex( const string& token, vector<double>::size_type& index ) {
+  if( token.empty() || !( std::isdigit(static_cast<unsigned char>(token[0])) != 0
+                           || token[0] == '+' || token[0] == '-' || token[0] == '.' ) ) {
+    return IndexParse::not_a_number;
+  }
+  const char* begin = token.c_str();
+  char* end = nullptr;
+  const double value = std::strtod(begin, &end);
+  if( end == begin ) { // eg "-" or "."
+    return IndexParse::not_a_number;
+  }
+  if( *end != '\0' || !std::isfinite(value) || value != std::floor(value) ) {
+    return IndexParse::not_whole;
+  }
+  if( value < 0.0 ) {
+    return IndexParse::negative;
+  }
+  // 2^64 (or 2^32) is exactly representable, so this excludes it and above.
+  if( value >= static_cast<double>(std::numeric_limits<vector<double>::size_type>::max()) ) {
+    return IndexParse::too_large;
+  }
+  index = static_cast<vector<double>::size_type>(value);
+  return IndexParse::ok;
 }
 
 vector<string> Configf::arb( const string& delim ) {

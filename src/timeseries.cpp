@@ -65,13 +65,13 @@ void Timeseries::init( Configf& configf ) {
     }
 
     // Get any user specified Node indices to apply stimulus.
-    vector<double> temp_node; //TODO(stuart-knock): Should be vector<size_type>, see issue #142 on GitHub.
+    vector<size_type> temp_node;
     if( configf.next("Node") ) {
-      temp_node = configf.numbers();
+      temp_node = configf.indices();
     }
 
     // Check user supplied Node indices are valid.
-    for(double j : temp_node) {
+    for(size_type j : temp_node) {
       if( j < 1 || j > nodes ) {
         cerr<<"Stimulus node number "<<j<<" is out of range: nodes are "
             <<"numbered from 1 to "<<nodes<<"."<<endl;

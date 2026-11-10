@@ -82,8 +82,18 @@ class Configf : public std::ifstream { // derived class
   /** If "param" is not found, return false. */
   template<class T> bool optional( const std::string& param, T& ret, int delim=':' );
 
+  using size_type = std::vector<double>::size_type;
+
   /// Read & return an arbitrary array of doubles
   std::vector<double> numbers();
+
+  /// Read & return a list of indices, eg the node numbers after `Node:`.
+  /** Reads whitespace-separated numbers until the next token that does not
+      start like a number (eg the next key, or `All` in `Node: All`), which is
+      left to be read next. Each number must be a non-negative whole number
+      (see parseIndex()); otherwise exits with an error that shows the line.
+      Callers check the range, eg that node numbers run from 1 to Nodes. */
+  std::vector<size_type> indices();
 
   /// Return all whitespace separated strings before delimiting string
   std::vector<std::string> arb( const std::string& delim );
@@ -121,6 +131,22 @@ class Configf : public std::ifstream { // derived class
 
   friend class Dumpf;
 };
+
+/// Result of reading one token as an index, see parseIndex().
+enum class IndexParse {
+  ok,           ///< A non-negative whole number.
+  not_a_number, ///< Does not start like a number (eg `All`, `Start:` or `-`).
+  negative,     ///< A number less than zero.
+  not_whole,    ///< Not a whole number (eg `2.5`, or `3,` with trailing text).
+  too_large     ///< A whole number too large to be an index.
+};
+
+/// Reads `token` as an index: a non-negative whole number such as `12`.
+/** Any form of number that std::strtod reads is accepted if its value is a
+    whole number (so `12.0` and `1.2e1` also give 12). On success sets `index`
+    and returns IndexParse::ok; otherwise leaves `index` unchanged and says
+    why the token is not an index. */
+IndexParse parseIndex( const std::string& token, std::vector<double>::size_type& index );
 
 /// global function that returns string=="Object#" for config file parsing
 /** also useful in naming outputf "solution.phi.#". */
