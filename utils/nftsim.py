@@ -41,7 +41,6 @@ import os
 import sys
 
 import numpy as np
-import matplotlib.pyplot as plt
 
 class NF:
     """
@@ -119,6 +118,8 @@ class NF:
         Plot trace...
         + TODO: this overlaps with functionality included in configs_compare
         """
+        # Imported here so that reading output needs only numpy.
+        import matplotlib.pyplot as plt
         plt.plot(self.time, self.data[trace])
         plt.show()
 
@@ -129,6 +130,10 @@ class NF:
         l = fid.readline()
         skiprows = 0
         while not l.startswith('======================='):
+            if l == '':
+                raise ValueError('%s is not an nftsim output file: no line of '
+                                 "'=' separates the configuration from the data."
+                                 % getattr(fid, 'name', 'the file'))
             if 'Time  |' in l:
                 LOG.error('Did you try to open an old style output file?')
                 sys.exit()

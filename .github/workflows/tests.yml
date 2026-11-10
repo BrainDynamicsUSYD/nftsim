@@ -55,6 +55,20 @@ jobs:
       - name: Numerical regression tests
         run: ./nf_numerical --check all
 
+  python-reader:
+    name: Python output reader (utils/nftsim.py)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install numpy
+        # Only numpy: reading output must not need matplotlib.
+        run: python -m pip install numpy
+      - name: Reader tests
+        run: python -m unittest discover -s test/python -v
+
   sanitizers:
     name: AddressSanitizer + UndefinedBehaviorSanitizer (clang++)
     runs-on: ubuntu-latest
