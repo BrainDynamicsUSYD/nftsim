@@ -17,6 +17,15 @@
 #             level give bit-identical output (and match the regression
 #             references exactly); it costs about 14% in run time on Apple M1.
 #    LDLIBS   Libraries to link (default -lm).
+#    OPENMP   'make OPENMP=1' builds with OpenMP (prototype): threads share the
+#             nodes of grids of 256 nodes or more, and OMP_NUM_THREADS sets
+#             how many. Results are bit-for-bit the same for any number of
+#             threads and the same as the serial build: with clang, the
+#             default build; with g++, which OPENMP=1 builds with
+#             -ffp-contract=off, 'make FPFLAGS=-ffp-contract=off'. Apple clang
+#             needs libomp (eg 'brew install libomp'), found under LIBOMP
+#             (default: Homebrew's prefix); or use g++, eg
+#             'make OPENMP=1 CXX=g++-16'.
 #  Objects are not rebuilt when only these flags change, so run 'make clean'
 #  first, eg 'make clean && make ARCH='.
 #
@@ -50,16 +59,43 @@ ifeq ($(shell uname -s), Linux)
   DEBUG := -std=c++11 -ggdb3 -Og -Wall -Wextra -pedantic $(ARCH) $(FPFLAGS) -funroll-loops
 endif
 
-# Mac OS, default to clang++
+# Mac OS, default to clang++ (GNU flags if CXX is set to g++, eg CXX=g++-16)
 ifeq ($(shell uname -s), Darwin)
   CXX := clang++
   ARCH ?= -march=native
-  CXXFLAGS := -std=c++11 -Wall -Wno-padded -Wno-c++98-compat -Wno-c++98-compat-pedantic -fdiagnostics-fixit-info -Wdocumentation $(ARCH) $(FPFLAGS) -funroll-loops -flto -O3
-  DEBUG := -std=c++11 -g -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -fdiagnostics-fixit-info -Wdocumentation $(FPFLAGS)
+  ifneq (,$(findstring clang,$(shell $(CXX) --version 2>/dev/null | head -n 1)))
+    CXXFLAGS := -std=c++11 -Wall -Wno-padded -Wno-c++98-compat -Wno-c++98-compat-pedantic -fdiagnostics-fixit-info -Wdocumentation $(ARCH) $(FPFLAGS) -funroll-loops -flto -O3
+    DEBUG := -std=c++11 -g -Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic -fdiagnostics-fixit-info -Wdocumentation $(FPFLAGS)
+  else
+    CXXFLAGS := -std=c++11 -Wall -Wextra -pedantic $(ARCH) $(FPFLAGS) -funroll-loops -flto -O3
+    DEBUG := -std=c++11 -ggdb3 -Og -Wall -Wextra -pedantic $(ARCH) $(FPFLAGS) -funroll-loops
+  endif
 endif
 
 # Libraries, passed to the linker (not the compiler).
 LDLIBS ?= -lm
+
+# Optional OpenMP build (make OPENMP=1). Apple clang has no -fopenmp driver
+# support, so pass it to the preprocessor and link Homebrew's libomp.
+ifeq ($(OPENMP),1)
+  ifneq (,$(findstring clang,$(shell $(CXX) --version 2>/dev/null | head -n 1)))
+    ifeq ($(shell uname -s), Darwin)
+      LIBOMP ?= $(firstword $(wildcard /opt/homebrew/opt/libomp /usr/local/opt/libomp))
+      OMPFLAGS := -Xpreprocessor -fopenmp -I$(LIBOMP)/include
+      OMPLIBS := -L$(LIBOMP)/lib -lomp
+    else
+      OMPFLAGS := -fopenmp
+    endif
+  else
+    # g++ fuses multiply-adds (-ffp-contract=fast) differently in vectorised
+    # and scalar code, so a node's result would depend on where the thread
+    # blocks start. Without fusing, every node does the same arithmetic.
+    OMPFLAGS := -fopenmp -ffp-contract=off
+  endif
+  CXXFLAGS += $(OMPFLAGS)
+  DEBUG += $(OMPFLAGS)
+  LDLIBS += $(OMPLIBS)
+endif
 
 # Source and header files
 HEADER := $(wildcard $(SRCDIR)*.h)

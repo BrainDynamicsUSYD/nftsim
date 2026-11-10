@@ -67,6 +67,7 @@ class Dendrite : public NF {
             const Propagator& prepropag, const Coupling& precouple );
   ~Dendrite() override;
   void step() override;
+  bool nodeParallel() const override; ///< true for this class only (not derived classes); see parallel.h
   /// Select the second-order scheme (`Integration: SecondOrder`). Call before init().
   void useSecondOrder( bool so ) {
     second_order = so;

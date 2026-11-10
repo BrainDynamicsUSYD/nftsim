@@ -44,6 +44,7 @@ class Coupling : public NF {
           const Propagator& prepropag, const Population& postpop );
   ~Coupling() override;
   void step() override;
+  bool nodeParallel() const override; ///< true for this class only (not derived classes); see parallel.h
   /// Initial nu, read from this coupling's section (before init() is called).
   virtual double nuinit( Configf& configf ) const;
   void output( Output& output ) const override;

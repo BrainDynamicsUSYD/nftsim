@@ -9,6 +9,7 @@
 
 // Other nftsim headers
 #include "configf.h"    // Configf;
+#include "parallel.h"   // nftsim::par::range;
 #include "population.h" // Population;
 
 // C++ standard library headers
@@ -16,6 +17,7 @@
 #include <iostream>  // std::cerr; std::endl;
 #include <string>    // std::string;
 #include <vector>    // std::vector;
+#include <typeinfo> // typeid;
 using std::cerr;
 using std::endl;
 using std::exp;
@@ -77,7 +79,8 @@ HarmonicIntegral::~HarmonicIntegral() = default;
 void HarmonicIntegral::step() {
   const vector<double>& Q = prepop.Q(tau);
   const double invdt = 1.0/deltat;
-  for( size_type i=0; i<nodes; i++ ) {
+  const nftsim::par::Range nr = nftsim::par::range(nodes); // this thread's nodes
+  for( size_type i=nr.begin; i<nr.end; i++ ) {
     const double dQdt = ( Q[i] -oldQ[i] )*invdt;
     const double adjustedQ = oldQ[i] -twoongamma*dQdt -oldp[i];
     const double C1 = dpdt[i] -gamma*adjustedQ -dQdt;
@@ -87,4 +90,8 @@ void HarmonicIntegral::step() {
     oldQ[i] = Q[i];
     oldp[i] = p[i];
   }
+}
+
+bool HarmonicIntegral::nodeParallel() const {
+  return typeid(*this) == typeid(HarmonicIntegral);
 }

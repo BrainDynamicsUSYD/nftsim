@@ -14,6 +14,7 @@
 #include "glutamate_response.h"  // GlutamateResponse;
 #include "make_unique.h" // nftsim::make_unique;
 #include "output.h"     // Output;
+#include "parallel.h"   // nftsim::par::range; nftsim::par::serial; nftsim::par::single;
 #include "propagator.h" // Propagator;
 #include "firing_response.h"  // FiringResponse;
 #include "tau.h"        // Tau;
@@ -54,19 +55,32 @@ Population::Population( size_type nodes, double deltat, size_type index )
 Population::~Population() = default;
 
 void Population::step() {
-  // move pointer to keyring
-  qkey = (qkey+1) % qhistory.size();
+  // With threads sharing the nodes (see parallel.h), one thread moves the
+  // pointer; no thread reads this population's history before the propagators step.
   if( firing_response != nullptr ) { // neural population
-    firing_response->step();
-    firing_response->fire( qhistory[qkey] );
-  } else { // stimulus population
-    timeseries->step();
-    timeseries->fire( qhistory[qkey] );
+    nftsim::par::single( [this]{ qkey = (qkey+1) % qhistory.size(); } ); // move pointer to keyring
+    if( firing_response->nodeParallel() ) {
+      firing_response->step();
+      firing_response->fire( qhistory[qkey] );
+    } else {
+      nftsim::par::serial( [this]{
+        firing_response->step();
+        firing_response->fire( qhistory[qkey] );
+      } );
+    }
+  } else { // stimulus population; white noise is drawn node by node on one thread
+    nftsim::par::single( [this]{
+      qkey = (qkey+1) % qhistory.size(); // move pointer to keyring
+      timeseries->step();
+      timeseries->fire( qhistory[qkey] );
+    } );
   }
 
   // q is the current Q, only for output purpose
-  for( size_type i=0; i<nodes; i++ ) {
-    q[i] = qhistory[qkey][i];
+  const nftsim::par::Range nr = nftsim::par::range(nodes); // this thread's nodes
+  const vector<double>& qnow = qhistory[qkey];
+  for( size_type i=nr.begin; i<nr.end; i++ ) {
+    q[i] = qnow[i];
   }
 }
 
@@ -135,8 +149,10 @@ const vector<double>& Population::Q( const Tau& tau) const {
   // local static shared by every population and propagator, so one call could
   // overwrite the vector another caller still held a reference to.
   vector<double>& delayed = tau.delayed;
-  delayed.resize(nodes);
-  for( size_type i=0; i<nodes; i++ ) {
+  // Each thread fills only its own nodes (see parallel.h), which are the only
+  // ones its propagators read.
+  const nftsim::par::Range nr = nftsim::par::range(nodes);
+  for( size_type i=nr.begin; i<nr.end; i++ ) {
     delayed[i] = qhistory[(qkey-tau.m[i]+qhistory.size())%qhistory.size()][i];
   }
   return delayed;
@@ -152,17 +168,19 @@ const vector<double>& Population::Q( const Tau& tau) const {
 */
 const vector<double>& Population::Qinterpolated( const Tau& tau ) const {
   vector<double>& delayed = tau.delayed;
-  delayed.resize(nodes);
   const size_type hs = qhistory.size();
+  // Each thread fills only its own nodes (see parallel.h), which are the only
+  // ones its propagators read.
+  const nftsim::par::Range nr = nftsim::par::range(nodes);
   if( tau.m.size() == 1 ) { // homogeneous tau
     const double f = tau.frac[0];
     const vector<double>& a = qhistory[(qkey+hs-tau.m[0])%hs];
     const vector<double>& b = qhistory[(qkey+hs-tau.m[0]-1)%hs];
-    for( size_type i=0; i<nodes; i++ ) {
+    for( size_type i=nr.begin; i<nr.end; i++ ) {
       delayed[i] = a[i] + f*(b[i]-a[i]);
     }
   } else { // inhomogeneous tau
-    for( size_type i=0; i<nodes; i++ ) {
+    for( size_type i=nr.begin; i<nr.end; i++ ) {
       const double a = qhistory[(qkey+hs-tau.m[i])%hs][i];
       if( tau.frac[i] > 0.0 ) {
         const double b = qhistory[(qkey+hs-tau.m[i]-1)%hs][i];

@@ -42,6 +42,7 @@ Keep tests fast: the whole suite should run in well under a second.
 |---|---|
 | `test_configf.cpp` | `Configf::indices()` reading lists of node numbers, and `parseIndex()` rejecting negative and non-whole numbers |
 | `test_stencil.cpp` | `Stencil` and `StencilLegacy` neighbours and wrap-around on square and rectangular tori |
+| `test_parallel.cpp` | `nftsim::par::range()` blocks of nodes for several thread counts (OpenMP build), and a `Stencil` filled block by block matching one assigned at once |
 | `test_delays.cpp` | `Tau` rounding to whole steps and the warning for values that are not whole steps; `Population::Q(tau)` lags, including a delay equal to the history length and per-node delays |
 | `test_integrators.cpp` | `RK4` and `Euler` (`de.h`) errors and convergence order on a two-variable linear system with node-dependent rates |
 | `test_dendrite.cpp` | `Dendrite` (RK4) and `DendriteIntegral` against the analytic step response; numeric initial `V` |

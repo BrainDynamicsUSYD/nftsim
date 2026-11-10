@@ -23,6 +23,7 @@
 #include "dendriteramp.h"      // DendriteRamp;
 #include "make_unique.h"       // nftsim::make_unique;
 #include "output.h"     // Output;
+#include "parallel.h"   // nftsim::par::range;
 #include "propagator.h" // Propagator;
 
 // C++ standard library headers
@@ -31,6 +32,7 @@
 #include <iostream> // std::cerr; std::endl;
 #include <string>   // std::string;
 #include <vector>   // std::vector;
+#include <typeinfo> // typeid;
 using std::exp;
 using std::string;
 using std::vector;
@@ -80,13 +82,16 @@ FiringResponse::~FiringResponse() = default;
 /// Step through dendrites, then sum up soma potentials.
 void FiringResponse::step() {
   dendrites.step();
-  for( size_type i=0; i<nodes; i++ ) {
-    v[i] = 0;
-  }
-  for( Array<Dendrite>::size_type  i=0; i<dendrites.size(); i++ ) {
-    for( size_type j=0; j<nodes; j++ ) {
-      v[j] += dendrites[i]->V()[j];
+  // Summed node by node in dendrite order, so the sum is the same as adding
+  // each dendrite's V over all nodes in turn.
+  const Array<Dendrite>::size_type nd = dendrites.size();
+  const nftsim::par::Range nr = nftsim::par::range(nodes); // this thread's nodes
+  for( size_type j=nr.begin; j<nr.end; j++ ) {
+    double sum = 0;
+    for( Array<Dendrite>::size_type i=0; i<nd; i++ ) {
+      sum += dendrites[i]->V()[j];
     }
+    v[j] = sum;
   }
 }
 
@@ -118,24 +123,25 @@ void FiringResponse::useSecondOrder( bool second_order ) {
 }
 
 void FiringResponse::fire( vector<double>& Q ) const {
+  const nftsim::par::Range nr = nftsim::par::range(nodes); // this thread's nodes
   switch( function ) {
   case Function::Sigmoid:
-    for( size_type i=0; i<nodes; i++ ) {
+    for( size_type i=nr.begin; i<nr.end; i++ ) {
       Q[i] = Q_max/( 1.0 + exp( -(v[i]-theta)/sigma ) );
     }
     break;
   case Function::Linear:
-    for( size_type i=0; i<nodes; i++ ) {
+    for( size_type i=nr.begin; i<nr.end; i++ ) {
       Q[i] = v[i]*a +b;
     }
     break;
   case Function::Quadratic:
-    for( size_type i=0; i<nodes; i++ ) {
+    for( size_type i=nr.begin; i<nr.end; i++ ) {
       Q[i] = v[i]*v[i]*a + v[i]*b +c;
     }
     break;
   case Function::Cubic:
-    for( size_type i=0; i<nodes; i++ ) {
+    for( size_type i=nr.begin; i<nr.end; i++ ) {
       Q[i] = v[i]*v[i]*v[i]*a + v[i]*v[i]*b + v[i]*c +d;
     }
     break;
@@ -181,4 +187,8 @@ void FiringResponse::outputDendrite( size_type index, Output& output ) const {
       dendrites[i]->output(output);
     }
   }
+}
+
+bool FiringResponse::nodeParallel() const {
+  return typeid(*this) == typeid(FiringResponse);
 }

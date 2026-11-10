@@ -20,6 +20,7 @@
 // Other nftsim headers
 #include "configf.h"    // Configf;
 #include "make_unique.h" // nftsim::make_unique;
+#include "parallel.h"   // nftsim::par::range; nftsim::par::atStepEnd;
 #include "population.h" // Population;
 #include "stencil.h"    // Stencil;
 
@@ -28,6 +29,7 @@
 #include <iostream>  // std::cerr; std::endl;
 #include <string>    // std::string;
 #include <vector>    // std::vector;
+#include <typeinfo> // typeid;
 using std::cerr;
 using std::endl;
 using std::exp;
@@ -170,23 +172,43 @@ void Wave::step() {
   // vector each time (O(nodes^2) per step).
   const vector<double>& Qnew = prepop.Q(tau);
 
-  //Iterate over space, calculating phi for the next time-step.
-  for( size_type i=0; i<nodes; i++,
-       stencilp++, stencilQ++, stencil_oldp++, stencil_oldQ++ ) {
-    const double sump  = stencilp(stencilp.n) + stencilp(stencilp.s) + stencilp(stencilp.w) + stencilp(stencilp.e) ; // sum of the von Neumann (orthogonal) neighbourhood (phi)
-    const double sumQ  = stencilQ(stencilQ.n) + stencilQ(stencilQ.s) + stencilQ(stencilQ.w) + stencilQ(stencilQ.e) ; // sum of the von Neumann (orthogonal) neighbourhood (Q)
-    const double drive = dfact * (tenminus4p2*stencilQ(stencilQ.c) +
+  //Iterate over space, calculating phi for the next time-step. The four
+  //stencils have the same layout, so node i is at index k = padded(i) of each,
+  //with neighbours n = k-stride, s = k+stride, w = k-1 and e = k+1.
+  const double* up = stencilp.data();
+  const double* uq = stencilQ.data();
+  const double* oldup = stencil_oldp.data();
+  const double* olduq = stencil_oldQ.data();
+  const size_type stride = static_cast<size_type>(stencilp.stride());
+  const nftsim::par::Range nr = nftsim::par::range(nodes); // this thread's nodes
+  for( size_type i=nr.begin; i<nr.end; i++ ) {
+    const size_type k = static_cast<size_type>(stencilp.padded(static_cast<int>(i)));
+    const double sump  = up[k-stride] + up[k+stride] + up[k-1] + up[k+1] ; // sum of the von Neumann (orthogonal) neighbourhood (phi)
+    const double sumQ  = uq[k-stride] + uq[k+stride] + uq[k-1] + uq[k+1] ; // sum of the von Neumann (orthogonal) neighbourhood (Q)
+    const double drive = dfact * (tenminus4p2*uq[k] +
                      Qnew[i]*expfactpos +
-                     stencil_oldQ(stencil_oldQ.c)*expfactneg +
+                     olduq[k]*expfactneg +
                      p2*sumQ);
-    p[i]  = expfactneg * (twominus4p2*stencilp(stencilp.c) +
+    p[i]  = expfactneg * (twominus4p2*up[k] +
                           p2*sump -
-                          stencil_oldp(stencil_oldp.c)*expfactneg +
+                          oldup[k]*expfactneg +
                           drive);
   }
 
-  //If key==1, set it to 0; if key==0, set it to 1.
-  key = static_cast<int>(key == 0);
-  stencil_oldp = p;
-  stencil_oldQ = Qnew;
+  // Each thread copies its own nodes into the older stencils, which only it
+  // reads (at the centre) in this step. Their halos need every node, and
+  // nothing reads them or key until the next step, so one thread fills the
+  // halos and swaps the stencils at the end of the step (see parallel.h).
+  stencil_oldp.assignNodes(p, nr.begin, nr.end);
+  stencil_oldQ.assignNodes(Qnew, nr.begin, nr.end);
+  nftsim::par::atStepEnd( [this]{
+    oldp[key == 0]->fillHalo();
+    oldQ[key == 0]->fillHalo();
+    //If key==1, set it to 0; if key==0, set it to 1.
+    key = static_cast<int>(key == 0);
+  } );
+}
+
+bool Wave::nodeParallel() const {
+  return typeid(*this) == typeid(Wave);
 }

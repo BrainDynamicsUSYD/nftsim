@@ -15,6 +15,7 @@
 // Other nftsim headers
 #include "configf.h"    // Configf;
 #include "output.h"     // Output;
+#include "parallel.h"   // nftsim::par::range;
 #include "population.h" // Population;
 #include "propagator.h" // Propagator;
 
@@ -23,6 +24,7 @@
 #include <iostream>  // std::cerr; std::endl;
 #include <string>    // std::string;
 #include <vector>    // std::vector;
+#include <typeinfo> // typeid;
 using std::cerr;
 using std::endl;
 using std::string;
@@ -62,7 +64,8 @@ Coupling::~Coupling() = default;
 
 /// Calculate next value for synaptic-coupling-strength-weighted-presynaptic-inputs.
 void Coupling::step() {
-  for( size_type i=0; i<nodes; i++ ) {
+  const nftsim::par::Range nr = nftsim::par::range(nodes); // this thread's nodes
+  for( size_type i=nr.begin; i<nr.end; i++ ) {
     P[i] = nu[i]*prepropag[i];
   }
 }
@@ -89,4 +92,8 @@ bool Coupling::excite() const {
 
 const vector<double>& Coupling::nuphi() const {
   return P;
+}
+
+bool Coupling::nodeParallel() const {
+  return typeid(*this) == typeid(Coupling);
 }

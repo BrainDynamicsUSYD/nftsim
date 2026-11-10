@@ -23,7 +23,7 @@ class Population;
 class Tau : public NF {
   size_type max; ///< if tau is inhomogeneous, == biggest element
   std::vector<size_type> m; ///< tau values across nodes, size()==1 if homogeneous
-  mutable std::vector<double> delayed; ///< per-Tau buffer for Population::Q() when tau is inhomogeneous or fractional
+  mutable std::vector<double> delayed; ///< per-Tau buffer for Population::Q() when tau is inhomogeneous or fractional (sized by the constructor, so that threads sharing the nodes never resize it)
   /// Fractional part f of tau/deltat, as tau = (m+f)*deltat with 0 <= f < 1.
   /// Only used with `Integration: SecondOrder`, where Population::Q()
   /// interpolates linearly between the stored firing rates m and m+1 steps

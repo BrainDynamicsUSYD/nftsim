@@ -11,6 +11,9 @@
 #ifndef NFTSIM_SRC_ARRAY_H
 #define NFTSIM_SRC_ARRAY_H
 
+// Other nftsim headers
+#include "parallel.h" // nftsim::par::serial;
+
 // C++ standard library headers
 #include <memory>  // std::unique_ptr;
 #include <utility> // std::move;
@@ -26,10 +29,16 @@ class Array {
   Array(const Array&) = delete;            ///< No copy constructor allowed.
   Array& operator=(const Array&) = delete; ///< No copy assignment allowed.
 
-  /// Calls `step()` on each element, in the order they were added.
+  /// Calls `step()` on each element, in the order they were added. With
+  /// threads sharing the nodes, an element that cannot step a block of nodes
+  /// (nodeParallel() is false) is stepped by one thread (see parallel.h).
   void step() {
     for( auto& t : m ) {
-      t->step();
+      if( t->nodeParallel() ) {
+        t->step();
+      } else {
+        nftsim::par::serial( [&t]{ t->step(); } );
+      }
     }
   }
   /// Adds an element, taking ownership of it.

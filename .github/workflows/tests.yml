@@ -1,7 +1,8 @@
 # Build nftsim and run its unit and numerical regression tests.
 #
-# Jobs: g++ and clang++ on Linux, Apple clang on macOS, and a sanitizer build
-# on Linux. White noise is generated portably (src/random.cpp), so the whole
+# Jobs: g++ and clang++ on Linux, Apple clang on macOS, a sanitizer build
+# on Linux, and an OpenMP build (make OPENMP=1) on Linux whose outputs must be
+# byte-identical for 1 and 4 threads and to the serial build. White noise is generated portably (src/random.cpp), so the whole
 # suite passes with libc++ on macOS as well as libstdc++ on Linux.
 #
 # The numerical check (nf_numerical --check all) compares each output with its
@@ -54,6 +55,42 @@ jobs:
         run: make test-unit
       - name: Numerical regression tests
         run: ./nf_numerical --check all
+
+  openmp:
+    name: OpenMP build (g++), outputs identical for 1 and 4 threads
+    runs-on: ubuntu-latest
+    env:
+      CXX: g++
+    steps:
+      - uses: actions/checkout@v5
+      - name: Build serial nftsim (reference)
+        # OPENMP=1 builds g++ with -ffp-contract=off (see the Makefile), so the
+        # serial build it must match is built the same way.
+        run: |
+          make -j"$(nproc)" nftsim CXX="$CXX" FPFLAGS=-ffp-contract=off OBJDIR=obj-serial/ BINDIR=bin-serial/ DEPDIR=dep-serial/
+      - name: Build OpenMP nftsim and unit tests
+        # NFTSIM_OMP_MIN_NODES=1 shares the nodes between threads on every
+        # grid, including the small grids of the tests (by default grids under
+        # 256 nodes run on one thread).
+        run: make -j"$(nproc)" nftsim bin/unit_tests CXX="$CXX" OPENMP=1 FPFLAGS=-DNFTSIM_OMP_MIN_NODES=1
+      - name: Unit tests (4 threads)
+        run: OMP_NUM_THREADS=4 ./bin/unit_tests
+      - name: Numerical regression tests (4 threads)
+        run: OMP_NUM_THREADS=4 ./nf_numerical --check all
+      - name: Outputs byte-identical for 1 and 4 threads and the serial build
+        run: |
+          mkdir -p omp-check
+          for conf in test/numerical/*.conf benchmarks/*.conf; do
+            name=$(basename "$conf" .conf)
+            # short runs: 0.25 s simulated, output from the start
+            sed -e 's/^\( *Time: *\)[^ ]*/\10.25/' -e '/^Output:/s/Start: *[^ ]*/Start: 0/' "$conf" > "omp-check/$name.conf"
+            ./bin-serial/nftsim -i "omp-check/$name.conf" -o "omp-check/$name.serial"
+            for t in 1 4; do
+              OMP_NUM_THREADS=$t ./bin/nftsim -i "omp-check/$name.conf" -o "omp-check/$name.t$t"
+              cmp "omp-check/$name.serial" "omp-check/$name.t$t"
+            done
+            echo "$name: identical"
+          done
 
   python-reader:
     name: Python output reader (utils/nftsim.py)

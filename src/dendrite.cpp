@@ -15,6 +15,7 @@
 #include "configf.h"    // Configf;
 #include "coupling.h"   // Coupling;
 #include "output.h"     // Output;
+#include "parallel.h"   // nftsim::par::range;
 #include "propagator.h" // Propagator;
 #include "restrict.h"   // NFTSIM_RESTRICT;
 
@@ -22,6 +23,7 @@
 #include <iostream> // std::endl; std::cerr;
 #include <string>   // std::string;
 #include <vector>   // std::vector;
+#include <typeinfo> // typeid;
 using std::string;
 using std::vector;
 
@@ -55,6 +57,7 @@ void Dendrite::init( Configf& configf ) {
   alphaxbeta = alpha * beta;
 
   dvdt.assign(nodes, 0.0); // start at rest
+  prevnp.assign(nodes, 0.0); // set on the first step if second_order
 }
 
 Dendrite::Dendrite( size_type nodes, double deltat, size_type index,
@@ -75,8 +78,14 @@ void Dendrite::initFromInputs() {
 void Dendrite::startSecondOrder( const double* np ) {
   // Zero slope on the first step: nu*phi at t_-1 is taken equal to nu*phi at t_0.
   if( !started ) {
-    prevnp.assign(np, np+nodes);
-    started = true;
+    // Each thread copies its own nodes (see parallel.h); started is changed
+    // only once every thread has read it.
+    const nftsim::par::Range nr = nftsim::par::range(nodes);
+    for( size_type i=nr.begin; i<nr.end; i++ ) {
+      prevnp[i] = np[i];
+    }
+    nftsim::par::barrier();
+    nftsim::par::single( [this]{ started = true; } );
   }
 }
 
@@ -97,7 +106,8 @@ void Dendrite::step() {
     const double h6 = deltat/6.0;
     const double fab = factorab;
     const double ab = alphaxbeta;
-    for( size_type i=0; i<nodes; i++ ) {
+    const nftsim::par::Range nr = nftsim::par::range(nodes); // this thread's nodes
+    for( size_type i=nr.begin; i<nr.end; i++ ) {
       const double p0 = np[i];
       const double dp = p0 - pp[i];
       const double pm = p0 + 0.5*dp; // extrapolated to t_n + h/2
@@ -138,7 +148,8 @@ void Dendrite::step() {
   const double h6 = deltat/6.0;
   const double fab = factorab;
   const double ab = alphaxbeta;
-  for( size_type i=0; i<nodes; i++ ) {
+  const nftsim::par::Range nr = nftsim::par::range(nodes); // this thread's nodes
+  for( size_type i=nr.begin; i<nr.end; i++ ) {
     const double p = np[i];
     const double v0 = V[i];
     const double w0 = W[i];
@@ -163,4 +174,8 @@ void Dendrite::step() {
 
 void Dendrite::output( Output& output ) const {
   output("Dendrite",index+1,"V",v);
+}
+
+bool Dendrite::nodeParallel() const {
+  return typeid(*this) == typeid(Dendrite);
 }

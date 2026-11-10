@@ -19,6 +19,7 @@
 // Other nftsim headers
 #include "configf.h"    // Configf;
 #include "output.h"     // Output;
+#include "parallel.h"   // nftsim::par::range;
 #include "population.h" // Population;
 
 // C++ standard library headers
@@ -27,6 +28,7 @@
 #include <iostream> // std::cerr; std::endl;
 #include <string>   // std::string;
 #include <vector>   // std::vector;
+#include <typeinfo> // typeid;
 using std::cerr;
 using std::endl;
 using std::string;
@@ -99,7 +101,11 @@ Propagator::Propagator( size_type nodes, double deltat, size_type index, Populat
 Propagator::~Propagator() = default;
 
 void Propagator::step() {
-  p = prepop.Q(tau);
+  const vector<double>& Q = prepop.Q(tau);
+  const nftsim::par::Range nr = nftsim::par::range(nodes); // this thread's nodes
+  for( size_type i=nr.begin; i<nr.end; i++ ) {
+    p[i] = Q[i];
+  }
 }
 
 /** @brief Initial phi at every node, read from this propagator's section.
@@ -126,4 +132,8 @@ const vector<double>& Propagator::phi() const {
 
 void Propagator::output( Output& output ) const {
   output("Propagator",index+1,"phi",p);
+}
+
+bool Propagator::nodeParallel() const {
+  return typeid(*this) == typeid(Propagator);
 }

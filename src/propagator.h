@@ -50,6 +50,7 @@ class Propagator : public NF {
               Population& postpop, size_type longside, std::string topology );
   ~Propagator() override;
   void step() override;
+  bool nodeParallel() const override; ///< true for this class only (not derived classes); see parallel.h
   /// Initial phi at each node (Steady, one number or one per node), from the config file.
   std::vector<double> phiinit( Configf& configf ) const;
   /// Select the second-order scheme (`Integration: SecondOrder`): fractional
