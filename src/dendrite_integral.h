@@ -43,6 +43,8 @@ class DendriteIntegral : public Dendrite {
   ~DendriteIntegral() override;
   void step() override;
   void initFromInputs() override;
+  bool mergeable() const override;
+  void merge( const Dendrite& other ) override;
 };
 
 #endif //NFTSIM_SRC_DENDRITE_INTEGRAL_H

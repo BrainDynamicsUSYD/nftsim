@@ -103,6 +103,19 @@ Modules that integrate their own state with their inputs held constant over a st
 The `Ramp` and `DiffArctan` couplings evaluate `nu` one step ahead of `phi`, which is first order while `nu` is changing, and `Ramp` dendrites keep their rates constant within a step (evaluated at its midpoint).
 The `Wave` propagator's spatial error depends on the grid spacing and is not changed by this option.
 
+## Merged dendrites
+
+The dendritic response is linear, so the dendrites of a population that have the same `alpha` and `beta` and the same type (the default RK4 `Dendrite`, or `Integral`) sum to a potential that obeys the same equation, driven by the sum of their inputs `nu*phi`.
+`NFTsim` therefore integrates each such group as one dendrite, started from the sums of their initial `V` and `dV/dt`.
+In the standard corticothalamic model this cuts 11 dendrite integrations per node per step to 4.
+The output changes only by round-off (the order of summation changes), typically below 1e-13 of each column's scale.
+
+`Ramp` dendrites, whose rates change in time, are never merged.
+A dendrite whose own `V` is requested in the `Dendrite:` line of the output is not merged either, so its output is unchanged; the rest of its group still is.
+
+To turn merging off, for debugging or comparison, set the environment variable `NFTSIM_MERGE_DENDRITES=0` (or `off`).
+`NFTSIM_MERGE_DENDRITES=verbose` lists the merged dendrites of each population on standard error.
+
 ## Troubleshooting
 
 Problems compiling? First check [the following page](https://github.com/BrainDynamicsUSYD/nftsim/wiki/All:-Cross-platform-support) for the latest information. If that doesn't solve the problem please drop us a message using Github's issues. Don't forget to mention the following info: operating system, compiler, compiler version, `NFTsim` version. 

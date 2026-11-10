@@ -20,11 +20,24 @@
 
 // C++ standard library headers
 #include <cmath>     // std::exp;
+#include <typeinfo>  // typeid;
 
 void DendriteIntegral::initFromInputs() {
   Dendrite::initFromInputs();
   if( steady_v ) {
     oldnp = v; // the input's previous value, as set in init()
+  }
+}
+
+bool DendriteIntegral::mergeable() const {
+  return typeid(*this) == typeid(DendriteIntegral);
+}
+
+void DendriteIntegral::merge( const Dendrite& other ) {
+  Dendrite::merge(other); // V and dV/dt; the caller has checked canMerge()
+  const auto& o = static_cast<const DendriteIntegral&>(other);
+  for( size_type i=0; i<nodes; i++ ) {
+    oldnp[i] += o.oldnp[i]; // the previous input is the sum too
   }
 }
 
@@ -54,7 +67,7 @@ void DendriteIntegral::step() {
   // assume that alpha, beta are constant and nu*phi is linear for the time step
   // Per-node temporaries are locals (they were class members, which forced a
   // store per node and blocked vectorisation).
-  const double* NFTSIM_RESTRICT np = precouple.nuphi().data(); // current nu*phi
+  const double* NFTSIM_RESTRICT np = input(); // current nu*phi
   double* NFTSIM_RESTRICT vv = v.data();
   double* NFTSIM_RESTRICT dv = dvdt.data();
   double* NFTSIM_RESTRICT onp = oldnp.data();
@@ -95,7 +108,7 @@ void DendriteIntegral::step() {
   second order. The solution formula is the same with the end points changed.
 */
 void DendriteIntegral::stepSecondOrder() {
-  const double* NFTSIM_RESTRICT np = precouple.nuphi().data(); // nu*phi at t_n
+  const double* NFTSIM_RESTRICT np = input(); // nu*phi at t_n
   startSecondOrder(np);
   double* NFTSIM_RESTRICT vv = v.data();
   double* NFTSIM_RESTRICT dv = dvdt.data();

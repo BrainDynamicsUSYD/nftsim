@@ -43,6 +43,21 @@ class FiringResponse : public NF {
   std::vector<Array<Dendrite>::size_type> dendrite_index; ///< indices of dendrites
   std::vector<double> v; ///< soma potential for the population
 
+  // Dendrite merging: dendrites of the same linear type with the same alpha
+  // and beta are integrated as one, driven by the sum of their inputs (their
+  // V sum exactly, up to round-off). See mergeDendrites().
+  bool merge_dendrites; ///< merging allowed (default from NFTSIM_MERGE_DENDRITES)
+  bool merge_done = false; ///< true once mergeDendrites() has run
+  std::vector<Dendrite*> stepped; ///< dendrites that are stepped and summed into v
+  /// Per dendrite: true if its own V is written to the output. Set by
+  /// outputDendrite() (const, as it is reached through the const output
+  /// interface), and such dendrites are never merged.
+  mutable std::vector<bool> dendrite_output;
+  /// Groups the dendrites that can be merged and merges each group into its
+  /// first member. Runs at the first step(), after Solver has set up the
+  /// outputs, so that dendrites whose own V is output can be left out.
+  void mergeDendrites();
+
  public:
   FiringResponse(const FiringResponse& ) = delete; ///< No copy constructor allowed.
   FiringResponse() = delete;                       ///< No default constructor allowed.
@@ -55,6 +70,15 @@ class FiringResponse : public NF {
 
   /// Select the second-order scheme (`Integration: SecondOrder`) for all dendrites.
   void useSecondOrder( bool second_order );
+  /// Allow or forbid merging dendrites. Call before the first step(). The
+  /// default is to merge, unless the environment variable
+  /// NFTSIM_MERGE_DENDRITES is 0, off, no or false.
+  void allowMerging( bool allow ) {
+    merge_dendrites = allow;
+  }
+  /// Number of dendrite integrations per step: the number of dendrites less
+  /// those merged into another (all of them before the first step()).
+  Array<Dendrite>::size_type steppedDendrites() const;
 
   virtual void fire( std::vector<double>& Q ) const;
   /// Called once every population, propagator and coupling has been
