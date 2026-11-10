@@ -43,6 +43,13 @@ class StencilGrid {
 
   /// Copies `field` into the grid, fills the halo and resets the cursor to node 0.
   const std::vector<double>& operator= ( const std::vector<double>& field );
+
+  /// The padded grid (interior plus halo), for reading neighbours by index:
+  /// interior node (row r, column c) is at data()[(r+1)*stride() + c + 1].
+  const double* data() const { return m; }
+  int stride() const { return longside+2; } ///< offset between vertically adjacent cells
+  int rows() const { return shortside; }    ///< number of interior rows
+  int columns() const { return longside; }  ///< number of interior columns
   inline void operator++ (int) const; ///< Moves the cursor to the next node.
   void set( int node ) const; ///< Moves the cursor to `node`.
   int get() const; ///< Node at the cursor.
