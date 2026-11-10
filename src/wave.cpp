@@ -20,7 +20,7 @@
 // Other nftsim headers
 #include "configf.h"    // Configf;
 #include "make_unique.h" // nftsim::make_unique;
-#include "parallel.h"   // nftsim::par::range; nftsim::par::serial;
+#include "parallel.h"   // nftsim::par::range; nftsim::par::atStepEnd;
 #include "population.h" // Population;
 #include "stencil.h"    // Stencil;
 
@@ -196,13 +196,14 @@ void Wave::step() {
   }
 
   // Each thread copies its own nodes into the older stencils, which only it
-  // reads (at the centre) in this step; then one thread fills their halos,
-  // which need every node, and swaps them for the next step.
+  // reads (at the centre) in this step. Their halos need every node, and
+  // nothing reads them or key until the next step, so one thread fills the
+  // halos and swaps the stencils at the end of the step (see parallel.h).
   stencil_oldp.assignNodes(p, nr.begin, nr.end);
   stencil_oldQ.assignNodes(Qnew, nr.begin, nr.end);
-  nftsim::par::serial( [&]{
-    stencil_oldp.fillHalo();
-    stencil_oldQ.fillHalo();
+  nftsim::par::atStepEnd( [this]{
+    oldp[key == 0]->fillHalo();
+    oldQ[key == 0]->fillHalo();
     //If key==1, set it to 0; if key==0, set it to 1.
     key = static_cast<int>(key == 0);
   } );

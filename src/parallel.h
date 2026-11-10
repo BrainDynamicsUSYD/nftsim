@@ -7,9 +7,13 @@
   The blocks are contiguous and fixed for the run, so in a chain of per-node
   loops (coupling, dendrites, soma sum, firing, propagator) each thread reads
   only values it wrote itself and no barrier is needed between them. The few
-  steps that are not per node (advancing a history index, filling the Wave
-  stencils' halos, white noise, output) run on one thread, par::single() or
-  par::serial(), with barriers.
+  steps that are not per node run on one thread: advancing a population's
+  history index and white noise with par::single(), and output with
+  par::serial(). Work that nothing reads until the next step (filling the
+  Wave stencils' halos) is put off with par::atStepEnd() to the end of the
+  step, so it needs no barriers of its own. A model with P populations
+  (neural or stimulus) then has P+2 barriers per step, whatever the number
+  of nodes, propagators and dendrites.
 
   Objects whose step() has not been written this way (nodeParallel() is false,
   see NF) are stepped by Array::step() inside par::serial(): one thread steps
@@ -26,7 +30,8 @@
 #define NFTSIM_SRC_PARALLEL_H
 
 // C++ standard library headers
-#include <vector> // std::vector;
+#include <functional> // std::function;
+#include <vector>     // std::vector;
 
 #ifdef _OPENMP
 #include <omp.h>
@@ -121,6 +126,36 @@ template<class F> inline void serial( F f ) {
   }
 #endif
   f();
+}
+
+/// Work put off to the end of the time-step by atStepEnd().
+inline std::vector<std::function<void()>>& stepEndQueue() {
+  static std::vector<std::function<void()>> queue;
+  return queue;
+}
+
+/// Runs f now, or, while threads share the nodes, once on one thread at the
+/// end of the time-step, when Solver::step() calls runStepEnd() (in a
+/// serial() section, before output). Use it for work on state that nothing
+/// reads again before the next step, which saves the barriers of a serial().
+template<class F> inline void atStepEnd( F f ) {
+#ifdef _OPENMP
+  if( sharing() ) {
+    if( omp_get_thread_num() == 0 ) { // every thread asks; one records it
+      stepEndQueue().emplace_back(f);
+    }
+    return;
+  }
+#endif
+  f();
+}
+
+/// Runs, in order, the work put off by atStepEnd(). Call on one thread only.
+inline void runStepEnd() {
+  for( auto& f : stepEndQueue() ) {
+    f();
+  }
+  stepEndQueue().clear();
 }
 
 } // namespace par

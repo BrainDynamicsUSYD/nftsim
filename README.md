@@ -63,6 +63,7 @@ Set the number of threads with `OMP_NUM_THREADS`, eg `OMP_NUM_THREADS=8 ./bin/nf
 Grids of fewer than 256 nodes still run on one thread, where threads would only add overhead.
 The output is bit-for-bit the same for any number of threads, and the same as the serial build: with clang the default build, and with g++, which `OPENMP=1` builds with `-ffp-contract=off`, the build `make FPFLAGS=-ffp-contract=off`.
 White noise is still drawn on one thread, node by node, so that it stays the same as in the serial build.
+The threads wait for each other a few times per time-step, which is slow unless they wait actively: on macOS set `OMP_WAIT_POLICY=active` (it can make runs several times faster), and prefer clang with libomp to g++, whose OpenMP library has slow barriers on macOS.
 Apple clang needs Homebrew's `libomp` (`brew install libomp`); alternatively use g++, eg `make OPENMP=1 CXX=g++-16`.
 
 Are you on Windows and want to use `NFTsim`. Check [some options here](https://github.com/BrainDynamicsUSYD/nftsim/wiki/All:-Cross-platform-support). 

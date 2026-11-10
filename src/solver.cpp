@@ -277,7 +277,10 @@ void Solver::step() {
   couplings.step();
   pops.step();
   propagators.step();
-  nftsim::par::serial( [this]{ outputs->step(); } );
+  nftsim::par::serial( [this]{
+    nftsim::par::runStepEnd(); // eg Wave stencil halos (see parallel.h)
+    outputs->step();
+  } );
 }
 
 void Solver::Outputs::step() {
