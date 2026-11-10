@@ -31,12 +31,13 @@ using std::vector;
     \frac{d^2\phi}{dt^2}&=& \gamma^2 \left(Q - \frac{2}{\gamma} \frac{d\phi}{dt} - \phi \right)
   \f}
 */
-void Harmonic::HarmonicDE::rhs( const vector<double>& y, vector<double>& dydt, size_type /*unused*/ ) {
+void Harmonic::HarmonicDE::rhs( const vector<double>& y, vector<double>& dydt, size_type n ) {
   // y = {phi,dphi/dt,Q}
   // dydt = {dphi/dt, d^2phi/dt^2,dQ/dt}
   dydt[0] = y[1];
   dydt[1] = gammasquared * (y[2] - (twoongamma * y[1]) - y[0]);
-  dydt[2] = 0.0;
+  // Q is constant over the step, or linear with Integration: SecondOrder.
+  dydt[2] = dQdt.empty() ? 0.0 : dQdt[n];
 }
 
 void Harmonic::init( Configf& configf ) {
@@ -47,6 +48,11 @@ void Harmonic::init( Configf& configf ) {
   if(gamma == 0.0) {
     cerr << "Harmonic requires gamma or velocity to be provided." << endl;
     exit(EXIT_FAILURE);
+  }
+
+  // The firing-rate history starts at the presynaptic population's initial Q.
+  if( second_order ) {
+    oldQ.assign(nodes, Q);
   }
 
   // If "Steady" then phi was set to Q in Propagator::init, so the
@@ -85,6 +91,25 @@ Harmonic::~Harmonic() {
 }
 
 void Harmonic::step() {
+  if( second_order ) {
+    // The delayed Q at the new time, t_n+1, is already known (populations step
+    // before propagators), so take Q as linear between its values at t_n and
+    // t_n+1 rather than holding it at the t_n+1 value over the whole step.
+    // RK4 integrates the linear Q exactly (dQ/dt is constant in rhs), leaving
+    // the step second order overall, like HarmonicIntegral.
+    const vector<double>& Qnew = prepop.Q(tau);
+    de->dQdt.resize(nodes);
+    for( size_type i=0; i<nodes; i++ ) {
+      (*de)[2][i] = oldQ[i];
+      de->dQdt[i] = (Qnew[i] - oldQ[i])/deltat;
+      oldQ[i] = Qnew[i];
+    }
+    rk4->step();
+    for( size_type i=0; i<nodes; i++ ) {
+      p[i] = (*de)[0][i]; // phi
+    }
+    return;
+  }
   const vector<double>& Q = prepop.Q(tau);
   //Copy the Q to its corresponding variable in the DE.
   for( size_type i=0; i<nodes; i++ ) {

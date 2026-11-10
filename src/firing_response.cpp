@@ -99,6 +99,12 @@ void FiringResponse::add2Dendrite( size_type index, const Propagator& prepropag,
   }
 }
 
+void FiringResponse::useSecondOrder( bool second_order ) {
+  for( Array<Dendrite>::size_type i=0; i<dendrites.size(); i++ ) {
+    dendrites[i]->useSecondOrder(second_order);
+  }
+}
+
 void FiringResponse::fire( vector<double>& Q ) const {
   if(mode == "Sigmoid") {
     for( size_type i=0; i<nodes; i++ ) {

@@ -287,6 +287,17 @@ Time: 10 Deltat: 1e-4
 \type{Time} is the simulation duration in seconds.
 
 \type{Deltat} is the time increment for each time step.
+\item  {\em Time-stepping scheme (optional)}
+\begin{lstlisting}
+Integration: SecondOrder
+\end{lstlisting}
+\type{Integration} is optional and, if given, must directly follow \type{Deltat}. Its value is \type{Default} (the same as leaving it out) or \type{SecondOrder}.
+
+With the default scheme each step updates the couplings (using $\phi_{ab}$ at $t_n$), then the dendrites, holding $\nu_{ab}\phi_{ab}$ at its value at $t_n$ over $[t_n, t_{n+1}]$ (or, for \type{Integral} dendrites, taking it to rise linearly from its value at $t_{n-1}$ to its value at $t_n$, which lags the input by one step), then the firing rates $Q_a(t_{n+1}) = S[V_a(t_{n+1})]$, then the propagators. Delays are rounded to a whole number of steps. The error of the coupled system is then first order in \type{Deltat}.
+
+With \type{SecondOrder}, each dendrite takes $\nu_{ab}\phi_{ab}$ as linear over $[t_n, t_{n+1}]$, extrapolated from its values at $t_{n-1}$ and $t_n$ (as in a second-order Adams--Bashforth step); the \type{Harmonic} propagator takes the delayed $Q_b$ as linear between its values at $t_n$ and $t_{n+1}$, which are both known when propagators step (\type{HarmonicIntegral} and \type{Wave} already use them); and a delay with $\tau_{ab}/\Delta t = m + f$, $0 < f < 1$, is evaluated by linear interpolation, $Q_b(t - \tau_{ab}) \approx (1-f)\,Q_b(t - m\Delta t) + f\,Q_b(t - (m+1)\Delta t)$, rather than rounded. Each of these has an $O(\Delta t^3)$ error per step, so the coupled system, including the nonlinear firing response, is second order: halving \type{Deltat} reduces the error about four-fold. The scheme is explicit and costs about the same as the default. A fixed point of the model is also a fixed point of the scheme.
+
+Second order requires smooth inputs: stimuli with jumps (\type{PulseRect}, \type{Burst}) give first-order errors near each jump with either scheme, and white noise converges in its statistics rather than path by path. Modules that integrate their own state with their inputs held constant over a step remain first order: the plastic couplings (\type{CaDP}, \type{BCM}, \type{BCM-Spatial}), the \type{Bursting} and \type{GlutamateResponse} firing responses, and \type{WaveLegacy}. The \type{Ramp} and \type{DiffArctan} couplings evaluate $\nu_{ab}$ one step ahead of $\phi_{ab}$, which is first order while $\nu_{ab}$ changes, and \type{Ramp} dendrites hold their rates constant within a step (at its midpoint). The spatial error of \type{Wave} depends on $\Delta x$ and is unaffected.
 \item  {\em Grid size}
 \begin{lstlisting}
 Nodes: 4 Longside: 2
@@ -580,8 +591,9 @@ Harmonic - phi: Steady Tau: 0 gamma: 116
 
     \item[Tau]\ \\
     The axonal time delay between populations. If it is spatially homogeneous, then it is a number with units of seconds. If it is spatially inhomogeneous, then input \(n\) numbers, where \(n=\) \type{Nodes}.
-    Delays are rounded to the nearest whole number of time-steps, and a warning is printed if a value is not within \(10^{-6}\) of a step multiple.
+    With the default time-stepping scheme, delays are rounded to the nearest whole number of time-steps (an error of up to $\Delta t/2$ in the delay), and a warning is printed if a value is not within \(10^{-6}\) of a step multiple.
     Choosing \type{Deltat} as a power of two (e.g.\ \(2^{-13}\) s) lets common delays be represented exactly.
+    With \type{Integration: SecondOrder} (Sec.~\ref{sec:global}) a fractional delay is instead interpolated linearly between the two nearest stored time points.
 
 \end{description}
 \end{itemize}

@@ -67,6 +67,35 @@ To run the basic example type
 
     ./bin/nftsim -i ./configs/eirs-corticothalamic.conf -o eirs-corticothalamic.output
 
+## Time-stepping scheme
+
+By default `NFTsim` advances the coupled model with a scheme that is first order in `Deltat`: halving the time-step halves the error.
+An optional second-order scheme, where halving `Deltat` quarters the error, is selected by adding a line after `Time: ... Deltat: ...` in the configuration file:
+
+    Time: 10 Deltat: 1.220703125e-04
+    Integration: SecondOrder
+
+Without this line (or with `Integration: Default`) the output is unchanged.
+
+The second-order scheme changes three things:
+
+- each dendrite takes its input `nu*phi` as linear over the time-step, extrapolated from its two most recent values, instead of holding it constant;
+- the `Harmonic` propagator takes the delayed firing rate `Q` as linear between its values at the start and end of the step (as `HarmonicIntegral` and `Wave` already do);
+- a delay `Tau` that is not a whole number of time-steps is interpolated linearly between the stored firing rates instead of being rounded to the nearest step.
+
+No extra solves are needed, so it runs as fast as the default scheme.
+
+Use it whenever accuracy matters at the usual time-steps (`Deltat` around 1e-4 s).
+For a single-node corticothalamic model, the error in the response to a smooth pulse at `Deltat` = 2^-13 s is about 0.3% with `SecondOrder`, against 5% (RK4 dendrites) or 18% (Integral dendrites) with the default scheme.
+At that time-step the default scheme also overestimates the spindle peak power of `test/numerical/eirs-spindles.conf` by about 10%.
+The second-order scheme also removes the error from rounding delays: with the default scheme a delay of 42 ms is rounded to a whole number of steps, which stops the error falling below about 2% as `Deltat` is reduced.
+
+Second order needs smooth inputs.
+A stimulus that jumps (`PulseRect`, `Burst`) gives first-order errors near each jump with either scheme, and white noise converges only in its statistics (spectra), not path by path.
+Modules that integrate their own state with their inputs held constant over a step are still first order: the plastic couplings (`CaDP`, `BCM`, `BCM-Spatial`), the `Bursting` and `GlutamateResponse` firing responses, and `WaveLegacy`.
+The `Ramp` and `DiffArctan` couplings evaluate `nu` one step ahead of `phi`, which is first order while `nu` is changing, and `Ramp` dendrites keep their rates constant within a step (evaluated at its midpoint).
+The `Wave` propagator's spatial error depends on the grid spacing and is not changed by this option.
+
 ## Troubleshooting
 
 Problems compiling? First check [the following page](https://github.com/BrainDynamicsUSYD/nftsim/wiki/All:-Cross-platform-support) for the latest information. If that doesn't solve the problem please drop us a message using Github's issues. Don't forget to mention the following info: operating system, compiler, compiler version, `NFTsim` version. 

@@ -52,6 +52,9 @@ class FiringResponse : public NF {
   virtual void add2Dendrite( size_type index, const Propagator& prepropag,
                              const Coupling& precouple, Configf& configf );
 
+  /// Select the second-order scheme (`Integration: SecondOrder`) for all dendrites.
+  void useSecondOrder( bool second_order );
+
   virtual void fire( std::vector<double>& Q ) const;
   inline const std::vector<double>& V() const;
   void output( Output& output ) const override;

@@ -32,6 +32,7 @@ class DendriteIntegral : public Dendrite {
   std::vector<double> oldnp; ///< Pulse density (nu*phi) of the previous time-step.
 
   void init( Configf& configf ) override;
+  void stepSecondOrder(); ///< step() for Integration: SecondOrder
 
  public:
   DendriteIntegral() = delete;                        // No default constructor allowed.
