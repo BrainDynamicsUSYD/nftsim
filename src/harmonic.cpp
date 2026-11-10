@@ -55,27 +55,20 @@ void Harmonic::init( Configf& configf ) {
     oldQ.assign(nodes, Q);
   }
 
-  // If "Steady" then phi was set to Q in Propagator::init, so the
-  // following assignment does nothing. But if not "Steady" then
-  // for Harmonic we still want phi=Q. ?True for integral approx but maybe not general?
-  Q = p[0];
-
   // Initialize constant factors to speed up computation.
   gammasquared = gamma * gamma;
   twoongamma = 2.0 / gamma;
 
-  de.init(p[0]); // call Harmonic::HarmonicDE::init
+  de.init(p); // call Harmonic::HarmonicDE::init
   de.gammasquared = gammasquared;
   de.twoongamma = twoongamma;
 }
 
-void Harmonic::HarmonicDE::init(const double pinit) {
-  variables[0].clear();
-  variables[1].clear();
-  variables[2].clear();
-  variables[0].resize(nodes, pinit);
-  variables[1].resize(nodes, 0.0);
-  variables[2].resize(nodes, 0.0);
+/// Starts phi at the initial phi of each node, at rest (dphi/dt = 0).
+void Harmonic::HarmonicDE::init( const vector<double>& pinit ) {
+  variables[0] = pinit;
+  variables[1].assign(nodes, 0.0);
+  variables[2].assign(nodes, 0.0);
 }
 
 Harmonic::Harmonic( size_type nodes, double deltat, size_type index, Population& prepop,

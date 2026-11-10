@@ -27,6 +27,8 @@ class Propagator;
 class Propagator : public NF {
  protected:
   void init( Configf& configf ) override;
+  /// Initial phi from an optional `phi:` entry at the stream position.
+  std::vector<double> readPhi( Configf& configf ) const;
 
   Population& prepop;
   Population& postpop;
@@ -48,7 +50,8 @@ class Propagator : public NF {
               Population& postpop, size_type longside, std::string topology );
   ~Propagator() override;
   void step() override;
-  double phiinit( Configf& configf ) const;
+  /// Initial phi at each node (Steady, one number or one per node), from the config file.
+  std::vector<double> phiinit( Configf& configf ) const;
   /// Select the second-order scheme (`Integration: SecondOrder`): fractional
   /// delays are interpolated rather than rounded, and Harmonic takes the
   /// delayed Q as linear over each step. Call before init().

@@ -45,3 +45,4 @@ Keep tests fast: the whole suite should run in well under a second.
 | `test_integrators.cpp` | `RK4` and `Euler` (`de.h`) errors and convergence order on a two-variable linear system with node-dependent rates |
 | `test_dendrite.cpp` | `Dendrite` (RK4) and `DendriteIntegral` against the analytic step response; numeric initial `V` |
 | `test_firing_response.cpp` | `FiringResponse` sigmoid and polynomial functions |
+| `test_propagator.cpp` | Initial `phi` (`Steady`, one number or one per node) for every propagator type; a uniform list matches one number; wrong-length lists rejected |

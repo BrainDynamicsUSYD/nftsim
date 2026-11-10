@@ -63,9 +63,9 @@ void CouplingDiffArctan::init( Configf& configf ) {
   nu.resize(nodes, nu_min);
   pos = (nu_min>0)?1:-1;
 
-  const double phi0 = prepropag.phiinit(configf); // a config lookup, so read it once
+  // The propagators are initialised before the couplings, so phi holds its initial value.
   for( size_type i=0; i<nodes; i++ ) {
-    P[i] = nu[i]*phi0;
+    P[i] = nu[i]*prepropag[i];
   }
 
   //initial time

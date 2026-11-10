@@ -31,8 +31,13 @@ void Dendrite::init( Configf& configf ) {
   }
   string buffer("Steady");
   configf.optional("V",buffer);
-  if( buffer == "Steady" ) {
-    v.assign(nodes, precouple.nuinit(configf)*prepropag.phiinit(configf));
+  if( buffer == "Steady" ) { // V = nu*phi, with the propagator's initial phi at each node
+    const double nu0 = precouple.nuinit(configf);
+    const vector<double> phi0 = prepropag.phiinit(configf);
+    v.resize(nodes);
+    for( size_type i=0; i<nodes; i++ ) {
+      v[i] = nu0*phi0[i];
+    }
   } else {
     v.assign(nodes, atof(buffer.c_str()));
   }
