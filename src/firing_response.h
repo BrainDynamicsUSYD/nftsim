@@ -57,6 +57,14 @@ class FiringResponse : public NF {
   void useSecondOrder( bool second_order );
 
   virtual void fire( std::vector<double>& Q ) const;
+  /// Firing rate q = S(v) and its slope dq/dv for a constant soma potential v,
+  /// as fire() computes them, for the start-up steady-state check
+  /// (steady_state.h). Returns false if the steady-state firing rate is not a
+  /// function of v alone: BurstResponse, whose threshold follows its own slow
+  /// variables Xtilde and Htilde, never sets `function`, so it returns false.
+  /// (GlutamateResponse fires as FiringResponse does: its glutamate only
+  /// drives plastic couplings.)
+  bool steadyFiring( double v, double& q, double& dqdv ) const;
   /// Called once every population, propagator and coupling has been
   /// initialised, for state whose initial value depends on other objects:
   /// each dendrite's Steady V (Dendrite::initFromInputs), and, in

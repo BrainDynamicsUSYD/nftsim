@@ -47,3 +47,4 @@ Keep tests fast: the whole suite should run in well under a second.
 | `test_dendrite.cpp` | `Dendrite` (RK4) and `DendriteIntegral` against the analytic step response; numeric initial `V` |
 | `test_firing_response.cpp` | `FiringResponse` sigmoid and polynomial functions |
 | `test_propagator.cpp` | Initial `phi` (`Steady`, one number or one per node) for every propagator type; a uniform list matches one number; wrong-length lists rejected |
+| `test_steady_state.cpp` | Start-up steady-state check: silent for a consistent population, warns for an inconsistent one (and at the tolerance), per-node `nu`, a self-coupled population's suggested steady state, and an explicit initial `phi` that is not the presynaptic `Q` |
