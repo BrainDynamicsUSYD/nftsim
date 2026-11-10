@@ -88,9 +88,14 @@ void Dumpf::outputConfig( Configf& configf ) {
 void Dumpf::open( const string& filename ) {
   this->filename = filename;
   if( !file.is_open() ) {
-    // Binary mode, so that binary output is not altered on platforms that
-    // translate line endings (it makes no difference on Linux and macOS).
-    file.open( filename.c_str(), std::ios::out | std::ios::binary );
+    // Text output is written in text mode, exactly as before, so on Windows its
+    // lines still end in CRLF. Binary output needs binary mode (no line-ending
+    // translation): if the format is already known to be binary (from the
+    // command line) open it so now, otherwise format() reopens the file if
+    // the config's Output Format asks for binary. On Linux and macOS the two
+    // modes are identical.
+    file.open( filename.c_str(),
+               fmt == OutputFormat::text ? std::ios::out : (std::ios::out | std::ios::binary) );
     if( !file ) {
       cerr<<"Error, cannot open file'"<<filename.c_str()<<"' for output."
           <<endl;
@@ -118,8 +123,23 @@ void Dumpf::format( OutputFormat format, bool fixed ) {
   if( fmt_fixed && !fixed ) {
     return;
   }
+  const bool was_binary = (fmt != OutputFormat::text);
   fmt = format;
   fmt_fixed = fmt_fixed || fixed;
+  // A binary format chosen after the file was opened in text mode (by the
+  // config's Output Format): reopen it in binary mode. Nothing has been
+  // written yet, because Solver::Outputs::init reads Format before writing.
+  if( file.is_open() && !was_binary && fmt != OutputFormat::text ) {
+    file.close();
+    file.open( filename.c_str(), std::ios::out | std::ios::trunc | std::ios::binary );
+    if( !file ) {
+      cerr<<"Error, cannot reopen file '"<<filename<<"' for binary output."<<endl;
+      exit(EXIT_FAILURE);
+    }
+    s = &file;
+    file.precision(14);
+    file<<scientific;
+  }
 }
 
 void Dumpf::binaryHeader( size_t columns, double deltat, double interval ) {

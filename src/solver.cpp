@@ -325,9 +325,6 @@ void Solver::Outputs::finish() {
 }
 
 void Solver::Outputs::init( Configf& configf ) {
-  // repeat config file into output
-  dumpf.outputConfig(configf);
-
   double tempf;
   string temps;
   vector<size_type> temp_node;
@@ -396,6 +393,11 @@ void Solver::Outputs::init( Configf& configf ) {
     }
     dumpf.format(format, false);
   }
+
+  // Repeat the config file into the output. This is the first write, so it
+  // comes after the format is known: the file is reopened in binary mode for
+  // the binary formats (see Dumpf::format).
+  dumpf.outputConfig(configf);
 
   // read in populations to output
   configf.next("Population");
