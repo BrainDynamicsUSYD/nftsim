@@ -208,6 +208,10 @@ void Population::initFromInputs() {
   }
 }
 
+bool Population::steadyFiring( double v, double& q, double& dqdv ) const {
+  return firing_response != nullptr && firing_response->steadyFiring(v, q, dqdv);
+}
+
 void Population::output( Output& output ) const {
   output("Pop",index+1,"Q",q);
   if(firing_response != nullptr) {

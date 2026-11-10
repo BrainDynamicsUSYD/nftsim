@@ -28,6 +28,7 @@
 #include "make_unique.h"   // nftsim::make_unique;
 #include "output.h"        // Output; Outlet;
 #include "population.h"    // Population;
+#include "steady_state.h"  // steady_state::checkSteadyState;
 #include "wave.h"          // Wave;
 #include "wave_legacy.h"   // WaveLegacy;
 
@@ -251,6 +252,19 @@ void Solver::init( Configf& configf ) {
   // the initial phi of the population's excitatory inputs).
   for( vector<double>::size_type i=0; i<cnt.npop; i++ ) {
     pops[i]->initFromInputs();
+  }
+  // Warn if the initial state is not a steady state, so that the simulation
+  // will start with a transient (diagnostics on stderr only).
+  {
+    vector<const Population*> pop_list;
+    for( vector<double>::size_type i=0; i<cnt.npop; i++ ) {
+      pop_list.push_back(pops[i]);
+    }
+    vector<steady_state::Connection> connections;
+    for( vector<int>::size_type i=0; i<cnt.ncnt; i++ ) {
+      connections.push_back( {cnt.pre[i], cnt.post[i], propagators[i], couplings[i]} );
+    }
+    steady_state::checkSteadyState(pop_list, connections, cerr);
   }
 
   // initialize outputs

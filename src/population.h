@@ -54,6 +54,19 @@ class Population : public NF {
   void step() override;
   virtual const std::vector<double>& Q( const Tau& tau ) const;
   double Qinit( Configf& configf ) const;
+  /// Initial firing rate, as set by init() (a neural population's `Q:`, a
+  /// stimulus population's initial stimulus value).
+  double initialQ() const {
+    return qinit;
+  }
+  /// True for a stimulus population, which has no firing response.
+  bool isStimulus() const {
+    return firing_response == nullptr;
+  }
+  /// Steady-state firing rate q = S(v) and slope dq/dv for a constant soma
+  /// potential v (see FiringResponse::steadyFiring). False for a stimulus
+  /// population and for firing responses without a steady state in v alone.
+  bool steadyFiring( double v, double& q, double& dqdv ) const;
   virtual const std::vector<double>& V() const;
   const std::vector<double>& glu() const;
   inline double sheetlength() const {

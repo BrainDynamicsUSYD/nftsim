@@ -144,6 +144,33 @@ void FiringResponse::fire( vector<double>& Q ) const {
   }
 }
 
+bool FiringResponse::steadyFiring( double v, double& q, double& dqdv ) const {
+  switch( function ) {
+  case Function::Sigmoid: {
+    const double e = exp( -(v-theta)/sigma );
+    const double f = 1.0/( 1.0 + e ); // 0 (not NaN) when e overflows
+    q = Q_max/( 1.0 + e ); // as in fire()
+    dqdv = Q_max*f*( 1.0 - f )/sigma;
+    return true;
+  }
+  case Function::Linear:
+    q = v*a +b;
+    dqdv = a;
+    return true;
+  case Function::Quadratic:
+    q = v*v*a + v*b +c;
+    dqdv = 2.0*a*v + b;
+    return true;
+  case Function::Cubic:
+    q = v*v*v*a + v*v*b + v*c +d;
+    dqdv = 3.0*a*v*v + 2.0*b*v + c;
+    return true;
+  case Function::None:
+    break;
+  }
+  return false;
+}
+
 void FiringResponse::output( Output& output ) const {
   output("Pop",index+1,"V",v);
 }

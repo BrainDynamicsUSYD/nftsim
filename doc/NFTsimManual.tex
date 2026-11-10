@@ -517,6 +517,20 @@ Population 3: Excitory neurons
 Q: 8.87145
     \end{lstlisting}
     The initial firing rate.
+    \NF starts the simulation as if the model were at a steady state with these firing rates: by default every propagator starts at \(\phi_{ab}=Q_b\) and every dendrite at \(V_{ab}=\nu_{ab}\phi_{ab}\).
+    This is a steady state only if each neural population's \type{Q} equals its firing response to that input, \(Q_a = S_a(V_a)\) with \(V_a=\sum_b \nu_{ab}\phi_{ab}\).
+    Otherwise the firing rate jumps to \(S_a(V_a)\) in the first time-step, and the simulation starts with a transient.
+    When it starts, \NF checks this for each neural population, node by node, with the initial \(\nu_{ab}\phi_{ab}\) of each coupling (for plastic and time-varying couplings, their initial \(\nu\)), and prints a warning to the standard error if \(S_a(V_a)\) and \type{Q} differ by more than 0.1\% (relative), for example
+    \begin{lstlisting}
+WARNING: Population 2's initial Q (8.87145) is not a steady state: its initial inputs give Q = 11.0797 (soma potential 1.153e-04 V). The simulation will start with a transient.
+    Newton's method from the configured values converges to this steady state (its stability is not checked):
+      Population 2: Q: 11.16405416
+    \end{lstlisting}
+    It also warns if a propagator's initial \type{phi} (Sec.~\ref{sec:prop}) differs from its presynaptic population's \type{Q}.
+    After any warning, \NF solves the steady-state equations \(Q_a = S_a(\sum_b \nu_{ab} Q_b)\) for the whole network by Newton's method, starting from the configured \type{Q}, and suggests the firing rates it finds as \type{Q} values; stimulus populations keep their initial firing rate.
+    It makes no suggestion if Newton's method does not converge, or if the network is not spatially uniform (eg, \type{nu} or \type{phi} given per node), and the suggested steady state may be unstable, or one of several.
+    The check is diagnostic only: it does not change the simulation or its output.
+    It skips stimulus populations and \type{Bursting} populations, whose steady-state firing also depends on their slow threshold variables.
     \item
     \begin{lstlisting}
 Firing: Function: Sigmoid Theta: 13e-3 Sigma: 3.8e-3 Qmax: 340
@@ -544,7 +558,8 @@ Dendrite 1: V: Steady alpha: 83 beta: 769
     \end{lstlisting}
     The identifier \type{Dendrite 1}, where the number 1 is the presynaptic connection index, is required for cross-checking. Users should find that these indices are simply ordered as 1, 2, 3, 4, ...
 
-    Optional parameter \type{V} may be used to specify the initial depolarization contribution from presynaptic activity. If unspecified, or set to \type{Steady}, \NF calculates the initial value by \(V_{ab}=\nu_{ab}\phi_{ab}\), node by node, with the initial \(\phi_{ab}\) of the presynaptic propagator (its \type{phi}, Sec.~\ref{sec:prop}) and the initial \type{nu} of the coupling (the first value, if several are given).
+    Optional parameter \type{V} may be used to specify the initial depolarization contribution from presynaptic activity. If unspecified, or set to \type{Steady}, \NF sets it to the coupling's initial input \(\nu_{ab}\phi_{ab}\) at each node, using the initial \(\phi_{ab}\) of the presynaptic propagator (its \type{phi}, Sec.~\ref{sec:prop}).
+    This is the input the coupling actually delivers: with one \type{nu} per node it uses each node's value, and for a \type{Matrix} coupling it is the sum over source nodes, \(\sum_i \nu_{ij}\phi_i\).
 
     \type{alpha} and \type{beta} are the parameters for the depolarization response.
     \end{itemize}
