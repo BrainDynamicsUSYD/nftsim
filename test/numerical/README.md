@@ -38,6 +38,15 @@ nf_numerical --check 'all' --rtol 1e-6
 nf_numerical --check 'e-erps' --exact
 ```
 To compare two output files directly, run `test/numerical/compare_output.py reference.output new.output`.
+Either file may be in the binary format (see the user manual), which is detected automatically.
+
+To check nftsim's binary output against the same (text) references, add `--format`:
+```
+nf_numerical --check 'all' --format Binary
+nf_numerical --check 'all' --format Binary32 --rtol 1e-6
+```
+`Binary32` rounds values to 32-bit floats (about 7 significant digits), so it needs the looser tolerance.
+The Python reader tests (`test/python`) and the Matlab reader test (`test/matlab/test_read.m`, run with `matlab -batch "run('test/matlab/test_read.m')"` from the repository root) also check binary output, against text output from the same run.
 
 This holds for the configurations with noise (White stimuli) too, because nftsim generates its Gaussian noise portably rather than with `std::normal_distribution` (see the top-level README).
 
