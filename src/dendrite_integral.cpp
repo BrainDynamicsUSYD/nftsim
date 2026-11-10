@@ -20,6 +20,13 @@
 // C++ standard library headers
 #include <cmath>     // std::exp;
 
+void DendriteIntegral::initFromInputs() {
+  Dendrite::initFromInputs();
+  if( steady_v ) {
+    oldnp = v; // the input's previous value, as set in init()
+  }
+}
+
 void DendriteIntegral::init( Configf& configf ) {
   Dendrite::init(configf);
 

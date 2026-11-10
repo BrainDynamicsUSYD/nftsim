@@ -32,6 +32,10 @@ void Dendrite::init( Configf& configf ) {
   string buffer("Steady");
   configf.optional("V",buffer);
   if( buffer == "Steady" ) { // V = nu*phi, with the propagator's initial phi at each node
+    // Provisional: initFromInputs() replaces this with the coupling's actual
+    // initial nu*phi, which differs from nuinit()*phi for per-node nu lists
+    // and for Matrix couplings (whose input at node j sums over all nodes).
+    steady_v = true;
     const double nu0 = precouple.nuinit(configf);
     const vector<double> phi0 = prepropag.phiinit(configf);
     v.resize(nodes);
@@ -59,6 +63,13 @@ Dendrite::Dendrite( size_type nodes, double deltat, size_type index,
 }
 
 Dendrite::~Dendrite() = default;
+
+void Dendrite::initFromInputs() {
+  if( steady_v ) {
+    v = precouple.nuphi();
+    dvdt.assign(nodes, 0.0);
+  }
+}
 
 void Dendrite::startSecondOrder( const double* np ) {
   // Zero slope on the first step: nu*phi at t_-1 is taken equal to nu*phi at t_0.

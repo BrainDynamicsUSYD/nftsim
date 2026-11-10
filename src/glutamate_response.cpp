@@ -86,6 +86,7 @@ void GlutamateResponse::excitatoryPhi( vector<double>& phi_e ) const {
   Lambda = 0 glutamate is not integrated and stays at 0.
 */
 void GlutamateResponse::initFromInputs() {
+  FiringResponse::initFromInputs(); // dendrites first
   vector<double> phi_e;
   excitatoryPhi(phi_e);
   for( size_type j=0; j<nodes; j++ ) {

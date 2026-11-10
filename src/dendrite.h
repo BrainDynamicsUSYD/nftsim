@@ -53,6 +53,8 @@ class Dendrite : public NF {
   std::vector<double> prevnp; ///< nu*phi at the previous step (second-order scheme)
   void startSecondOrder( const double* np ); ///< sets prevnp on the first step
 
+  bool steady_v = false; ///< true if V was given as `Steady`; see initFromInputs()
+
   void init( Configf& configf ) override;
  public:
   Dendrite() = delete;                // No default constructor allowed.
@@ -70,6 +72,10 @@ class Dendrite : public NF {
     second_order = so;
   }
   inline const std::vector<double>& V() const;
+  /// Called once every coupling has its initial value. For `V: Steady`, sets
+  /// V to the steady state of the input the dendrite actually receives, its
+  /// coupling's initial nu*phi at each node (Coupling::nuphi()).
+  virtual void initFromInputs();
   void output( Output& output ) const override;
 };
 

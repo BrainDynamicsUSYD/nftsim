@@ -53,6 +53,13 @@ void DendriteRamp::init( Configf& configf ) {
   de.beta_vec.push_back(beta);
 }
 
+void DendriteRamp::initFromInputs() {
+  Dendrite::initFromInputs();
+  if( steady_v ) {
+    de.init(v); // restart the ramp's own state from the updated V
+  }
+}
+
 void DendriteRamp::RampDE::init(const vector<double>& vinit) {
   variables[0] = vinit;
   variables[1].assign(nodes, 0.0);

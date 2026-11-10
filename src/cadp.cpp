@@ -73,6 +73,11 @@ void CaDP::CaDE::dep() {
 void CaDP::init( Configf& configf ) {
   de->init(configf);
   pos = de->pos;
+  // Initial nu*phi, as step() computes it, so a Steady dendrite and the
+  // initial-state check see the input this coupling actually delivers.
+  for( size_type i=0; i<nodes; i++ ) {
+    P[i] = (*de)[7][i]*prepropag[i];
+  }
 }
 
 void CaDP::CaDE::init( Configf& configf ) {
