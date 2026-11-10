@@ -6,13 +6,6 @@ modifications. As such, if you intend to add a `.conf` file to this set, they
 are expected to each run in under a few seconds and produce less than 500 kB of
 output.
 
-**NOTE: For exact reproducibility on older gcc (School of Physics, RHEL 6 and 7),
-  you MUST first rebuild `nftsim` using:**
- ```
- make clean
- make debug
- ```
-
 The expected output from these configuration files is stored in the directory
 `nftsim/test/numerical/data/` and preserved as part of the `nftsim` repository.
 
@@ -32,6 +25,21 @@ To check the full set of numerical-test configuration files, run:
 ```
 nf_numerical --check 'all'
 ```
+(or `make test-numerical`).
+The exit status is non-zero if any output differs or any configuration fails to run.
+
+By default the outputs are compared numerically by `compare_output.py` in this directory (Python 3, standard library only).
+The configuration echo, trace names, node indices and number of rows must be identical, and each value must match the reference to within `rtol` times the largest magnitude in its column (default `rtol` 1e-9).
+This allows for round-off differences between compilers, optimisation levels and CPU architectures, which are about 1e-12 of the column scale for these configurations.
+On a failure it reports the worst column and row.
+Change the tolerance with `--rtol` and `--atol`, or use `--exact` for the original byte-for-byte comparison, which only passes with the compiler and settings that generated the references (GNU g++ without optimisation):
+```
+nf_numerical --check 'all' --rtol 1e-6
+nf_numerical --check 'e-erps' --exact
+```
+To compare two output files directly, run `test/numerical/compare_output.py reference.output new.output`.
+
+This holds for the configurations with noise (White stimuli) too, because nftsim generates its Gaussian noise portably rather than with `std::normal_distribution` (see the top-level README).
 
 When a `--check` reveals a difference from the expected output the temporary
 file used for the check is not removed, this makes it easy to look at the

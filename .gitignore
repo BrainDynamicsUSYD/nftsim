@@ -7,8 +7,10 @@ dep/
 doc/html/
 doc/latex/
 
-# Ignore NFTsim output files
+# Ignore NFTsim output files, except the reference outputs of the numerical
+# regression tests
 *.output
+!/test/numerical/data/*.output
 *.mat
 
 # Ignore LaTeX files

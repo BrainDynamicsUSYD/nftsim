@@ -51,7 +51,7 @@ DEP := $(addprefix $(DEPDIR),$(notdir $(CPP:.cpp=.d)))
 
 #Targets that don't need the dependencies evaluated/included.
 NO_DEPS := make_bin_dir make_obj_dir make_dep_dir help help-dev docs info $(DOCDIR)$(USER_MANUAL) reference-manual user-manual
-NO_DEPS += clean-user-manual clean-reference-manual clean-docs clean-deps clean-objs clean-bin clean clean-all
+NO_DEPS += clean-user-manual clean-reference-manual clean-docs clean-deps clean-objs clean-bin clean clean-all clean-test
 
 # Delete the default suffixes
 .SUFFIXES:
@@ -59,7 +59,8 @@ NO_DEPS += clean-user-manual clean-reference-manual clean-docs clean-deps clean-
 .SUFFIXES: .o .d .cpp .h .tex
 
 .PHONY: nftsim debug all clang make_bin_dir make_obj_dir make_dep_dir help help-dev info docs user-manual reference-manual \
-	clean-user-manual clean-reference-manual clean-docs clean-deps clean-objs clean-bin clean clean-all
+	clean-user-manual clean-reference-manual clean-docs clean-deps clean-objs clean-bin clean clean-all \
+	test test-unit test-numerical clean-test
 
 # target: nftsim - Compile nftsim placing the executable in the bin directory.
 nftsim: $(BINDIR)$(BIN)
@@ -136,6 +137,32 @@ endif
 # Build object code
 $(OBJDIR)%.o: $(SRCDIR)%.cpp | make_obj_dir
 	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+# Unit tests: test/unit/*.cpp linked against every nftsim object except main.
+UNIT_DIR := test/unit/
+UNIT_SRC := $(wildcard $(UNIT_DIR)*.cpp)
+UNIT_HEADER := $(wildcard $(UNIT_DIR)*.h)
+UNIT_BIN := $(BINDIR)unit_tests
+LIB_OBJ := $(filter-out $(OBJDIR)main.o,$(OBJ))
+
+# target: test - Build nftsim and the unit tests, then run the unit and numerical tests.
+test: test-unit test-numerical
+
+# target: test-unit - Build and run the unit tests in test/unit/.
+test-unit: $(UNIT_BIN)
+	./$(UNIT_BIN)
+
+# target: test-numerical - Check the output of every test/numerical/*.conf against its reference.
+test-numerical: nftsim
+	./nf_numerical --check all
+
+#   target: $(UNIT_BIN) - Link the unit tests.
+$(UNIT_BIN): $(UNIT_SRC) $(UNIT_HEADER) $(HEADER) $(LIB_OBJ) | make_bin_dir
+	$(CXX) $(CXXFLAGS) -I$(SRCDIR) -I$(UNIT_DIR) $(UNIT_SRC) $(LIB_OBJ) -o $@
+
+#   target: clean-test - Delete the unit-test executable.
+clean-test:
+	-$(RM) $(UNIT_BIN)
 
 # target: help - Print this message.
 help:
