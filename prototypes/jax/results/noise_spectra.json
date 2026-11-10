@@ -1,0 +1,30 @@
+[
+ {
+  "case": "single node",
+  "runs": 16,
+  "time_s": 32.0,
+  "mean_ratio_jax_over_nftsim_1_100Hz": 1.0005336864697205,
+  "rms_log10_ratio": 0.028427416958723684,
+  "alpha_power_ratio": 0.9739544820156423,
+  "max_abs_z": 3.7835411482425245,
+  "frac_abs_z_gt_2": 0.04522613065326633,
+  "frac_abs_z_gt_3": 0.005025125628140704,
+  "peak_freq_nftsim": 9.0,
+  "peak_freq_jax": 9.0,
+  "n_bins": 199
+ },
+ {
+  "case": "16x16 grid",
+  "runs": 8,
+  "time_s": 8.0,
+  "mean_ratio_jax_over_nftsim_1_100Hz": 1.001109480140126,
+  "rms_log10_ratio": 0.013040150230455443,
+  "alpha_power_ratio": 0.9787328033462894,
+  "max_abs_z": 3.5872090322392496,
+  "frac_abs_z_gt_2": 0.08542713567839195,
+  "frac_abs_z_gt_3": 0.005025125628140704,
+  "peak_freq_nftsim": 9.0,
+  "peak_freq_jax": 9.0,
+  "n_bins": 199
+ }
+]

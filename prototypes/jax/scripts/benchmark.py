@@ -31,6 +31,10 @@ ap.add_argument("--no-jax", action="store_true")
 ap.add_argument("--max-bytes", type=float, default=None,
                 help="largest JAX batch state in bytes before splitting into chunks "
                      "(default: a third of physical memory)")
+ap.add_argument("--per-device", type=int, default=None,
+                help="largest number of sets per device per call; larger batches run as "
+                     "consecutive chunks (default: no limit for one node, 8 for a grid on CPU, "
+                     "whose state then stays in cache)")
 ap.add_argument("--repeat", type=int, default=3)
 ap.add_argument("--out", default=None)
 args = ap.parse_args()
@@ -90,7 +94,8 @@ def bench_jax(B):
     else:
         devs = jax.devices()[:1]
     max_bytes = args.max_bytes or (physical_memory() / 3 if backend == "cpu" else 60e9)
-    chunk = B
+    per_device = args.per_device or (8 if g > 1 and backend == "cpu" else None)
+    chunk = B if per_device is None else min(B, per_device * len(devs))
     while chunk * state_bytes(sp) > max_bytes and chunk % 2 == 0 and chunk > len(devs):
         chunk //= 2
     rec = (lambda st: st["phi"][0]) if layout == "nodes" else (lambda st: st["phi"][0, :1])

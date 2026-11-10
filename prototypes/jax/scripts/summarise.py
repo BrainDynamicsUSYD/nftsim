@@ -28,7 +28,7 @@ for path in sys.argv[1:]:
           f"throughput in simulated s per wall s ({path.split('/')[-1]})\n")
     cols = ["batch"]
     if jax_rows:
-        cols += [jdesc, "JAX first call (s)"]
+        cols += [jdesc, "JAX compile (s, approx.)"]
     if nft_rows:
         cols += [ndesc]
     if jax_rows and nft_rows:
@@ -41,7 +41,8 @@ for path in sys.argv[1:]:
         if jax_rows:
             note = f" ({B // j['chunk']} chunks)" if j and j["chunk"] < B else ""
             line += [(fmt(j["throughput"]) + note) if j else "-",
-                     fmt(j["first_call_s"]) if j else "-"]
+                     (f"{max(j['first_call_s'] - j['wall_s'], 0):.2g}" if j["chunk"] == B else "-")
+                     if j else "-"]
         if nft_rows:
             line += [fmt(n["throughput"]) if n else "-"]
         if jax_rows and nft_rows:

@@ -9,6 +9,9 @@ default scheme rounds delays to whole steps, so its gradient in t0 is zero).
 Each run starts at the steady state of its own parameters (steady_state()),
 so a change of parameters does not also start a transient.
 
+Reverse mode (jax.grad) is checked against finite differences, and forward
+mode (jax.jacfwd) against reverse mode, with the cost of each.
+
 1. trace loss: mean squared difference between phi_ee and a reference trace
    (simulated with perturbed parameters), single node, pulse input, 1 s.
 2. spectral loss: (log10 alpha power - log10 target)^2, alpha power being the
@@ -29,7 +32,7 @@ import numpy as np
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 import jax  # noqa: E402
 import jax.numpy as jnp  # noqa: E402
-from nftjax import eirs, simulate, steady_state  # noqa: E402
+from nftjax import eirs, simulate, steady_state, batch_simulate  # noqa: E402
 from nftjax.spectra import welch, band_power  # noqa: E402
 
 DT = eirs.DT
@@ -76,6 +79,10 @@ def report(label, f, theta, extra=None):
     t = time.perf_counter(); val = float(jax.block_until_ready(fj(theta))); t_f = time.perf_counter() - t
     t = time.perf_counter(); jax.block_until_ready(gj(theta)); t_compile_g = time.perf_counter() - t
     t = time.perf_counter(); g = np.asarray(jax.block_until_ready(gj(theta))); t_g = time.perf_counter() - t
+    # forward mode: one tangent per parameter, cheaper than reverse mode for a few parameters
+    fw = jax.jit(jax.jacfwd(f))
+    jax.block_until_ready(fw(theta))
+    t = time.perf_counter(); gf = np.asarray(jax.block_until_ready(fw(theta))); t_fw = time.perf_counter() - t
     # Finite differences are limited by truncation error at large steps and by
     # round-off at small ones, so report the step that agrees best.
     gfds = fd_grads(fj, np.asarray(theta, dtype=float))
@@ -89,9 +96,46 @@ def report(label, f, theta, extra=None):
            "rel_err_by_step": {f"{r:g}": dict(zip(NAMES, rels[j].tolist()))
                                for j, r in enumerate(RELS)},
            "forward_s": t_f, "grad_s": t_g, "grad_over_forward": t_g / t_f,
+           "jacfwd_s": t_fw, "jacfwd_over_forward": t_fw / t_f,
+           "jacfwd_vs_grad_max_rel": float(np.max(np.abs(gf - g) / np.abs(g))),
            "compile_forward_s": t_compile_f, "compile_grad_s": t_compile_g}
     if extra:
         res.update(extra)
+    print(json.dumps(res), flush=True)
+    return res
+
+
+def batch_timing(B, T):
+    """Time the alpha-power loss and its gradient for B parameter sets at once."""
+    sp = eirs.spec(scheme="second", noise=True, max_delay=0.05)
+    n = int(round(T / DT))
+    fs = 1.0 / (DT * OUT_EVERY)
+    rng = np.random.default_rng(0)
+    thetas = jnp.asarray(THETA0 * (1 + 0.002 * rng.uniform(-1, 1, (B, 3))))
+    keys = jax.random.split(jax.random.PRNGKey(3), B)
+
+    pb0 = eirs.batch_params(B)
+    delayed = np.isin(np.arange(11), eirs.DELAYED)
+
+    def losses(th):
+        nu = pb0["nu"].at[:, 0].set(th[:, 0]).at[:, 1].set(th[:, 1])
+        pb = dict(pb0, nu=nu, tau=jnp.where(delayed, th[:, 2:3] / 2, 0.0))
+        pb = jax.vmap(lambda p: steady_state(sp, p))(pb)
+        x = batch_simulate(sp, pb, n, OUT_EVERY, keys, lambda st: st["phi"][0], layout="nodes")
+        fr, p = welch(x[:, :, 0], fs, 1024)
+        a = band_power(fr, p, 8.0, 13.0)
+        return (jnp.log10(a) - jnp.log10(1.5 * 5e-9)) ** 2
+
+    f = jax.jit(lambda th: losses(th).sum())
+    g = jax.jit(jax.grad(lambda th: losses(th).sum()))
+    jax.block_until_ready(f(thetas))
+    jax.block_until_ready(g(thetas))
+    t = time.perf_counter(); jax.block_until_ready(f(thetas)); tf = time.perf_counter() - t
+    t = time.perf_counter(); gr = jax.block_until_ready(g(thetas)); tg = time.perf_counter() - t
+    # check one set's gradient against a single-set gradient (sets are independent)
+    res = {"loss": f"batched alpha power ({T:g} s, noise, B={B}, one CPU device)",
+           "B": B, "time_s": T, "forward_s": tf, "grad_s": tg, "grad_over_forward": tg / tf,
+           "grad_sets_per_s": B / tg, "finite": bool(jnp.all(jnp.isfinite(gr)))}
     print(json.dumps(res), flush=True)
     return res
 
@@ -131,6 +175,10 @@ def main():
         results.append(report(f"alpha power ({T:g} s, noise)", f, jnp.asarray(THETA0),
                               {"time_s": T, "alpha_power": a0}))
         T *= 4
+
+    # 3. gradients of a batch: one backward pass gives every set's gradient
+    for B in (64, 512):
+        results.append(batch_timing(B, 4.0))
 
     os.makedirs(args.out, exist_ok=True)
     with open(os.path.join(args.out, "gradcheck.json"), "w") as fh:

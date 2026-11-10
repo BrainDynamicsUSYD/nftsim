@@ -1,0 +1,166 @@
+{
+ "model": "single node",
+ "time_s": 10.0,
+ "steps": 81920,
+ "machine": "macOS-27.2-arm64-arm-64bit",
+ "processor": "arm",
+ "cpu_count": 10,
+ "jax": "0.12.0.1",
+ "rows": [
+  {
+   "impl": "jax",
+   "backend": "cpu",
+   "device": "cpu",
+   "devices": 1,
+   "layout": "nodes",
+   "B": 1,
+   "chunk": 1,
+   "wall_s": 0.013334000002942048,
+   "first_call_s": 0.28689179199864157,
+   "compile_s_est": 0.2735577919956995,
+   "throughput": 749.9625017094326,
+   "finite": true,
+   "loadavg_before": [
+    9.71875,
+    11.17919921875,
+    12.8515625
+   ]
+  },
+  {
+   "impl": "nftsim",
+   "procs": 1,
+   "B": 1,
+   "wall_s": 0.11866645800182596,
+   "throughput": 84.26981110235992,
+   "loadavg_before": [
+    9.71875,
+    11.17919921875,
+    12.8515625
+   ]
+  },
+  {
+   "impl": "jax",
+   "backend": "cpu",
+   "device": "cpu",
+   "devices": 8,
+   "layout": "nodes",
+   "B": 8,
+   "chunk": 8,
+   "wall_s": 0.01907329200184904,
+   "first_call_s": 0.448903500000597,
+   "compile_s_est": 0.42983020799874794,
+   "throughput": 4194.346733235378,
+   "finite": true,
+   "loadavg_before": [
+    9.71875,
+    11.17919921875,
+    12.8515625
+   ]
+  },
+  {
+   "impl": "nftsim",
+   "procs": 8,
+   "B": 8,
+   "wall_s": 0.21956991699698847,
+   "throughput": 364.34863707261525,
+   "loadavg_before": [
+    9.71875,
+    11.17919921875,
+    12.8515625
+   ]
+  },
+  {
+   "impl": "jax",
+   "backend": "cpu",
+   "device": "cpu",
+   "devices": 8,
+   "layout": "nodes",
+   "B": 64,
+   "chunk": 64,
+   "wall_s": 0.09581970800354611,
+   "first_call_s": 1.0655592499970226,
+   "compile_s_est": 0.9697395419934765,
+   "throughput": 6679.21050204322,
+   "finite": true,
+   "loadavg_before": [
+    9.1005859375,
+    11.0263671875,
+    12.78759765625
+   ]
+  },
+  {
+   "impl": "nftsim",
+   "procs": 10,
+   "B": 64,
+   "wall_s": 1.4454751669982215,
+   "throughput": 442.76097895826905,
+   "loadavg_before": [
+    9.1005859375,
+    11.0263671875,
+    12.78759765625
+   ]
+  },
+  {
+   "impl": "jax",
+   "backend": "cpu",
+   "device": "cpu",
+   "devices": 8,
+   "layout": "nodes",
+   "B": 512,
+   "chunk": 512,
+   "wall_s": 0.625601458013989,
+   "first_call_s": 1.3794808749953518,
+   "compile_s_est": 0.7538794169813627,
+   "throughput": 8184.124148709244,
+   "finite": true,
+   "loadavg_before": [
+    9.1005859375,
+    11.0263671875,
+    12.78759765625
+   ]
+  },
+  {
+   "impl": "nftsim",
+   "procs": 10,
+   "B": 512,
+   "wall_s": 11.986103540999466,
+   "throughput": 427.1613358325008,
+   "loadavg_before": [
+    10.29345703125,
+    11.24169921875,
+    12.85302734375
+   ]
+  },
+  {
+   "impl": "jax",
+   "backend": "cpu",
+   "device": "cpu",
+   "devices": 8,
+   "layout": "nodes",
+   "B": 4096,
+   "chunk": 4096,
+   "wall_s": 6.149020917000598,
+   "first_call_s": 7.471228875001543,
+   "compile_s_est": 1.322207958000945,
+   "throughput": 6661.223071587742,
+   "finite": true,
+   "loadavg_before": [
+    15.95947265625,
+    12.4521484375,
+    13.25634765625
+   ]
+  },
+  {
+   "impl": "nftsim",
+   "procs": 10,
+   "B": 4096,
+   "wall_s": 95.81973712499894,
+   "throughput": 427.4693422146085,
+   "loadavg_before": [
+    18.57421875,
+    13.43603515625,
+    13.59228515625
+   ]
+  }
+ ]
+}
