@@ -1,11 +1,12 @@
 # NFTsim (Neural Field Theory simulator)  
 
-[![tests](https://github.com/BrainDynamicsUSYD/nftsim/actions/workflows/tests.yml/badge.svg?branch=master)](https://github.com/BrainDynamicsUSYD/nftsim/actions/workflows/tests.yml)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24123840.svg)](https://doi.org/10.5281/zenodo.24123840)
-
-
 <p align="center">
   <img width="256" height="256" src="https://github.com/BrainDynamicsUSYD/nftsim/blob/master/doc/img/nftsim_logo_dark_background_256x256.png">
+</p>
+
+<p align="center">
+  <a href="https://github.com/BrainDynamicsUSYD/nftsim/actions/workflows/tests.yml"><img src="https://github.com/BrainDynamicsUSYD/nftsim/actions/workflows/tests.yml/badge.svg?branch=master" alt="tests"></a>
+  <a href="https://doi.org/10.5281/zenodo.24123840"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.24123840.svg" alt="DOI"></a>
 </p>
 
 
