@@ -1,0 +1,6 @@
+# CPU JAX.  For an NVIDIA GPU install "jax[cuda13]==0.12.0.1" instead (see gpu/setup_physics.sh).
+jax==0.12.0.1
+numpy
+pytest
+# optional, for the figure made by scripts/noise_spectra.py:
+# matplotlib

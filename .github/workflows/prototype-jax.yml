@@ -1,0 +1,38 @@
+# Tests of the JAX prototype (prototypes/jax): its output against nftsim's on
+# short deterministic configurations, batching, and gradients.  CPU JAX on Linux.
+
+name: prototype-jax
+
+on:
+  push:
+    paths:
+      - "prototypes/jax/**"
+      - "src/**"
+      - ".github/workflows/prototype-jax.yml"
+  pull_request:
+    paths:
+      - "prototypes/jax/**"
+      - "src/**"
+      - ".github/workflows/prototype-jax.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  jax-vs-nftsim:
+    name: JAX prototype vs nftsim (Linux, CPU JAX)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Build nftsim
+        run: make -j"$(nproc)" nftsim
+      - name: Install JAX (CPU)
+        run: python -m pip install -r prototypes/jax/requirements.txt
+      - name: Tests
+        working-directory: prototypes/jax
+        env:
+          NFTSIM_REQUIRED: "1"
+        run: python -m pytest tests -v
