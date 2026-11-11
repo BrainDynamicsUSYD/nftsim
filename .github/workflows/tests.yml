@@ -93,10 +93,12 @@ jobs:
         # MathWorks licenses MATLAB for CI on public repositories.
         with:
           release: latest
-      - name: Reader tests (text, Binary and Binary32)
+          # hamming (nf.rfft) and cwtft (nf.wavelet_spectrogram)
+          products: Signal_Processing_Toolbox Wavelet_Toolbox
+      - name: Reader, run and analysis tests
         uses: matlab-actions/run-command@v2
         with:
-          command: run('test/matlab/test_read.m')
+          command: run('test/matlab/test_read.m'); run('test/matlab/test_run.m'); run('test/matlab/test_analysis.m')
 
   sanitizers:
     name: AddressSanitizer + UndefinedBehaviorSanitizer (clang++)

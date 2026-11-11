@@ -56,6 +56,12 @@ function [f, P, Kx, Ky, Pkf, x, y, Prf] = spatial_spectrum(obj, p, kmax, n_windo
         end
     end
 
+    if size(data, 1) ~= size(data, 2)
+        % The wavenumber grid, mask and normalisation below assume a square grid.
+        error(['nf:' mfilename ':RectangularGrid'], ...
+              'nf.spatial_spectrum supports square grids only (this one is %d x %d).', ...
+              size(data, 1), size(data, 2));
+    end
     if mod(size(data, 1), 2) || mod(size(data, 2), 2)
         error('In order to have a zero frequency component, you need an even number of grid edge nodes');
     end
@@ -77,8 +83,16 @@ function [f, P, Kx, Ky, Pkf, x, y, Prf] = spatial_spectrum(obj, p, kmax, n_windo
     window_idx = nf.partition(size(data, 3), n_windows, [], frac_overlap, 1, 1);
 
     % Calculate the Fourier f and k values
-    Lx = 0.5; % linear cortex dimension (m)
-    Ly = 0.5;
+    % Physical size of the sheet: the population Length (along the long side)
+    % recorded by nf.read, with the short side in proportion (equal spacing).
+    if isstruct(obj) && isfield(obj, 'length') && ~isnan(obj.length)
+        Lx = obj.length;
+    else
+        Lx = 0.5; % (m) the usual cortex size, when the length is unknown
+        warning(['nf:' mfilename ':AssumedLength'], ...
+                'Sheet length unknown: assuming 0.5 m along the long side.');
+    end
+    Ly = Lx * size(data, 2) / size(data, 1);
 
     [f, Kx, Ky, x, y, ~, dk, ~] = nf.get_frequencies(data(:, :, window_idx(1, 1):window_idx(1, 2)), fs, Lx, Ly);
 

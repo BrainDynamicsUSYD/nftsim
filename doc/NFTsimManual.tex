@@ -914,6 +914,10 @@ or you can use the \type{nf.run} helper script to run the config file using \NF 
 obj = nf.run('nftsim.conf')
 \end{lstlisting}
 
+\type{nf.run} writes binary output by default (Sec.~\ref{sec:binary_output}), which is faster to write and read than text and keeps every value exact, unless the configuration's \type{Output} section sets its own \type{Format}, which is then used.
+To choose the format explicitly, pass it as the fourth argument, for example \type{nf.run('nftsim.conf', false, [], 'Text')} for a human-readable \type{.output} file.
+The Python \type{run} function in \type{utils/nftsim.py} behaves the same way, with an \type{output\_format} argument.
+
 %Using \type{nf\_run} means you will need to add \NF to your shell search path.
 
 Several helper files are provided to manipulate the \type{nf} object. The two most important helpers are \type{nf.extract} and \type{nf.grid}. Often you want to extract a particular field from the \type{nf} object, for example, to examine the output from \type{Propagator.3.phi}. To do this directly with the nftsim struct, you would need to check the \type{fields} variable to find the index of the trace you wanted, and then extract it from the \type{data} field. In the previous example, \type{Propagator.3.phi} is the second trace. These expressions are identical:

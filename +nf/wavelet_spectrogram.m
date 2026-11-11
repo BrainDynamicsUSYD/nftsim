@@ -1,37 +1,46 @@
-function [cfx, cfreqso] = wavelet_spectrogram(obj, traces, x, fs, cfreqs, morletParam, plotFlag)
+function [cfx, cfreqso] = wavelet_spectrogram(data, traces_or_fs, cfreqs, morletParam, plotFlag)
 % Takes the complex Morlet wavelet transform of time series data and plots
 % spectrogram
-% 
+%
 % ARGUMENTS:
-%       x -- 1xT vector time series or NxT matrix of time series recorded
-%            across N channels
-%       fs -- Sampling frequency (in Hz)
-%       cfreqs -- Vector of centre frequencies
+%       data -- either an nftsim output struct (as returned by nf.read or
+%            nf.run), or a 1xT vector time series or NxT matrix of time
+%            series recorded across N channels
+%       traces_or_fs -- for a struct, the trace name(s) to use (default
+%            'Propagator.1.phi'; every output node of each trace is a
+%            channel); for a time series, the sampling frequency (in Hz)
+%       cfreqs -- Vector of centre frequencies (default linspace(1, 45, 100))
 %       morletParam -- (Optional) Morlet wavelet parameter, allows trade off
 %           between time and frequency resolution (higher is better
 %           frequency resolution). Default value 7
-%       plotFlag -- (Optional) morletWaveletTransform(..., 'plot') means
+%       plotFlag -- (Optional) wavelet_spectrogram(..., 'plot') means
 %          function will create time-frequency plots, with or without
 %          morletParam specified. Plots will be averaged across channels.
 %          Default is no plotting
 %
 % OUTPUTS:
-%       cfs -- FxNxT matrix of complex Morlet wavelet coefficients, where F
-%           is the number of centre frequencies
+%       cfx -- FxNxT matrix of complex Morlet wavelet coefficients, where F
+%           is the number of centre frequencies (FxT for one channel)
 %       cfreqso -- Vector of centre frequencies. Should always be equal to
 %           input argument cfreqs, but this may not be true in every
 %           situation.
 %
+% REQUIRES: the Wavelet Toolbox (cwtft).
+%
 % USAGE:
 %{
+        % From an nftsim simulation:
+        obj = nf.run('./configs/eirs-corticothalamic.conf');
+        nf.wavelet_spectrogram(obj, 'Propagator.1.phi', linspace(1, 45, 100), 'plot');
+        % From a time series:
         fs = 1000;
-        t = 0:(1/Fs):2;
+        t = 0:(1/fs):2;
         x = chirp(t,3,1,8,'quadratic');
         cfreqs = linspace(1, 10, 100);
         % Use built-in spectrogram plotting with default Morlet parameter
-        wavelet_spectrogram(x, fs, cfreqs, 'plot');
+        nf.wavelet_spectrogram(x, fs, cfreqs, 'plot');
         % Manually plot spectrogram with smaller parameters
-        [cfx, cfreqs] = wavelet_spectrogram(x, fs, cfreqs, 3);
+        [cfx, cfreqs] = nf.wavelet_spectrogram(x, fs, cfreqs, 3);
         figure
         imagesc(t, cfreqs, abs(cfx))
         axis xy
@@ -40,28 +49,39 @@ function [cfx, cfreqso] = wavelet_spectrogram(obj, traces, x, fs, cfreqs, morlet
 % Rory Townsend, Oct 2016
 % rory.townsend@sydney.edu.au
 
-if ~isstruct(obj)
-        error(['nf:' mfilename ':BadInputArgument'], ...
-              'The first argument must be a struct as returned by nf.read().')
-    end
-
-    if nargin < 2 || isempty(traces)
-        if ismember('Propagator.1.phi', obj.fields)
-            traces = {'Propagator.1.phi'}; % Use 'Propagator.1.phi' by default.
+if isstruct(data)
+    % An nftsim output struct: each output node of each trace is a channel.
+    obj = data;
+    if nargin < 2 || isempty(traces_or_fs)
+        if any(strcmpi('Propagator.1.phi', obj.fields))
+            traces_or_fs = {'Propagator.1.phi'}; % Use 'Propagator.1.phi' by default.
         else
             error(['nf:' mfilename ':BadInputArgument'], ...
                   'You need to specify the name of a trace (eg, Propagator.1.phi).')
         end
     end
-
+    x = nf.extract(obj, traces_or_fs).'; % channels x time
+    fs = 1.0 / obj.deltat;
+else
+    x = data;
+    if nargin < 2 || isempty(traces_or_fs)
+        error(['nf:' mfilename ':BadInputArgument'], ...
+              'For a time series, the second argument must be the sampling frequency (Hz).')
+    end
+    fs = traces_or_fs;
+end
+if nargin < 3 || isempty(cfreqs)
+    cfreqs = linspace(1, 45, 100);
+end
 
 % Set up paramters for morlet wavelet transform
-if ~exist('morletParam', 'var') || strcmp(morletParam, 'plot')
-    if strcmp(morletParam, 'plot')
+if nargin < 4 || isempty(morletParam) || (ischar(morletParam) && strcmp(morletParam, 'plot'))
+    if nargin >= 4 && ischar(morletParam) && strcmp(morletParam, 'plot')
         plotFlag = 'plot';
     end
     morletParam = 7;
 end
+
 dt = 1/fs;
 morletFourierFactor = 4*pi/(morletParam+sqrt(2+morletParam^2));
 

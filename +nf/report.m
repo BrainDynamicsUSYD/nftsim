@@ -16,7 +16,9 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function report(obj)
-    fprintf(1, 'Output for: nftsim -i "%s"\n', obj.conf_file)
+    if isfield(obj, 'conf_file') % not set by nf.read
+        fprintf(1, 'Output for: nftsim -i "%s"\n', obj.conf_file)
+    end
     fprintf(1, 'Traces: ');
     for j = 1:length(obj.fields)
         fprintf(1, '%s ', obj.fields{j});

@@ -15,6 +15,7 @@ Needs numpy only (matplotlib is imported only for plotting).
 
 import os
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -282,6 +283,84 @@ class TestNftsimBinary(unittest.TestCase):
             run_nftsim(os.path.join(CONFS, 'e-erps.conf'), os.path.join(TMP, 'bad.output'),
                        '--format', 'csv')
 
+
+
+@unittest.skipUnless(os.access(NFTSIM, os.X_OK), 'bin/nftsim has not been built')
+class TestRun(unittest.TestCase):
+    """nftsim.run(): binary by default, Text on request, and the config's own
+    Format respected when no format is given."""
+
+    def conf(self, name, format_line=''):
+        with open(os.path.join(CONFS, 'e-erps.conf')) as f:
+            text = f.read()
+        text = re.sub(r'(\n\s*Output:[^\n]*)', lambda m: m.group(1) + format_line, text, count=1)
+        path = os.path.join(TMP, 'run-%s.conf' % name)
+        with open(path, 'w') as f:
+            f.write(text)
+        return path
+
+    def run_quiet(self, conf, *args):
+        with open(os.devnull, 'w') as null:
+            saved = os.dup(1), os.dup(2)
+            os.dup2(null.fileno(), 1)
+            os.dup2(null.fileno(), 2)
+            try:
+                return nftsim.run(conf, NFTSIM, *args)
+            finally:
+                os.dup2(saved[0], 1)
+                os.dup2(saved[1], 2)
+
+    def is_binary(self, conf):
+        with open(conf.replace('.conf', '.output'), 'rb') as f:
+            return b'NFTSIM-BINARY' in f.read()
+
+    def test_default_is_binary_with_the_same_values_as_text(self):
+        binary = self.run_quiet(self.conf('default'))
+        self.assertTrue(self.is_binary(self.conf('default')))
+        text = self.run_quiet(self.conf('text'), 'text')
+        self.assertFalse(self.is_binary(self.conf('text')))
+        self.assertEqual(binary.fields, text.fields)
+        for field in binary.fields:
+            scale = max(np.abs(text.data[field]).max(), np.finfo(float).tiny)
+            self.assertLessEqual(np.abs(binary.data[field] - text.data[field]).max(), 1e-13 * scale)
+
+    def test_config_format_is_respected(self):
+        self.run_quiet(self.conf('cfgtext', ' Format: Text'))
+        self.assertFalse(self.is_binary(self.conf('cfgtext', ' Format: Text')))
+        conf32 = self.conf('cfg32', ' Format: Binary32')
+        self.run_quiet(conf32)
+        with open(conf32.replace('.conf', '.output'), 'rb') as f:
+            self.assertIn(b'dtype=float32', f.read())
+
+    def test_explicit_format_overrides_the_config(self):
+        conf = self.conf('override', ' Format: Text')
+        self.run_quiet(conf, 'binary')
+        self.assertTrue(self.is_binary(conf))
+
+    def test_unknown_format_is_rejected(self):
+        with self.assertRaises(ValueError):
+            nftsim.run(self.conf('bad'), NFTSIM, 'csv')
+
+    def test_path_with_spaces(self):
+        folder = os.path.join(TMP, 'a folder with spaces')
+        os.makedirs(folder, exist_ok=True)
+        conf = os.path.join(folder, 'run spaces.conf')
+        shutil.copyfile(self.conf('spaces'), conf)
+        out = nftsim.run(conf, NFTSIM)
+        self.assertTrue(out.npoints > 0)
+
+    def test_failure_raises_instead_of_exiting(self):
+        with self.assertRaises(RuntimeError):
+            nftsim.run(os.path.join(TMP, 'no-such-config.conf'), NFTSIM)
+
+
+class TestImport(unittest.TestCase):
+
+    def test_import_writes_no_log_file(self):
+        folder = tempfile.mkdtemp()
+        code = 'import sys; sys.path.insert(0, %r); import nftsim' % os.path.join(ROOT, 'utils')
+        subprocess.check_call([sys.executable, '-c', code], cwd=folder)
+        self.assertEqual(os.listdir(folder), [])
 
 if __name__ == '__main__':
     unittest.main()
