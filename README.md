@@ -1,6 +1,7 @@
 # NFTsim (Neural Field Theory simulator)  
 
 [![tests](https://github.com/BrainDynamicsUSYD/nftsim/actions/workflows/tests.yml/badge.svg?branch=master)](https://github.com/BrainDynamicsUSYD/nftsim/actions/workflows/tests.yml)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24123840.svg)](https://doi.org/10.5281/zenodo.24123840)
 
 
 <p align="center">
@@ -143,6 +144,10 @@ Please cite us as follows:
    Read the paper [here](http://journals.plos.org/ploscompbiol/article/related?id=10.1371/journal.pcbi.1006387).
 
 Citation metadata are also provided in [`CITATION.cff`](CITATION.cff), which GitHub uses for its "Cite this repository" button.
+
+To cite the software itself, for example to record exactly which version produced a result, use its Zenodo DOI.
+[10.5281/zenodo.24123840](https://doi.org/10.5281/zenodo.24123840) refers to all versions and resolves to the latest release.
+Each release also has its own DOI, listed on its [Zenodo record](https://doi.org/10.5281/zenodo.24123840) (for example, v.1.3.0 is [10.5281/zenodo.24123841](https://doi.org/10.5281/zenodo.24123841)).
    
 
 
