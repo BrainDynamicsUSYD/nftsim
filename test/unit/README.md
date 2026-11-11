@@ -45,6 +45,7 @@ Keep tests fast: the whole suite should run in well under a second.
 | `test_delays.cpp` | `Tau` rounding to whole steps and the warning for values that are not whole steps; `Population::Q(tau)` lags, including a delay equal to the history length and per-node delays |
 | `test_integrators.cpp` | `RK4` and `Euler` (`de.h`) errors and convergence order on a two-variable linear system with node-dependent rates |
 | `test_dendrite.cpp` | `Dendrite` (RK4) and `DendriteIntegral` against the analytic step response; numeric initial `V` |
+| `test_dendrite_merge.cpp` | Merged dendrites (same `alpha`, `beta` and type) give the same soma potential as unmerged ones, to round-off, for a population with mixed groups, with both schemes; a dendrite whose `V` is output is not merged |
 | `test_firing_response.cpp` | `FiringResponse` sigmoid and polynomial functions |
 | `test_propagator.cpp` | Initial `phi` (`Steady`, one number or one per node) for every propagator type; a uniform list matches one number; wrong-length lists rejected |
 | `test_steady_state.cpp` | Start-up steady-state check: silent for a consistent population, warns for an inconsistent one (and at the tolerance), per-node `nu`, a self-coupled population's suggested steady state, and an explicit initial `phi` that is not the presynaptic `Q` |

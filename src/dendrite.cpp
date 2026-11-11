@@ -19,7 +19,9 @@
 #include "restrict.h"   // NFTSIM_RESTRICT;
 
 // C++ standard library headers
+#include <functional> // std::equal_to;
 #include <iostream> // std::endl; std::cerr;
+#include <typeinfo> // typeid;
 #include <string>   // std::string;
 #include <vector>   // std::vector;
 using std::string;
@@ -60,7 +62,7 @@ void Dendrite::init( Configf& configf ) {
 Dendrite::Dendrite( size_type nodes, double deltat, size_type index,
                     const Propagator& prepropag, const Coupling& precouple )
   : NF(nodes,deltat,index), v(nodes), dvdt(nodes, 0.0),
-    prepropag(prepropag), precouple(precouple) {
+    own_input(&precouple.nuphi()), prepropag(prepropag), precouple(precouple) {
 }
 
 Dendrite::~Dendrite() = default;
@@ -70,6 +72,53 @@ void Dendrite::initFromInputs() {
     v = precouple.nuphi();
     dvdt.assign(nodes, 0.0);
   }
+}
+
+bool Dendrite::mergeable() const {
+  return typeid(*this) == typeid(Dendrite);
+}
+
+bool Dendrite::canMerge( const Dendrite& other ) const {
+  const std::equal_to<double> same; // exact equality is intended
+  return mergeable() && other.mergeable() && typeid(*this) == typeid(other)
+         && same(alpha, other.alpha) && same(beta, other.beta)
+         && nodes == other.nodes && same(deltat, other.deltat)
+         && second_order == other.second_order && !started && !other.started;
+}
+
+void Dendrite::merge( const Dendrite& other ) {
+  for( size_type i=0; i<nodes; i++ ) {
+    v[i] += other.v[i];
+    dvdt[i] += other.dvdt[i];
+  }
+  merged_inputs.push_back(&other.precouple.nuphi());
+  merged_inputs.insert(merged_inputs.end(),
+                       other.merged_inputs.begin(), other.merged_inputs.end());
+  summed_np.resize(nodes);
+}
+
+const double* Dendrite::sumInputs() {
+  const double* NFTSIM_RESTRICT np0 = own_input->data();
+  const double* NFTSIM_RESTRICT np1 = merged_inputs[0]->data();
+  double* NFTSIM_RESTRICT sum = summed_np.data();
+  // One pass for the common groups of two and three dendrites.
+  if( merged_inputs.size() == 1 ) {
+    for( size_type i=0; i<nodes; i++ ) {
+      sum[i] = np0[i] + np1[i];
+    }
+    return sum;
+  }
+  const double* NFTSIM_RESTRICT np2 = merged_inputs[1]->data();
+  for( size_type i=0; i<nodes; i++ ) {
+    sum[i] = (np0[i] + np1[i]) + np2[i];
+  }
+  for( std::vector<const std::vector<double>*>::size_type c=2; c<merged_inputs.size(); c++ ) {
+    const double* NFTSIM_RESTRICT npc = merged_inputs[c]->data();
+    for( size_type i=0; i<nodes; i++ ) {
+      sum[i] += npc[i];
+    }
+  }
+  return sum;
 }
 
 void Dendrite::startSecondOrder( const double* np ) {
@@ -87,7 +136,7 @@ void Dendrite::step() {
     // stages use nu*phi at t_n, t_n + h/2 and t_n + h. The input's own
     // truncation error is then O(h^2) over a step, giving a second-order scheme
     // for the coupled system (holding nu*phi constant is first order).
-    const double* NFTSIM_RESTRICT np = precouple.nuphi().data();
+    const double* NFTSIM_RESTRICT np = input();
     startSecondOrder(np);
     double* NFTSIM_RESTRICT pp = prevnp.data();
     double* NFTSIM_RESTRICT V = v.data();
@@ -130,7 +179,7 @@ void Dendrite::step() {
   // It does the same arithmetic, in the same order, as the generic RK4::step()
   // in de.h would, but without a virtual rhs() call and a gather per node per
   // stage, which dominated nftsim's run time.
-  const double* NFTSIM_RESTRICT np = precouple.nuphi().data();
+  const double* NFTSIM_RESTRICT np = input();
   double* NFTSIM_RESTRICT V = v.data();
   double* NFTSIM_RESTRICT W = dvdt.data();
   const double h = deltat;
