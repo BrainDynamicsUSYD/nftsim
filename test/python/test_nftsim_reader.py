@@ -15,6 +15,7 @@ Needs numpy only (matplotlib is imported only for plotting).
 
 import os
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -339,6 +340,27 @@ class TestRun(unittest.TestCase):
     def test_unknown_format_is_rejected(self):
         with self.assertRaises(ValueError):
             nftsim.run(self.conf('bad'), NFTSIM, 'csv')
+
+    def test_path_with_spaces(self):
+        folder = os.path.join(TMP, 'a folder with spaces')
+        os.makedirs(folder, exist_ok=True)
+        conf = os.path.join(folder, 'run spaces.conf')
+        shutil.copyfile(self.conf('spaces'), conf)
+        out = nftsim.run(conf, NFTSIM)
+        self.assertTrue(out.npoints > 0)
+
+    def test_failure_raises_instead_of_exiting(self):
+        with self.assertRaises(RuntimeError):
+            nftsim.run(os.path.join(TMP, 'no-such-config.conf'), NFTSIM)
+
+
+class TestImport(unittest.TestCase):
+
+    def test_import_writes_no_log_file(self):
+        folder = tempfile.mkdtemp()
+        code = 'import sys; sys.path.insert(0, %r); import nftsim' % os.path.join(ROOT, 'utils')
+        subprocess.check_call([sys.executable, '-c', code], cwd=folder)
+        self.assertEqual(os.listdir(folder), [])
 
 if __name__ == '__main__':
     unittest.main()

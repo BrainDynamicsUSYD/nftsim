@@ -34,12 +34,14 @@ REQUIRES:
 
 __version__ = '0.2.0'
 import logging
-logging.basicConfig(filename='nftsim.log', level=logging.INFO,
-                    format='%(asctime)s:%(levelname)s:%(message)s')
+# A library should not configure logging (this used to create nftsim.log in
+# the working directory on import, and reconfigure the root logger); use
+# logging.basicConfig in your own script to see these messages.
 LOG = logging.getLogger(__name__)
+LOG.addHandler(logging.NullHandler())
 import os
 import re
-import sys
+import subprocess
 import warnings
 
 import numpy as np
@@ -169,8 +171,9 @@ class NF:
                                  "'=' separates the configuration from the data."
                                  % getattr(fid, 'name', 'the file'))
             if 'Time  |' in l:
-                LOG.error('Did you try to open an old style output file?')
-                sys.exit()
+                raise ValueError('%s looks like an old-style output file, which '
+                                 'this reader does not support.'
+                                 % getattr(fid, 'name', 'the file'))
             l = decode(fid.readline())
             skiprows += 1
         fid.readline()
@@ -257,23 +260,24 @@ def run(filename, nftsim_path='./bin/nftsim', output_format=None):
     used. NF reads every format.
     """
     filename = filename.replace('.conf', '')
-    cmd = '%s -i %s.conf -o %s.output' % (nftsim_path, filename, filename)
+    cmd = [nftsim_path, '-i', '%s.conf' % filename, '-o', '%s.output' % filename]
     if output_format is None:
         if not _config_sets_format('%s.conf' % filename):
-            cmd += ' --format binary'
+            cmd += ['--format', 'binary']
     else:
         if str(output_format).lower() not in ('text', 'binary', 'binary64', 'binary32'):
             raise ValueError("output_format must be 'binary', 'binary32' or 'text', not %r"
                              % (output_format,))
-        cmd += ' --format %s' % output_format
-    LOG.info('Running nftsim with command: \n %s \n' % cmd)
-    result = os.system(cmd)
-
-    if result:
-        LOG.error('The execution of NFTsim did not finish cleanly.')
-        sys.exit()
-    else:
-        LOG.info('\nFinished. Output file was written to %s.output\n' % filename)
+        cmd += ['--format', str(output_format)]
+    LOG.info('Running nftsim with command: %s', ' '.join(cmd))
+    # A list of arguments (no shell), so paths may contain spaces. A failure
+    # raises an exception instead of exiting the interpreter (eg a notebook).
+    result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                            universal_newlines=True)
+    if result.returncode != 0:
+        raise RuntimeError('nftsim failed (exit status %d):\n%s'
+                           % (result.returncode, result.stderr.strip()))
+    LOG.info('Finished. Output file was written to %s.output', filename)
 
     nf_obj = NF('%s.output' % filename)
     return nf_obj
