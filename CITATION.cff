@@ -3,6 +3,11 @@ message: "If you use NFTsim in your research, please cite the paper below."
 title: "NFTsim"
 version: "1.3.0"
 date-released: "2026-11-11"
+doi: "10.5281/zenodo.24123840"
+identifiers:
+  - type: doi
+    value: "10.5281/zenodo.24123840"
+    description: "Zenodo DOI for all versions of NFTsim (resolves to the latest release)"
 abstract: "A C++ simulator for multiscale neural field dynamics."
 type: software
 license: Apache-2.0
