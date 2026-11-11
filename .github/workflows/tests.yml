@@ -96,7 +96,7 @@ jobs:
       - name: Reader tests (text, Binary and Binary32)
         uses: matlab-actions/run-command@v2
         with:
-          command: run('test/matlab/test_read.m')
+          command: run('test/matlab/test_read.m'); run('test/matlab/test_run.m')
 
   sanitizers:
     name: AddressSanitizer + UndefinedBehaviorSanitizer (clang++)

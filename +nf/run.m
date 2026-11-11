@@ -12,6 +12,11 @@
 %        time_stamp -- boolean flag to use a time_stamp YYYY-MM-DDTHHMMSS
 %                      in the output file name.
 %        nftsim_path -- nftsim executable (full or relative path).
+%        output_format -- 'Binary' (float64), 'Binary32' or 'Text'. If omitted
+%                         or empty, nf.run writes binary output (faster to
+%                         write and read, and exact), unless the config's
+%                         Output section sets its own Format:, which is then
+%                         used. nf.read reads every format.
 %
 % OUTPUT: Writes a .output file in the same location as the .conf file.
 %        obj -- A nftsim output struct (a Matlab struct containing
@@ -29,10 +34,12 @@
 %{
     %At a matlab command promt, from nftsim's main directory:
     nf_obj = nf.run('./configs/eirs-corticothalamic.conf')
+    % The same, but writing a human-readable text .output file:
+    nf_obj = nf.run('./configs/eirs-corticothalamic.conf', false, [], 'Text')
 %}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-function obj = run(fname, time_stamp, nftsim_path)
+function obj = run(fname, time_stamp, nftsim_path, output_format)
     %
     tic;
     fname = strrep(fname, '.conf', ''); %Strip any .conf suffix.
@@ -61,10 +68,26 @@ function obj = run(fname, time_stamp, nftsim_path)
               'The nftsim_path you provided is incorrect:"%s".',nftsim_path);
     end
 
-    if ~time_stamp
-        nftsim_cmd = sprintf('%s -i %s.conf -o %s.output', nftsim_path, fname, fname);
+    % Output format: binary by default, but an explicit Format: in the config
+    % wins unless output_format is given (nftsim's --format overrides Format:).
+    if nargin < 4 || isempty(output_format)
+        if config_sets_format(sprintf('%s.conf', fname))
+            format_flag = '';
+        else
+            format_flag = ' --format Binary';
+        end
     else
-        nftsim_cmd = sprintf('%s -i %s.conf -t', nftsim_path, fname);
+        valid = {'text', 'binary', 'binary64', 'binary32'};
+        if ~ischar(output_format) && ~isstring(output_format) || ~any(strcmpi(char(output_format), valid))
+            error(['nf:' mfilename ':BadFormat'], ...
+                  'output_format must be ''Binary'', ''Binary32'' or ''Text''.');
+        end
+        format_flag = sprintf(' --format %s', char(output_format));
+    end
+    if ~time_stamp
+        nftsim_cmd = sprintf('%s -i %s.conf -o %s.output%s', nftsim_path, fname, fname, format_flag);
+    else
+        nftsim_cmd = sprintf('%s -i %s.conf -t%s', nftsim_path, fname, format_flag);
     end
     fprintf('INFO: Executing command:\n')    
     fprintf('%s\n', nftsim_cmd);
@@ -89,3 +112,18 @@ function obj = run(fname, time_stamp, nftsim_path)
             fprintf(1, 'done!\n');
     end
 end %function run()
+
+%% True if the config file's Output section sets the output Format.
+function tf = config_sets_format(conf)
+    tf = false;
+    fid = fopen(conf, 'r');
+    if fid < 0
+        return; % nftsim itself reports a missing config
+    end
+    text = fread(fid, Inf, '*char')';
+    fclose(fid);
+    % The Output section is the last one; look for Format: after its label
+    % (the last match, so a mention in the header comment is ignored).
+    starts = regexp(text, '(^|\n)\s*Output:');
+    tf = ~isempty(starts) && ~isempty(regexp(text(starts(end):end), '(^|\s)Format:', 'once'));
+end

@@ -87,6 +87,8 @@ The file keeps the text header (the configuration, trace names and node numbers)
 For 4096 nodes written at every step, a run took 0.5 s instead of 12.9 s and the file was 246 MB instead of 676 MB.
 The Python reader (`utils/nftsim.py`) and the Matlab reader (`nf.read`) detect the format and return the same structures as for text, and they read the complete rows of a run that was interrupted.
 The format is described in the user manual (section "Binary output").
+The Matlab `nf.run` and Python `nftsim.run` wrappers write binary output by default, unless the configuration sets its own `Format:`.
+Pass a format (`nf.run(conf, false, [], 'Text')`, or `nftsim.run(conf, output_format='text')`) to choose one explicitly.
 
 ## Time-stepping scheme
 

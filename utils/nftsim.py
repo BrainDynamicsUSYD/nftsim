@@ -38,6 +38,7 @@ logging.basicConfig(filename='nftsim.log', level=logging.INFO,
                     format='%(asctime)s:%(levelname)s:%(message)s')
 LOG = logging.getLogger(__name__)
 import os
+import re
 import sys
 import warnings
 
@@ -233,17 +234,37 @@ def read_text_rows(path, skiprows):
     return np.loadtxt(path, dtype=np.float64, skiprows=skiprows, max_rows=nrows, ndmin=2)
 
 
+def _config_sets_format(conf):
+    """True if the configuration file's Output section sets the output Format."""
+    try:
+        with open(conf) as f:
+            text = f.read()
+    except OSError:
+        return False  # nftsim itself reports a missing config
+    # The Output section is the last one; use the last 'Output:' label, so a
+    # mention in the header comment is ignored.
+    starts = [m.start() for m in re.finditer(r'(^|\n)\s*Output:', text)]
+    return bool(starts) and re.search(r'(^|\s)Format:', text[starts[-1]:]) is not None
+
+
 def run(filename, nftsim_path='./bin/nftsim', output_format=None):
     """
     Run nftsim and store output in NF object...
 
-    output_format, if given, is passed to nftsim's --format option ('text',
-    'binary' or 'binary32'); otherwise the configuration file's Format (text
-    by default) is used.
+    output_format is 'binary' (float64), 'binary32' or 'text'. If None,
+    binary output is written (faster to write and read, and exact), unless
+    the configuration file's Output section sets its own Format, which is then
+    used. NF reads every format.
     """
     filename = filename.replace('.conf', '')
     cmd = '%s -i %s.conf -o %s.output' % (nftsim_path, filename, filename)
-    if output_format is not None:
+    if output_format is None:
+        if not _config_sets_format('%s.conf' % filename):
+            cmd += ' --format binary'
+    else:
+        if str(output_format).lower() not in ('text', 'binary', 'binary64', 'binary32'):
+            raise ValueError("output_format must be 'binary', 'binary32' or 'text', not %r"
+                             % (output_format,))
         cmd += ' --format %s' % output_format
     LOG.info('Running nftsim with command: \n %s \n' % cmd)
     result = os.system(cmd)
