@@ -67,6 +67,15 @@ function [obj] = read(fname)
             obj.input_nodes = sscanf(buffer(idx{1}(1) + length(key)+2:end), '%d', 1);
         end
         
+        % Physical length of the (first) population's sheet, used by
+        % nf.spatial_spectrum; populations share one grid.
+        if ~isfield(obj, 'length')
+            tok = regexp(buffer, '^\s*Length:\s*([-+0-9.eEdD]+)', 'tokens', 'once');
+            if ~isempty(tok)
+                obj.length = str2double(tok{1});
+            end
+        end
+
         key   = 'nodes'; 
         if  ~isempty(strfind(buffer, key))
             idx = strfind(buffer, key, 'ForceCellOutput', true);

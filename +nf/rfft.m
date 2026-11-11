@@ -60,9 +60,11 @@ function [f, Y, P] = rfft(y, fs, NFFT, windowed, detrended, one_sided)
     end
 
     % Remove discontinuity at endpoints.
+    window_power = 1; % mean square of the window, to correct the PSD
     if windowed
-        window_func = repmat(hamming(size(y, 1)), [1, size(y, 2)]);
-        y = y .* window_func;
+        w = hamming(size(y, 1));
+        window_power = mean(w.^2);
+        y = y .* repmat(w, [1, size(y, 2)]);
     end
     
     Y = fft(y, NFFT) / NFFT;%size(y, 1); % Correctly normalized Fourier components c_k
@@ -74,7 +76,7 @@ function [f, Y, P] = rfft(y, fs, NFFT, windowed, detrended, one_sided)
 
     if one_sided
         % frequency vector
-        f = 0:freq_bin_width:(fs/2); 
+        f = (0:floor(NFFT / 2)) * freq_bin_width; % exactly one frequency per component
         Y = Y(1:(floor(NFFT / 2) + 1), :); % This can be returned as the single sided amplitude spectrum
         P = abs(Y).^2; % single sided spectrum 
 
@@ -90,11 +92,12 @@ function [f, Y, P] = rfft(y, fs, NFFT, windowed, detrended, one_sided)
             
     else
         Y = fftshift(Y);
-        f = -(fs/2):freq_bin_width:(fs/2)-freq_bin_width;
+        f = ((0:NFFT-1) - floor(NFFT / 2)) * freq_bin_width; % matches fftshift for even and odd NFFT
         P = abs(Y).^2; % two sided spectrum 
 
     end
         P = mean(P, 2);
         P = P ./ freq_bin_width; % Divide by frequency bin size to get power spectral density
+        P = P ./ window_power;   % Undo the power the window removed (a Hamming window keeps ~40%)
 
 end %function rfft()

@@ -40,12 +40,12 @@ function [f, Kx, Ky, x, y, df, dk, dx] = get_frequencies(data, fs, Lx, Ly)
 
     % This is the single positive sided frequency vector
     if isvector(data)
-        f = (0:(fs / length(data)):(fs / 2)).'; 
+        f = ((0:floor(length(data) / 2)) * (fs / length(data))).'; 
         return
     end
 
     % This is the single positive sided frequency
-    f = (0:(fs / size(data, 3)):(fs / 2)).'; 
+    f = ((0:floor(size(data, 3) / 2)) * (fs / size(data, 3))).'; 
     df = fs / size(data, 3);
 
     % Wavenumbers / single sided and positive
@@ -73,13 +73,13 @@ function [f, Kx, Ky, x, y, df, dk, dx] = get_frequencies(data, fs, Lx, Ly)
     
     % dx and dy should be the same
     dx = Lx / size(data, 1); % [m]
-    dy = Ly / size(data, 1); % [m]
+    dy = Ly / size(data, 2); % [m]
     
     % the stencil in NFTsim assumes the coordinates of a parcel of the discretized domain
     % is at the centre of the parcel, thus the first coordinate is at (dx/2; dy/2) 
 
-    x  = dx * (0:size(data, 1)) + dx/2;
-    y  = dy * (0:size(data, 1)) + dx/2;
+    x  = dx * (0:size(data, 1)-1) + dx/2; % node centres
+    y  = dy * (0:size(data, 2)-1) + dy/2;
 
     [x, y] = meshgrid(x, y);
 

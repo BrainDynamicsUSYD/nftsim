@@ -109,7 +109,7 @@ function [data, t2] = extract(obj, traces, t, nodes)
     n = length(nodes);
     data = zeros(stop-start+1, length(outputs) * n);
     for j = 1:length(outputs)
-        [~, node_index] = ismember(nodes, obj.nodes{j});
+        [~, node_index] = ismember(nodes, obj.nodes{outputs(j)});
         data(:, (((j - 1) * n) + 1):(j * n)) = obj.data{outputs(j)}(start:stop, node_index);
     end
     t2 = obj.time(start:stop);

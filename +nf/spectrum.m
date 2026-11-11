@@ -60,11 +60,11 @@ function [f, P] = spectrum(obj, traces, n_windows, windowed, detrended, one_side
         windowed = false; % No window function by default.
     end
 
-    if nargin < 5 || isempty(n_windows)
+    if nargin < 5 || isempty(detrended)
         detrended = false; % Do not detrend by default.
     end
 
-    if nargin < 6 || isempty(n_windows)
+    if nargin < 6 || isempty(one_sided)
         one_sided = true; % Calculate one-sided spectrum by default.
     end
 
